@@ -32,7 +32,7 @@ class Thought:
 
     def create_user_messages(self, prompt: str) -> List[dict]:
         user_messages = [{"role": "user", "content": prompt}] + [
-            {"role": "user", "content": FileManagement.read_file_content(file)} for file in self.input_files
+            {"role": "user", "content": FileManagement.read_file(file)} for file in self.input_files
         ]
         return user_messages
 
@@ -55,4 +55,3 @@ if __name__ == '__main__':
         """Evaluate the following prompt to the best of your abilities adding as much useful detail as possible while 
         keeping your answer curt and to the point""",
         "How can the Thought.py be improved? Write an improved version"))
-    # print(thought.think("Provide a detailed answer about Hideki Naganuma's background, contributions, and any relevant achievements."))
