@@ -40,7 +40,7 @@ class ThoughtProcess:
         new_folder = os.path.join(self.thoughts_folder, f"{self.thought_id}")
         os.makedirs(new_folder, exist_ok=True)
 
-        first_thought = self.create_next_thought([file_to_evaluate])
+        first_thought = self.create_next_thought(files_to_evaluate)
         first_attempt = first_thought.think("""Evaluate the following  prompt thoroughly but concisely. Adding as much useful detail as possible while 
         keeping your answer curt and to the point.""", task)
         FileManagement.save_to_solution(first_attempt, str(self.thought_id))
@@ -93,4 +93,4 @@ if __name__ == '__main__':
     thought_process = ThoughtProcess()
     # thought_process.save_solution("Test", "1")
     # print(FileManagement.read_solution("1"))
-    thought_process.evaluate_task(f"""Improve {file_to_evaluate} specifically I want to split off the FileManagement defs into a new py file named as such. Write such a file""")
+    thought_process.evaluate_task(f"""Improve {file_to_evaluate} specifically I want to split off the FileManagement defs into FileManagement.py, write these changes""")

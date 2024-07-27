@@ -6,6 +6,7 @@ from openai import OpenAI
 
 import Constants
 import Prompter
+from ThoughtProcessor.FileManagement import FileManagement
 from Utility import Utility
 
 
@@ -33,31 +34,10 @@ class Thought:
         return response
 
     def create_user_messages(self, prompt: str) -> List[dict]:
-        file_contents = self.load_files(self.input_files)
+        file_contents = FileManagement.load_files(self.input_files)
         user_messages = [{"role": "user", "content": prompt}] + \
                         [{"role": "user", "content": content} for content in file_contents]
         return user_messages
-
-    @staticmethod
-    def load_file_content(file_path: str) -> str:
-        full_path = os.path.join("Thoughts", "1", file_path)
-        logging.info(f"Loading file content from: {full_path}")
-        try:
-            with open(full_path, 'r', encoding='utf-8') as file:
-                return file.read()
-        except FileNotFoundError:
-            logging.error(f"File not found: {file_path}")
-            return f"[FAILED TO LOAD {file_path}]"
-        except Exception as e:
-            logging.error(f"An unexpected error occurred: {str(e)}")
-            return f"[FAILED TO LOAD {file_path}]"
-
-    def load_files(self, file_paths: List[str]) -> List[str]:
-        contents = []
-        for path in file_paths:
-            logging.info(f"Attempting to access {path}")
-            contents.append(self.load_file_content(path))
-        return contents
 
     def get_openai_response(self, messages: List[dict]) -> str:
         model = Constants.MODEL_NAME

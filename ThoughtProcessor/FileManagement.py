@@ -1,5 +1,7 @@
 import os
 import logging
+from typing import List
+
 
 class FileManagement:
     @staticmethod
@@ -12,6 +14,28 @@ class FileManagement:
                 logging.info(f"File {file_path} instantiated.")
         except Exception as e:
             logging.error(f"ERROR: could not save instantiate file: {file_path}\n {str(e)} \nThought_id: {thought_id}")
+
+    @staticmethod
+    def load_file_content(file_path: str) -> str:
+        full_path = os.path.join("Thoughts", "1", file_path)
+        logging.info(f"Loading file content from: {full_path}")
+        try:
+            with open(full_path, 'r', encoding='utf-8') as file:
+                return file.read()
+        except FileNotFoundError:
+            logging.error(f"File not found: {file_path}")
+            return f"[FAILED TO LOAD {file_path}]"
+        except Exception as e:
+            logging.error(f"An unexpected error occurred: {str(e)}")
+            return f"[FAILED TO LOAD {file_path}]"
+
+    @staticmethod
+    def load_files(file_paths: List[str]) -> List[str]:
+        contents = []
+        for path in file_paths:
+            logging.info(f"Attempting to access {path}")
+            contents.append(FileManagement.load_file_content(path))
+        return contents
 
     @staticmethod
     def save_to_solution(content: str, thought_id: str):
@@ -32,6 +56,9 @@ class FileManagement:
         try:
             with open(file_path, "r", encoding="utf-8") as file:
                 return file.read()
+        except FileNotFoundError:
+            logging.error(f"ERROR: File not found: {file_path}")
+            return "[FATAL ERROR: COULD NOT FIND SOLUTION FILE]"
         except Exception as e:
             logging.error(f"ERROR: could not read file, {str(e)}")
-            return "[FATAL ERROR COULD NOT READ SOLUTION]"
+            return "[FATAL ERROR: COULD NOT READ SOLUTION]"
