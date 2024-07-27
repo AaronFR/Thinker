@@ -100,8 +100,10 @@ EXECUTIVE_PROMPT = """Given the following input solution, write a valid json fil
     "areas_of_improvement": (optional, not present if solution is perfect)
 }
 """
-PROMPT_FOLLOWING_EXECUTIVE_DIRECTION = """Evaluate the following prompt to the best of your abilities adding as much useful detail as possible. 
-A prior task has outputed to solution.txt and has been deemed insufficient for the reasons stated next. 
+PROMPT_FOLLOWING_EXECUTIVE_DIRECTION = """Evaluate the following  prompt thoroughly but concisely.
+Adding as much useful detail as possible while keeping your answer curt and to the point.
+If there is content from a solution.txt you have been run before and previous output deemed insufficient for the reasons 
+stated next. 
 Follow next_steps and areas_of_improvement to append an improvement to the solution"""
 
 EVALUATE_TASKS_INSTRUCTIONS = """

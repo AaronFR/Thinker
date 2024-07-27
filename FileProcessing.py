@@ -43,7 +43,6 @@ class FileProcessing:
         except Exception as e:
             logging.error(f"ERROR: could not save file, {str(e)}")
 
-    @deprecated(reason="Use FileManagement/save_file instead")
     @staticmethod
     def save_as_text(content: str, file_name, prompt_id: str):
         """

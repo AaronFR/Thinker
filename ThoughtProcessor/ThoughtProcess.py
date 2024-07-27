@@ -10,22 +10,21 @@ from Prompter import Prompter
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.Thought import Thought
 
-file_to_evaluate = "Thought.py"
-files_to_evaluate = [file_to_evaluate, "ThoughtProcess.py"]  # placeholder
-
 
 class ThoughtProcess:
     """
     Class to handle the process of evaluating tasks using the Thought class.
     """
 
-    def __init__(self):
+    def __init__(self, files_to_evaluate):
         self.thoughts_folder = os.path.join(os.path.dirname(__file__), "Thoughts")
+        self.files_to_evaluate = files_to_evaluate
         self.thought_id = 1  # self.get_next_thought_id()
+        FileManagement.initialise_file(self.thought_id, "solution.txt")
+
         self.prompter = Prompter()
         self.open_ai_client = OpenAI()
         self.max_tries = 2
-        FileManagement.initialise_file(self.thought_id, "solution.txt")
 
     def get_next_thought_id(self) -> int:
         """Get the next available thought ID based on existing directories."""
@@ -40,30 +39,24 @@ class ThoughtProcess:
         new_folder = os.path.join(self.thoughts_folder, f"{self.thought_id}")
         os.makedirs(new_folder, exist_ok=True)
 
-        first_thought = self.create_next_thought(files_to_evaluate)
-        initial_response = first_thought.think("""Evaluate the following  prompt thoroughly but concisely. Adding as much useful detail as possible while 
-        keeping your answer curt and to the point.""", task)
-        FileManagement.save_to_solution(initial_response, str(self.thought_id))
-
         logs = ""
         for iteration in range(1, self.max_tries + 1):
-            external_files = [file_to_evaluate, "solution.txt"]  # hard coded for now
             logging.info(f"Starting iteration {iteration} for task: {task}")
 
-            executive_output_dict = self.process_executive_thought("")
+            executive_output_dict = self.process_executive_thought(task)
             logs += str(executive_output_dict)
             print(f"executive output: {executive_output_dict.get('next_steps')}")
             if executive_output_dict.get('solved'):
                 self.finalise_solution(self.thought_id, logs)
                 break
 
-            self.process_thought(executive_output_dict, external_files)
+            self.process_thought(executive_output_dict, self.files_to_evaluate)
         else:
             logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS")
             FileManagement.save_file(logs, os.path.join(self.thoughts_folder, str(self.thought_id), "logs.txt"), "")
 
     def process_executive_thought(self, task: str) -> Dict[str, str]:
-        executive_thought = self.create_next_thought([file_to_evaluate, "solution.txt"])
+        executive_thought = self.create_next_thought(self.files_to_evaluate)
         executive_output = executive_thought.think(Constants.EXECUTIVE_PROMPT, task)
         try:
             logging.info(f"Converting executive output from json format to dict: \n{executive_output}")
@@ -91,5 +84,11 @@ class ThoughtProcess:
 
 
 if __name__ == '__main__':
-    thought_process = ThoughtProcess()
-    thought_process.evaluate_task(f"""Make a series of small improvements to  {file_to_evaluate} and ThoughtProcess.py, focus on logic improvements, flow changes and improved readability/understandability""")
+    thought_process = ThoughtProcess(["ThoughtProcess.py", "solution.txt"])
+    thought_process.evaluate_task(
+        f"""Write up a refactoring for "ThoughtProcess.py": In the current flow an initial Thought is created that then 
+        writes to solution.txt, then a loop is started which goes thought -> new executive, where the prior executive 
+        thought tells the next thought in the loop what to do, in reality there should be no initial thought, 
+        just going straight into the processing loop, where an executive thought is triggered that tells a new thought 
+        what to do in the same iteration of the loop"""
+    )
