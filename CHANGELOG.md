@@ -9,13 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- 
+- FileManagment.py for /Thoughts splitting out methods from ThoughtProcess.py
 
 ### Changed
 
-- PromptManagement.py processing parallel prompts is now done with asyncio for efficiency gains in I/O operations
+- 
 
 ### Removed
+
+-
+
+
+## [0.2.0] - 2024-07-27
+
+### Added
+
+- Thought.py, ThoughtProcess.py created as a way of iteratively trying to solve a solution one step at a time, instead of the previous approach where a solution plan would be designed and followed from the first step
 
 ## [0.1.1] - 2024-07-24
 
