@@ -64,18 +64,24 @@ class FileManagement:
             logging.error(f"Could not save file, {str(e)} \nThought_id: {thought_id}")
 
     @staticmethod
-    def save_file(content: str, file_name, thought_id: str):
+    def save_file(content: str, file_name, thought_id: str, overwrite=False):
         """
         Saves the response content in HTML format to a file.
 
         :param content: The content to be formatted and saved.
         :param file_name: The base name for the output HTML file.
         :param thought_id: sub-folder the ThoughtProcess is running on
+        :param overwrite: whether the file should be overwritten
         """
         file_path = os.path.join("Thoughts", thought_id, file_name)
         try:
-            with open(file_path, "w", encoding="utf-8") as file:
-                file.write(content)
-                logging.debug("File Saved: {file_path}")
+            if overwrite:
+                with open(file_path, "w", encoding="utf-8") as file:
+                    file.write(content)
+                    logging.debug("File overwritten: {file_path}")
+            else:
+                with open(file_path, "a", encoding="utf-8") as file:
+                    file.write(content)
+                    logging.debug("File Saved: {file_path}")
         except Exception as e:
             logging.error(f"could not save file, {str(e)}")

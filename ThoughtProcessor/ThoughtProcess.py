@@ -65,13 +65,19 @@ class ThoughtProcess:
             logging.error("Failed to decode JSON output: %s", executive_output)
             raise
 
-    def process_thought(self, executive_output_dict: Dict[str, str], external_files: List[str]):
+    def process_thought(
+            self,
+            executive_output_dict: Dict[str, str],
+            external_files: List[str],
+            save_to: str,
+            overwrite: bool
+        ):
         thought = self.create_next_thought(external_files)
         output = thought.think(
             Constants.PROMPT_FOLLOWING_EXECUTIVE_DIRECTION,
             str(executive_output_dict.get('next_steps')) + "/n" + str(
                 executive_output_dict.get('areas_of_improvement')))
-        FileManagement.save_to_solution(output, str(self.thought_id))
+        FileManagement.save_file(output, save_to, str(self.thought_id), overwrite)
 
     def create_next_thought(self, input_data) -> Thought:
         # Central management of thought instances
