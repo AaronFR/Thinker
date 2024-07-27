@@ -29,7 +29,7 @@ class ThoughtProcess:
 
         self.prompter = Prompter()
         self.open_ai_client = OpenAI()
-        self.max_tries = 2
+        self.max_tries = 10
 
     def get_next_thought_id(self) -> int:
         """
@@ -58,6 +58,7 @@ class ThoughtProcess:
         logs = ""
         for iteration in range(1, self.max_tries + 1):
             logging.info(f"Starting iteration {iteration} for task: {task}")
+            self.files_to_evaluate = FileManagement.list_files(new_folder)
 
             executive_output_dict = self.process_executive_thought(task)
             logs += str(executive_output_dict) + "\n"
@@ -145,7 +146,7 @@ class ThoughtProcess:
 if __name__ == '__main__':
     thought_process = ThoughtProcess()
     thought_process.evaluate_task(
-        """Take Thought.py and FileManagment.py and re-write them so that each method within each has a docstring."""  # Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""
+        """Write a 10 page report on the history of India"""  # Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""
     )
 
     # """Take ThoughtProcess.py and re-write so that method has a docstring. Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""  # found to overwrite python files in a meaningful way

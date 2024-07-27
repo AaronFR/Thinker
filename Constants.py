@@ -91,18 +91,25 @@ The word 'TASKS:' MUST be included at the start
 Files MUST be referenced within square brackets e.g [example.csv]
 """
 
-EXECUTIVE_PROMPT = """Given the preceding input files, write a valid json file 
+EXECUTIVE_PROMPT = """You are the first part of a 2 process, iterating in a system to solve an initial task,
+where file input is evaluated against the existing reference files, with each step adding to the files until the initial
+task can be said to be solved. ONLY output the following json object.
+
+Given the preceding input files, write a valid json file 
 (only json formatting, don't surround with triple backticks), with the following fields and format: 
 {
     "Type": (of question),
     "solved": (false if answer can be improved),
-    "next_steps": (if 'solved': false)
-    "areas_of_improvement": (optional, not present if solution is perfect)
+    "next_steps": (if 'solved': false, Make sure to reference all required input files and previous tasks. Ensure consistency in the output format.)
+    "areas_of_improvement": (optional, not present if solution is perfect and meets all requirements of the initial prompt)
     "save_to": (location the next task reading this output should save its output to, only one location at a time. If being improved its okay to overwrite a supplied file. Default: "solution.txt")
-    "overwrite_file" (whether depending on context a file should be overwritten or not. Default: false)
+    "overwrite_file" (whether depending on context a file should be overwritten or not. Don't be trigger happy, unless required e.g. the user asks for a file to be-rewritten most operations NOT overwrite the files there saving to. Default: false)
 }
 """
-PROMPT_FOLLOWING_EXECUTIVE_DIRECTION = """Evaluate the following  prompt thoroughly but concisely.
+PROMPT_FOLLOWING_EXECUTIVE_DIRECTION = """You are the 2nd part of a 2 step process, iterating in a system to solve an initial task,
+The first part has generated directives for you to follow in order to solve help solve the initial task
+
+Evaluate the following  prompt thoroughly but concisely.
 Adding as much useful detail as possible while keeping your answer curt and to the point.
 If there is content from a solution.txt you have been run before and previous output deemed insufficient for the reasons 
 stated next. 
