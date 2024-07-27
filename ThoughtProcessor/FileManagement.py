@@ -24,6 +24,27 @@ class FileManagement:
             logging.error(f"ERROR: could not instantiate file: {file_path}\n {str(e)} \nThought_id: {thought_id}")
 
     @staticmethod
+    def list_files(directory: str) -> list:
+        """
+        List all file names in the given directory.
+
+        :param directory: The path to the directory.
+        :return: A list of file names in the directory.
+        """
+        try:
+            entries = os.listdir(directory)
+            file_names = [entry for entry in entries if os.path.isfile(os.path.join(directory, entry))]
+            logging.info(f"Found the following files in Thought space: {file_names}")
+
+            return file_names
+        except FileNotFoundError:
+            logging.error(f"The directory {directory} does not exist.")
+            return []
+        except Exception as e:
+            logging.error(f"An error occurred: {e}")
+            return []
+
+    @staticmethod
     def read_file(file_path: str) -> str:
         """Read the content of a file.
 

@@ -16,14 +16,14 @@ class ThoughtProcess:
     Class to handle the process of evaluating tasks using the Thought class.
     """
 
-    def __init__(self, files_to_evaluate):
+    def __init__(self):
         """
         Initialize the ThoughtProcess instance.
 
         :param files_to_evaluate: List of file paths supplied by the user as reference against their task.
         """
         self.thoughts_folder = os.path.join(os.path.dirname(__file__), "Thoughts")
-        self.files_to_evaluate = files_to_evaluate
+        self.files_to_evaluate = []
         self.thought_id = 1  # self.get_next_thought_id()
         FileManagement.initialise_file(self.thought_id, "solution.txt")
 
@@ -143,7 +143,7 @@ class ThoughtProcess:
 
 
 if __name__ == '__main__':
-    thought_process = ThoughtProcess(["Thought.py", "FileManagement.py", "solution.txt"])
+    thought_process = ThoughtProcess()
     thought_process.evaluate_task(
         """Take Thought.py and FileManagment.py and re-write them so that each method within each has a docstring."""  # Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""
     )
