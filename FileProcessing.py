@@ -6,6 +6,8 @@ from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 from pathlib import Path
 
+from typing_extensions import deprecated
+
 
 class FileProcessing:
 
@@ -41,10 +43,12 @@ class FileProcessing:
         except Exception as e:
             logging.error(f"ERROR: could not save file, {str(e)}")
 
+    @deprecated(reason="Use FileManagement/save_file instead")
     @staticmethod
     def save_as_text(content: str, file_name, prompt_id: str):
         """
         Saves the response content in HTML format to a file.
+        Very similar to save_file which replaces this method
 
         :param content: The content to be formatted and saved.
         :param file_name: The base name for the output HTML file.

@@ -6,7 +6,6 @@ from typing import List, Dict
 from openai import OpenAI
 
 import Constants
-from FileProcessing import FileProcessing
 from Prompter import Prompter
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.Thought import Thought
@@ -55,13 +54,13 @@ class ThoughtProcess:
             logs += str(executive_output_dict)
             print(f"executive output: {executive_output_dict.get('next_steps')}")
             if executive_output_dict.get('solved'):
-                self.finalise_solution(iteration, logs)
+                self.finalise_solution(self.thought_id, logs)
                 break
 
             self.process_thought(executive_output_dict, external_files)
         else:
             logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS")
-            print("Logs: ", logs)
+            FileManagement.save_file(logs, os.path.join(self.thoughts_folder, str(self.thought_id), "logs.txt"), "")
 
     def process_executive_thought(self, task: str) -> Dict[str, str]:
         executive_thought = self.create_next_thought([file_to_evaluate, "solution.txt"])
@@ -88,7 +87,7 @@ class ThoughtProcess:
 
     def finalise_solution(self, iteration: int, logs: str) -> None:
         print(f"Solved by iteration: {iteration}")
-        FileProcessing.save_as_text(logs, os.path.join(self.thoughts_folder, str(iteration), "logs"), "")
+        FileManagement.save_file(logs, os.path.join(self.thoughts_folder, str(iteration), "logs.txt"), "")
 
 
 if __name__ == '__main__':
