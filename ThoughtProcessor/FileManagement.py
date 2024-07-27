@@ -13,10 +13,10 @@ class FileManagement:
             with open(file_path, "w", encoding="utf-8"):
                 logging.info(f"File {file_path} instantiated.")
         except Exception as e:
-            logging.error(f"ERROR: could not save instantiate file: {file_path}\n {str(e)} \nThought_id: {thought_id}")
+            logging.error(f"ERROR: could not instantiate file: {file_path}\n {str(e)} \nThought_id: {thought_id}")
 
     @staticmethod
-    def load_file_content(file_path: str) -> str:
+    def read_file_content(file_path: str) -> str:
         full_path = os.path.join("Thoughts", "1", file_path)
         logging.info(f"Loading file content from: {full_path}")
         try:
@@ -34,25 +34,25 @@ class FileManagement:
         contents = []
         for path in file_paths:
             logging.info(f"Attempting to access {path}")
-            contents.append(FileManagement.load_file_content(path))
+            contents.append(FileManagement.read_file_content(path))
         return contents
 
     @staticmethod
     def save_to_solution(content: str, thought_id: str):
         """Append content to the solution.txt file for a given thought."""
-        file_path = f"Thoughts/{thought_id}/solution.txt"
+        file_path = os.path.join("Thoughts", thought_id, "solution.txt")
         try:
             logging.info(f"{thought_id}: Attempting to save solution")
             with open(file_path, "a", encoding="utf-8") as file:
                 file.write(content + "\n")
                 logging.info(f"Solution saved for thought_id: {thought_id}")
         except Exception as e:
-            logging.error(f"ERROR: could not save file, {str(e)} \n Thought_id: {thought_id}")
+            logging.error(f"Could not save file, {str(e)} \nThought_id: {thought_id}")
 
     @staticmethod
     def read_solution(thought_id: str) -> str:
-        """Read a given solution.txt file for a given thought id number."""
-        file_path = f"Thoughts/{thought_id}/solution.txt"
+        """Read a given solution.txt file for a given thought ID."""
+        file_path = os.path.join("Thoughts", thought_id, "solution.txt")
         try:
             with open(file_path, "r", encoding="utf-8") as file:
                 return file.read()

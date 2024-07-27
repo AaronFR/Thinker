@@ -1,9 +1,6 @@
 import logging
-import os
 from typing import List
-
 from openai import OpenAI
-
 import Constants
 import Prompter
 from ThoughtProcessor.FileManagement import FileManagement
@@ -34,13 +31,12 @@ class Thought:
         return response
 
     def create_user_messages(self, prompt: str) -> List[dict]:
-        file_contents = FileManagement.load_files(self.input_files)
-        user_messages = [{"role": "user", "content": prompt}] + \
-                        [{"role": "user", "content": content} for content in file_contents]
+        user_messages = [{"role": "user", "content": prompt}] + [
+            {"role": "user", "content": FileManagement.read_file_content(file)} for file in self.input_files
+        ]
         return user_messages
 
     def get_openai_response(self, messages: List[dict]) -> str:
-        model = Constants.MODEL_NAME
         try:
             response = self.open_ai_client.chat.completions.create(
                 model=Constants.MODEL_NAME, messages=messages).choices[0].message.content

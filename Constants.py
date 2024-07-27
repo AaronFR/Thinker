@@ -95,8 +95,8 @@ EXECUTIVE_PROMPT = """Given the following input solution, write a valid json fil
 (only json formatting, don't surround with triple backticks), with the following fields and format: 
 {
     "Type": (of question),
-    "solved": (False if answer can be improved),
-    "next_steps": (if 'solved': False)
+    "solved": (false if answer can be improved),
+    "next_steps": (if 'solved': false)
     "areas_of_improvement": (optional, not present if solution is perfect)
 }
 """

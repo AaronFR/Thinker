@@ -11,7 +11,8 @@ from Prompter import Prompter
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.Thought import Thought
 
-file_to_evaluate = "ThoughtProcess.py"  # placeholder
+file_to_evaluate = "Thought.py"
+files_to_evaluate = [file_to_evaluate, "FileManagement.py"]  # placeholder
 
 
 class ThoughtProcess:
@@ -93,4 +94,4 @@ if __name__ == '__main__':
     thought_process = ThoughtProcess()
     # thought_process.save_solution("Test", "1")
     # print(FileManagement.read_solution("1"))
-    thought_process.evaluate_task(f"""Improve {file_to_evaluate} specifically I want to split off the FileManagement defs into FileManagement.py, write these changes""")
+    thought_process.evaluate_task(f"""Make a series of small improvements to  {file_to_evaluate} and FileManagement.py, scale of improvements can be typos, refactorings to logic changes""")
