@@ -91,20 +91,23 @@ The word 'TASKS:' MUST be included at the start
 Files MUST be referenced within square brackets e.g [example.csv]
 """
 
-EXECUTIVE_PROMPT = """Given the following input solution, write a valid json file 
+EXECUTIVE_PROMPT = """Given the preceding input files, write a valid json file 
 (only json formatting, don't surround with triple backticks), with the following fields and format: 
 {
     "Type": (of question),
     "solved": (false if answer can be improved),
     "next_steps": (if 'solved': false)
     "areas_of_improvement": (optional, not present if solution is perfect)
+    "save_to": (location the next task reading this output should save its output to, only one location at a time. If being improved its okay to overwrite a supplied file. Default: "solution.txt")
+    "overwrite_file" (whether depending on context a file should be overwritten or not. Default: false)
 }
 """
 PROMPT_FOLLOWING_EXECUTIVE_DIRECTION = """Evaluate the following  prompt thoroughly but concisely.
 Adding as much useful detail as possible while keeping your answer curt and to the point.
 If there is content from a solution.txt you have been run before and previous output deemed insufficient for the reasons 
 stated next. 
-Follow next_steps and areas_of_improvement to append an improvement to the solution"""
+Follow next_steps and areas_of_improvement to append an improvement to the solution.
+If you have been directed to overwrite an existing file, please maintain as much of the original content as is sensible while outputing an AUGMENTED version in line with your directives."""
 
 EVALUATE_TASKS_INSTRUCTIONS = """
 You are an assistant to handle and process tasks and convert them into full, detailed solutions. You sould aim to provide full detail responses, not cut out relevant information from supplied reference material while making the solution engaging and interesting to read.

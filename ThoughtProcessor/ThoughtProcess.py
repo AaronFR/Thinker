@@ -17,6 +17,11 @@ class ThoughtProcess:
     """
 
     def __init__(self, files_to_evaluate):
+        """
+        Initialize the ThoughtProcess instance.
+
+        :param files_to_evaluate: List of file paths supplied by the user as reference against their task.
+        """
         self.thoughts_folder = os.path.join(os.path.dirname(__file__), "Thoughts")
         self.files_to_evaluate = files_to_evaluate
         self.thought_id = 1  # self.get_next_thought_id()
@@ -27,15 +32,26 @@ class ThoughtProcess:
         self.max_tries = 2
 
     def get_next_thought_id(self) -> int:
-        """Get the next available thought ID based on existing directories."""
+        """
+        Get the next available thought ID based on existing directories.
+
+        :return: Next available thought ID as an integer.
+        """
         os.makedirs(self.thoughts_folder, exist_ok=True)
         return len([name for name in os.listdir(self.thoughts_folder) if
                     os.path.isdir(os.path.join(self.thoughts_folder, name))]) + 1
 
     def evaluate_task(self, task: str):
-        """Evaluate the given task and attempt to provide an optimised solution.
+        """
+        Evaluate the given task and attempt to provide an optimized solution.
 
-        Should probably switch to using a DAG with edges"""
+        This method runs multiple iterations to process the task and saves
+        any relevant logs or solutions.
+
+        ToDo: Should probably switch to using a DAG with edges
+
+        :param task: The task to evaluate as a string.
+        """
         new_folder = os.path.join(self.thoughts_folder, f"{self.thought_id}")
         os.makedirs(new_folder, exist_ok=True)
 
@@ -44,18 +60,33 @@ class ThoughtProcess:
             logging.info(f"Starting iteration {iteration} for task: {task}")
 
             executive_output_dict = self.process_executive_thought(task)
-            logs += str(executive_output_dict)
+            logs += str(executive_output_dict) + "\n"
             print(f"executive output: {executive_output_dict.get('next_steps')}")
             if executive_output_dict.get('solved'):
                 self.finalise_solution(self.thought_id, logs)
                 break
 
-            self.process_thought(executive_output_dict, self.files_to_evaluate)
+            # Check if the executive output has file writing instructions
+            save_to = executive_output_dict.get('save_to', None)
+            overwrite = executive_output_dict.get('overwrite_file', False)
+            self.process_thought(executive_output_dict, self.files_to_evaluate, save_to, overwrite)
         else:
             logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS")
-            FileManagement.save_file(logs, os.path.join(self.thoughts_folder, str(self.thought_id), "logs.txt"), "")
+            FileManagement.save_file(
+                logs,
+                os.path.join(self.thoughts_folder, str(self.thought_id), "logs.txt"),
+                "",
+                True
+            )
 
     def process_executive_thought(self, task: str) -> Dict[str, str]:
+        """
+        Process and obtain the new executive directive for the initial task.
+
+        :param task: The initial task from the user.
+        :return: A dictionary parsed from the llm's JSON format output.
+        :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary.
+        """
         executive_thought = self.create_next_thought(self.files_to_evaluate)
         executive_output = executive_thought.think(Constants.EXECUTIVE_PROMPT, task)
         try:
@@ -72,6 +103,16 @@ class ThoughtProcess:
             save_to: str,
             overwrite: bool
         ):
+        """
+        Process the thoughts generated from the executive output and save results.
+
+        ToDo: Should probably change system_message if its the first iteration
+
+        :param executive_output_dict: Dictionary containing the executive directives for this task
+        :param external_files: List of external files used as context.
+        :param save_to: File path where output should be saved.
+        :param overwrite: Boolean flag to determine if the output file should be overwritten.
+        """
         thought = self.create_next_thought(external_files)
         output = thought.think(
             Constants.PROMPT_FOLLOWING_EXECUTIVE_DIRECTION,
@@ -79,22 +120,32 @@ class ThoughtProcess:
                 executive_output_dict.get('areas_of_improvement')))
         FileManagement.save_file(output, save_to, str(self.thought_id), overwrite)
 
-    def create_next_thought(self, input_data) -> Thought:
+    def create_next_thought(self, input_data: List[str]) -> Thought:
+        """
+        Create a new Thought instance for processing.
+
+        :param input_data: file references to be used as context.
+        :return: An instance of the Thought class.
+        """
         # Central management of thought instances
         new_thought = Thought(input_data, self.prompter, self.open_ai_client)
         return new_thought
 
     def finalise_solution(self, iteration: int, logs: str) -> None:
+        """
+        Finalize and save the logs, after successful evaluation of the solution.
+
+        :param iteration: The iteration number where a solution was found.
+        :param logs: The logs generated during the evaluation process.
+        """
         print(f"Solved by iteration: {iteration}")
-        FileManagement.save_file(logs, os.path.join(self.thoughts_folder, str(iteration), "logs.txt"), "")
+        FileManagement.save_file(logs, os.path.join(self.thoughts_folder, str(self.thought_id), "logs.txt"), "")
 
 
 if __name__ == '__main__':
-    thought_process = ThoughtProcess(["ThoughtProcess.py", "solution.txt"])
+    thought_process = ThoughtProcess(["Thought.py", "FileManagement.py", "solution.txt"])
     thought_process.evaluate_task(
-        f"""Write up a refactoring for "ThoughtProcess.py": In the current flow an initial Thought is created that then 
-        writes to solution.txt, then a loop is started which goes thought -> new executive, where the prior executive 
-        thought tells the next thought in the loop what to do, in reality there should be no initial thought, 
-        just going straight into the processing loop, where an executive thought is triggered that tells a new thought 
-        what to do in the same iteration of the loop"""
+        """Take Thought.py and FileManagment.py and re-write them so that each method within each has a docstring."""  # Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""
     )
+
+    # """Take ThoughtProcess.py and re-write so that method has a docstring. Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""  # found to overwrite python files in a meaningful way
