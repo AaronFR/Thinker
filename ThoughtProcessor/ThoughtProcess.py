@@ -7,15 +7,10 @@ from openai import OpenAI
 
 import Constants
 from Prompter import Prompter
+from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.Thought import Thought
 
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[logging.FileHandler('thought_process.log'), logging.StreamHandler()]
-)
 
 class ThoughtProcess:
     """
@@ -68,14 +63,15 @@ class ThoughtProcess:
 
             executive_output_dict = self.process_executive_thought(task_description)
             logs += str(executive_output_dict) + "\n"
-            print(f"executive output: {executive_output_dict.get('tasks')}")
             if executive_output_dict.get('solved'):
                 self.finalise_solution(self.thought_id, logs)
                 break
 
             logging.info(f"About to iterate task list: {executive_output_dict.get('tasks')}")
-            for task in executive_output_dict.get('tasks'):
-                logging.info(f"Executing task: {task_description}")
+            tasks = executive_output_dict.get('tasks')
+            number_of_tasks = len(tasks)
+            for task_number, task in enumerate(tasks):
+                logging.info(f"Executing task: {task_number + 1}/{number_of_tasks} : \n{pformat(task)}")
                 self.process_thought(task.get('what_to_do'), task.get('what_to_reference'), task.get('where_to_do_it'))
         else:
             logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS")
@@ -120,7 +116,7 @@ class ThoughtProcess:
         :param save_to: File path where output should be saved.
         :param overwrite: Boolean flag to determine if the output file should be overwritten. ToDo: Not currently in service
         """
-        print("PRIMARY INSTRUCTION: :" + executive_directive)
+        logging.info("Processing Thought: " + executive_directive)
         thought = self.create_next_thought(external_files)
         output = thought.think(
             Constants.PROMPT_FOLLOWING_EXECUTIVE_DIRECTION,
@@ -146,53 +142,13 @@ class ThoughtProcess:
         :param iteration: The iteration number where a solution was found.
         :param logs: The logs generated during the evaluation process.
         """
-        print(f"Solved by iteration: {iteration}")
+        logging.info(f"Solved by iteration: {iteration}")
         FileManagement.save_file(logs, os.path.join(self.thoughts_folder, str(self.thought_id), "logs.txt"), "")
 
 
 if __name__ == '__main__':
+    ErrorHandler.setup_logging()
     thought_process = ThoughtProcess()
-    input = """
-    {
-        "type": "project_overview",
-        "areas_of_improvement": [
-            "Enhance error handling mechanisms to improve robustness during file operations and JSON parsing.",
-            "Implement parallel processing for improved task evaluation efficiency.",
-            "Revise logging practices to capture more detailed error messages and operational logs for easier debugging.",
-            "Improve the documentation for methods and class structures to enhance code readability and maintainability.",
-            "Refactor the task evaluation mechanism to use a Directed Acyclic Graph (DAG) to better manage task dependencies and execution order."
-        ],
-        "solved": false,
-        "tasks": [
-            {
-                "what_to_reference": [
-                    "README.md",
-                    "CHANGELOG.md",
-                    "ThoughtProcess.py",
-                    "solution.txt",
-                    "Prompter.py",
-                    "FileManagement.py",
-                    "Thought.py"
-                ],
-                "what_to_do": "Rewrite the README.md file to provide a comprehensive overview of the project, including its purpose, features, setup instructions, usage examples, contribution guidelines, and areas for future improvement.",
-                "where_to_do_it": "README.md"
-            },
-            {
-                "what_to_reference": [
-                    "CHANGELOG.md",
-                    "ThoughtProcess.py"
-                ],
-                "what_to_do": "Refactor the ThoughtProcess class to enhance error handling and implement parallel processing capabilities for task evaluation.",
-                "where_to_do_it": "ThoughtProcess.py"
-            }
-        ]
-    }"""
-    executive_output = json.loads(input)
-    tasks = executive_output.get('tasks')
-
-    for task in tasks:
-        print(task)
-        print(task.get('what_to_reference'))
 
     thought_process.evaluate_and_execute_task(
         """Review ThoughtProcess.py and make suggestions in a new document suggestions.md as to how I could change the method definitions to be more intuitive to make the flow more understandable, first minor changes then drastic changes"""

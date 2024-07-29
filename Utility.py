@@ -6,7 +6,6 @@ from typing import List, Dict
 import tiktoken
 import Constants
 
-logging.basicConfig(level=logging.INFO)
 
 class Utility:
 

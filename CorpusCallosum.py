@@ -15,7 +15,6 @@ import Constants
 with open('config.json', 'r') as file:
     config = json.load(file)
 logging_level = getattr(logging, config['app']['logging']['level'])
-logging.basicConfig(level='DEBUG')
 
 
 class CorpusCallosum:
