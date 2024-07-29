@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from typing import List, Dict, Type
+from typing import List, Dict
 
 from openai import OpenAI
 
@@ -108,7 +108,7 @@ class ThoughtProcess:
             executive_directive: str,
             external_files: List[str],
             save_to: str,
-            overwrite=False
+            overwrite: bool = False
         ):
         """
         Process the thoughts generated from the executive output and save results.
