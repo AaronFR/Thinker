@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from typing import List, Dict
+from typing import List, Dict, Type
 
 from openai import OpenAI
 
@@ -10,6 +10,12 @@ from Prompter import Prompter
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.Thought import Thought
 
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    handlers=[logging.FileHandler('thought_process.log'), logging.StreamHandler()]
+)
 
 class ThoughtProcess:
     """
@@ -29,7 +35,7 @@ class ThoughtProcess:
 
         self.prompter = Prompter()
         self.open_ai_client = OpenAI()
-        self.max_tries = 10
+        self.max_tries = 5
 
     def get_next_thought_id(self) -> int:
         """
@@ -62,15 +68,25 @@ class ThoughtProcess:
 
             executive_output_dict = self.process_executive_thought(task)
             logs += str(executive_output_dict) + "\n"
-            print(f"executive output: {executive_output_dict.get('next_steps')}")
+            print(f"executive output: {executive_output_dict.get('tasks')}")
             if executive_output_dict.get('solved'):
                 self.finalise_solution(self.thought_id, logs)
                 break
 
-            # Check if the executive output has file writing instructions
-            save_to = executive_output_dict.get('save_to', None)
-            overwrite = executive_output_dict.get('overwrite_file', False)
-            self.process_thought(executive_output_dict, self.files_to_evaluate, save_to, overwrite)
+            # # Check if the executive output has file writing instructions
+            # print(f"executive_output_dict: \n{executive_output_dict}")
+            # save_to = executive_output_dict.get('where_to_do_it', None)
+            # overwrite = executive_output_dict.get('overwrite_file', False)
+            # print(f"save_to: {save_to}")
+            # self.process_thought(executive_output_dict, self.files_to_evaluate, save_to, overwrite)
+
+            for task in executive_output_dict.get('tasks'):
+                # ToDo: Save json format names to constant files for reuse  # Should be solution.txt be default
+                print(f"type: {type(executive_output_dict.get('tasks'))}")
+                print(f"task type: \n{type(task)}")
+                print(f"task: \n{task}")
+                #needs to parralised
+                self.process_thought(task.get('what_to_do'), task.get('what_to_reference'), task.get('where_to_do_it'))
         else:
             logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS")
             FileManagement.save_file(
@@ -89,7 +105,7 @@ class ThoughtProcess:
         :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary.
         """
         executive_thought = self.create_next_thought(self.files_to_evaluate)
-        executive_output = executive_thought.think(Constants.EXECUTIVE_PROMPT, task)
+        executive_output = executive_thought.think([Constants.EXECUTIVE_PROMPT], task)
         try:
             logging.info(f"Converting executive output from json format to dict: \n{executive_output}")
             return json.loads(executive_output)
@@ -99,26 +115,27 @@ class ThoughtProcess:
 
     def process_thought(
             self,
-            executive_output_dict: Dict[str, str],
+            executive_directive: str,
             external_files: List[str],
             save_to: str,
-            overwrite: bool
+            overwrite=False
         ):
         """
         Process the thoughts generated from the executive output and save results.
 
         ToDo: Should probably change system_message if its the first iteration
 
-        :param executive_output_dict: Dictionary containing the executive directives for this task
+        :param executive_directive: Primary instruction for this task
         :param external_files: List of external files used as context.
         :param save_to: File path where output should be saved.
-        :param overwrite: Boolean flag to determine if the output file should be overwritten.
+        :param overwrite: Boolean flag to determine if the output file should be overwritten. ToDo: Not currently in service
         """
+        print("PRIMARY INSTRUCTION: :" + executive_directive)
         thought = self.create_next_thought(external_files)
         output = thought.think(
             Constants.PROMPT_FOLLOWING_EXECUTIVE_DIRECTION,
-            str(executive_output_dict.get('next_steps')) + "/n" + str(
-                executive_output_dict.get('areas_of_improvement')))
+            "Primary Instructions: " + str(executive_directive)
+        )
         FileManagement.save_file(output, save_to, str(self.thought_id), overwrite)
 
     def create_next_thought(self, input_data: List[str]) -> Thought:
@@ -145,8 +162,46 @@ class ThoughtProcess:
 
 if __name__ == '__main__':
     thought_process = ThoughtProcess()
-    thought_process.evaluate_task(
-        """Write a 10 page report on the history of India"""  # Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""
-    )
+    input = """
+    {
+        "type": "project_overview",
+        "areas_of_improvement": [
+            "Enhance error handling mechanisms to improve robustness during file operations and JSON parsing.",
+            "Implement parallel processing for improved task evaluation efficiency.",
+            "Revise logging practices to capture more detailed error messages and operational logs for easier debugging.",
+            "Improve the documentation for methods and class structures to enhance code readability and maintainability.",
+            "Refactor the task evaluation mechanism to use a Directed Acyclic Graph (DAG) to better manage task dependencies and execution order."
+        ],
+        "solved": false,
+        "tasks": [
+            {
+                "what_to_reference": [
+                    "README.md",
+                    "CHANGELOG.md",
+                    "ThoughtProcess.py",
+                    "solution.txt",
+                    "Prompter.py",
+                    "FileManagement.py",
+                    "Thought.py"
+                ],
+                "what_to_do": "Rewrite the README.md file to provide a comprehensive overview of the project, including its purpose, features, setup instructions, usage examples, contribution guidelines, and areas for future improvement.",
+                "where_to_do_it": "README.md"
+            },
+            {
+                "what_to_reference": [
+                    "CHANGELOG.md",
+                    "ThoughtProcess.py"
+                ],
+                "what_to_do": "Refactor the ThoughtProcess class to enhance error handling and implement parallel processing capabilities for task evaluation.",
+                "where_to_do_it": "ThoughtProcess.py"
+            }
+        ]
+    }"""
+    json.loads(input)
 
-    # """Take ThoughtProcess.py and re-write so that method has a docstring. Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""  # found to overwrite python files in a meaningful way
+    thought_process.evaluate_task(
+        """Write an improved version of the README.md file given all the other files made available to you, each one exists in the code base. The README.md needs to be completely re-written and cover what the projectt is trying to be and the ACTUAL areas of improvement"""
+    )
+    #
+    # # Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""
+    # # """Take ThoughtProcess.py and re-write so that method has a docstring. Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""  # found to overwrite python files in a meaningful way

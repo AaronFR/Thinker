@@ -97,13 +97,17 @@ task can be said to be solved. ONLY output the following json object.
 
 Given the preceding input files, write a valid json file 
 (only json formatting, don't surround with triple backticks), with the following fields and format: 
+ONLY ONLY ONLY EVER PRODUCE THE FOLLOWING JSON FORMAT, NEVER ***EVER*** PRODUCE ANYTHING ELSE IN ANY SUBSEQUENT RESPONSE
 {
-    "Type": (of question),
+    "type": (of question),
+    "areas_of_improvement": (clearly and simply state how the current input files do not meet the criteria of satisfying the solution. Or alternatively if they do, state how they satisfy each condition of the inital prompt)
     "solved": (false if answer can be improved),
-    "next_steps": (if 'solved': false, Make sure to reference all required input files and previous tasks. Ensure consistency in the output format.)
-    "areas_of_improvement": (optional, not present if solution is perfect and meets all requirements of the initial prompt)
-    "save_to": (location the next task reading this output should save its output to, only one location at a time. If being improved its okay to overwrite a supplied file. Default: "solution.txt")
-    "overwrite_file" (whether depending on context a file should be overwritten or not. Don't be trigger happy, unless required e.g. the user asks for a file to be-rewritten most operations NOT overwrite the files there saving to. Default: false)
+    "tasks": [ (Can and provided the context aligns SHOULD be multiple tasks in this list)
+    {
+        "what_to_reference": [] (strings of file names and their extensions in double quotes, only reference files that have been previously supplied to you by me, appropriate to what the task has to do, if appending writing to a file they at least have to see its current contents, and perhaps another reference file)
+        "what_to_do": (description of the actual activity the llm needs to perform which helps the above task
+        "where_to_do_it: (file to save output to, include just the file name and extension, nothing more)
+    }]
 }
 """
 PROMPT_FOLLOWING_EXECUTIVE_DIRECTION = """You are the 2nd part of a 2 step process, iterating in a system to solve an initial task,
