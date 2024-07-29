@@ -1,44 +1,44 @@
 ```markdown
 
+# The Thinker
+
+## Objectives
+The primary objective of this project is to create an intelligent system that can evaluate tasks iteratively using machine learning techniques, providing automated solutions based on user-defined instructions and available resources. It aims to enhance decision-making processes by leveraging AI capabilities.
+
+- Automate Problem-Solving: To provide a system that can evaluate and generate solutions for various tasks without extensive manual intervention.
+- Modular-Architecture: That can explore and evaluate a wide range of tasks using AI-based thought processing, with flexibility and adaptability.
+
+## Current Limitations
+
+- The process can be slow due to the iterative nature of evaluations, as well as potential network call dependencies with the language model.
+- While it can handle structured tasks, unexpected inputs may lead to ineffective results or erratic outputs.
+- Parallel processing is not yet implemented, which could expedite task completion.
+
+
+## Features
+- **Iterative Task Evaluation**: Breaks down a user input task/prompt into individual parts to query iteratively.
+- **Executive Thought Processing**: Uses an executive reasoning layer to determine action plans based on user tasks and available context files.
+
+## Architecture
+The project's architecture is designed with modularity in mind, allowing for the easy addition of new features and components. The key modules are structured as follows:
+
+- **ThoughtProcess**: Coordinates the overall workflow. It initializes the thought process, evaluates tasks iteratively, manages logs, and saves outputs.
+- **Thought**: Represents an individual call to a LLM api, the current state of a task and provides methods for interacting with the AI model to generate responses.
+- **Prompter**: Interfaces with the AI model, sending requests and retrieving outputs based on specified prompts.
+
+
 ## Features to implement
+- Improved error handling and fallback mechanisms to ensure robustness during task evaluations.
+  - recovery strategies to avoid dead-ends in task chains.
+- Improved logging and debugging
+- Enhancements to the executive reasoning layer to handle more complex decision-making.
+  - Improve the executive thought generation mechanism for more precise outputs.
+- Utilise multiple outputs n= in Thought.py/get_openai_response
+  - Introduce parallel processing for handling multiple tasks simultaneously to enhance performance.
+- Implement a Directed Acyclic Graph (DAG) structure for task management to improve decision-making efficiency.
+- Integrating additional AI models to enhance capability and accuracy.
 - Ability to search wikipedia through api
   - ability to search web
-- Proper file allocation and retrieval
-- Declare logging level the once in configuration
-- Looping functionality if solutions are deemed to have not met the initial task
-- Task tagging e.g. [Output], [4x]
 
 
-
-## General Recommendations
-2. **Naming Conventions**:
-   - Ensure naming conventions (CamelCase for classes, snake_case for methods and functions) are followed consistently across the codebase.
-   - Rename variables to be more descriptive, especially within loops or complex data structures.
-
-3. **Configuration Management**:
-   - Externalize configurations, such as model names and token limits, into a dedicated configuration file to allow for easier updates without code changes.
-
-## Class-Specific Recommendations
-
-### PromptManagement
-- **Graceful Degradation**:
-  - Implement fallback logic if any parallel tasks fail, to ensure the system remains operational as much as possible.
-- **Asyncio**:
-  - process_parallel_prompts can be switched to the async functionality when you understand it.
-
-### Prompter
-- **Response Handling**:
-  - Validate the structure of the returned API response to prevent issues if the response format changes unexpectedly.
-  
-- **Output Handling**:
-  - Provide options for different output storage formats beyond just text to enhance flexibility in data handling.
-
-## Testing and Validation
-- Implement unit tests and integration tests for all classes and methods to ensure functionality and facilitate ongoing maintenance.
-- Use a testing framework (like `pytest`) to automate these tests and include tests for error situations to validate the robustness of methods.
-
-## Documentation
-- Create external documentation outlining the architecture of the application, key classes, and methods for onboarding new developers.
-
-By addressing the above recommendations, the overall quality of the codebase will be significantly enhanced, ensuring better maintainability, readability, and performance over the long term.
 ```
