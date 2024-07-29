@@ -64,7 +64,7 @@ class ThoughtProcess:
             executive_output_dict = self.process_executive_thought(task_description)
             logs += str(executive_output_dict) + "\n"
             if executive_output_dict.get('solved'):
-                self.finalise_solution(self.thought_id, logs)
+                self.finalise_solution(iteration, logs)
                 break
 
             logging.info(f"About to iterate task list: {executive_output_dict.get('tasks')}")
