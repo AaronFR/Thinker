@@ -86,16 +86,15 @@ class FileManagement:
         :param thought_id: sub-folder the ThoughtProcess is running on
         :param overwrite: whether the file should be overwritten
         """
-        print(f"content: {str} \nfile_name: {file_name}, \nthought_id: {thought_id}")
         file_path = os.path.join("Thoughts", thought_id, file_name)
         try:
             if overwrite:
                 with open(file_path, "w", encoding="utf-8") as file:
                     file.write(content)
-                    logging.debug("File overwritten: {file_path}")
+                    logging.info("File overwritten: {file_path}")
             else:
                 with open(file_path, "a", encoding="utf-8") as file:
                     file.write(content)
-                    logging.debug("File Saved: {file_path}")
+                    logging.info(f"File Saved: {file_path}")
         except Exception as e:
             logging.error(f"could not save file, {str(e)}")

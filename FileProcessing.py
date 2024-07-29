@@ -6,7 +6,6 @@ from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
 from pathlib import Path
 
-from typing_extensions import deprecated
 
 
 class FileProcessing:
@@ -57,7 +56,7 @@ class FileProcessing:
         try:
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write(content)
-                logging.debug("File Saved: {file_path}")
+                logging.debug(f"File Saved: {file_path}")
         except Exception as e:
             logging.error(f"ERROR: could not save file, {str(e)}")
 
@@ -73,7 +72,7 @@ class FileProcessing:
                     with open(file_base_name + "_" + str(i) + ".txt", 'r', encoding='utf-8') as f:
                         # Read content from each output file and write it to the consolidated file
                         content += f.read()
-                    print(f"CONTENT [{i}]: {content}")
+                    logging.info((f"CONTENT [{i}]: {content}"))
                 except FileNotFoundError:
                     logging.error(f"File {file_base_name + '_' + str(i) + '.txt'} not found.")
                 except UnicodeDecodeError as e:

@@ -28,9 +28,7 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 
 ## Features to implement
-- Improved error handling and fallback mechanisms to ensure robustness during task evaluations.
-  - recovery strategies to avoid dead-ends in task chains.
-- Improved logging and debugging
+- Ability for executive thoughts to demand a *section* of text be over-written and for an executor thought to act on such a plan
 - Enhancements to the executive reasoning layer to handle more complex decision-making.
   - Improve the executive thought generation mechanism for more precise outputs.
 - Utilise multiple outputs n= in Thought.py/get_openai_response
@@ -42,3 +40,4 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 
 ```
+`ThoughtProcess`

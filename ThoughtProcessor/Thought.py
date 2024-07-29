@@ -1,6 +1,8 @@
 import logging
+import time
+from pprint import pformat
 from typing import List
-from openai import OpenAI
+from openai import OpenAI, OpenAIError
 import Constants
 import Prompter
 from ThoughtProcessor.FileManagement import FileManagement
@@ -37,13 +39,13 @@ class Thought:
         system_messages = self.create_system_messages(system_prompts)
         messages = system_messages + user_messages
 
-        logging.info(f"Messages: {messages}")
+        logging.debug(f"Messages: {messages}")
         logging.info(f"Tokens used (limit 128k): {Utility.calculate_tokens_used(messages)}")
 
-        response = self.get_open_ai_response(messages)
+        response = Utility.execute_with_retries(lambda: self.get_open_ai_response(messages))  # ensure retry methodlogy isn't repeated
         if not response:
             logging.error("No response from OpenAI API.")
-            return "FATAL ERROR: NO RESPONSE FROM OPEN AI API, CONSIDER PROCESS TERMINATION"
+            raise
 
         logging.info(f"Thought finished")
         return response
@@ -62,7 +64,7 @@ class Thought:
             system_messages = [
                 {"role": "system", "content": prompt} for prompt in prompts
             ]
-        logging.info(f"system_messages = \n{system_messages}")
+
         return system_messages
 
     def create_user_messages(self, prompt: str) -> List[dict]:
@@ -73,26 +75,39 @@ class Thought:
         :param prompt: The user's prompt.
         :return: A list of dictionaries representing user messages.
         """
-        user_messages = [
-            {"role": "user", "content": file + ": \n" + FileManagement.read_file(file)} for file in self.input_files
-        ] + [{"role": "user", "content": prompt}]
-        logging.info(f"user_messages = \n{user_messages}")
+        user_messages = []
+        for file in self.input_files:
+            try:
+                content = FileManagement.read_file(file)
+                user_messages.append({"role": "user", "content": f"{file}: \n{content}"})
+            except FileNotFoundError:
+                logging.error(f"File not found: {file}. Please ensure the file exists.")
+                user_messages.append({"role": "user", "content": f"File not found: {file}"})
+            except Exception as e:
+                logging.error(f"Error reading file {file}: {e}")
+                user_messages.append({"role": "user", "content": f"Error reading file {file}. Exception: {e}"})
+
+        user_messages.append({"role": "user", "content": prompt})
         return user_messages
 
-    def get_open_ai_response(self, messages: List[dict]) -> str:
+    def get_open_ai_response(self, messages: List[dict]) -> str | None:
         """Request a response from the OpenAI API.
 
         :param messages: The system and user messages to send to the ChatGpt client
         :return: The content of the response from OpenAI or an error message to inform the next Thought.
         """
         try:
-            logging.info(f"Calling OpenAI API with messages: {messages}")
+            logging.debug(f"Calling OpenAI API with messages: {messages}")
             response = self.open_ai_client.chat.completions.create(
-                model=Constants.MODEL_NAME, messages=messages).choices[0].message.content
+                model=Constants.MODEL_NAME, messages=messages
+            ).choices[0].message.content
             return response or "[ERROR: NO RESPONSE FROM OpenAI API]"
+        except OpenAIError as e:
+            logging.error(f"OpenAI API")
+            raise
         except Exception as e:
-            logging.error(f"Failed to get response from OpenAI: {e}")
-            return "[ERROR: Failed to get response from OpenAI]"
+            logging.error(f"Unexpected error")
+            raise
 
 
 if __name__ == '__main__':

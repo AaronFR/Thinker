@@ -1,7 +1,8 @@
 import logging
 import re
+import time
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Callable, Any
 
 import tiktoken
 import Constants
@@ -63,6 +64,24 @@ class Utility:
 
         match = re.match(file_prefix_pattern, clue.strip())
         return bool(match)
+
+    @staticmethod
+    def execute_with_retries(func: Callable[[], Any], max_retries: int = 5) -> Any:
+        """Execute a callable with retries on failure.
+
+        :param func: A callable that will be executed.
+        :param max_retries: Maximum number of retries for the callable.
+        :return: The return value of the callable if successful, or None if all retries fail.
+        """
+        for attempt in range(max_retries):
+            try:
+                return func()
+            except Exception as e:
+                wait_time = 2 ** attempt  # Exponential backoff
+                logging.error(f"Attempt {attempt + 1} failed: {e}. Retrying in {wait_time} seconds...")
+                time.sleep(wait_time)  # Wait before retrying
+        logging.error("Max retries exceeded. Failed to get response from callable.")
+        return None
 
 
 if __name__ == '__main__':
