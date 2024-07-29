@@ -47,7 +47,7 @@ class ThoughtProcess:
         return len([name for name in os.listdir(self.thoughts_folder) if
                     os.path.isdir(os.path.join(self.thoughts_folder, name))]) + 1
 
-    def evaluate_task(self, task: str):
+    def evaluate_and_execute_task(self, task_description: str):
         """
         Evaluate the given task and attempt to provide an optimized solution.
 
@@ -56,36 +56,26 @@ class ThoughtProcess:
 
         ToDo: Should probably switch to using a DAG with edges
 
-        :param task: The task to evaluate as a string.
+        :param task_description: The description of the task to evaluate as a string.
         """
         new_folder = os.path.join(self.thoughts_folder, f"{self.thought_id}")
         os.makedirs(new_folder, exist_ok=True)
 
         logs = ""
         for iteration in range(1, self.max_tries + 1):
-            logging.info(f"Starting iteration {iteration} for task: {task}")
+            logging.info(f"Starting iteration {iteration} for task: {task_description}")
             self.files_to_evaluate = FileManagement.list_files(new_folder)
 
-            executive_output_dict = self.process_executive_thought(task)
+            executive_output_dict = self.process_executive_thought(task_description)
             logs += str(executive_output_dict) + "\n"
             print(f"executive output: {executive_output_dict.get('tasks')}")
             if executive_output_dict.get('solved'):
                 self.finalise_solution(self.thought_id, logs)
                 break
 
-            # # Check if the executive output has file writing instructions
-            # print(f"executive_output_dict: \n{executive_output_dict}")
-            # save_to = executive_output_dict.get('where_to_do_it', None)
-            # overwrite = executive_output_dict.get('overwrite_file', False)
-            # print(f"save_to: {save_to}")
-            # self.process_thought(executive_output_dict, self.files_to_evaluate, save_to, overwrite)
-
+            logging.info(f"About to iterate task list: {executive_output_dict.get('tasks')}")
             for task in executive_output_dict.get('tasks'):
-                # ToDo: Save json format names to constant files for reuse  # Should be solution.txt be default
-                print(f"type: {type(executive_output_dict.get('tasks'))}")
-                print(f"task type: \n{type(task)}")
-                print(f"task: \n{task}")
-                #needs to parralised
+                logging.info(f"Executing task: {task_description}")
                 self.process_thought(task.get('what_to_do'), task.get('what_to_reference'), task.get('where_to_do_it'))
         else:
             logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS")
@@ -197,10 +187,15 @@ if __name__ == '__main__':
             }
         ]
     }"""
-    json.loads(input)
+    executive_output = json.loads(input)
+    tasks = executive_output.get('tasks')
 
-    thought_process.evaluate_task(
-        """Write an improved version of the README.md file given all the other files made available to you, each one exists in the code base. The README.md needs to be completely re-written and cover what the projectt is trying to be and the ACTUAL areas of improvement"""
+    for task in tasks:
+        print(task)
+        print(task.get('what_to_reference'))
+
+    thought_process.evaluate_and_execute_task(
+        """Review ThoughtProcess.py and make suggestions in a new document suggestions.md as to how I could change the method definitions to be more intuitive to make the flow more understandable, first minor changes then drastic changes"""
     )
     #
     # # Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""
