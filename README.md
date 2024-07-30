@@ -10,14 +10,14 @@ The primary objective of this project is to create an intelligent system that ca
 
 ## Current Limitations
 
-- The process can be slow due to the iterative nature of evaluations, as well as potential network call dependencies with the language model.
-- While it can handle structured tasks, unexpected inputs may lead to ineffective results or erratic outputs.
-- Parallel processing is not yet implemented, which could expedite task completion.
-
+- ***Capability***The ThoughtProcessor operates like a public works department with its allocated budget of iterations: spend it all! The system can generate long reports but due to the inability to re-write text, the answers are not succinct.
+- **Performance**: Iterating through a sequential series of LLM api calls takes time for each request, as the output data to review grows larger the time to process each executive thought grows larger.
+- **Input Handling**: While the system manages structured tasks well, unexpected inputs can result in suboptimal or erratic outputs.
+- **Lack of Parallel Processing**: The absence of parallel task management capabilities can hinder efficiency in completing tasks.
 
 ## Features
-- **Iterative Task Evaluation**: Breaks down a user input task/prompt into individual parts to query iteratively.
-- **Executive Thought Processing**: Uses an executive reasoning layer to determine action plans based on user tasks and available context files.
+- **Iterative Task Evaluation**: The system decomposes user input tasks into individual components, allowing for progressive querying and processing.
+- **Executive Thought Processing**: An executive reasoning layer formulates action plans based on provided tasks and relevant context files.
 
 ## Architecture
 The project's architecture is designed with modularity in mind, allowing for the easy addition of new features and components. The key modules are structured as follows:
@@ -28,15 +28,13 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 
 ## Features to implement
-- Ability for executive thoughts to demand a *section* of text be over-written and for an executor thought to act on such a plan
-- Enhancements to the executive reasoning layer to handle more complex decision-making.
-  - Improve the executive thought generation mechanism for more precise outputs.
-- Utilise multiple outputs n= in Thought.py/get_openai_response
-  - Introduce parallel processing for handling multiple tasks simultaneously to enhance performance.
-- Implement a Directed Acyclic Graph (DAG) structure for task management to improve decision-making efficiency.
-- Integrating additional AI models to enhance capability and accuracy.
-- Ability to search wikipedia through api
-  - ability to search web
+To enhance the system's capabilities and efficiency, several features are planned for implementation:
+- **Overwrite Capability**: Enable executive thoughts to dictate the overwriting of specific text sections, with executor thoughts carrying out those plans.
+- **Enhanced Executive Reasoning**: Develop improvements to the executive thought generation for more accurate and complex decision-making.
+- **Multiple Output Handling**: Allow `Thought.py/get_openai_response` to support multiple outputs 'n=' to enhance response versatility.
+- **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.
+- **DAG Structure for Task Management**: Introduce a Directed Acyclic Graph (DAG) structure to optimize decision-making efficiency in task management.
+- **API Integrations**: Integrate additional AI models for improved capability and accuracy, along with the ability to search resources like Wikipedia and the web.
 
 
 ```

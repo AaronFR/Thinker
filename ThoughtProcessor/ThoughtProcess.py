@@ -190,7 +190,7 @@ if __name__ == '__main__':
     thought_process = ThoughtProcess()
 
     thought_process.evaluate_and_execute_task(
-        """Review ThoughtProcess.py and make suggestions in a new document suggestions.md as to how I could change the method definitions to be more intuitive to make the flow more understandable, first minor changes then drastic changes"""
+        """rewrite the README in a way that you think makes sense"""
     )
     #
     # # Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""
