@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import re
 from collections import deque
 from pprint import pformat
 from typing import List, Dict, Tuple
@@ -45,10 +46,6 @@ class ThoughtProcess:
     def evaluate_and_execute_task(self, task_description: str):
         """
         Evaluate the given task and attempt to provide an optimized solution.
-
-        This method runs multiple iterations to process the task and saves
-        any relevant logs or solutions.
-
         ToDo: Should probably switch to using a DAG with edges
 
         :param task_description: The description of the task to evaluate as a string.
@@ -94,12 +91,14 @@ class ThoughtProcess:
                             else:
                                 logging.error(f"Task failed: {task.get('what_to_do')}. Output: {output}")
                                 failed_tasks_queue.append(task)  # Add the failed task to the queue
+                                logs += f"Task failed: {task.get('what_to_do')} - Output: \n{output}"
                         except Exception as e:
                             logging.error(f"Error executing task `{task.get('what_to_do')}`: {e}")
                             failed_tasks_queue.append(task)  # Queue the failed task
 
                     if attempt_count == self.max_tries:
                         logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS")
+                        logs += f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS\n"  # Capture final attempt logs
                         break
 
                 except Exception as e:
