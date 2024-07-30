@@ -51,7 +51,7 @@ class Thought:
         response = Utility.execute_with_retries(lambda: self.get_open_ai_response(messages))
         if not response:
             logging.error("No response from OpenAI API.")
-            raise
+            raise Exception("Failed to get response from OpenAI API.")
 
         logging.info(f"Thought finished")
         return response
@@ -119,10 +119,10 @@ class Thought:
                 model=Constants.MODEL_NAME, messages=messages
             ).choices[0].message.content
             return response or "[ERROR: NO RESPONSE FROM OpenAI API]"
-        except OpenAIError as e:
-            logging.error(f"OpenAI API")
+        except OpenAIError:
+            logging.error(f"OpenAI API error:")
             raise
-        except Exception as e:
+        except Exception:
             logging.error(f"Unexpected error")
             raise
 
