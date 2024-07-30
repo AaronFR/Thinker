@@ -125,7 +125,9 @@ class ThoughtProcess:
         executive_output = executive_thought.think([Constants.EXECUTIVE_PROMPT], task)
         try:
             logging.info(f"Converting executive output from json format to dict: \n{executive_output}")
-            return json.loads(executive_output)
+            # Remove the ```json and ``` at the start and end
+            cleaned_json_string = re.sub(r'^```json\s*|\s*```$', '', executive_output.strip())
+            return json.loads(cleaned_json_string)
         except json.JSONDecodeError:
             logging.error("Failed to decode JSON output: %s", executive_output)
             raise
