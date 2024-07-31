@@ -1,7 +1,4 @@
-import enum
 import logging
-import time
-from pprint import pformat
 from typing import List, Dict
 from openai import OpenAI, OpenAIError
 import Constants
@@ -13,21 +10,23 @@ from Utility import Utility
 
 
 class Thought:
-    """Class to manage and process 'thoughts' in the Thinker system using the OpenAI API"""
+    """This class manages a single interaction with a llm. Each instance of 'Thought' is focused on
+        understanding user input and generating an appropriate output based on that input."""
+
 
     def __init__(self, input_files: List[str], prompter: Prompter, open_ai_client: OpenAI):
         """Each 'Thought' represents a single call to the api that then adds to the existing body of files representing
         a solution to the initial task that triggered the thought process.
 
-        :param input_files: file references representing files passed in by the user for processing/reference
-        :param prompter: handles prompting the OpenAi API
+        :param input_files: A list of file names that users provide for analysis or reference in generating responses.
+        :param prompter: An instance of the Prompter class, responsible for creating the prompts sent to the OpenAI API.
         :param open_ai_client: The OpenAI API client instance.
         """
         self.prompter = prompter
         self.open_ai_client = open_ai_client
         self.input_files = input_files
 
-    def think(self, system_prompts: List[str], user_prompt: str) -> str:
+    def think(self, system_prompts: List[str] | str, user_prompt: str) -> str:
         """Generate a response based on system and user prompts.
         ToDo: At some point actions other than writing will be needed, e.g. 'web search'
         ToDo: With large context lengths approx 5k+ the current executive prompt can fail to produce an actual json output and get confused into writing a unironic answer
