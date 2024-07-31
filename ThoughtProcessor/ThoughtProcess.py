@@ -68,30 +68,29 @@ class ThoughtProcess:
 
                 try:
                     executive_output_dict = self.process_executive_thought(current_task)
-                    logs += str(executive_output_dict) + "\n"
+                    logs += "EXEC PLAN: " + str(pformat(executive_output_dict)) + "\n"
 
                     if executive_output_dict.get('solved'):
                         logging.info(f"Task `{current_task}` solved successfully in attempt {attempt_count}.")
                         self.finalise_solution(self.thought_id, logs)
                         return  # Exit if the solution is found
 
-                    logging.info(f"Generated tasks: {executive_output_dict.get('tasks')}")
+                    logging.info(f"Generated tasks: {pformat(executive_output_dict.get('tasks'))}")
                     tasks = executive_output_dict.get('tasks', [])
 
                     for task in tasks:
                         try:
-                            logging.info(f"Executing task: {pformat(task)}")
-                            success, output = self.process_thought(
-                                task.get('what_to_do'),
-                                task.get('what_to_reference'),
-                                task.get('where_to_do_it')
+                            logging.info(f"Executing task: \n{pformat(task)}")
+                            success, output = self.process_task(
+                                task
                             )
                             if success:
                                 logging.info(f"Task executed successfully: {task.get('what_to_do')}")
                             else:
-                                logging.error(f"Task failed: {task.get('what_to_do')}. Output: {output}")
-                                failed_tasks_queue.append(task)  # Add the failed task to the queue
-                                logs += f"Task failed: {task.get('what_to_do')} - Output: \n{output}"
+                                failed_task = task.get('what_to_do')
+                                logging.error(f"Task failed: {failed_task}. Output: {output}")
+                                # failed_tasks_queue.append(failed_task)  # ToDo implement, for starters it needs
+                                logs += f"Task failed: {failed_task} - Output: \n{output}"
                         except Exception as e:
                             logging.error(f"Error executing task `{task.get('what_to_do')}`: {e}")
                             failed_tasks_queue.append(task)  # Queue the failed task
