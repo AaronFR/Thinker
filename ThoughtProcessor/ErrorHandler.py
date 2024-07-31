@@ -7,8 +7,8 @@ class ErrorHandler:
     def setup_logging(log_file: str = 'application.log'):
         """Sets up logging configuration."""
         logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s [%(levelname)s] %(message)s',
+            level=logging.DEBUG,
+            format='%(asctime)s [%(levelname)s] (%(filename)s:%(lineno)d) %(message)s',
             handlers=[
                 logging.FileHandler(log_file),
                 logging.StreamHandler()
