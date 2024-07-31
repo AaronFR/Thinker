@@ -1,3 +1,4 @@
+import enum
 import json
 import logging
 import os
@@ -13,6 +14,11 @@ from Prompter import Prompter
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.Thought import Thought
+
+
+class ThoughtType(enum.Enum):
+    APPEND = "APPEND"
+    REWRITE = "REWRITE"
 
 
 class ThoughtProcess:
@@ -103,6 +109,12 @@ class ThoughtProcess:
                 except Exception as e:
                     logging.error(f"Error processing executive thought for `{current_task}`: {e}")
                     break  # Exit loop on processing executive thought failure
+                finally:
+                    FileManagement.save_file(
+                        logs,
+                        os.path.join(self.thoughts_folder, str(self.thought_id), "logs.txt"),
+                        ""
+                    )
 
             # Process failed tasks if there are any
             if failed_tasks_queue:
@@ -110,6 +122,27 @@ class ThoughtProcess:
                 for failed_task in failed_tasks_queue:
                     task_queue.append(failed_task)  # Add failed task back to the main task queue
                 failed_tasks_queue.clear()  # Clear the failed tasks queue for the next set of executions
+
+    @staticmethod
+    def re_write_section(text: str, replace: str, replacement: str) -> str:
+        """
+        Modify a specific section of the code based on an item identifier and replace it with new content.
+
+        :param text: The original str text
+        :param replace: The identifier for the section to be replaced (e.g., "Item 4").
+        :param replacement: The replacement content as a string.
+        :return: The modified code.
+        """
+        # Regex pattern to find the section based on the item identifier
+        pattern = re.compile(
+            r'(?P<target>' + re.escape(replace) + r'.*?)(?=\n\n|\Z)',
+            re.DOTALL
+        )
+
+        # Replace the matched section with the replacement content
+        modified_code = pattern.sub(replacement, text)
+
+        return modified_code
 
     def process_executive_thought(self, task: str) -> Dict[str, str]:
         """
@@ -125,16 +158,25 @@ class ThoughtProcess:
             logging.info(f"Converting executive output from json format to dict: \n{executive_output}")
             # Remove the ```json and ``` at the start and end
             cleaned_json_string = re.sub(r'^```json\s*|\s*```$', '', executive_output.strip())
+
+            # Properly escape backslashes, but leave known escape sequences intact
+            def escape_backslashes(match):
+                if match.group(0) in ('\\n', '\\t', '\\r', '\\\\'):
+                    return match.group(0)
+                else:
+                    return '\\\\'
+
+            cleaned_json_string = re.sub(r'\\', escape_backslashes, cleaned_json_string)
+            cleaned_json_string = cleaned_json_string.replace('\\', '\\\\')  # removes escape characters in the string
+
             return json.loads(cleaned_json_string)
         except json.JSONDecodeError:
             logging.error("Failed to decode JSON output: %s", executive_output)
             raise
 
-    def process_thought(
+    def process_task(
             self,
-            executive_directive: str,
-            external_files: List[str],
-            save_to: str,
+            task_directives: Dict[str, str],
             overwrite: bool = False
         ) -> Tuple[bool, str]:
         """
@@ -142,26 +184,56 @@ class ThoughtProcess:
 
         ToDo: Should probably change system_message if its the first iteration
 
-        :param executive_directive: Primary instruction for this task
-        :param external_files: List of external files used as context.
-        :param save_to: File path where output should be saved.
-        :param overwrite: Boolean flag to determine if the output file should be overwritten. ToDo: Not currently in service
+        :param task_directives: Dict with the executive thought's instructions for this task
         :return: Tuple indicating success status and the output result.
         """
-        try:
-            logging.info("Processing Thought: " + executive_directive)
-            thought = self.create_next_thought(external_files)
-            output = thought.think(
-                "Primary Instructions: " + str(executive_directive)
-            )
+        thought_type = task_directives.get('type')
+        primary_instruction = task_directives.get('what_to_do')
+        external_files = task_directives.get('what_to_reference', [])
+        save_to = task_directives.get('where_to_do_it')
 
-            FileManagement.save_file(output, save_to, str(self.thought_id), overwrite)
+        if not thought_type:
+            thought_type = ThoughtType.APPEND.value
+
+        try:
+            logging.debug("Type input bug: = " + str(type(primary_instruction)))
+
+            logging.info(f"Processing Thought: [{thought_type}]" + primary_instruction)
+            if thought_type != "APPEND":
+                print("LOL")
+            thought = self.create_next_thought(external_files)
+
+            if thought_type == ThoughtType.APPEND.value:
+                output = thought.think(
                     Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
+                    "Primary Instructions: " + str(primary_instruction)
+                )
+                FileManagement.save_file(output, save_to, str(self.thought_id), overwrite)
+            if thought_type == ThoughtType.REWRITE.value:
+                output = thought.think(
+                    Constants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
+                    f"""Just rewrite <to_rewrite>\n{task_directives.get('what_to_rewrite')}\n</to_rewrite>\n
+                    In the following way: {str(primary_instruction)}"""
+                )
+                FileManagement.re_write_section(task_directives.get('what_to_rewrite'), output, save_to, str(self.thought_id))
+            #ToDO APPEND and REWRITE to a enum, then check message is present in enum
+
             logging.info(f"Thought processed and saved to {save_to}.")
             return True, output  # Task was successful
         except Exception as e:
             logging.error(f"Output was empty or invalid: {e}")
             return False, ''  # Task failed
+
+    def rewrite_thought(self, thought: Thought, task_directives: Dict[str, str]):
+        output = thought.think(
+            Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
+            f"""Just rewrite <to_rewrite>\n{task_directives.get('what_to_rewrite')}\n</to_rewrite>\n
+            In the following way: {str(task_directives.get('what_to_do'))}"""
+        )
+        FileManagement.re_write_section(task_directives.get('what_to_rewrite'),
+                                        output,
+                                        task_directives.get('where_to_do_it'),
+                                        str(self.thought_id))
 
     def create_next_thought(self, input_data: List[str]) -> Thought:
         """
@@ -187,11 +259,33 @@ class ThoughtProcess:
 
 if __name__ == '__main__':
     ErrorHandler.setup_logging()
+    openai = OpenAI()
+    prompter = Prompter()
     thought_process = ThoughtProcess()
+    thought = Thought(["Thought.py"], prompter, openai)
 
     thought_process.evaluate_and_execute_task(
-        """rewrite the README in a way that you think makes sense"""
+        """Rewrite Thought.py to be more intuitive and understandable at a glance"""
     )
+
+    # thought_process.rewrite_thought(thought,
+    # {
+    #     'type': "REWRITE",
+    #     'what_to_reference': ['Thought.py'],
+    #     'what_to_rewrite': """\"\"\"Generate a response based on system and user prompts.
+    #     ToDo: At some point actions other than writing will be needed, e.g. 'web search'
+    #     ToDo: With large context lengths approx 5k+ the current executive prompt can fail to produce an actual json output and get confused into writing a unironic answer
+    #     #Solved if executive files only review summaries of input files
+    #
+    #     :param system_prompts: The system prompts to guide the thinking process.
+    #     :param user_prompt: The task the thought process is to be dedicated to.
+    #     :return: The response generated by OpenAI or an error message.
+    #     \"\"\"""",
+    #     'what_to_do': "Rewrite this docstring in portugeuese, don't forget the triple commas, don't write anything ABOUT doing the task just do it, do not add a code block delimtiter, don't add a language identifier",
+    #     'where_to_do_it': 'Thought.py'
+    # }
+    # )
+
     #
     # # Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""
     # # """Take ThoughtProcess.py and re-write so that method has a docstring. Please don't overwrite ThoughtProcess to fill it with theory, it needs to remain a valid python file as it was"""  # found to overwrite python files in a meaningful way
