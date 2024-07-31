@@ -77,7 +77,7 @@ if __name__ == '__main__':
     thought = Thought(["solution.txt"], prompter, openai)
 
     print(thought.think(
-        Constants.EXECUTIVE_PROMPT,
+        Constants.EXECUTIVE_SYSTEM_INSTRUCTIONS,
         """
         Give me a history of India"""))
         #"How can the Thought.py be improved? Write an improved version"))

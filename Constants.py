@@ -91,7 +91,7 @@ The word 'TASKS:' MUST be included at the start
 Files MUST be referenced within square brackets e.g [example.csv]
 """
 
-EXECUTIVE_PROMPT = """You are the first part of a 2 process, iterating in a system to solve an initial task,
+EXECUTIVE_SYSTEM_INSTRUCTIONS = """You are the first part of a 2 process, iterating in a system to solve an initial task,
 where file input is evaluated against the existing reference files, with each step adding to the files until the initial
 task can be said to be solved. ONLY output the following json object.
 
@@ -102,23 +102,32 @@ ONLY ONLY ONLY EVER PRODUCE THE FOLLOWING JSON FORMAT, NEVER ***EVER*** PRODUCE 
     "type": (of question),
     "areas_of_improvement": (clearly and simply state how the current input files do not meet the criteria of satisfying the solution. Or alternatively if they do, state how they satisfy each condition of the inital prompt)
     "solved": (false if answer can be improved),
-    "tasks": [ (Can and provided the context aligns SHOULD be multiple tasks in this list)
+    "tasks": [ (Can and provided the context aligns SHOULD be multiple tasks in this list, sensibly compile default and special tasks)
     {
+        "type": (default: "APPEND" task, special types "REWRITE": program will produce output re-writing a part of the text via a regex replace, list the ***exact*** text you want re-written and how you would like the exeuctor to re-write it)
         "what_to_reference": [] (strings of file names and their extensions in double quotes, only reference files that have been previously supplied to you by me, appropriate to what the task has to do, if appending writing to a file they at least have to see its current contents, and perhaps another reference file)
+        "what_to_rewrite" (OPTIONAL: only for REWRITE Tasks) (EXACT text in the document to regex replace with this tasks output, change any commas to be escaped for the regex formating to follow)
         "what_to_do": (description of the actual activity the llm needs to perform which helps the above task
-        "where_to_do_it: (file to save output to, include just the file name and extension, nothing more)
-    }]
+        "where_to_do_it: (file to save output to, can ONLY be one singular file create another task for another file if necessary, include just the file name and extension, nothing more)
+    }
 }
 """
-PROMPT_FOLLOWING_EXECUTIVE_DIRECTION = """You are the 2nd part of a 2 step process, iterating in a system to solve an initial task,
+
+EXECUTOR_SYSTEM_INSTRUCTIONS = """You are the 2nd part of a 2 step process, iterating in a system to solve an initial task,
 The first part has generated directives for you to follow in order to solve help solve the initial task
 
 Evaluate the following  prompt thoroughly but concisely.
 Adding as much useful detail as possible while keeping your answer curt and to the point.
-If there is content from a solution.txt you have been run before and previous output deemed insufficient for the reasons 
-stated next. 
+Follow next_steps and areas_of_improvement to append an improvement to the solution."""
+REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS = """You are the 2nd part of a 2 step process, iterating in a system to rewrite a section of text,
+The first part has generated general directives for you to follow in order to improve the selected text for replacement
+
+Evaluate the following  prompt thoroughly but concisely.
+Adding as much useful detail as possible while keeping your answer curt and to the point.
 Follow next_steps and areas_of_improvement to append an improvement to the solution.
-If you have been directed to overwrite an existing file, please maintain as much of the original content as is sensible while outputing an AUGMENTED version in line with your directives."""
+You have been directed to overwrite an existing file, please maintain as much of the original content as is sensible while outputing an AUGMENTED version in line with your directives.
+
+Do not add code block delimiters, don't add a language identifier"""
 
 EVALUATE_TASKS_INSTRUCTIONS = """
 You are an assistant to handle and process tasks and convert them into full, detailed solutions. You sould aim to provide full detail responses, not cut out relevant information from supplied reference material while making the solution engaging and interesting to read.

@@ -121,7 +121,7 @@ class ThoughtProcess:
         :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary.
         """
         executive_thought = self.create_next_thought(self.files_to_evaluate)
-        executive_output = executive_thought.think([Constants.EXECUTIVE_PROMPT], task)
+        executive_output = executive_thought.think([Constants.EXECUTIVE_SYSTEM_INSTRUCTIONS], task)
         try:
             logging.info(f"Converting executive output from json format to dict: \n{executive_output}")
             # Remove the ```json and ``` at the start and end
@@ -153,11 +153,11 @@ class ThoughtProcess:
             logging.info("Processing Thought: " + executive_directive)
             thought = self.create_next_thought(external_files)
             output = thought.think(
-                Constants.PROMPT_FOLLOWING_EXECUTIVE_DIRECTION,
                 "Primary Instructions: " + str(executive_directive)
             )
 
             FileManagement.save_file(output, save_to, str(self.thought_id), overwrite)
+                    Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
             logging.info(f"Thought processed and saved to {save_to}.")
             return True, output  # Task was successful
         except Exception as e:
