@@ -24,6 +24,18 @@ class ThoughtType(enum.Enum):
 class ThoughtProcess:
     """
     Class to handle the process of evaluating tasks using the Thought class.
+
+    The ThoughtProcess orchestrates the flow of task evaluation by breaking user prompts down into actionable
+    thoughts. The process includes multiple retries for task execution, allowing
+    the system to address and resolve complex problems iteratively.
+
+    Attributes:
+        thoughts_folder (str): Directory where thoughts are stored.
+        files_for_evaluation (list): List of files available for evaluation.
+        current_thought_id (int): Unique identifier for the current thought process.
+        prompter (Prompter): An instance to manage prompts for task communication.
+        open_ai_client (OpenAI): Client for interaction with the OpenAI API.
+        max_tries (int): Maximum attempts to resolve a task.
     """
 
     def __init__(self):
@@ -31,9 +43,9 @@ class ThoughtProcess:
         Initialize the ThoughtProcess instance.
         """
         self.thoughts_folder = os.path.join(os.path.dirname(__file__), "Thoughts")
-        self.files_to_evaluate = []
-        self.thought_id = 1  # self.get_next_thought_id()
-        FileManagement.initialise_file(self.thought_id, "solution.txt")  # ToDo: In future this might not be necessary
+        self.files_for_evaluation = []
+        self.current_thought_id = 1  # self.get_next_thought_id()
+        FileManagement.initialise_file(self.current_thought_id, "solution.txt")  # ToDo: In future this might not be necessary
 
         self.prompter = Prompter()
         self.open_ai_client = OpenAI()
@@ -53,17 +65,13 @@ class ThoughtProcess:
         """
         Evaluate and execute a task based on its description.
 
-        This method provides a structured approach to assess the task, generate an execution plan, and perform the
-        necessary actions to achieve the desired outcome.
-        The process includes multiple iterations and handles retries in case of unresolved issues,
-        with logs maintained for tracking.
-
-        ToDo: Should probably switch to using a DAG with edges
+        This method coordinates the assessment and execution process, generating execution plans,
+        attempting the resolution iteratively, and keeping logs of performance outcomes.
 
         :param task_description: The description of the task to evaluate as a string.
         """
-        new_folder = os.path.join(self.thoughts_folder, f"{self.thought_id}")
-        os.makedirs(new_folder, exist_ok=True)
+        current_prompt_folder = os.path.join(self.thoughts_folder, f"{self.current_thought_id}")
+        os.makedirs(current_prompt_folder, exist_ok=True)
 
         task_queue = deque([task_description])  # Main task queue
         failed_tasks_queue = []  # Queue for failed tasks
@@ -73,18 +81,20 @@ class ThoughtProcess:
             current_task = task_queue.popleft()  # Get the next task
             attempt_count = 0  # Reset attempt counter for the current task
 
+            # Iterate through execution attempts for a given task
             while attempt_count < self.max_tries:
                 attempt_count += 1
                 logging.info(f"Attempt {attempt_count} for task: {current_task}")
-                self.files_to_evaluate = FileManagement.list_files(new_folder)
+                self.files_for_evaluation = FileManagement.list_files(current_prompt_folder)
 
                 try:
-                    executive_output_dict = self.process_executive_thought(current_task)
+                    executive_output_dict = self.generate_executive_plan(current_task)
                     execution_logs += "EXEC PLAN: " + str(pformat(executive_output_dict)) + "\n"
 
                     if executive_output_dict.get('solved'):
                         logging.info(f"Task `{current_task}` solved successfully in attempt {attempt_count}.")
-                        self.finalise_solution(self.thought_id, execution_logs)
+
+                        self.finalise_solution(self.current_thought_id, execution_logs)
                         return  # Exit if the solution is found
 
                     logging.info(f"Generated tasks: {pformat(executive_output_dict.get('tasks'))}")
@@ -93,7 +103,7 @@ class ThoughtProcess:
                     for task in tasks:
                         try:
                             logging.info(f"Executing task: \n{pformat(task)}")
-                            success, output = self.process_task(
+                            success, output = self.execute_task(
                                 task
                             )
                             if success:
@@ -118,7 +128,7 @@ class ThoughtProcess:
 
             FileManagement.save_file(
                 execution_logs,
-                os.path.join(self.thoughts_folder, str(self.thought_id), "execution_logs.txt"),
+                os.path.join(self.thoughts_folder, str(self.current_thought_id), "execution_logs.txt"),
                 ""
             )
 
@@ -150,7 +160,7 @@ class ThoughtProcess:
 
         return modified_code
 
-    def process_executive_thought(self, task: str) -> Dict[str, object]:
+    def generate_executive_plan(self, task: str) -> Dict[str, object]:
         """
         Process and obtain the new executive directive for the initial task.
 
@@ -158,23 +168,25 @@ class ThoughtProcess:
         :return: A dictionary parsed from the llm's JSON format output.
         :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary.
         """
-        executive_thought = self.create_next_thought(self.files_to_evaluate)
+        executive_thought = self.create_next_thought(self.files_for_evaluation)
         executive_output = executive_thought.executive_think([Constants.EXECUTIVE_SYSTEM_INSTRUCTIONS], task)
 
         return executive_output
 
-    def process_task(
+    def execute_task(
             self,
             task_directives: Dict[str, str],
             overwrite: bool = False
-        ) -> Tuple[bool, str]:
+    ) -> Tuple[bool, str]:
         """
         Process the thoughts generated from the executive output and save results.
 
+        This method carries out the task as dictated by the executive output, based on the instructions
+        provided.
         ToDo: Should probably change system_message if its the first iteration
 
         :param task_directives: Dict with the executive thought's instructions for this task
-        :return: Tuple indicating success status and the output result.
+        :return: Tuple indicating success status and the output result of executing the task.
         """
         thought_type = task_directives.get('type')
         primary_instruction = task_directives.get('what_to_do')
@@ -188,22 +200,23 @@ class ThoughtProcess:
             logging.debug("Type input bug: = " + str(type(primary_instruction)))
 
             logging.info(f"Processing Thought: [{thought_type}]" + primary_instruction)
-            thought = self.create_next_thought(external_files)
+            executor_thought = self.create_next_thought(external_files)
 
             if thought_type == ThoughtType.APPEND.value:
-                output = thought.think(
+                output = executor_thought.think(
                     Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
                     "Primary Instructions: " + str(primary_instruction)
                 )
-                FileManagement.save_file(output, save_to, str(self.thought_id), overwrite)
+                FileManagement.save_file(output, save_to, str(self.current_thought_id), overwrite)
             if thought_type == ThoughtType.REWRITE.value:
-                output = thought.think(
+                output = executor_thought.think(
                     Constants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
                     f"""Just rewrite <to_rewrite>\n{task_directives.get('what_to_rewrite')}\n</to_rewrite>\n
                     In the following way: {str(primary_instruction)}"""
                 )
-                FileManagement.re_write_section(task_directives.get('what_to_rewrite'), output, save_to, str(self.thought_id))
-            #ToDO APPEND and REWRITE to a enum, then check message is present in enum
+                FileManagement.re_write_section(task_directives.get('what_to_rewrite'), output, save_to,
+                                                str(self.current_thought_id))
+            # ToDO APPEND and REWRITE to a enum, then check message is present in enum
 
             logging.info(f"Thought processed and saved to {save_to}.")
             return True, output  # Task was successful
@@ -220,7 +233,7 @@ class ThoughtProcess:
         FileManagement.re_write_section(task_directives.get('what_to_rewrite'),
                                         output,
                                         task_directives.get('where_to_do_it'),
-                                        str(self.thought_id))
+                                        str(self.current_thought_id))
 
     def create_next_thought(self, input_data: List[str]) -> Thought:
         """
@@ -241,7 +254,7 @@ class ThoughtProcess:
         :param logs: The logs generated during the evaluation process.
         """
         logging.info(f"Solved by iteration: {iteration}")
-        FileManagement.save_file(logs, os.path.join(self.thoughts_folder, str(self.thought_id), "logs.txt"), "")
+        FileManagement.save_file(logs, os.path.join(self.thoughts_folder, str(self.current_thought_id), "logs.txt"), "")
 
 
 if __name__ == '__main__':
@@ -249,10 +262,11 @@ if __name__ == '__main__':
     openai = OpenAI()
     prompter = Prompter()
     thought_process = ThoughtProcess()
-    thought = Thought(["Thought.py"], prompter, openai)
+    thought = Thought(["ThoughtProcess.py"], prompter, openai)
 
     thought_process.evaluate_and_execute_task(
-        """Rewrite Thought.py to be more intuitive and understandable at a glance"""
+        """Rewrite ThoughtProcess.py to be more intuitive and understandable at a glance, make your suggestions in 
+        suggestions.md only, not editing the original python class"""
     )
 
     # thought_process.rewrite_thought(thought,
