@@ -233,6 +233,27 @@ class ThoughtProcess:
                                         output,
                                         task_directives.get('where_to_do_it'),
                                         str(self.current_thought_id))
+    def rewrite_file_task(self, executor_thought: Thought, task_directives: Dict[str, object], approx_max_tokens=1000) -> str:
+        file_contents = FileManagement.read_file(task_directives.get('file_to_rewrite'))
+
+        re_written_file = ""
+        char_per_token = 4  # Rough estimate of characters per token
+        approx_max_chars = approx_max_tokens * char_per_token
+
+        # Correctly split file_contents into chunks based on approx_max_chars
+        text_chunks = [file_contents[i:i + approx_max_chars] for i in range(0, len(file_contents), approx_max_chars)]
+        print(f"HELLO WORLD: {len(text_chunks)}, text_length = {len(file_contents)}")
+        for text_chunk in text_chunks:  # ToDo: could be parralised
+            logging.info(f"Rewriting: {text_chunk}")
+            re_written_file += executor_thought.think(
+                Constants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
+                f"""Rewrite this section: \n<rewrite_this>\n{text_chunk}\n</rewrite_this>\n
+                                                        In the following way: {str(task_directives.get('what_to_do'))}"""
+            )
+            print(re_written_file)
+
+        FileManagement.save_file(re_written_file, task_directives.get('where_to_do_it'), str(self.current_thought_id), overwrite=True)
+        return "File rewritten successfully"
 
     def create_next_thought(self, input_data: List[str]) -> Thought:
         """

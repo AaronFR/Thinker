@@ -29,7 +29,6 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 ## Features to implement
 To enhance the system's capabilities and efficiency, several features are planned for implementation:
-- **Overwrite Capability**: Enable executive thoughts to dictate the overwriting of specific text sections, with executor thoughts carrying out those plans.
 - **Enhanced Executive Reasoning**: Develop improvements to the executive thought generation for more accurate and complex decision-making.
 - **Multiple Output Handling**: Allow `Thought.py/get_openai_response` to support multiple outputs 'n=' to enhance response versatility.
 - **Refactor class hierarchy**: Move away from 'Thoughts' structure to a system of tasks and tasks_loops
