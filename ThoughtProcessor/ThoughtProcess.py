@@ -19,7 +19,7 @@ from ThoughtProcessor.Thought import Thought
 class ThoughtType(enum.Enum):
     APPEND = "APPEND"
     REWRITE = "REWRITE"
-
+    REWRITE_FILE = "REWRITE_FILE"
 
 class ThoughtProcess:
     """
@@ -102,9 +102,8 @@ class ThoughtProcess:
                     for task in tasks:
                         try:
                             logging.info(f"Executing task: \n{pformat(task)}")
-                            success, output = self.execute_task(
-                                task
-                            )
+                            success, output = self.execute_task(task)
+
                             if success:
                                 logging.info(f"Task executed successfully: {task.get('what_to_do')}")
                             else:
@@ -187,52 +186,50 @@ class ThoughtProcess:
         :param task_directives: Dict with the executive thought's instructions for this task
         :return: Tuple indicating success status and the output result of executing the task.
         """
-        thought_type = task_directives.get('type')
-        primary_instruction = task_directives.get('what_to_do')
-        external_files = task_directives.get('what_to_reference', [])
-        save_to = task_directives.get('where_to_do_it')
-
-        if not thought_type:
-            thought_type = ThoughtType.APPEND.value
+        thought_type = task_directives.get('type', ThoughtType.APPEND.value)
 
         try:
-            logging.debug("Type input bug: = " + str(type(primary_instruction)))
+            logging.debug("Type input 'bug': = " + str(type(task_directives.get('what_to_do'))))
+            logging.info(f"Processing Thought: [{thought_type}]" + task_directives.get('what_to_do'))
+            executor_thought = self.create_next_thought(task_directives.get('what_to_reference', []))
 
-            logging.info(f"Processing Thought: [{thought_type}]" + primary_instruction)
-            executor_thought = self.create_next_thought(external_files)
+            task_method = {
+                ThoughtType.APPEND.value: self.append_to_file_task,
+                ThoughtType.REWRITE.value: self.rewrite_part_task,
+                ThoughtType.REWRITE_FILE.value: self.rewrite_file_task,
+            }
 
-            if thought_type == ThoughtType.APPEND.value:
-                output = executor_thought.think(
-                    Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
-                    "Primary Instructions: " + str(primary_instruction)
-                )
-                FileManagement.save_file(output, save_to, str(self.current_thought_id), overwrite)
-            if thought_type == ThoughtType.REWRITE.value:
-                output = executor_thought.think(
-                    Constants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
-                    f"""Just rewrite <replace_this>\n{task_directives.get('replace_this')}\n</replace_this>\n
-                    In the following way: {str(primary_instruction)}"""
-                )
-                FileManagement.re_write_section(task_directives.get('replace_this'), output, save_to,
-                                                str(self.current_thought_id))
-            # ToDO APPEND and REWRITE to a enum, then check message is present in enum
+            output = task_method[thought_type](executor_thought, task_directives, task_directives.get('where_to_do_it'))
 
-            logging.info(f"Thought processed and saved to {save_to}.")
+            logging.info(f"Thought processed and saved to {task_directives.get('where_to_do_it')}.")
             return True, output  # Task was successful
         except Exception as e:
             logging.error(f"Output was empty or invalid: {e}")
             return False, ''  # Task failed
 
-    def rewrite_thought(self, thought: Thought, task_directives: Dict[str, str]):
-        output = thought.think(
-            Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
-            f"""Just rewrite <to_rewrite>\n{task_directives.get('replace_this')}\n</to_rewrite>\n
+    def append_to_file_task(self, executor_thought: Thought, task_directives: Dict[str, object]) -> str:
+        output = executor_thought.think(
+                    Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
+                    "Primary Instructions: " + str(task_directives.get('what_to_do'))
+                )
+        FileManagement.save_file(output, task_directives.get('where_to_do_it'), str(self.current_thought_id))
+
+        return output
+
+    def rewrite_part_task(self, executor_thought: Thought, task_directives: Dict[str, object]) -> str:
+        output = executor_thought.think(
+            Constants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
+            f"""Just rewrite <rewrite_this>\n{task_directives.get('rewrite_this')}\n</rewrite_this>\n
             In the following way: {str(task_directives.get('what_to_do'))}"""
         )
-        FileManagement.re_write_section(task_directives.get('replace_this'),
-                                        output,
-                                        task_directives.get('where_to_do_it'),
-                                        str(self.current_thought_id))
+        FileManagement.re_write_section(
+            task_directives.get('rewrite_this'),
+            output,
+            task_directives.get('where_to_do_it'),
+            str(self.current_thought_id))
+
+        return output
+
     def rewrite_file_task(self, executor_thought: Thought, task_directives: Dict[str, object], approx_max_tokens=1000) -> str:
         file_contents = FileManagement.read_file(task_directives.get('file_to_rewrite'))
 
@@ -285,8 +282,7 @@ if __name__ == '__main__':
     # thought = Thought(["ThoughtProcess.py"], prompter, openai)
 
     thought_process.evaluate_and_execute_task(
-        """Rewrite Thought.py to be more intuitive and understandable at a glance, make your suggestions in 
-        suggestions.md only, don't edit the original python class"""
+        """Make practical suggestions for how to improve the supplied codebase: Constants.py, Thought.py and ThoughtProcess.py"""
     )
 
     # thought_process.rewrite_thought(thought,
