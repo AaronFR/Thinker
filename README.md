@@ -32,6 +32,7 @@ To enhance the system's capabilities and efficiency, several features are planne
 - **Overwrite Capability**: Enable executive thoughts to dictate the overwriting of specific text sections, with executor thoughts carrying out those plans.
 - **Enhanced Executive Reasoning**: Develop improvements to the executive thought generation for more accurate and complex decision-making.
 - **Multiple Output Handling**: Allow `Thought.py/get_openai_response` to support multiple outputs 'n=' to enhance response versatility.
+- **Refactor class hierarchy**: Move away from 'Thoughts' structure to a system of tasks and tasks_loops
 - **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.
 - **DAG Structure for Task Management**: Introduce a Directed Acyclic Graph (DAG) structure to optimize decision-making efficiency in task management.
 - **API Integrations**: Integrate additional AI models for improved capability and accuracy, along with the ability to search resources like Wikipedia and the web.

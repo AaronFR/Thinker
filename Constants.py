@@ -113,6 +113,72 @@ ONLY ONLY ONLY EVER PRODUCE THE FOLLOWING JSON FORMAT, NEVER ***EVER*** PRODUCE 
 }
 """
 
+
+"""
+ToDo: extra schema to add
+Tasks:
+    - redo: number of times to redo a prompt filtering for quality of response, for tasks where quality is important
+    - repeat: for APPEND tasks, so that large texts can be added to the output without triggering another run
+"""
+EXECUTIVE_FUNCTIONS_SCHEME = [{
+    "name": "executiveDirective",
+    "description": """Assess input files for improvements and generate tasks to provide a solution which completely 
+    satisfied the initial user prompt""",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "type": {
+                "type": "string",
+                "description": "A summarisation of what the tasks in this directive are supposed to accomplish"
+            },
+            "areas_of_improvement": {
+                "type": "string",
+                "description": "Detailed explanation of how the current input files do not meet the criteria or how they do satisfy the conditions."
+            },
+            "solved": {
+                "type": "boolean",
+                "description": "Indicates whether the issue is solved or if further action is needed."
+            },
+            "tasks": {
+                "type": "array",
+                "description": "A list of tasks (*at least* one) to address the identified issues.",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Type of task, e.g., 'APPEND' for appending content to the end of a file or 'REWRITE' for regex replacing existing content",
+                            "enum": ["APPEND", "REWRITE"]
+                        },
+                        "what_to_reference": {
+                            "type": "array",
+                            "description": "List of file names with extensions, relevant to the task.",
+                            "items": {"type": "string"}
+                        },
+                        "what_to_rewrite": {
+                            "type": "string",
+                            "description": """The text you want replaced, ***EXACTLY*** the same as it appears in the 
+                            initial document, any deviation from the read content will cause the regex evaluation to fail. 
+                            make sure the output is a valid string and that any commas or other special characters in 
+                            python and escaped. 
+                            Only for 'REWRITE' tasks."""
+                        },
+                        "what_to_do": {
+                            "type": "string",
+                            "description": "Description of the actions required to complete the task."
+                        },
+                        "where_to_do_it": {
+                            "type": "string",
+                            "description": "The file where the output should be saved."
+                        }
+                    },
+                    "required": ["type", "what_to_reference", "what_to_do", "where_to_do_it"]
+                }
+            }
+        }
+    }
+}]
+
 EXECUTOR_SYSTEM_INSTRUCTIONS = """You are the 2nd part of a 2 step process, iterating in a system to solve an initial task,
 The first part has generated directives for you to follow in order to solve help solve the initial task
 

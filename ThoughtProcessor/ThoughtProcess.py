@@ -144,7 +144,7 @@ class ThoughtProcess:
 
         return modified_code
 
-    def process_executive_thought(self, task: str) -> Dict[str, str]:
+    def process_executive_thought(self, task: str) -> Dict[str, object]:
         """
         Process and obtain the new executive directive for the initial task.
 
@@ -153,26 +153,9 @@ class ThoughtProcess:
         :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary.
         """
         executive_thought = self.create_next_thought(self.files_to_evaluate)
-        executive_output = executive_thought.think([Constants.EXECUTIVE_SYSTEM_INSTRUCTIONS], task)
-        try:
-            logging.info(f"Converting executive output from json format to dict: \n{executive_output}")
-            # Remove the ```json and ``` at the start and end
-            cleaned_json_string = re.sub(r'^```json\s*|\s*```$', '', executive_output.strip())
+        executive_output = executive_thought.executive_think([Constants.EXECUTIVE_SYSTEM_INSTRUCTIONS], task)
 
-            # Properly escape backslashes, but leave known escape sequences intact
-            def escape_backslashes(match):
-                if match.group(0) in ('\\n', '\\t', '\\r', '\\\\'):
-                    return match.group(0)
-                else:
-                    return '\\\\'
-
-            cleaned_json_string = re.sub(r'\\', escape_backslashes, cleaned_json_string)
-            cleaned_json_string = cleaned_json_string.replace('\\', '\\\\')  # removes escape characters in the string
-
-            return json.loads(cleaned_json_string)
-        except json.JSONDecodeError:
-            logging.error("Failed to decode JSON output: %s", executive_output)
-            raise
+        return executive_output
 
     def process_task(
             self,
@@ -199,8 +182,6 @@ class ThoughtProcess:
             logging.debug("Type input bug: = " + str(type(primary_instruction)))
 
             logging.info(f"Processing Thought: [{thought_type}]" + primary_instruction)
-            if thought_type != "APPEND":
-                print("LOL")
             thought = self.create_next_thought(external_files)
 
             if thought_type == ThoughtType.APPEND.value:
