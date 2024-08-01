@@ -77,7 +77,7 @@ class Utility:
             try:
                 return func()
             except Exception as e:
-                wait_time = 2 ** attempt  # Exponential backoff
+                wait_time = 10 ** attempt  # Exponential backoff
                 logging.error(f"Attempt {attempt + 1} failed: {e}. Retrying in {wait_time} seconds...")
                 time.sleep(wait_time)  # Wait before retrying
         logging.error("Max retries exceeded. Failed to get response from callable.")
