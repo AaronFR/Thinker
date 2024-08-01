@@ -168,14 +168,14 @@ class ThoughtProcess:
         :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary.
         """
         executive_thought = self.create_next_thought(self.files_for_evaluation)
-        executive_output = executive_thought.executive_think([Constants.EXECUTIVE_SYSTEM_INSTRUCTIONS], task)
+        existing_files = f"Existing files: [{', '.join(str(file) for file in self.files_for_evaluation)}]"
+        executive_output = executive_thought.executive_think([existing_files, Constants.EXECUTIVE_FUNCTION_INSTRUCTIONS], task)
 
         return executive_output
 
     def execute_task(
             self,
-            task_directives: Dict[str, str],
-            overwrite: bool = False
+            task_directives: Dict[str, str]
     ) -> Tuple[bool, str]:
         """
         Process the thoughts generated from the executive output and save results.
@@ -272,7 +272,7 @@ if __name__ == '__main__':
     # {
     #     'type': "REWRITE",
     #     'what_to_reference': ['Thought.py'],
-    #     'replace_this': """\"\"\"Generate a response based on system and user prompts.
+    #     'rewrite_this': """\"\"\"Generate a response based on system and user prompts.
     #     ToDo: At some point actions other than writing will be needed, e.g. 'web search'
     #     ToDo: With large context lengths approx 5k+ the current executive prompt can fail to produce an actual json output and get confused into writing a unironic answer
     #     #Solved if executive files only review summaries of input files

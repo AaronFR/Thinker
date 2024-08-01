@@ -29,7 +29,6 @@ class Utility:
 
         return token_count
 
-
     @staticmethod
     def fill_placeholders(prompt: str) -> str:
         """Replace placeholders in prompt with actual file content if within token limit."""

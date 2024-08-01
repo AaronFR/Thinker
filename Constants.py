@@ -106,13 +106,20 @@ ONLY ONLY ONLY EVER PRODUCE THE FOLLOWING JSON FORMAT, NEVER ***EVER*** PRODUCE 
     {
         "type": (default: "APPEND" task, special types "REWRITE": program will produce output re-writing a part of the text via a regex replace, list the ***exact*** text you want re-written and how you would like the exeuctor to re-write it)
         "what_to_reference": [] (strings of file names and their extensions in double quotes, only reference files that have been previously supplied to you by me, appropriate to what the task has to do, if appending writing to a file they at least have to see its current contents, and perhaps another reference file)
-        "replace_this" (OPTIONAL: only for REWRITE Tasks) (EXACT text in the document to regex replace with this tasks output, change any commas to be escaped for the regex formating to follow)
+        "rewrite_this" (OPTIONAL: only for REWRITE Tasks) (EXACT text in the document to regex replace with this tasks output, change any commas to be escaped for the regex formating to follow)
         "what_to_do": (description of the actual activity the llm needs to perform which helps the above task
         "where_to_do_it: (file to save output to, can ONLY be one singular file create another task for another file if necessary, include just the file name and extension, nothing more)
     }
 }
 """
+EXECUTIVE_FUNCTION_INSTRUCTIONS = """You are the first part of a 2 process, iterating in a system to solve an initial task,
+where file input is evaluated against the existing reference files, with each step adding to the files until the initial
+task can be said to be solved.
 
+Your output will be made to adhere to a defined json output. Focus on creating a sensible arrangement of tasks,
+for instance: it does not make sense to try and re-write a file that doesn't exist. Instead it should be created with
+'APPEND'.
+"""
 
 """
 ToDo: extra schema to add
@@ -148,9 +155,10 @@ EXECUTIVE_FUNCTIONS_SCHEME = [{
                         "type": {
                             "type": "string",
                             "description": """Type of task, e.g.
-                            'APPEND': for appending content to the end of a file, 
+                            'APPEND': for appending content to the end of a file, or creating a new file. 
                             'REWRITE': for regex replacing, a small amount of text inline with your instructions,
-                            'REWRITE_FILE': file for rewriting an entire file, this will cause the task to process the file piece by piece into an llm, applying your instructions to each piece of the entire file""",
+                            'REWRITE_FILE': rewrites 'rewrite_this' to 'where_to_do_it'. Splitting the 'rewrite_this' file into pieces to feed into an llm, and rewrite in accordance with your instructions, piecing them together again for the entire file.
+                            Ideally 'rewrite_this' and 'where_to_do_it' are the same file""",
                             "enum": ["APPEND", "REWRITE", "REWRITE_FILE"]
                         },
                         "what_to_reference": {
@@ -158,14 +166,19 @@ EXECUTIVE_FUNCTIONS_SCHEME = [{
                             "description": "List of file names with extensions, relevant to the task.",
                             "items": {"type": "string"}
                         },
-                        "replace_this": {
+                        "rewrite_this": {
                             "type": """string""",
                             "description": """The text you want replaced, ***EXACTLY*** the same as it appears in the 
                             initial document, any deviation from the read content will cause the regex evaluation to fail. 
                             make sure the output is a valid multi-line, triple-quote string and that any commas or other special characters in 
                             python and escaped.
                             Make sure you reference and write to ('where_to_do_it') the file you want to change and that it has this line as you've written it
-                            Only for 'REWRITE' tasks."""
+                            Only for 'REWRITE' tasks. DO NOT WRITE FOR 'REWRITE_FILE' TASKS!"""
+                        },
+                        "file_to_rewrite": {
+                            "type": """string""",
+                            "description": """The file including its extension that you want to rewrite.
+                            Only for 'REWRITE_FILE' tasks."""
                         },
                         "what_to_do": {
                             "type": "string",
@@ -173,7 +186,7 @@ EXECUTIVE_FUNCTIONS_SCHEME = [{
                         },
                         "where_to_do_it": {
                             "type": "string",
-                            "description": "The file where the output should be saved."
+                            "description": "The file where the output should be saved. MUST include a file from the reference files"
                         }
                     },
                     "required": ["type", "what_to_reference", "what_to_do", "where_to_do_it"]

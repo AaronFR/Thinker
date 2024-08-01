@@ -75,21 +75,21 @@ if __name__ == '__main__':
 #         {
 #             "type": "REWRITE",
 #             "what_to_reference": ["ThoughtProcess.py"],
-#             "replace_this": "class ThoughtProcess:\n    \"\"\"\n    Class to handle the process of evaluating tasks using the Thought class.\n    \"\"\"",
+#             "rewrite_this": "class ThoughtProcess:\n    \"\"\"\n    Class to handle the process of evaluating tasks using the Thought class.\n    \"\"\"",
 #             "what_to_do": "Add a more comprehensive overview of the class purpose, including a brief explanation of its main functionalities and how it interacts with other components.",
 #             "where_to_do_it": "suggestions.md"
 #         },
 #         {
 #             "type": "REWRITE",
 #             "what_to_reference": ["ThoughtProcess.py"],
-#             "replace_this": "def evaluate_and_execute_task(self, task_description: str):",
+#             "rewrite_this": "def evaluate_and_execute_task(self, task_description: str):",
 #             "what_to_do": "Change the method signature to \"def evaluate_task(self, task: str):\" and simplify the function description to clearly state the task's execution procedure without excess detail.",
 #             "where_to_do_it": "suggestions.md"
 #         },
 #         {
 #             "type": "REWRITE",
 #             "what_to_reference": ["ThoughtProcess.py"],
-#             "replace_this": "def process_task(self, task_directives: Dict[str, str], overwrite: bool = False) -> Tuple[bool, str]:",
+#             "rewrite_this": "def process_task(self, task_directives: Dict[str, str], overwrite: bool = False) -> Tuple[bool, str]:",
 #             "what_to_do": "Modify the method description, separating the parameters clearly with better explanations of their purpose and potential values, including examples in the docstring.",
 #             "where_to_do_it": "suggestions.md"
 #         },
