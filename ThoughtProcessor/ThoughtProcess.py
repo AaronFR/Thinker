@@ -51,7 +51,13 @@ class ThoughtProcess:
 
     def evaluate_and_execute_task(self, task_description: str):
         """
-        Evaluate the given task and attempt to provide an optimized solution.
+        Evaluate and execute a task based on its description.
+
+        This method provides a structured approach to assess the task, generate an execution plan, and perform the
+        necessary actions to achieve the desired outcome.
+        The process includes multiple iterations and handles retries in case of unresolved issues,
+        with logs maintained for tracking.
+
         ToDo: Should probably switch to using a DAG with edges
 
         :param task_description: The description of the task to evaluate as a string.
@@ -59,11 +65,11 @@ class ThoughtProcess:
         new_folder = os.path.join(self.thoughts_folder, f"{self.thought_id}")
         os.makedirs(new_folder, exist_ok=True)
 
-        logs = ""
         task_queue = deque([task_description])  # Main task queue
         failed_tasks_queue = []  # Queue for failed tasks
 
         while task_queue:
+            execution_logs = ""
             current_task = task_queue.popleft()  # Get the next task
             attempt_count = 0  # Reset attempt counter for the current task
 
@@ -74,11 +80,11 @@ class ThoughtProcess:
 
                 try:
                     executive_output_dict = self.process_executive_thought(current_task)
-                    logs += "EXEC PLAN: " + str(pformat(executive_output_dict)) + "\n"
+                    execution_logs += "EXEC PLAN: " + str(pformat(executive_output_dict)) + "\n"
 
                     if executive_output_dict.get('solved'):
                         logging.info(f"Task `{current_task}` solved successfully in attempt {attempt_count}.")
-                        self.finalise_solution(self.thought_id, logs)
+                        self.finalise_solution(self.thought_id, execution_logs)
                         return  # Exit if the solution is found
 
                     logging.info(f"Generated tasks: {pformat(executive_output_dict.get('tasks'))}")
@@ -96,25 +102,25 @@ class ThoughtProcess:
                                 failed_task = task.get('what_to_do')
                                 logging.error(f"Task failed: {failed_task}. Output: {output}")
                                 # failed_tasks_queue.append(failed_task)  # ToDo implement, for starters it needs
-                                logs += f"Task failed: {failed_task} - Output: \n{output}"
+                                execution_logs += f"Task failed: {failed_task} - Output: \n{output}"
                         except Exception as e:
                             logging.error(f"Error executing task `{task.get('what_to_do')}`: {e}")
                             failed_tasks_queue.append(task)  # Queue the failed task
 
                     if attempt_count == self.max_tries:
                         logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS")
-                        logs += f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS\n"  # Capture final attempt logs
+                        execution_logs += f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS\n"  # Capture final attempt logs
                         break
 
                 except Exception as e:
                     logging.error(f"Error processing executive thought for `{current_task}`: {e}")
                     break  # Exit loop on processing executive thought failure
-                finally:
-                    FileManagement.save_file(
-                        logs,
-                        os.path.join(self.thoughts_folder, str(self.thought_id), "logs.txt"),
-                        ""
-                    )
+
+            FileManagement.save_file(
+                execution_logs,
+                os.path.join(self.thoughts_folder, str(self.thought_id), "execution_logs.txt"),
+                ""
+            )
 
             # Process failed tasks if there are any
             if failed_tasks_queue:
