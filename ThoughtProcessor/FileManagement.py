@@ -140,4 +140,6 @@ class FileManagement:
 
 
 if __name__ == '__main__':
-    FileManagement.re_write_section("test", "TEST COMPLETE", "solution.txt", "1")
+    FileManagement.re_write_section("""Generate a response based on system and user prompts.
+        
+        ToDo: At some point actions other than writing will be needed, e.g. 'web search'.""", "womp", "thought.py", "1")

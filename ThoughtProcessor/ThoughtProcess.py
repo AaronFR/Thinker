@@ -259,14 +259,14 @@ class ThoughtProcess:
 
 if __name__ == '__main__':
     ErrorHandler.setup_logging()
-    openai = OpenAI()
-    prompter = Prompter()
+    # openai = OpenAI()
+    # prompter = Prompter()
     thought_process = ThoughtProcess()
-    thought = Thought(["ThoughtProcess.py"], prompter, openai)
+    # thought = Thought(["ThoughtProcess.py"], prompter, openai)
 
     thought_process.evaluate_and_execute_task(
-        """Rewrite ThoughtProcess.py to be more intuitive and understandable at a glance, make your suggestions in 
-        suggestions.md only, not editing the original python class"""
+        """Rewrite Thought.py to be more intuitive and understandable at a glance, make your suggestions in 
+        suggestions.md only, don't edit the original python class"""
     )
 
     # thought_process.rewrite_thought(thought,

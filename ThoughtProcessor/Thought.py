@@ -59,7 +59,6 @@ class Thought:
     def executive_think(self, system_prompts: List[str] | str, user_prompt: str) -> Dict[str, object]:
         """Generate a response based on system and user prompts.
         ToDo: At some point actions other than writing will be needed, e.g. 'web search'
-        ToDo: With large context lengths approx 5k+ the current executive prompt can fail to produce an actual json output and get confused into writing a unironic answer
         #Solved if executive files only review summaries of input files
 
         :param system_prompts: The system prompts to guide the thinking process.
@@ -70,7 +69,8 @@ class Thought:
         if isinstance(system_prompts, str):
             system_prompts = [system_prompts]
         if not isinstance(system_prompts, list) or not all(isinstance(sp, str) for sp in system_prompts):
-            raise ValueError("system_prompts must be a list of strings.")
+            raise ValueError("""system_prompts must be provided in the format of a list, where each element is a string. 
+            Please ensure compliance with this expected structure for proper functionality.""")
 
         messages = Prompter.generate_role_messages(system_prompts, self.input_files, user_prompt)
 
@@ -140,5 +140,5 @@ if __name__ == '__main__':
     print(thought.think(
         Constants.EXECUTIVE_SYSTEM_INSTRUCTIONS,
         """
-        Give me a history of India"""))
+        rewrite solution.txt to be more concise"""))
         #"How can the Thought.py be improved? Write an improved version"))

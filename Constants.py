@@ -156,10 +156,10 @@ EXECUTIVE_FUNCTIONS_SCHEME = [{
                             "items": {"type": "string"}
                         },
                         "what_to_rewrite": {
-                            "type": "string",
+                            "type": """string""",
                             "description": """The text you want replaced, ***EXACTLY*** the same as it appears in the 
                             initial document, any deviation from the read content will cause the regex evaluation to fail. 
-                            make sure the output is a valid string and that any commas or other special characters in 
+                            make sure the output is a valid multi-line, triple-quote string and that any commas or other special characters in 
                             python and escaped. 
                             Only for 'REWRITE' tasks."""
                         },
