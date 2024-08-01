@@ -211,10 +211,10 @@ class ThoughtProcess:
             if thought_type == ThoughtType.REWRITE.value:
                 output = executor_thought.think(
                     Constants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
-                    f"""Just rewrite <to_rewrite>\n{task_directives.get('what_to_rewrite')}\n</to_rewrite>\n
+                    f"""Just rewrite <replace_this>\n{task_directives.get('replace_this')}\n</replace_this>\n
                     In the following way: {str(primary_instruction)}"""
                 )
-                FileManagement.re_write_section(task_directives.get('what_to_rewrite'), output, save_to,
+                FileManagement.re_write_section(task_directives.get('replace_this'), output, save_to,
                                                 str(self.current_thought_id))
             # ToDO APPEND and REWRITE to a enum, then check message is present in enum
 
@@ -227,10 +227,10 @@ class ThoughtProcess:
     def rewrite_thought(self, thought: Thought, task_directives: Dict[str, str]):
         output = thought.think(
             Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
-            f"""Just rewrite <to_rewrite>\n{task_directives.get('what_to_rewrite')}\n</to_rewrite>\n
+            f"""Just rewrite <to_rewrite>\n{task_directives.get('replace_this')}\n</to_rewrite>\n
             In the following way: {str(task_directives.get('what_to_do'))}"""
         )
-        FileManagement.re_write_section(task_directives.get('what_to_rewrite'),
+        FileManagement.re_write_section(task_directives.get('replace_this'),
                                         output,
                                         task_directives.get('where_to_do_it'),
                                         str(self.current_thought_id))
@@ -273,7 +273,7 @@ if __name__ == '__main__':
     # {
     #     'type': "REWRITE",
     #     'what_to_reference': ['Thought.py'],
-    #     'what_to_rewrite': """\"\"\"Generate a response based on system and user prompts.
+    #     'replace_this': """\"\"\"Generate a response based on system and user prompts.
     #     ToDo: At some point actions other than writing will be needed, e.g. 'web search'
     #     ToDo: With large context lengths approx 5k+ the current executive prompt can fail to produce an actual json output and get confused into writing a unironic answer
     #     #Solved if executive files only review summaries of input files

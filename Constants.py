@@ -106,7 +106,7 @@ ONLY ONLY ONLY EVER PRODUCE THE FOLLOWING JSON FORMAT, NEVER ***EVER*** PRODUCE 
     {
         "type": (default: "APPEND" task, special types "REWRITE": program will produce output re-writing a part of the text via a regex replace, list the ***exact*** text you want re-written and how you would like the exeuctor to re-write it)
         "what_to_reference": [] (strings of file names and their extensions in double quotes, only reference files that have been previously supplied to you by me, appropriate to what the task has to do, if appending writing to a file they at least have to see its current contents, and perhaps another reference file)
-        "what_to_rewrite" (OPTIONAL: only for REWRITE Tasks) (EXACT text in the document to regex replace with this tasks output, change any commas to be escaped for the regex formating to follow)
+        "replace_this" (OPTIONAL: only for REWRITE Tasks) (EXACT text in the document to regex replace with this tasks output, change any commas to be escaped for the regex formating to follow)
         "what_to_do": (description of the actual activity the llm needs to perform which helps the above task
         "where_to_do_it: (file to save output to, can ONLY be one singular file create another task for another file if necessary, include just the file name and extension, nothing more)
     }
@@ -147,25 +147,29 @@ EXECUTIVE_FUNCTIONS_SCHEME = [{
                     "properties": {
                         "type": {
                             "type": "string",
-                            "description": "Type of task, e.g., 'APPEND' for appending content to the end of a file or 'REWRITE' for regex replacing existing content",
-                            "enum": ["APPEND", "REWRITE"]
+                            "description": """Type of task, e.g.
+                            'APPEND': for appending content to the end of a file, 
+                            'REWRITE': for regex replacing, a small amount of text inline with your instructions,
+                            'REWRITE_FILE': file for rewriting an entire file, this will cause the task to process the file piece by piece into an llm, applying your instructions to each piece of the entire file""",
+                            "enum": ["APPEND", "REWRITE", "REWRITE_FILE"]
                         },
                         "what_to_reference": {
                             "type": "array",
                             "description": "List of file names with extensions, relevant to the task.",
                             "items": {"type": "string"}
                         },
-                        "what_to_rewrite": {
+                        "replace_this": {
                             "type": """string""",
                             "description": """The text you want replaced, ***EXACTLY*** the same as it appears in the 
                             initial document, any deviation from the read content will cause the regex evaluation to fail. 
                             make sure the output is a valid multi-line, triple-quote string and that any commas or other special characters in 
-                            python and escaped. 
+                            python and escaped.
+                            Make sure you reference and write to ('where_to_do_it') the file you want to change and that it has this line as you've written it
                             Only for 'REWRITE' tasks."""
                         },
                         "what_to_do": {
                             "type": "string",
-                            "description": "Description of the actions required to complete the task."
+                            "description": "Description of what you want the executor task to do, the actions required to complete the executor task. Be detailed and give the executor llm as much to work with as possible."
                         },
                         "where_to_do_it": {
                             "type": "string",
