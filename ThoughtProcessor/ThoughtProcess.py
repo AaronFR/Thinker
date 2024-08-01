@@ -45,7 +45,6 @@ class ThoughtProcess:
         self.thoughts_folder = os.path.join(os.path.dirname(__file__), "Thoughts")
         self.files_for_evaluation = []
         self.current_thought_id = 1  # self.get_next_thought_id()
-        FileManagement.initialise_file(self.current_thought_id, "solution.txt")  # ToDo: In future this might not be necessary
 
         self.prompter = Prompter()
         self.open_ai_client = OpenAI()
