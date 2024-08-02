@@ -2,16 +2,14 @@ import logging
 from pprint import pprint
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessage
-import time
 
-from FileProcessing import FileProcessing
+from ThoughtProcessor.ErrorHandler import ErrorHandler
+from ThoughtProcessor.FileManagement import FileManagement
 
-
-# Press Shift+F10 to execute it or replace it with your code.
 
 class Analyser:
     def __init__(self):
-        self.html_formatter = FileProcessing()
+        self.file_formatter = FileManagement()
         self.MODEL_NAME = "gpt-4o-mini"
 
     def analyse_solution(self, initial_prompt: str, solution: str) -> ChatCompletionMessage | None:
@@ -43,9 +41,10 @@ class Analyser:
 
 
 if __name__ == '__main__':
+    ErrorHandler.setup_logging()
+
     analyser = Analyser()
     analysis = analyser.analyse_solution("Comprehensive Python Example: Using Tuple, Dictionary, Module, Decorator, Generator, Polymorphism, and Asynchronous Programming", """bee""")
 
-    html_processing = FileProcessing()
     pprint(analysis)
-    html_processing.save_as_html(analysis.content, "Analysis", 1)
+    FileManagement.save_file(analysis.content, "Analysis.txt", 1)

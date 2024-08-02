@@ -9,9 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- FileManagment.py for /Thoughts splitting out methods from ThoughtProcess.py
-- Docstrings
+- TaskRunner for running individual tasks in order to improve solution: APPEND, REWRITE, REWRITE_FILE
 - 
+
+### Changed
+
+- Total Refactor of ThoughtProcessing. 'Thought' Metaphor abandoned to more practical terminology.
+
+
+
+### Removed
+
+-
+
+## [0.2.1] - 2024-08-01
+
+### Added
+
+- FileManagment.py for /Thoughts splitting out methods from ThoughtProcess.py
+- Docstrings to each major method
 
 ### Changed
 
@@ -19,11 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Executive thoughts can now dictate where output is to be saved and if it should overwrite existing content
 - Executive thoughts can split out multiple new executor thought instances to be run
 - ThoughtProcessing now works where each iteration is a 2-step process. Llm looks at the state of the solution and produces a plan of action -> Acted on by the next llm with output saved to the directed file
-
-### Removed
-
--
-
 
 ## [0.2.0] - 2024-07-27
 

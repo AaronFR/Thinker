@@ -2,15 +2,18 @@ import os
 import logging
 import re
 from typing import List
+from datetime import datetime
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import PythonLexer
 
 
 class FileManagement:
-    """Class for managing files related to thoughts and solutions."""
+    """Class for managing files related to tasks and solutions."""
 
     @staticmethod
     def initialise_file(thought_id: int, file: str):
         """Initialize a given file as an empty file, in advance of it being opened
-        ToDo: Thoughts as a folder and Thoughts as a class do not match up. One thought has numerous Thought class
         instance declarations, doesn't make sense.
 
         :param thought_id: The ID of the currently executing thought.
@@ -87,7 +90,10 @@ class FileManagement:
         :param thought_id: sub-folder the ThoughtProcess is running on
         :param overwrite: whether the file should be overwritten
         """
-        file_path = os.path.join("Thoughts", thought_id, file_name)
+        dir_path = os.path.join("Thoughts", str(thought_id))
+        os.makedirs(dir_path, exist_ok=True)
+
+        file_path = os.path.join("Thoughts", str(thought_id), file_name)
         try:
             if overwrite:
                 with open(file_path, "w", encoding="utf-8") as file:
@@ -138,8 +144,76 @@ class FileManagement:
         except Exception as e:
             logging.error(f"could not save file, {str(e)}")
 
+    def save_as_html(self, content: str, file_name: str, prompt_id: str):
+        """
+        Saves the response content in HTML format to a file.
+
+        :param content: The content to be formatted and saved.
+        :param file_name: The base name for the output HTML file.
+        :param prompt_id: An identifier to make the file name unique.
+        """
+        dir_path = os.path.join("Thoughts", str(prompt_id))
+        os.makedirs(dir_path, exist_ok=True)
+
+        html_text = self.format_to_html(content)
+        file_path = dir_path + f"/{file_name}_{prompt_id}.html"
+
+        try:
+            with open(file_path, "w", encoding="utf-8") as file:
+                file.write(html_text)
+        except Exception as e:
+            logging.error(f"ERROR: could not save file, {str(e)}")
+
+    def format_to_html(self, text: str) -> str:
+        """
+        Formats the provided text as HTML.
+        :param text: Initial text with format characters e.g. \n
+        :return: HTML formatted string of the input text.
+        """
+        html_formatter = HtmlFormatter(full=True, style=self.style)
+        highlighted_code = highlight(text, PythonLexer(), html_formatter)
+        return highlighted_code
+
+    def aggregate_files(self, file_base_name, start, end, thought_id=1):
+        i = start - 1
+        end -= 1
+        content = ""
+
+        if end >= i > -1:
+            while i <= end:
+                i += 1
+                try:
+                    with open(file_base_name + "_" + str(i) + ".txt", 'r', encoding='utf-8') as f:
+                        # Read content from each output file and write it to the consolidated file
+                        content += f.read()
+                    logging.info(f"CONTENT [{i}]: {content}")
+                except FileNotFoundError:
+                    logging.error(f"File {file_base_name + '_' + str(i) + '.txt'} not found.")
+                except UnicodeDecodeError as e:
+                    logging.error(f"Error decoding file {file_base_name + '_' + str(i) + '.txt'}: {e}")
+                except Exception as e:
+                    logging.error(f"ERROR: could not save file, {str(e)}")
+
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        self.save_as_html(content, "solution", timestamp)
+        FileManagement.save_file(content, "solution", str(thought_id), overwrite=True)
+
+    @staticmethod
+    def get_next_thought_id(thoughts_folder) -> int:
+        """
+        Get the next available thought ID based on existing directories.
+
+        :return: Next available thought ID as an integer.
+        """
+        os.makedirs(thoughts_folder, exist_ok=True)
+        return len([name for name in os.listdir(thoughts_folder) if
+                    os.path.isdir(os.path.join(thoughts_folder, name))]) + 1
+
 
 if __name__ == '__main__':
-    FileManagement.re_write_section("""Generate a response based on system and user prompts.
-        
-        ToDo: At some point actions other than writing will be needed, e.g. 'web search'.""", "womp", "thought.py", "1")
+    # FileManagement.re_write_section("""Generate a response based on system and user prompts.
+    #                                 """, "womp", "thought.py", "1")
+
+    FileManagement.save_file("Test", "test_test", 1)
+
+

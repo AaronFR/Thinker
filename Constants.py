@@ -119,6 +119,9 @@ task can be said to be solved.
 Your output will be made to adhere to a defined json output. Focus on creating a sensible arrangement of tasks,
 for instance: it does not make sense to try and re-write a file that doesn't exist. Instead it should be created with
 'APPEND'.
+
+Please don't overwrite or write to fill in content with theory, ensure that the document remains valid for its intended 
+use and that your output is to the point and practical. Notes if needs be can be made if new supplimentary files
 """
 
 """
