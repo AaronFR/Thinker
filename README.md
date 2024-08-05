@@ -30,6 +30,7 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 ## Features to implement
 To enhance the system's capabilities and efficiency, several features are planned for implementation:
+- **Execution logs**: Currently logs only write failures, they should write a statement for each individual iteration of the system
 - **Enhanced Executive Reasoning**: Develop improvements to the executive plan generator for more accurate and complex decision-making.
 - **Multiple Output Handling**: Allow `AI_Wrapper.py/get_openai_response` to support multiple outputs 'n=' to enhance response versatility.
 - **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.

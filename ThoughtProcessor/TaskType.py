@@ -14,7 +14,6 @@ class TaskType(enum.Enum):
     REWRITE_FILE = "REWRITE_FILE"
 
     def execute(self, executor_task: AiWrapper, task_directives: Dict[str, object]):
-        ErrorHandler.setup_logging()
         if self == TaskType.APPEND:
             self.append_to_file_task(executor_task, task_directives)
         elif self == TaskType.REWRITE:

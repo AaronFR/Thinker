@@ -7,9 +7,14 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
+from ThoughtProcessor.ErrorHandler import ErrorHandler
+
 
 class FileManagement:
     """Class for managing files related to tasks and solutions."""
+
+    def __init__(self):
+        ErrorHandler.setup_logging()
 
     @staticmethod
     def initialise_file(thought_id: int, file: str):

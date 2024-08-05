@@ -70,11 +70,11 @@ class Prompter:
             logging.info(f"output tokens: {chat_completion.usage.completion_tokens}, price: ${output_token_price}")
             response = chat_completion.choices[0].message.content
             return response or "[ERROR: NO RESPONSE FROM OpenAI API]"
-        except OpenAIError:
-            logging.error(f"OpenAI API error:")
+        except OpenAIError as e:
+            logging.error(f"OpenAI API error: {e}")
             raise
-        except Exception:
-            logging.error(f"Unexpected error")
+        except Exception as e:
+            logging.error(f"Unexpected error: {e}")
             raise
 
     def process_prompt(self, prompt: str, task_number: int):

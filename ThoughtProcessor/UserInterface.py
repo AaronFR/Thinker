@@ -41,6 +41,8 @@ class UserInterface:
         self.task_runner = TaskRunner(self.current_thought_id, self.prompter, self.open_ai_client)
         self.max_tries = 3
 
+        ErrorHandler.setup_logging()
+
     def evaluate_prompt(self, user_prompt: str):
         """
         Evaluate and execute a task based on its description.
@@ -86,7 +88,6 @@ class UserInterface:
 
 
 if __name__ == '__main__':
-    ErrorHandler.setup_logging()
     thought_process = UserInterface()
 
     thought_process.evaluate_prompt(
