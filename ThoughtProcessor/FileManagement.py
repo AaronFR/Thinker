@@ -24,8 +24,8 @@ class FileManagement:
         :param thought_id: The ID of the currently executing thought.
         :param file: The name of the file to initialize.
         """
-        os.makedirs(f"Thoughts/{thought_id}", exist_ok=True)
-        file_path = os.path.join("Thoughts", str(thought_id), file)
+        os.makedirs(f"thoughts/{thought_id}", exist_ok=True)
+        file_path = os.path.join("thoughts", str(thought_id), file)
         try:
             with open(file_path, "w", encoding="utf-8"):
                 logging.info(f"File {file_path} instantiated.")
@@ -60,7 +60,7 @@ class FileManagement:
         :param file_path: The path of the file to read.
         :return: The content of the file or an error message to let the next llm known what happened.
         """
-        full_path = os.path.join("Thoughts", "1", file_path)
+        full_path = os.path.join("thoughts", "1", file_path)
         logging.info(f"Loading file content from: {full_path}")
         try:
             with open(full_path, 'r', encoding='utf-8') as file:
@@ -95,10 +95,10 @@ class FileManagement:
         :param thought_id: sub-folder the ThoughtProcess is running on
         :param overwrite: whether the file should be overwritten
         """
-        dir_path = os.path.join("Thoughts", str(thought_id))
+        dir_path = os.path.join("thoughts", str(thought_id))
         os.makedirs(dir_path, exist_ok=True)
 
-        file_path = os.path.join("Thoughts", str(thought_id), file_name)
+        file_path = os.path.join("thoughts", str(thought_id), file_name)
         try:
             if overwrite:
                 with open(file_path, "w", encoding="utf-8") as file:
@@ -142,7 +142,7 @@ class FileManagement:
             raise ValueError(f"No matches found for the target string: {target_string}")
 
         try:
-            file_path = os.path.join("Thoughts", thought_id, file_name)
+            file_path = os.path.join("thoughts", thought_id, file_name)
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write(modified_text)
                 logging.info(f"File overwritten: {file_path}")
@@ -157,7 +157,7 @@ class FileManagement:
         :param file_name: The base name for the output HTML file.
         :param prompt_id: An identifier to make the file name unique.
         """
-        dir_path = os.path.join("Thoughts", str(prompt_id))
+        dir_path = os.path.join("thoughts", str(prompt_id))
         os.makedirs(dir_path, exist_ok=True)
 
         html_text = self.format_to_html(content)

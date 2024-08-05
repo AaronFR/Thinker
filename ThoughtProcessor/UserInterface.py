@@ -32,7 +32,7 @@ class UserInterface:
         """
         Initialize the ThoughtProcess instance.
         """
-        self.thoughts_folder = os.path.join(os.path.dirname(__file__), "Thoughts")
+        self.thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
         self.files_for_evaluation = []
         self.current_thought_id = 1  # self.get_next_thought_id()
 
