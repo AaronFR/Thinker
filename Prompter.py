@@ -58,9 +58,17 @@ class Prompter:
         """
         try:
             logging.debug(f"Calling OpenAI API with messages: {messages}")
-            response = self.open_ai_client.chat.completions.create(
+            chat_completion = self.open_ai_client.chat.completions.create(
                 model=Constants.MODEL_NAME, messages=messages
-            ).choices[0].message.content
+            )
+            input_token_price = chat_completion.usage.prompt_tokens * 0.00000015
+            output_token_price = chat_completion.usage.completion_tokens * 0.00000060
+
+            Constants.request_price += (input_token_price + output_token_price)
+
+            logging.info(f"input tokens: {chat_completion.usage.prompt_tokens}, price: ${input_token_price}")
+            logging.info(f"output tokens: {chat_completion.usage.completion_tokens}, price: ${output_token_price}")
+            response = chat_completion.choices[0].message.content
             return response or "[ERROR: NO RESPONSE FROM OpenAI API]"
         except OpenAIError:
             logging.error(f"OpenAI API error:")

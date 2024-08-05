@@ -4,6 +4,7 @@ from collections import deque
 
 from openai import OpenAI
 
+import Constants
 from Prompter import Prompter
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
@@ -79,6 +80,9 @@ class UserInterface:
                     break  # Exit loop on processing executive thought failure
 
                 attempt_count += 1
+
+            logging.info(f"Request [{current_task}] finished, total cost: {Constants.request_price}")
+            Constants.request_price = 0.0
 
 
 if __name__ == '__main__':
