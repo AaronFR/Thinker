@@ -16,6 +16,8 @@ class FileManagement:
     def __init__(self):
         ErrorHandler.setup_logging()
 
+        self.thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
+
     @staticmethod
     def initialise_file(thought_id: int, file: str):
         """Initialize a given file as an empty file, in advance of it being opened
@@ -33,21 +35,22 @@ class FileManagement:
             logging.error(f"ERROR: could not instantiate file: {file_path}\n {str(e)} \nThought_id: {thought_id}")
 
     @staticmethod
-    def list_files(directory: str) -> list:
+    def list_files(thoughts_id: str="1") -> list:
         """
         List all file names in the given directory.
 
-        :param directory: The path to the directory.
+        :param file_name: The path to the directory.
         :return: A list of file names in the directory.
         """
+        thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts", thoughts_id)
         try:
-            entries = os.listdir(directory)
-            file_names = [entry for entry in entries if os.path.isfile(os.path.join(directory, entry))]
+            entries = os.listdir(thoughts_folder)
+            file_names = [entry for entry in entries if os.path.isfile(os.path.join(thoughts_folder, entry))]
             logging.info(f"Found the following files in Thought space: {file_names}")
 
             return file_names
         except FileNotFoundError:
-            logging.error(f"The directory {directory} does not exist.")
+            logging.error(f"The directory {thoughts_folder} does not exist.")
             return []
         except Exception as e:
             logging.error(f"An error occurred: {e}")

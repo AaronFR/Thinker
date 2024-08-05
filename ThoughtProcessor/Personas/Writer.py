@@ -4,35 +4,48 @@ from pprint import pformat
 from typing import Dict, List
 
 import Constants
-from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.AiWrapper import AiWrapper
-from ThoughtProcessor.Personas.Analyst import Analyst
-from ThoughtProcessor.Personas.Writer import Writer
-from ThoughtProcessor.TaskType import TaskType
+from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
+from ThoughtProcessor.Personas.PersonaInterface import PersonaInterface
+from ThoughtProcessor.TaskType import TaskType
 
-class TaskRunner:
-    def __init__(self, current_thought_id: int):
-        self.current_thought_id = current_thought_id
+
+class Writer(PersonaInterface):
+
+    def __init__(self, name):
+        super().__init__(name)
         self.thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
-
-        self.personas = {
-            'analyst': Analyst('analyst'),
-            # 'researcher': Researcher('researcher'),
-            'writer': Writer('writer')
-            # 'editor': Editor('editor')
-        }
+        self.files_for_evaluation = []
+        self.current_thought_id = 1  # self.get_next_thought_id()
 
         ErrorHandler.setup_logging()
 
-    def run_iteration(self, current_task: str, persona='writer'):
+    def work(self, current_task: str):
+        """Planner-specific task execution logic
         """
-        Orchestrate the execution of tasks based on the current user prompt.
-        ToDo: implement system for dealing with failed tasks
+        execution_logs = ""
+        self.files_for_evaluation = FileManagement.list_files(str(self.current_thought_id))
 
-        :param persona: the assigned 'role' to operate in at the given stage of the application
-        """
-        self.personas.get(persona).work(current_task)
+        executive_output_dict = self.generate_executive_plan(current_task)
+        execution_logs += "EXEC PLAN: " + str(pformat(executive_output_dict)) + "\n"
+        # ToDo create function that checks dicts against function definitions, if a deviation is detected the executive is re-run
+
+        logging.info(f"Generated tasks: {pformat(executive_output_dict.get('tasks'))}")
+
+        tasks = executive_output_dict.get('tasks', [])
+        for task in tasks:
+            try:
+                self.run_task(task)
+            except Exception as e:
+                failed_task = task.get('what_to_do')
+                logging.error(f"Task failed: {failed_task}: {e}")
+                execution_logs += f"Task failed: {failed_task}\n"
+                FileManagement.save_file(
+                    execution_logs,
+                    os.path.join(self.thoughts_folder, str(self.current_thought_id), "execution_logs.txt"),
+                    str(self.current_thought_id)
+                )
 
     def run_task(self, task_directives: Dict[str, object]):
         logging.info(f"Executing task: \n{pformat(task_directives)}")
@@ -69,14 +82,4 @@ class TaskRunner:
         :return: An instance of the ai wrapper class.
         """
         # Central management of thought instances
-        return AiWrapper(input_data, self.prompter, self.open_ai_client)
-
-    def finalise_solution(self, iteration: int, logs: str) -> None:
-        """
-        Finalize and save the logs, after successful evaluation of the solution.
-
-        :param iteration: The iteration number where a solution was found.
-        :param logs: The logs generated during the evaluation process.
-        """
-        logging.info(f"Solved by iteration: {iteration}")
-        FileManagement.save_file(logs, os.path.join(self.thoughts_folder, str(self.current_thought_id), "logs.txt"), "")
+        return AiWrapper(input_data)

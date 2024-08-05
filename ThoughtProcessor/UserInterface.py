@@ -72,7 +72,7 @@ class UserInterface:
                     break
 
                 try:
-                    solved = self.task_runner.run_iteration(current_task, attempt_count)
+                    solved = self.task_runner.run_iteration(current_task)
                     if solved:
                         return
                 except Exception as e:
