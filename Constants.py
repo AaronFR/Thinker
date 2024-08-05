@@ -187,7 +187,10 @@ EXECUTIVE_FUNCTIONS_SCHEME = [{
                         },
                         "what_to_do": {
                             "type": "string",
-                            "description": "Description of what you want the executor task to do, the actions required to complete the executor task. Be detailed and give the executor llm as much to work with as possible."
+                            "description": """Your instructions to the 2nd part of the iterative process: The executor.
+                            Critical!
+                            Be concise, detailed and nuanced. Make references to the how the previous work went in order 
+                            to tell the executor what to improve on in this loop"""
                         },
                         "where_to_do_it": {
                             "type": "string",
