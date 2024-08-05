@@ -33,6 +33,7 @@ class TaskRunner:
 
         executive_output_dict = self.generate_executive_plan(current_task)
         execution_logs += "EXEC PLAN: " + str(pformat(executive_output_dict)) + "\n"
+        #ToDo create function that checks dicts against function definitions, if a deviation is detected the executive is re-run
 
         if executive_output_dict.get('solved'):
             logging.info(f"Task `{current_task}` solved successfully in attempt {attempt_count}.")
