@@ -3,21 +3,16 @@ import concurrent.futures
 import json
 import logging
 from asyncio import as_completed
-from concurrent.futures import ThreadPoolExecutor
+from ThoughtProcessor import FileManagement
 from typing import List, Dict
 
-from FileProcessing import FileProcessing
 from Prompter import Prompter
-
-with open('config.json', 'r') as file:
-    config = json.load(file)
-logging_level = getattr(logging, config['app']['logging']['level'])
 
 
 class PromptManagement:
 
     def __init__(self):
-        self.html_formatter = FileProcessing()
+        self.html_formatter = FileManagement
         self.prompter = Prompter()
 
     def send_prompt_list(self, prompts: List[str]):
