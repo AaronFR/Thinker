@@ -4,7 +4,7 @@ from collections import deque
 
 from openai import OpenAI
 
-import Constants
+import Globals
 from Prompter import Prompter
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
@@ -36,9 +36,7 @@ class UserInterface:
         self.files_for_evaluation = []
         self.current_thought_id = 1  # self.get_next_thought_id()
 
-        self.prompter = Prompter()
-        self.open_ai_client = OpenAI()
-        self.task_runner = TaskRunner(self.current_thought_id, self.prompter, self.open_ai_client)
+        self.task_runner = TaskRunner(self.current_thought_id)
         self.max_tries = 15
 
         ErrorHandler.setup_logging()
@@ -83,13 +81,13 @@ class UserInterface:
 
                 attempt_count += 1
 
-            logging.info(f"FINISHED REQUEST: [{current_task}]\nin {attempt_count} iterations\ntotal cost: {Constants.request_price}")
-            Constants.request_price = 0.0
+            logging.info(f"FINISHED REQUEST: [{current_task}]\nin {attempt_count} iterations\ntotal cost: {Globals.request_price}")
+            Globals.request_price = 0.0
 
     @staticmethod
     def within_budget(budget=0.01):
-        logging.info(f"Current cost: {Constants.request_price}")
-        return Constants.request_price <= budget
+        logging.info(f"Current cost: {Globals.request_price}")
+        return Globals.request_price <= budget
 
 
 if __name__ == '__main__':

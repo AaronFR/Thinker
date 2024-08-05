@@ -2,8 +2,6 @@
 MODEL_NAME = "gpt-4o-mini"
 EXPENSIVE_MODEL_NAME = "gpt-4o"
 
-request_price = 0.0
-
 parallel_planing_tasks = {
                 1: "Can you augment the following prompt? You should add in extra detail and considerations as needed: <Prompt>{initial_prompt}</Prompt>",
                 2: "Can you come up with all the points and considerations that would be connected to the following prompt? Note as well what it might be inter-connected to: <Prompt>{initial_prompt}</Prompt>",

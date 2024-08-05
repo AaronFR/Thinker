@@ -10,11 +10,9 @@ from ThoughtProcessor.TaskType import TaskType
 from ThoughtProcessor.FileManagement import FileManagement
 
 class TaskRunner:
-    def __init__(self, current_thought_id: int, prompter, open_ai_client):
+    def __init__(self, current_thought_id: int):
         self.current_thought_id = current_thought_id
-        self.thoughts_folder = os.path.join(os.path.dirname(__file__), "Thoughts")
-        self.prompter = prompter
-        self.open_ai_client = open_ai_client
+        self.thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
 
         ErrorHandler.setup_logging()
 

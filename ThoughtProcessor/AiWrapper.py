@@ -1,7 +1,7 @@
 import logging
 from typing import List, Dict
-from openai import OpenAI
 import Constants
+import Globals
 from Prompter import Prompter
 from Utility import Utility
 
@@ -13,15 +13,13 @@ class AiWrapper:
     """This class manages a single interaction with a llm. Each instance of 'Thought' is focused on
         understanding user input and generating an appropriate output based on that input."""
 
-    def __init__(self, input_files: List[str], prompter: Prompter, open_ai_client: OpenAI):
+    def __init__(self, input_files: List[str]):
         """Initializes a llm wrapper instance that handles the interaction with the OpenAI API.
 
         :param input_files: A list of file names that users provide for analysis or reference in generating responses.
         :param prompter: An instance of the Prompter class, responsible for creating the prompts sent to the OpenAI API.
         :param open_ai_client: The OpenAI API client instance.
         """
-        self.prompter = prompter
-        self.open_ai_client = open_ai_client
         self.input_files = input_files
 
     def execute(self, system_prompts: List[str] | str, user_prompt: str) -> str:
@@ -39,7 +37,7 @@ class AiWrapper:
         """
         messages = Prompter.generate_messages(self.input_files, system_prompts, user_prompt)
 
-        response = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_response(messages))
+        response = Utility.execute_with_retries(lambda: Globals.prompter.get_open_ai_response(messages))
         if not response:
             logging.error("No response from OpenAI API.")
             raise Exception("Failed to get response from OpenAI API.")
@@ -58,7 +56,7 @@ class AiWrapper:
         """
         messages = Prompter.generate_messages(self.input_files, system_prompts, user_prompt)
 
-        response = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_function_response(messages))
+        response = Utility.execute_with_retries(lambda: Globals.prompter.get_open_ai_function_response(messages))
         if not response:
             logging.error("No response from OpenAI API.")
             raise Exception("Failed to get response from OpenAI API.")
@@ -68,9 +66,7 @@ class AiWrapper:
 
 
 if __name__ == '__main__':
-    prompter = Prompter()
-    openai = OpenAI()
-    ai_wrapper = AiWrapper(["solution.txt"], prompter, openai)
+    ai_wrapper = AiWrapper(["solution.txt"])
 
     print(ai_wrapper.execute(
         Constants.EXECUTIVE_SYSTEM_INSTRUCTIONS,

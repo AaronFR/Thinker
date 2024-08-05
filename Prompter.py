@@ -8,6 +8,7 @@ from openai import OpenAI, OpenAIError
 from openai.types.chat import ChatCompletion
 
 import Constants
+import Globals
 from ThoughtProcessor.FileManagement import FileManagement
 from Utility import Utility
 
@@ -20,10 +21,9 @@ class Role(enum.Enum):
 
 
 class Prompter:
-    def __init__(self):
-        self.open_ai_client = OpenAI()
 
-    def get_open_ai_function_response(self, messages: List[dict]) -> Dict[str, object]:
+    @staticmethod
+    def get_open_ai_function_response(messages: List[dict]) -> Dict[str, object]:
         """Requests a structured response from the OpenAI API for function calling.
 
         :param messages: The system and user messages to send to the ChatGpt client
@@ -31,7 +31,7 @@ class Prompter:
         """
         try:
             logging.debug(f"Calling OpenAI API with messages: {messages}")
-            output = self.open_ai_client.chat.completions.create(
+            output = Globals.open_ai_client.chat.completions.create(
                 model=Constants.MODEL_NAME,
                 messages=messages,
                 functions=Constants.EXECUTIVE_FUNCTIONS_SCHEME,
@@ -50,7 +50,8 @@ class Prompter:
             logging.error(f"Unexpected error")
             raise
 
-    def get_open_ai_response(self, messages: List[dict]) -> str | None:
+    @staticmethod
+    def get_open_ai_response(messages: List[dict]) -> str | None:
         """Request a response from the OpenAI API.
 
         :param messages: The system and user messages to send to the ChatGpt client
@@ -58,13 +59,13 @@ class Prompter:
         """
         try:
             logging.debug(f"Calling OpenAI API with messages: {messages}")
-            chat_completion = self.open_ai_client.chat.completions.create(
+            chat_completion = Globals.open_ai_client.chat.completions.create(
                 model=Constants.MODEL_NAME, messages=messages
             )
             input_token_price = chat_completion.usage.prompt_tokens * 0.00000015
             output_token_price = chat_completion.usage.completion_tokens * 0.00000060
 
-            Constants.request_price += (input_token_price + output_token_price)
+            Globals.request_price += (input_token_price + output_token_price)
 
             logging.info(f"input tokens: {chat_completion.usage.prompt_tokens}, price: ${input_token_price}")
             logging.info(f"output tokens: {chat_completion.usage.completion_tokens}, price: ${output_token_price}")
@@ -95,13 +96,13 @@ class Prompter:
         except Exception as e:
             logging.error(f"Error during OpenAI API call: {e}")
 
-    def generate_response(self,
-                          prompt: str,
+    @staticmethod
+    def generate_response(prompt: str,
                           system_prompt=Constants.EVALUATE_TASKS_INSTRUCTIONS,
                           model=Constants.MODEL_NAME) -> ChatCompletion:
         """Generate ChatCompletion response from OpenAI API for a given prompt."""
         logging.debug(f"Generating response for prompt: {prompt[:20]}...")
-        return self.open_ai_client.chat.completions.create(
+        return Globals.open_ai_client.chat.completions.create(
             model=model,
             messages=[
                 {"role": "system", "content": system_prompt},
