@@ -39,7 +39,7 @@ class UserInterface:
         self.prompter = Prompter()
         self.open_ai_client = OpenAI()
         self.task_runner = TaskRunner(self.current_thought_id, self.prompter, self.open_ai_client)
-        self.max_tries = 3
+        self.max_tries = 15
 
         ErrorHandler.setup_logging()
 
@@ -62,7 +62,7 @@ class UserInterface:
             attempt_count = 0  # Reset attempt counter for the current task
 
             # Iterate through execution attempts for a given task
-            while attempt_count < self.max_tries:
+            while self.within_budget():
                 if attempt_count == self.max_tries:
                     logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS")
                     execution_logs = f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS\n"  # Capture final attempt logs
@@ -83,8 +83,13 @@ class UserInterface:
 
                 attempt_count += 1
 
-            logging.info(f"Request [{current_task}] finished, total cost: {Constants.request_price}")
+            logging.info(f"FINISHED REQUEST: [{current_task}]\nin {attempt_count} iterations\ntotal cost: {Constants.request_price}")
             Constants.request_price = 0.0
+
+    @staticmethod
+    def within_budget(budget=0.01):
+        logging.info(f"Current cost: {Constants.request_price}")
+        return Constants.request_price <= budget
 
 
 if __name__ == '__main__':
