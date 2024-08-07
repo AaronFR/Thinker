@@ -112,10 +112,10 @@ class Prompter:
         )
 
     @staticmethod
-    def generate_messages(input_files, system_prompts: List[str] | str, user_prompts: List[str]):
+    def generate_messages(input_files, system_prompts: List[str] | str, user_prompts: List[str]) -> List[Dict[str, str]]:
         logging.debug(f"Thinking...{pformat(user_prompts, width=180)}")
-        Utility.ensure_string_list(system_prompts)
-        Utility.ensure_string_list(user_prompts)
+        system_prompts = Utility.ensure_string_list(system_prompts)
+        user_prompts = Utility.ensure_string_list(user_prompts)
 
         messages = Prompter.generate_role_messages(system_prompts, input_files, user_prompts)
 
@@ -125,7 +125,7 @@ class Prompter:
         return messages
 
     @staticmethod
-    def generate_role_messages(system_prompts: List[str], input_files: List[str], user_prompts: List[str]):
+    def generate_role_messages(system_prompts: List[str], input_files: List[str], user_prompts: List[str]) -> List[Dict[str, str]]:
         """
         :param system_prompts: list of instructions to be saved as system info
         :param input_files: input file content for reference: taking the form of previous user input
