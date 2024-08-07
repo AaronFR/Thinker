@@ -3,7 +3,6 @@ import logging
 from typing import Dict
 
 import Constants
-from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.AiWrapper import AiWrapper
 

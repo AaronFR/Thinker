@@ -1,6 +1,6 @@
 import io
 import logging
-import sys
+import os
 
 
 class ErrorHandler:
@@ -9,20 +9,32 @@ class ErrorHandler:
     @staticmethod
     def setup_logging(log_file: str = 'application.log'):
         """Sets up logging configuration."""
-        file_handler = logging.FileHandler(log_file, encoding='utf-8')
+        thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
 
-        # Wrap the standard output with a TextIOWrapper to set the encoding
-        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-        stream_handler = logging.StreamHandler(sys.stdout)
+        log_file_location = os.path.join(thoughts_folder, log_file)
+        logger = logging.getLogger()
 
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format='%(asctime)s [%(levelname)s] (%(filename)s:%(lineno)d) %(message)s',
-            handlers=[
-                logging.FileHandler(log_file),
-                logging.StreamHandler()
-            ]
-        )
+        # Clear any existing handlers
+        if logger.hasHandlers():
+            logger.handlers.clear()
+
+        # Set the logging level
+        logger.setLevel(logging.DEBUG)
+        file_handler = logging.FileHandler(log_file_location)
+        console_handler = logging.StreamHandler()
+
+        # Set level for handlers
+        file_handler.setLevel(logging.DEBUG)
+        console_handler.setLevel(logging.INFO)
+
+        # Create formatter and add it to the handlers
+        formatter = logging.Formatter('%(asctime)s [%(levelname)s] (%(filename)s:%(lineno)d) %(message)s')
+        file_handler.setFormatter(formatter)
+        console_handler.setFormatter(formatter)
+
+        # Add handlers to the logger
+        logger.addHandler(file_handler)
+        logger.addHandler(console_handler)
 
     @staticmethod
     def log_error(message: str, exception: Exception):
@@ -38,7 +50,8 @@ class ErrorHandler:
 
 if __name__ == '__main__':
     ErrorHandler.setup_logging()
+
+
+    logging.debug("Anything?")
     logging.info("Something please")
-
-
 
