@@ -5,15 +5,19 @@ from typing import Dict
 import Constants
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.AiWrapper import AiWrapper
+from ThoughtProcessor.Personas import Persona_Constants
 
 
 class TaskType(enum.Enum):
-    APPEND = "APPEND"
+    WRITE = "WRITE"
+    APPEND = "APPEND" #ToDo: Will be made redundent with 'WRITE'
     REWRITE = "REWRITE"
     REWRITE_FILE = "REWRITE_FILE"
 
     def execute(self, executor_task: AiWrapper, task_directives: Dict[str, object]):
-        if self == TaskType.APPEND:
+        if self == TaskType.WRITE:
+            self.write_to_file_task(executor_task, task_directives)
+        elif self == TaskType.APPEND:
             self.append_to_file_task(executor_task, task_directives)
         elif self == TaskType.REWRITE:
             self.rewrite_part_task(executor_task, task_directives)
@@ -21,6 +25,31 @@ class TaskType(enum.Enum):
             self.rewrite_file_task(executor_task, task_directives)
         else:
             raise ValueError(f"Unknown TaskType: {self}")
+
+    @staticmethod
+    def write_to_file_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1):
+        pages_to_write = task_directives.get("pages_to_write")
+        output = ""
+
+        for i in range(1, pages_to_write):
+            if i == 1:
+                text = executor_task.execute(
+                    Persona_Constants.WRITER_SYSTEM_INSTRUCTIONS,
+                    [f"Write the first page of {pages_to_write}, answering the following: " + str(task_directives.get('what_to_do'))]
+                )
+            else:
+                text = executor_task.execute(
+                    Persona_Constants.WRITER_SYSTEM_INSTRUCTIONS,
+                    [
+                        f"So far you have written: \n\n{output}",
+                        """Continue writing the document. Please bear in 
+                        mind not your are being prompted repeatedly: you don't have to write a response for everything at once"""
+                    ]
+                )
+
+            output += text
+            print(f"THE AI WROTE: {text}")
+        FileManagement.save_file(output, task_directives.get('where_to_do_it'), str(current_thought_id))
 
     @staticmethod
     def append_to_file_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1):

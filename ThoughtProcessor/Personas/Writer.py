@@ -3,10 +3,10 @@ import os
 from pprint import pformat
 from typing import Dict, List
 
-import Constants
 from ThoughtProcessor.AiWrapper import AiWrapper
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
+from ThoughtProcessor.Personas import Persona_Constants
 from ThoughtProcessor.Personas.PersonaInterface import PersonaInterface
 from ThoughtProcessor.TaskType import TaskType
 
@@ -27,9 +27,11 @@ class Writer(PersonaInterface):
         execution_logs = ""
         self.files_for_evaluation = FileManagement.list_files(str(self.current_thought_id))
 
+        # ToDo: re-write schema splitting out writer specific version
         executive_output_dict = self.generate_executive_plan(current_task)
         execution_logs += "EXEC PLAN: " + str(pformat(executive_output_dict)) + "\n"
-        # ToDo create function that checks dicts against function definitions, if a deviation is detected the executive is re-run
+        # ToDo: add task  method that WRITES a full file to a specified length: 2000 tokens * n iterations
+        # ToDo: create function that checks dicts against function definitions, if a deviation is detected the executive is re-run
 
         logging.info(f"Generated tasks: {pformat(executive_output_dict.get('tasks'))}")
 
@@ -47,13 +49,14 @@ class Writer(PersonaInterface):
                     str(self.current_thought_id)
                 )
 
-    def run_task(self, task_directives: Dict[str, object]):
+    @staticmethod
+    def run_task(task_directives: Dict[str, object]):
         logging.info(f"Executing task: \n{pformat(task_directives)}")
         logging.debug("Type input 'bug': = " + str(type(task_directives.get('what_to_do'))))
 
         logging.info(f"Processing Task: [{task_directives.get('type', TaskType.APPEND.value)}]"
                      + str(task_directives.get('what_to_do')))
-        executor_thought = self.generate_ai_wrapper(task_directives.get('what_to_reference', []))
+        executor_thought = Writer.generate_ai_wrapper(task_directives.get('what_to_reference', []))
 
         thought_type = TaskType(task_directives.get('type', TaskType.APPEND.value))
         thought_type.execute(executor_thought, task_directives)
@@ -69,12 +72,16 @@ class Writer(PersonaInterface):
         """
         executive_thought = self.generate_ai_wrapper(self.files_for_evaluation)
         existing_files = f"Existing files: [{', '.join(str(file) for file in self.files_for_evaluation)}]"
-        executive_output = executive_thought.executive_think(
-            [existing_files, Constants.EXECUTIVE_FUNCTION_INSTRUCTIONS], task)
+        executive_output = executive_thought.execute_function(
+            [existing_files, Persona_Constants.EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS],
+            task,
+            Persona_Constants.WRITER_FUNCTION_SCHEMA
+        )
 
         return executive_output
 
-    def generate_ai_wrapper(self, input_data: List[str]) -> AiWrapper:
+    @staticmethod
+    def generate_ai_wrapper(input_data: List[str]) -> AiWrapper:
         """
         Create a new wrapper instance for llm processing.
 
