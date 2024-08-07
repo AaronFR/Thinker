@@ -109,7 +109,6 @@ class Prompter:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": str(prompt)}
             ]
-            # ToDo investigate more roles
         )
 
     @staticmethod
@@ -128,7 +127,6 @@ class Prompter:
     @staticmethod
     def generate_role_messages(system_prompts: List[str], input_files: List[str], user_prompts: List[str]):
         """
-        ToDo: generalise for user_prompt***S***
         :param system_prompts: list of instructions to be saved as system info
         :param input_files: input file content for reference: taking the form of previous user input
         :param user_prompts: primary initial instruction and other supplied material
@@ -169,8 +167,8 @@ class Prompter:
 if __name__ == '__main__':
     # Should probably read from an actual log file.
     prompter = Prompter()
-    # prompts = ["Review [Prompter.py], try and re-write it solving any ToDo's you spot",
-    #            "Review [HtmlProcessing.py], try and re-write it solving any ToDo's you spot"]
+    # prompts = ["Review [Prompter.py], try and re-write it solving any to-do's you spot",
+    #            "Review [HtmlProcessing.py], try and re-write it solving any to-do's you spot"]
 
     prompter.process_prompt(
         "I want you to write a lengthy, detailed and well thought out report about the psychology of anger",  #"""Can you review the file I'll copy in below and give me any recomendations for improving logging? Specifically Logging Enhancements [README.md]""",

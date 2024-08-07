@@ -9,6 +9,7 @@ from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.Personas import PersonaConstants
 from ThoughtProcessor.Personas.PersonaInterface import PersonaInterface
 from ThoughtProcessor.TaskType import TaskType
+from Utility import Utility
 
 
 class Writer(PersonaInterface):
@@ -27,10 +28,8 @@ class Writer(PersonaInterface):
         execution_logs = ""
         self.files_for_evaluation = FileManagement.list_files(str(self.current_thought_id))
 
-        # ToDo: re-write schema splitting out writer specific version
         executive_output_dict = self.generate_executive_plan(current_task)
         execution_logs += "EXEC PLAN: " + str(pformat(executive_output_dict)) + "\n"
-        # ToDo: add task  method that WRITES a full file to a specified length: 2000 tokens * n iterations
         # ToDo: create function that checks dicts against function definitions, if a deviation is detected the executive is re-run
 
         logging.info(f"Generated tasks: {pformat(executive_output_dict.get('tasks'))}")

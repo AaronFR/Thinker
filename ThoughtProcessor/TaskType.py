@@ -5,12 +5,12 @@ from typing import Dict
 import Constants
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.AiWrapper import AiWrapper
-from ThoughtProcessor.Personas import Persona_Constants
+from ThoughtProcessor.Personas import PersonaConstants
 
 
 class TaskType(enum.Enum):
     WRITE = "WRITE"
-    APPEND = "APPEND" #ToDo: Will be made redundent with 'WRITE'
+    APPEND = "APPEND"
     REWRITE = "REWRITE"
     REWRITE_FILE = "REWRITE_FILE"
 
@@ -34,12 +34,12 @@ class TaskType(enum.Enum):
         for i in range(1, pages_to_write):
             if i == 1:
                 text = executor_task.execute(
-                    Persona_Constants.WRITER_SYSTEM_INSTRUCTIONS,
+                    PersonaConstants.WRITER_SYSTEM_INSTRUCTIONS,
                     [f"Write the first page of {pages_to_write}, answering the following: " + str(task_directives.get('what_to_do'))]
                 )
             else:
                 text = executor_task.execute(
-                    Persona_Constants.WRITER_SYSTEM_INSTRUCTIONS,
+                    PersonaConstants.WRITER_SYSTEM_INSTRUCTIONS,
                     [
                         f"So far you have written: \n\n{output}",
                         """Continue writing the document. Please bear in 
@@ -84,7 +84,7 @@ class TaskType(enum.Enum):
         # Correctly split file_contents into chunks based on approx_max_chars
         text_chunks = [file_contents[i:i + approx_max_chars] for i in range(0, len(file_contents), approx_max_chars)]
         print(f"HELLO WORLD: {len(text_chunks)}, text_length = {len(file_contents)}")
-        for text_chunk in text_chunks:  # ToDo: could be parralised
+        for text_chunk in text_chunks:  # ToDo: could be parallelised
             logging.info(f"Rewriting: {text_chunk}")
             re_written_file += executor_task.execute(
                 Constants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,

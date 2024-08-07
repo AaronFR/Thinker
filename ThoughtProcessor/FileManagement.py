@@ -142,7 +142,8 @@ class FileManagement:
         modified_text = pattern.sub(replacement, file_content)
 
         if file_content == modified_text:
-            # ToDo add backup method to try and recover
+            # You could try and recover but really the lesson is: don't use regex just *extract* lines from the document
+            # and have the AI operate on those lines directly.
             logging.error(f"No matches found for the target string: {target_string}")
             raise ValueError(f"No matches found for the target string: {target_string}")
 
