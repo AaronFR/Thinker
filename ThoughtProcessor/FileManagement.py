@@ -9,14 +9,14 @@ from pygments.lexers import PythonLexer
 
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 
+thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
+
 
 class FileManagement:
     """Class for managing files related to tasks and solutions."""
 
     def __init__(self):
         ErrorHandler.setup_logging()
-
-        self.thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
 
     @staticmethod
     def initialise_file(thought_id: int, file: str):
@@ -35,35 +35,35 @@ class FileManagement:
             logging.error(f"ERROR: could not instantiate file: {file_path}\n {str(e)} \nThought_id: {thought_id}")
 
     @staticmethod
-    def list_files(thoughts_id: str="1") -> list:
+    def list_files(thoughts_id: str = "1") -> list:
         """
         List all file names in the given directory.
 
-        :param file_name: The path to the directory.
         :return: A list of file names in the directory.
         """
-        thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts", thoughts_id)
+        thought_folder = os.path.join(os.path.dirname(__file__), "thoughts", thoughts_id)
         try:
-            entries = os.listdir(thoughts_folder)
-            file_names = [entry for entry in entries if os.path.isfile(os.path.join(thoughts_folder, entry))]
+            entries = os.listdir(thought_folder)
+            file_names = [entry for entry in entries if os.path.isfile(os.path.join(thought_folder, entry))]
             logging.info(f"Found the following files in Thought space: {file_names}")
 
             return file_names
         except FileNotFoundError:
-            logging.error(f"The directory {thoughts_folder} does not exist.")
+            logging.error(f"The directory {thought_folder} does not exist.")
             return []
         except Exception as e:
             logging.error(f"An error occurred: {e}")
             return []
 
     @staticmethod
-    def read_file(file_path: str) -> str:
+    def read_file(file_path: str, thought_id=1) -> str:
         """Read the content of a file.
 
         :param file_path: The path of the file to read.
+        :param thought_id:
         :return: The content of the file or an error message to let the next llm known what happened.
         """
-        full_path = os.path.join("thoughts", "1", file_path)
+        full_path = os.path.join(thoughts_folder, str(thought_id), file_path)
         logging.info(f"Loading file content from: {full_path}")
         try:
             with open(full_path, 'r', encoding='utf-8') as file:
@@ -98,19 +98,22 @@ class FileManagement:
         :param thought_id: sub-folder the ThoughtProcess is running on
         :param overwrite: whether the file should be overwritten
         """
-        dir_path = os.path.join("thoughts", str(thought_id))
+        dir_path = os.path.join(thoughts_folder, str(thought_id))
         os.makedirs(dir_path, exist_ok=True)
 
-        file_path = os.path.join("thoughts", str(thought_id), file_name)
+        file_path = os.path.join(dir_path, file_name)
         try:
-            if overwrite:
-                with open(file_path, "w", encoding="utf-8") as file:
-                    file.write(content)
-                    logging.info(f"File overwritten: {file_path}")
+            if overwrite or not os.path.exists(file_path):
+                mode = "w"
             else:
-                with open(file_path, "a", encoding="utf-8") as file:
-                    file.write(content)
-                    logging.info(f"File Saved: {file_path}")
+                mode = "a"
+
+            with open(file_path, mode, encoding="utf-8") as file:
+                file.write(content)
+                if overwrite:
+                    logging.info(f"File overwritten: {file_path}")
+                else:
+                    logging.info(f"File saved: {file_path}")
         except Exception as e:
             logging.error(f"could not save file, {str(e)}")
 
@@ -138,14 +141,13 @@ class FileManagement:
 
         modified_text = pattern.sub(replacement, file_content)
 
-
         if file_content == modified_text:
             # ToDo add backup method to try and recover
             logging.error(f"No matches found for the target string: {target_string}")
             raise ValueError(f"No matches found for the target string: {target_string}")
 
         try:
-            file_path = os.path.join("thoughts", thought_id, file_name)
+            file_path = os.path.join(thoughts_folder, thought_id, file_name)
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write(modified_text)
                 logging.info(f"File overwritten: {file_path}")
@@ -160,7 +162,7 @@ class FileManagement:
         :param file_name: The base name for the output HTML file.
         :param prompt_id: An identifier to make the file name unique.
         """
-        dir_path = os.path.join("thoughts", str(prompt_id))
+        dir_path = os.path.join(thoughts_folder, str(prompt_id))
         os.makedirs(dir_path, exist_ok=True)
 
         html_text = self.format_to_html(content)
@@ -172,13 +174,14 @@ class FileManagement:
         except Exception as e:
             logging.error(f"ERROR: could not save file, {str(e)}")
 
-    def format_to_html(self, text: str) -> str:
+    @staticmethod
+    def format_to_html(text: str) -> str:
         """
         Formats the provided text as HTML.
         :param text: Initial text with format characters e.g. \n
         :return: HTML formatted string of the input text.
         """
-        html_formatter = HtmlFormatter(full=True, style=self.style)
+        html_formatter = HtmlFormatter(full=True)
         highlighted_code = highlight(text, PythonLexer(), html_formatter)
         return highlighted_code
 
@@ -207,7 +210,7 @@ class FileManagement:
         FileManagement.save_file(content, "solution", str(thought_id), overwrite=True)
 
     @staticmethod
-    def get_next_thought_id(thoughts_folder) -> int:
+    def get_next_thought_id() -> int:
         """
         Get the next available thought ID based on existing directories.
 
@@ -222,6 +225,4 @@ if __name__ == '__main__':
     # FileManagement.re_write_section("""Generate a response based on system and user prompts.
     #                                 """, "womp", "thought.py", "1")
 
-    FileManagement.save_file("Test", "test_test", 1)
-
-
+    FileManagement.save_file("Test", "test_test", "1")
