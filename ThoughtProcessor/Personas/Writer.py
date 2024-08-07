@@ -90,3 +90,9 @@ class Writer(PersonaInterface):
         """
         # Central management of thought instances
         return AiWrapper(input_data)
+
+
+if __name__ == '__main__':
+    writer = Writer("test")
+    writer.work("""Write a detailed report about the future of tidal technology, what innovations and possible disruptions could occur
+    """)
