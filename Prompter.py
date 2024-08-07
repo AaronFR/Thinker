@@ -115,20 +115,8 @@ class Prompter:
     @staticmethod
     def generate_messages(input_files, system_prompts: List[str] | str, user_prompts: List[str]):
         logging.debug(f"Thinking...{pformat(user_prompts, width=180)}")
-        if isinstance(system_prompts, str):
-            logging.warning(
-                "Had to reformat a string system message into a list, this can lead to failurse to generate errors if not correctly handled")
-            system_prompts = [system_prompts]
-        if not isinstance(system_prompts, list) or not all(isinstance(sp, str) for sp in system_prompts):
-            raise ValueError("""system_prompts must be provided in the format of a list, where each element is a string. 
-                    Please ensure compliance with this expected structure for proper functionality.""")
-        if isinstance(user_prompts, str):
-            logging.warning(
-                "Had to reformat a string user message into a list, this can lead to failurse to generate errors if not correctly handled")
-            user_prompts = [user_prompts]
-        if not isinstance(user_prompts, list) or not all(isinstance(up, str) for up in user_prompts):
-            raise ValueError("""user_prompts must be provided in the format of a list, where each element is a string. 
-                    Please ensure compliance with this expected structure for proper functionality.""")
+        Utility.ensure_string_list(system_prompts)
+        Utility.ensure_string_list(user_prompts)
 
         messages = Prompter.generate_role_messages(system_prompts, input_files, user_prompts)
 

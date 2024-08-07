@@ -82,6 +82,21 @@ class Utility:
         logging.error("Max retries exceeded. Failed to get response from callable.")
         return None
 
+    @staticmethod
+    def ensure_string_list(list_or_string: list[object] | str):
+        if isinstance(list_or_string, str):
+            logging.warning("""Had to reformat a string into a list, this can lead strings being decomposed into 
+                            individual characters if not correctly handled""")
+            output = [list_or_string]
+        else:
+            output = list_or_string
+
+        if not isinstance(output, list) or not all(isinstance(sp, str) for sp in output):
+            raise ValueError("""List is invalid, one or more elements is not a list. 
+                    Please ensure compliance with this expected structure for proper functionality.""")
+
+        return output
+
 
 if __name__ == '__main__':
     example = "replace_file_clues"

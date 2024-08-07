@@ -62,19 +62,25 @@ class Writer(PersonaInterface):
         thought_type.execute(executor_thought, task_directives)
         logging.info(f"Task processed and saved to {task_directives.get('where_to_do_it')}.")
 
-    def generate_executive_plan(self, task: str) -> Dict[str, object]:
+    def generate_executive_plan(self, task: str, additional_user_messages: List[str] = None) -> Dict[str, object]:
         """
         Process and obtain the new executive directive for the initial task.
 
         :param task: The initial task from the user.
+        :param additional_user_messages: any additional information to add before the primary instruction
         :return: A dictionary parsed from the LLM's JSON format output.
         :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary.
         """
+        if additional_user_messages:
+            Utility.ensure_string_list(additional_user_messages)
+        else:
+            additional_user_messages = []
+
         executive_thought = self.generate_ai_wrapper(self.files_for_evaluation)
         existing_files = f"Existing files: [{', '.join(str(file) for file in self.files_for_evaluation)}]"
         executive_output = executive_thought.execute_function(
             [existing_files, PersonaConstants.EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS],
-            task,
+            additional_user_messages + [task],
             PersonaConstants.WRITER_FUNCTION_SCHEMA
         )
 
