@@ -6,7 +6,7 @@ from typing import Dict, List
 from ThoughtProcessor.AiWrapper import AiWrapper
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
-from ThoughtProcessor.Personas import Persona_Constants
+from ThoughtProcessor.Personas import PersonaConstants
 from ThoughtProcessor.Personas.PersonaInterface import PersonaInterface
 from ThoughtProcessor.TaskType import TaskType
 
@@ -67,15 +67,15 @@ class Writer(PersonaInterface):
         Process and obtain the new executive directive for the initial task.
 
         :param task: The initial task from the user.
-        :return: A dictionary parsed from the llm's JSON format output.
+        :return: A dictionary parsed from the LLM's JSON format output.
         :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary.
         """
         executive_thought = self.generate_ai_wrapper(self.files_for_evaluation)
         existing_files = f"Existing files: [{', '.join(str(file) for file in self.files_for_evaluation)}]"
         executive_output = executive_thought.execute_function(
-            [existing_files, Persona_Constants.EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS],
+            [existing_files, PersonaConstants.EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS],
             task,
-            Persona_Constants.WRITER_FUNCTION_SCHEMA
+            PersonaConstants.WRITER_FUNCTION_SCHEMA
         )
 
         return executive_output
@@ -86,7 +86,7 @@ class Writer(PersonaInterface):
         Create a new wrapper instance for llm processing.
 
         :param input_data: file references to be used as context.
-        :return: An instance of the ai wrapper class.
+        :return: An instance of the AI wrapper class.
         """
         # Central management of thought instances
         return AiWrapper(input_data)
