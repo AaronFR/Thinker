@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Total Refactor of ThoughtProcessing. 'Thought' Metaphor abandoned to more practical terminology.
+- Editor suitable tasks split out from Writer, reducing 'confusion' in executing functions
 
 
 

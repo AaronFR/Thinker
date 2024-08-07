@@ -7,6 +7,7 @@ task can be said to be solved.
 Your output will be made to adhere to a defined json output. Focus on creating a sensible arrangement of tasks,
 for instance: it does not make sense to try and re-write a file that doesn't exist. Instead it should be created with
 'APPEND'.
+It doesn't make sense to try and re-write a file that doesn't exist. Write or append there first.
 
 Please don't overwrite or write to fill in content with theory, ensure that the document remains valid for its intended 
 use and that your output is to the point and practical. Notes if needs be can be made if new supplimentary files
@@ -36,35 +37,20 @@ WRITER_FUNCTION_SCHEMA = [{
                         "type": {
                             "type": "string",
                             "description": """Type of task, e.g.
-                            'WRITE': For repeatedly adding a page of content according to the 'what_to_do' instructions, n times where n approximates a pages additional output
+                            'WRITE': For repeatedly appending pages of content according to the 'what_to_do' instructions, n times where n approximates a pages additional output
                             'APPEND': for appending content to the end of a file, or creating a new file. 
-                            'REWRITE': for regex replacing, a small amount of text inline with your instructions,
-                            'REWRITE_FILE': rewrites 'rewrite_this' to 'where_to_do_it'. Splitting the 'rewrite_this' file into pieces to feed into an llm, and rewrite in accordance with your instructions, piecing them together again for the entire file.
-                            Ideally 'rewrite_this' and 'where_to_do_it' are the same file""",
-                            "enum": ["APPEND", "REWRITE", "REWRITE_FILE", "WRITE"]
+                            """,
+                            "enum": ["APPEND", "WRITE"]
                         },
                         "what_to_reference": {
                             "type": "array",
                             "description": "List of file names with extensions, relevant to the task.",
                             "items": {"type": "string"}
                         },
-                        "rewrite_this": {
-                            "type": """string""",
-                            "description": """The text you want replaced, ***EXACTLY*** the same as it appears in the 
-                            initial document, any deviation from the read content will cause the regex evaluation to fail. 
-                            make sure the output is a valid multi-line, triple-quote string and that any commas or other special characters in 
-                            python and escaped.
-                            Make sure you reference and write to ('where_to_do_it') the file you want to change and that it has this line as you've written it
-                            Only for 'REWRITE' tasks. DO NOT WRITE FOR 'REWRITE_FILE' TASKS!"""
-                        },
-                        "file_to_rewrite": {
-                            "type": "string",
-                            "description": """The file including its extension that you want to rewrite.
-                            Only for 'REWRITE_FILE' tasks."""
-                        },
                         "pages_to_write": {
                             "type": "integer",
-                            "description": "How many pages of content you would like written. 5 is a good starting place, 10 max. Only for 'WRITE' tasks."
+                            "description": """How many pages of content you would like written. 
+                            5 is a good starting place, 10 max. Only for 'WRITE' tasks."""
                         },
                         "what_to_do": {
                             "type": "string",
@@ -75,7 +61,8 @@ WRITER_FUNCTION_SCHEMA = [{
                         },
                         "where_to_do_it": {
                             "type": "string",
-                            "description": "The file where the output should be saved. MUST include a file from the reference files"
+                            "description": """The file where the output should be saved. MUST include a file from the 
+                            reference files."""
                         }
                     },
                     "required": ["type", "what_to_reference", "what_to_do", "where_to_do_it"]
@@ -100,7 +87,7 @@ Task Requirements:
 - Blend Content: Ensure each piece you write integrates smoothly into the existing document. Avoid concluding each section as your writing is meant to be part of a larger whole.
 - Consistency: Maintain consistency throughout your writing. Avoid repetition of previously established content unless explicitly summarizing.
 - Avoid Repetition: Do not write conclusions or repeat headings. Ensure content is unique and non-redundant.
-- Specificity and Detail: Be specific and detailed in your prompts. For example, when writing about tidal energy, specify aspects like "environmental impacts" or "technological advancements."
+- Specificity and Detail: Be specific and detailed in your prompts.
 - Role Assignment: Assume a specific role where necessary to guide the writing style and perspective. For instance, write from the perspective of an environmental scientist or an economic analyst.
 - Structured Approach: Break down complex tasks into clear, sequential steps. Provide context and ensure understanding of the broader topic.
 - Focus: Concentrate on one task per prompt to maintain clarity and precision.
@@ -110,12 +97,72 @@ Task Requirements:
 """
 
 
-# WRITER_SYSTEM_INSTRUCTIONS = """You are a talented, skillful writer, please follow the supplied instructions from another
-# llm writing as they request, write in detail but deliberately. Please bear in mind your writing is being presented to the
-# end user: Don't include notes on how the file can be approved or what to do next, that's not your role.
-# You are writing pieces of a continuous document, do not conclude each and every output you make. Each part you write is
-# to be blend into the existing input it is NOT supposed to stand on its own.
-# Your writing is to be consistent DO NOT write conclusions, DO NOT REPEAT HEADINGS UNDER ANY CIRCUMSTANCES
-#
-# Do NOT repeat yourself or previously established content unless to explicitly summarise.
-# Write with your alloted number of pages in mind, if you have 10 pages to write, the first page can just cover the very initial basics and so on"""
+
+
+EDITOR_FUNCTION_SCHEMA = [{
+    "name": "executiveDirective",
+    "description": """Assess input files for improvements and generate tasks for a writer to create and improve
+    the initial solution, in line with the initial user prompt and any initial planning""",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "type": {
+                "type": "string",
+                "description": "A summarisation of what the tasks in this directive are supposed to accomplish"
+            },
+            "areas_of_improvement": {
+                "type": "string",
+                "description": "Detailed explanation of how the current input files do not meet the criteria or how they do satisfy the conditions."
+            },
+            "tasks": {
+                "type": "array",
+                "description": "A list of tasks (*at least* one) to address the identified issues.",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": """Type of task, e.g.
+                            'REWRITE': for regex replacing, a small amount of text inline with your instructions,
+                            'REWRITE_FILE': rewrites 'rewrite_this' to 'where_to_do_it'. Splitting the 'rewrite_this' file into pieces to feed into an llm, and rewrite in accordance with your instructions, piecing them together again for the entire file.
+                            """,
+                            "enum": ["REWRITE", "REWRITE_FILE"]
+                        },
+                        "what_to_reference": {
+                            "type": "array",
+                            "description": "List of file names with extensions, relevant to the task.",
+                            "items": {"type": "string"}
+                        },
+                        "rewrite_this": {
+                            "type": """string""",
+                            "description": """The text you want replaced, ***EXACTLY*** the same as it appears in the 
+                            initial document, any deviation from the read content will cause the regex evaluation to fail. 
+                            make sure the output is a valid multi-line, triple-quote string and that any commas or other special characters in 
+                            python and escaped.
+                            Make sure you reference and write to ('where_to_do_it') the file you want to change and that it has this line as you've written it
+                            Only for 'REWRITE' tasks. DO NOT WRITE FOR 'REWRITE_FILE' TASKS!"""
+                        },
+                        "file_to_rewrite": {
+                            "type": "string",
+                            "description": """The file including its extension that you want to rewrite.
+                            Only for 'REWRITE_FILE' tasks."""
+                        },
+                        "what_to_do": {
+                            "type": "string",
+                            "description": """Your instructions to the 2nd part of the iterative process: The executor.
+                            Critical!
+                            Be concise, detailed and nuanced. Make references to the how the previous work went in order 
+                            to tell the executor what to improve on in this loop"""
+                        },
+                        "where_to_do_it": {
+                            "type": "string",
+                            "description": """The file where the output should be saved. MUST include a file from the 
+                            reference files. MUST be included for ALL task types"""
+                        }
+                    },
+                    "required": ["type", "what_to_reference", "what_to_do", "where_to_do_it"]
+                }
+            }
+        }
+    }
+}]
