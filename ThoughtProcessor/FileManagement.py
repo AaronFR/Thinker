@@ -155,7 +155,8 @@ class FileManagement:
         except Exception as e:
             logging.error(f"could not save file, {str(e)}")
 
-    def save_as_html(self, content: str, file_name: str, prompt_id: str):
+    @staticmethod
+    def save_as_html(content: str, file_name: str, prompt_id: str):
         """
         Saves the response content in HTML format to a file.
 
@@ -166,7 +167,7 @@ class FileManagement:
         dir_path = os.path.join(thoughts_folder, str(prompt_id))
         os.makedirs(dir_path, exist_ok=True)
 
-        html_text = self.format_to_html(content)
+        html_text = FileManagement._format_to_html(content)
         file_path = dir_path + f"/{file_name}_{prompt_id}.html"
 
         try:
@@ -176,7 +177,7 @@ class FileManagement:
             logging.error(f"ERROR: could not save file, {str(e)}")
 
     @staticmethod
-    def format_to_html(text: str) -> str:
+    def _format_to_html(text: str) -> str:
         """
         Formats the provided text as HTML.
         :param text: Initial text with format characters e.g. \n
@@ -186,7 +187,8 @@ class FileManagement:
         highlighted_code = highlight(text, PythonLexer(), html_formatter)
         return highlighted_code
 
-    def aggregate_files(self, file_base_name, start, end, thought_id=1):
+    @staticmethod
+    def aggregate_files(file_base_name, start, end, thought_id=1):
         i = start - 1
         end -= 1
         content = ""
@@ -207,7 +209,7 @@ class FileManagement:
                     logging.error(f"ERROR: could not save file, {str(e)}")
 
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        self.save_as_html(content, "solution", timestamp)
+        FileManagement.save_as_html(content, "solution", timestamp)
         FileManagement.save_file(content, "solution", str(thought_id), overwrite=True)
 
     @staticmethod

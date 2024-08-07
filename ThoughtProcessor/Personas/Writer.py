@@ -75,15 +75,27 @@ class Writer(PersonaInterface):
         else:
             additional_user_messages = []
 
-        executive_thought = self.generate_ai_wrapper(self.files_for_evaluation)
+        executive_planner = Writer.create_ai_wrapper(self.files_for_evaluation)
+
         existing_files = f"Existing files: [{', '.join(str(file) for file in self.files_for_evaluation)}]"
-        executive_output = executive_thought.execute_function(
+        executive_plan = executive_planner.execute_function(
             [existing_files, PersonaConstants.EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS],
             additional_user_messages + [task],
             PersonaConstants.WRITER_FUNCTION_SCHEMA
         )
 
-        return executive_output
+        if Writer.invalid_function_output(executive_plan):
+            logging.info("INVALID SCHEMA, RETRYING...")
+            executive_plan = executive_planner.execute_function(
+                [existing_files, PersonaConstants.EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS],
+                additional_user_messages + [task],
+                PersonaConstants.WRITER_FUNCTION_SCHEMA
+            )
+
+            if Writer.invalid_function_output(executive_plan):
+                logging.error("2ND INVALID SCHEMA PRODUCED")
+
+        return executive_plan
 
     @staticmethod
     def generate_ai_wrapper(input_data: List[str]) -> AiWrapper:

@@ -81,7 +81,7 @@ class UserInterface:
 
                 attempt_count += 1
 
-            logging.info(f"FINISHED REQUEST: [{current_task}]\nin {attempt_count} iterations\ntotal cost: {Globals.request_price}")
+            logging.info(f"FINISHED REQUEST: [{current_task}]\nin {attempt_count} iterations\ntotal cost: {round(Globals.request_price, 4)}")
             Globals.request_price = 0.0
 
     @staticmethod
@@ -94,9 +94,7 @@ if __name__ == '__main__':
     thought_process = UserInterface()
 
     thought_process.evaluate_prompt(
-        """Write your suggestions on how to improve TaskRunner.py in a separate markdown file called 'suggestions.md
-        do not edit the original file in any way, tailor your review around logical architecutral improvements
-        specific lines of code that could be refactored to be more intuitive, performant, etc.
-        These types of practical concerns. Don't suggest logging changes, unit tests or exceptions'"""
+        """Please write new versions of TaskRunner.py and TaskType.py call them TaskRunnerV2.py and TaskTypeV2.py respectively. Improving first for things like readability, useability, and general good coding standards.
+        THEN write into these new class files, adding in new functions, new capabilities that could be added to either for increased user value"""
     )
 
