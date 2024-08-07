@@ -56,7 +56,7 @@ class TaskRunner:
         """
         executive_thought = self.generate_ai_wrapper(self.files_for_evaluation)
         existing_files = f"Existing files: [{', '.join(str(file) for file in self.files_for_evaluation)}]"
-        executive_output = executive_thought.executive_think(
+        executive_output = executive_thought.execute_function(
             [existing_files, Constants.EXECUTIVE_FUNCTION_INSTRUCTIONS], task)
 
         return executive_output

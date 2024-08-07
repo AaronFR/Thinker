@@ -31,7 +31,7 @@ class ExecutiveThought:
                 {"role": "user", "content": "solution.txt:\nHideki Naganuma was an artist"},
                 {"role": "user", "content": input_solution}
             ],
-            functions=Constants.EXECUTIVE_FUNCTIONS_SCHEME,
+            functions=Constants.EXECUTIVE_FUNCTIONS_SCHEMA,
             function_call={"name": "executiveDirective"}
             # ToDo investigate more roles
         )  # .choices[0].message.content

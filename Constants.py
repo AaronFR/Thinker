@@ -130,7 +130,7 @@ Tasks:
     - redo: number of times to redo a prompt filtering for quality of response, for tasks where quality is important
     - repeat: for APPEND tasks, so that large texts can be added to the output without triggering another run
 """
-EXECUTIVE_FUNCTIONS_SCHEME = [{
+EXECUTIVE_FUNCTIONS_SCHEMA = [{
     "name": "executiveDirective",
     "description": """Assess input files for improvements and generate tasks to provide a solution which completely 
     satisfied the initial user prompt""",

@@ -45,7 +45,7 @@ class AiWrapper:
         logging.info(f"Executor Task Finished")
         return response
 
-    def executive_think(self, system_prompts: List[str] | str, user_prompt: str) -> Dict[str, object]:
+    def execute_function(self, system_prompts: List[str] | str, user_prompt: str, function_schema=Constants.EXECUTIVE_FUNCTIONS_SCHEMA) -> Dict[str, object]:
         """Generates a structured response based on system and user prompts for executive directives.
         ToDo: At some point actions other than writing will be needed, e.g. 'web search'
         #Solved if executive files only review summaries of input files
@@ -56,7 +56,7 @@ class AiWrapper:
         """
         messages = Prompter.generate_messages(self.input_files, system_prompts, user_prompt)
 
-        response = Utility.execute_with_retries(lambda: Globals.prompter.get_open_ai_function_response(messages))
+        response = Utility.execute_with_retries(lambda: Globals.prompter.get_open_ai_function_response(messages, function_schema))
         if not response:
             logging.error("No response from OpenAI API.")
             raise Exception("Failed to get response from OpenAI API.")

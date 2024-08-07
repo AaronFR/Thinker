@@ -23,18 +23,19 @@ class Role(enum.Enum):
 class Prompter:
 
     @staticmethod
-    def get_open_ai_function_response(messages: List[dict]) -> Dict[str, object]:
+    def get_open_ai_function_response(messages: List[dict], function_schema) -> Dict[str, object]:
         """Requests a structured response from the OpenAI API for function calling.
 
         :param messages: The system and user messages to send to the ChatGpt client
-        :return: The content of the response from OpenAI or an error message to inform the next executor task.
+        :param function_schema:  The schema to apply to the output json
+        :return: The content of the response from OpenAI or an error message to inform the next executor task
         """
         try:
             logging.debug(f"Calling OpenAI API with messages: {messages}")
             output = Globals.open_ai_client.chat.completions.create(
                 model=Constants.MODEL_NAME,
                 messages=messages,
-                functions=Constants.EXECUTIVE_FUNCTIONS_SCHEME,
+                functions=function_schema,
                 function_call={"name": "executiveDirective"}
                 # ToDo investigate more roles
             )
