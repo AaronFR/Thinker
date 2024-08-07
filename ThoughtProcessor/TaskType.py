@@ -27,7 +27,7 @@ class TaskType(enum.Enum):
     def append_to_file_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1):
         output = executor_task.execute(
             Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
-            "Primary Instructions: " + str(task_directives.get('what_to_do'))
+            ["Primary Instructions: " + str(task_directives.get('what_to_do'))]
         )
         FileManagement.save_file(output, task_directives.get('where_to_do_it'), str(current_thought_id))
 
@@ -35,8 +35,8 @@ class TaskType(enum.Enum):
     def rewrite_part_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1):
         output = executor_task.execute(
             Constants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
-            f"""Just rewrite <rewrite_this>\n{task_directives.get('rewrite_this')}\n</rewrite_this>\n
-            In the following way: {str(task_directives.get('what_to_do'))}"""
+            [f"""Just rewrite <rewrite_this>\n{task_directives.get('rewrite_this')}\n</rewrite_this>\n
+            In the following way: {str(task_directives.get('what_to_do'))}"""]
         )
         FileManagement.re_write_section(
             str(task_directives.get('rewrite_this')),
@@ -60,8 +60,8 @@ class TaskType(enum.Enum):
             logging.info(f"Rewriting: {text_chunk}")
             re_written_file += executor_task.execute(
                 Constants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
-                f"""Rewrite this section: \n<rewrite_this>\n{text_chunk}\n</rewrite_this>\n
-                    In the following way: {str(task_directives.get('what_to_do'))}"""
+                [f"""Rewrite this section: \n<rewrite_this>\n{text_chunk}\n</rewrite_this>\n
+                    In the following way: {str(task_directives.get('what_to_do'))}"""]
             )
             print(re_written_file)
 

@@ -113,15 +113,24 @@ class Prompter:
         )
 
     @staticmethod
-    def generate_messages(input_files, system_prompts: List[str] | str, user_prompt: str):
-        logging.info(f"Thinking...{user_prompt}")
+    def generate_messages(input_files, system_prompts: List[str] | str, user_prompts: List[str]):
+        logging.debug(f"Thinking...{pformat(user_prompts, width=180)}")
         if isinstance(system_prompts, str):
+            logging.warning(
+                "Had to reformat a string system message into a list, this can lead to failurse to generate errors if not correctly handled")
             system_prompts = [system_prompts]
         if not isinstance(system_prompts, list) or not all(isinstance(sp, str) for sp in system_prompts):
             raise ValueError("""system_prompts must be provided in the format of a list, where each element is a string. 
                     Please ensure compliance with this expected structure for proper functionality.""")
+        if isinstance(user_prompts, str):
+            logging.warning(
+                "Had to reformat a string user message into a list, this can lead to failurse to generate errors if not correctly handled")
+            user_prompts = [user_prompts]
+        if not isinstance(user_prompts, list) or not all(isinstance(up, str) for up in user_prompts):
+            raise ValueError("""user_prompts must be provided in the format of a list, where each element is a string. 
+                    Please ensure compliance with this expected structure for proper functionality.""")
 
-        messages = Prompter.generate_role_messages(system_prompts, input_files, user_prompt)
+        messages = Prompter.generate_role_messages(system_prompts, input_files, user_prompts)
 
         logging.debug(f"Messages: {pformat(messages)}")
         logging.info(f"Tokens used (limit 128k): {Utility.calculate_tokens_used(messages)}")
@@ -129,12 +138,12 @@ class Prompter:
         return messages
 
     @staticmethod
-    def generate_role_messages(system_prompts: List[str], input_files: List[str], user_prompt: str):
+    def generate_role_messages(system_prompts: List[str], input_files: List[str], user_prompts: List[str]):
         """
         ToDo: generalise for user_prompt***S***
         :param system_prompts: list of instructions to be saved as system info
         :param input_files: input file content for reference: taking the form of previous user input
-        :param user_prompt: primary initial instruction
+        :param user_prompts: primary initial instruction and other supplied material
         :return:
         """
         role_messages = []
@@ -151,7 +160,7 @@ class Prompter:
                 logging.error(f"Error reading file {file}: {e}")
                 role_messages.append((Role.USER, f"Error reading file {file}. Exception: {e}"))
 
-        role_messages.append((Role.USER, user_prompt))
+        role_messages = role_messages + [(Role.USER, prompt) for prompt in user_prompts]
         system_role_messages = [(Role.SYSTEM, prompt) for prompt in system_prompts]
 
         return Prompter.create_messages_by_role(role_messages + system_role_messages)
