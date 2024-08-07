@@ -81,7 +81,8 @@ class UserInterface:
 
                 attempt_count += 1
 
-            logging.info(f"FINISHED REQUEST: [{current_task}]\nin {attempt_count} iterations\ntotal cost: {round(Globals.request_price, 4)}")
+            logging.info(f"""FINISHED REQUEST: [{current_task}]\nin {attempt_count} iterations
+                         \ntotal cost: ${round(Globals.request_price, 4)}""")
             Globals.request_price = 0.0
 
     @staticmethod

@@ -18,6 +18,7 @@ class ExecutiveThought:
         self.open_ai_client = OpenAI()
 
     def think(self, question: str, input_solution: str) -> Dict[str, str]:
+        # ToDo could form the basis of an Analyst: Analyse role and task
         if not input_solution:
             input_solution = "Null"
         open_ai_client = OpenAI()

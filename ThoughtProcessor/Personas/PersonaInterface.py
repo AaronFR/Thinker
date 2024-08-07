@@ -2,11 +2,14 @@ import logging
 from typing import List, Dict
 
 from ThoughtProcessor.AiWrapper import AiWrapper
+from ThoughtProcessor.ErrorHandler import ErrorHandler
 
 
 class PersonaInterface:
     def __init__(self, name):
         self.name = name
+
+        ErrorHandler.setup_logging()
 
     def work(self, task):
         raise NotImplementedError("This method should be overridden by subclasses")

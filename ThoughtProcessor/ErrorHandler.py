@@ -4,7 +4,10 @@ import os
 
 
 class ErrorHandler:
-    """Centralized error handling class for consistent logging and exception management."""
+    """Centralized error handling class for consistent logging and exception management.
+    ToDo: Currently has to be initialised in every class for logs to *actually* be logged, which can easily lead to
+    mistakes
+    """
 
     @staticmethod
     def setup_logging(log_file: str = 'application.log'):

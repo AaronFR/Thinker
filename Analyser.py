@@ -13,6 +13,7 @@ class Analyser:
         self.MODEL_NAME = "gpt-4o-mini"
 
     def analyse_solution(self, initial_prompt: str, solution: str) -> ChatCompletionMessage | None:
+        # ToDo: ANOTHER contender for being the basis of the Analyst persona
         """
         To determine if the solution is satisfactory and cannot be improved.
         If it can be the flag will be set to false and ideally the solution should be re-run through again and again
