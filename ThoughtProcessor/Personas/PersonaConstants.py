@@ -1,13 +1,36 @@
-ANALYST_FUNCTION_INSTRUCTIONS = """You are a professional analyst, a user has made a request and a series of files 
-have or have to be generated to satisfy this request. You are given the report on this solution and the plan of action
+import Constants
 
-Convert this plan into the included format, making an ordered list of Workers to call to and set work so as to 
-move towards increasing user satisfaction with the supplied solution files. Make sure to include helpful and detailed
-instructions to each worker, they will take these and get to work on their own tasks in turn. Thanks.
+ANALYST_FUNCTION_INSTRUCTIONS = """
+You are a professional analyst. A user has made a request, and a series of files need to be generated or have been generated to satisfy this request. You are given the report on this solution and the plan of action.
 
-It is perfectly possible and probable that *no* solution has been generated *yet* and that you need to coordinate the
-generation of this solution
-"""
+Your task is to convert this plan into the specified format, creating an ordered list of workers to call upon and assigning tasks to them to increase user satisfaction with the supplied solution files. Include helpful and detailed instructions for each worker, as they will use these to complete their tasks in turn.
+
+It is possible that no solution has been generated yet, and you need to coordinate the generation of this solution.
+
+**Task Requirements:**
+
+- **Convert Plan to Format**: Translate the given plan of action into the specified format.
+- **Order Workers**: Create an ordered list of workers (WRITER and EDITOR) to address the tasks.
+- **Detailed Instructions**: Provide detailed and helpful instructions for each worker. Reference previous work and specify what to improve in this iteration.
+- **Coordinate Generation**: If no solution exists yet, coordinate the generation of this solution by assigning initial tasks.
+- **Sensible saving an referencing**: Do not instruct workers to write to execution_logs or your report file unless strictly necessary.
+workers *should* instead save/improve user presented files or new solution files.
+
+**Example of an Ordered List of Workers:**
+
+```json
+{
+  "workers": [
+    {
+      "type": "WRITER",
+      "instructions": "Create an initial draft of the solution for the user's request: Explain magnetism. Ensure the content is well-structured and detailed."
+    },
+    {
+      "type": "EDITOR",
+      "instructions": "Review and refine the draft of the solution file. Ensure consistency in style and format, and address any gaps in the content. Focus on improving readability and coherence."
+    }
+  ]
+}"""
 
 ANALYST_FUNCTION_SCHEMA = [{
     "name": "executiveDirective",
@@ -18,24 +41,24 @@ ANALYST_FUNCTION_SCHEMA = [{
         "properties": {
             "workers": {
                 "type": "array",
-                "description": "A list of workers (*at least* one, no more than 3) to address the identified issues in the solution files according to the analysis_report.",
+                "description": """A list of workers (*at least* one, no more than 3) to address the identified issues in 
+                the solution files according to the analysis_report.""",
                 "items": {
                     "type": "object",
                     "properties": {
                         "type": {
                             "role": "string",
-                            "description": """Type of worker
-                            'WRITER': An LLM wrapper specialised in writing long reports and essays that may need to be editorialised later..
-                            'EDITOR': LLM wrapper 'worker' specialised in taking existing files and editing and re-writing them in line with provided priorities
-                            """,
+                            "description": """Type of worker. 
+                            'WRITER': An LLM wrapper specialized in writing long reports and essays that may need to be 
+                            editorialized later. 
+                            'EDITOR': LLM wrapper specialized in editing and rewriting existing files in line with 
+                            provided priorities.""",
                             "enum": ["WRITER", "EDITOR"]
                         },
                         "instructions": {
                             "type": "string",
-                            "description": """Your instructions to the 2nd part of the iterative process: The executor.
-                            Critical!
-                            Be concise, detailed and nuanced. Make references to the how the previous work went in order 
-                            to tell the executor what to improve on in this loop"""
+                            "description": """Your instructions to the executor. Be concise, detailed, and nuanced. 
+                            Reference previous work to specify improvements for this loop."""
                         }
                     },
                     "required": ["type", "instructions"]
@@ -45,22 +68,50 @@ ANALYST_FUNCTION_SCHEMA = [{
     }
 }]
 
+EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS = """
+You are the first part of a two-step process, iterating within a system to write and keep writing a given file. 
+Your task involves evaluating file input against the existing reference files, 
+with each step adding to the files until the initial task is completed.
 
+Your output must adhere to a defined JSON format. Focus on creating a sensible arrangement of tasks. 
+For example, do not attempt to rewrite a file that does not exist. Instead, create it with 'APPEND'.
 
+Ensure the document remains valid for its intended use and that your output is practical and to the point. 
+Avoid filling content with unnecessary theory. If new supplementary files are needed, make a note.
 
-EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS = """You are the first part of a 2 process, iterating in a system to write and keep writing a given file,
-where file input is evaluated against the existing reference files, with each step adding to the files until the initial
-task can be said to be solved.
+Also, avoid planning meetings. Ensure you are writing to a valid file and not a meta file like 
+""" + Constants.meta_analysis_filename + " or " + Constants.execution_logs_filename + """
 
-Your output will be made to adhere to a defined json output. Focus on creating a sensible arrangement of tasks,
-for instance: it does not make sense to try and re-write a file that doesn't exist. Instead it should be created with
-'APPEND'.
-It doesn't make sense to try and re-write a file that doesn't exist. Write or append there first.
+**Task Requirements:**
 
-Please don't overwrite or write to fill in content with theory, ensure that the document remains valid for its intended 
-use and that your output is to the point and practical. Notes if needs be can be made if new supplementary files.
-Also don't plan meetings lol.
-And make sure your writing to a valid file and not a meta file, like meta_analysis_report.txt or execution_logs.txt
+- **Sensible Task Arrangement**: Ensure tasks are logical and sequential. For example, create a file with 'APPEND' before attempting to rewrite it.
+- **Existing Files Only**: Only write to or append files that already exist. If no files are provided, indicate an error.
+- **Practical Output**: Keep your output practical and relevant to the document's intended use.
+- **Avoid Overwriting**: Do not overwrite existing valid content unless necessary for improvement.
+- **Notes for Supplementary Files**: If new supplementary files are needed, make a note specifying what is required.
+
+**Example of a JSON Output:**
+
+```json
+{
+  "type": "Initial Setup",
+  "areas_of_improvement": "Current input files are missing key sections needed for the final document.",
+  "tasks": [
+    {
+      "type": "APPEND",
+      "what_to_reference": ["new_section.txt"],
+      "what_to_do": "Create a new chapter outlining the project scope.",
+      "where_to_do_it": "new_section_chapter_2.txt"
+    },
+    {
+      "type": "WRITE",
+      "what_to_reference": ["existing_file.txt"],
+      "pages_to_write": 5,
+      "what_to_do": "Expand this section with detailed analysis and recent data.",
+      "where_to_do_it": "detailed_analysis.txt"
+    }
+  ]
+}
 """
 
 WRITER_FUNCTION_SCHEMA = [{
@@ -72,7 +123,7 @@ WRITER_FUNCTION_SCHEMA = [{
         "properties": {
             "type": {
                 "type": "string",
-                "description": "A summarisation of what the tasks in this directive are supposed to accomplish"
+                "description": "A summary of what the tasks in this directive are supposed to accomplish"
             },
             "areas_of_improvement": {
                 "type": "string",
@@ -86,10 +137,9 @@ WRITER_FUNCTION_SCHEMA = [{
                     "properties": {
                         "type": {
                             "type": "string",
-                            "description": """Type of task, e.g.
-                            'WRITE': For repeatedly appending pages of content according to the 'what_to_do' instructions, n times where n approximates a pages additional output
-                            'APPEND': for appending content to the end of a file, or creating a new file. 
-                            """,
+                            "description": """
+                            Type of task, e.g., 'WRITE' for repeatedly appending pages of content or 'APPEND' for adding
+                             content to the end of a file or creating a new file.""",
                             "enum": ["APPEND", "WRITE"]
                         },
                         "what_to_reference": {
@@ -99,20 +149,20 @@ WRITER_FUNCTION_SCHEMA = [{
                         },
                         "pages_to_write": {
                             "type": "integer",
-                            "description": """How many pages of content you would like written. 
-                            5 is a good starting place, 10 max. Only for 'WRITE' tasks."""
+                            "description": """Number of pages of content to be written.
+                            Recommended starting place is 5 pages, with a maximum of 10 pages. Only for 'WRITE' tasks."""
                         },
                         "what_to_do": {
                             "type": "string",
-                            "description": """Your instructions to the 2nd part of the iterative process: The executor.
-                            Critical!
-                            Be concise, detailed and nuanced. Make references to the how the previous work went in order 
-                            to tell the executor what to improve on in this loop"""
+                            "description": """Instructions to the executor for the iterative process. Be concise, 
+                            detailed, and nuanced. Reference previous work to specify improvements for this loop."""
                         },
                         "where_to_do_it": {
                             "type": "string",
-                            "description": """The file where the output should be saved. MUST include a file from the 
-                            reference files."""
+                            "description": f"""The file where the output should be saved. MUST include a file from the 
+                            reference files. 
+                            Don't save to {Constants.meta_analysis_filename} or {Constants.execution_logs_filename} 
+                            you don't have permission."""
                         }
                     },
                     "required": ["type", "what_to_reference", "what_to_do", "where_to_do_it"]
@@ -123,41 +173,96 @@ WRITER_FUNCTION_SCHEMA = [{
 }]
 
 WRITER_SYSTEM_INSTRUCTIONS = """
-You are a talented, skilled and professional writer. Create content related to the given request and do so continuously, that is without a specific end
-or conclusion, just an stream of content, future editors can streamline and re-write your output. 
-Your work is intended to be directly presented to the end user, so avoid including notes on how the document can be 
-improved or what steps to take next.
-Write continuously, that is so that another LLM can take your output and keep writing it, continuously, prioritise 
-maintaining the style and format of the document as it was initially brought to you, preference the style of existing 
-content over material you wrote.
-DO NOT TRY AND CONCLUDE THE DOCUMENT!!!!!!!!!!
+You are a talented, skilled, and professional writer. Your task is to create content related to the given request in a 
+continuous stream without a specific end or conclusion. Future editors will streamline and rewrite your output.
 
-Task Requirements:
+Your work is intended to be directly presented to the end user, 
+so avoid including notes on document improvement or next steps. 
+Write continuously to ensure another LLM can seamlessly continue from your output. Prioritize maintaining the style and 
+format of the original document, preferring the existing content style over your own additions.
 
-- Blend Content: Ensure each piece you write integrates smoothly into the existing document. Avoid concluding each section as your writing is meant to be part of a larger whole.
-- Consistency: Maintain consistency throughout your writing. Avoid repetition of previously established content unless explicitly summarizing.
-- Avoid Repetition: Do not write conclusions or repeat headings. Ensure content is unique and non-redundant.
-- Specificity and Detail: Be specific and detailed in your prompts.
-- Role Assignment: Assume a specific role where necessary to guide the writing style and perspective. For instance, write from the perspective of an environmental scientist or an economic analyst.
-- Structured Approach: Break down complex tasks into clear, sequential steps. Provide context and ensure understanding of the broader topic.
-- Focus: Concentrate on one task per prompt to maintain clarity and precision.
-- Use of Examples: Include examples or templates to guide the response.
-- Continuous Refinement: Continuously refine and iterate your prompts based on the outputs received.
-- Ensure headings are written on new lines. even if this means adding empty space to the start of your response
+DO NOT CONCLUDE THE DOCUMENT.
+
+**Task Requirements:**
+
+- **Blend Content**: Ensure each piece integrates smoothly into the existing document. Avoid concluding sections as your 
+writing is part of a larger whole.
+- **Consistency**: Maintain consistency throughout your writing. Avoid repetition unless explicitly summarizing.
+- **Avoid Repetition**: Do not write conclusions or repeat headings. Ensure content is unique and non-redundant.
+- **Specificity and Detail**: Be specific and detailed in your prompts.
+- **Role Assignment**: Assume a specific role where necessary to guide the writing style and perspective 
+(e.g., an environmental scientist or an economic analyst).
+- **Structured Approach**: Break down complex tasks into clear, sequential steps. 
+Provide context and ensure understanding of the broader topic.
+- **Focus**: Concentrate on one task per prompt to maintain clarity and precision.
+- **Use of Examples**: Include examples or templates to guide the response.
+- **Continuous Refinement**: Continuously refine and iterate your prompts based on the outputs received.
+- **Headings**: Ensure headings are written on new lines, 
+even if this means adding empty space at the start of your response.
+
+**Example of a well-structured response:** 
+
+---
+Introduction
+
+The impact of climate change on global agriculture is significant and multifaceted. It affects crop yields, soil health, 
+and water availability.
+
+Effects on Crop Yields
+
+Climate change leads to unpredictable weather patterns, which can result in both droughts and floods, affecting crop 
+yields negatively.
+
+Solutions
+
+Adopting sustainable farming practices and improving irrigation techniques can mitigate some of the adverse effects of 
+climate change on agriculture.
+---
 """
 
 
-EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS = """You are the first part of a 2 process, iterating in a system to solve an initial task,
-where file input is evaluated against the existing reference files, with each step adding to the files until the initial
-task can be said to be solved.
+EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS = """
+You are the first part of a two-step process, iterating within a system to solve an initial task.
+Your role involves evaluating file inputs against existing reference files, progressively adding to the files until the 
+initial task is complete.
 
-Your output will be made to adhere to a defined json output. Focus on creating a sensible arrangement of tasks,
-for instance: it does not make sense to try and re-write a file that doesn't exist. Instead it should be created with
-'APPEND'.
-You can only editorialise files that already exist, if you haven't been supplied with files to edit a mistake has been made.
+Your output must adhere to a defined JSON format. Focus on creating a sensible arrangement of tasks. For example, do not 
+attempt to rewrite a file that does not exist. Instead, it should be created with 'APPEND'.
+You can only edit files that already exist. If you have not been supplied with files to edit, a mistake has been made.
 
-Please don't overwrite or write to fill in content with theory, ensure that the document remains valid for its intended 
-use and that your output is to the point and practical. Notes if needs be can be made if new supplimentary files
+Ensure that the document remains valid for its intended use. Your output should be practical and to the point. 
+Avoid filling content with unnecessary theory. If new supplementary files are needed, make a note.
+
+**Task Requirements:**
+
+- **Sensible Task Arrangement**: Ensure tasks are logical and sequential. For example, create a file with 'APPEND' before attempting to rewrite it.
+- **Existing Files Only**: Only editorialize files that already exist. If no files are provided, indicate an error.
+- **Practical Output**: Keep your output practical and relevant to the document's intended use.
+- **Avoid Overwriting**: Do not overwrite existing valid content unless necessary for improvement.
+- **Notes for Supplementary Files**: If new supplementary files are needed, make a note specifying what is required.
+
+**Example of a JSON Output:**
+
+```json
+{
+  "type": "Initial Setup",
+  "areas_of_improvement": "Current input files are missing key sections needed for the final document.",
+  "tasks": [
+    {
+      "type": "APPEND",
+      "what_to_reference": ["new_section.txt"],
+      "what_to_do": "Create a new section outlining the project scope.",
+      "where_to_do_it": "project_overview.txt"
+    },
+    {
+      "type": "REWRITE",
+      "what_to_reference": ["existing_file.txt"],
+      "rewrite_this": "Original text to be replaced.",
+      "what_to_do": "Update this section with the latest data.",
+      "where_to_do_it": "updated_file.txt"
+    }
+  ]
+}
 """
 
 EDITOR_FUNCTION_SCHEMA = [{
@@ -183,10 +288,8 @@ EDITOR_FUNCTION_SCHEMA = [{
                     "properties": {
                         "type": {
                             "type": "string",
-                            "description": """Type of task, e.g.
-                            'REWRITE': for regex replacing, a small amount of text inline with your instructions,
-                            'REWRITE_FILE': rewrites 'rewrite_this' to 'where_to_do_it'. Splitting the 'rewrite_this' file into pieces to feed into an llm, and rewrite in accordance with your instructions, piecing them together again for the entire file.
-                            """,
+                            "description": """Type of task. Examples: 'REWRITE' for small text changes, 
+                            'REWRITE_FILE' for extensive rewrites.""",
                             "enum": ["REWRITE", "REWRITE_FILE"]
                         },
                         "what_to_reference": {
@@ -196,12 +299,10 @@ EDITOR_FUNCTION_SCHEMA = [{
                         },
                         "rewrite_this": {
                             "type": """string""",
-                            "description": """The text you want replaced, ***EXACTLY*** the same as it appears in the 
-                            initial document, any deviation from the read content will cause the regex evaluation to fail. 
-                            make sure the output is a valid multi-line, triple-quote string and that any commas or other special characters in 
-                            python and escaped.
-                            Make sure you reference and write to ('where_to_do_it') the file you want to change and that it has this line as you've written it
-                            Only for 'REWRITE' tasks. DO NOT WRITE FOR 'REWRITE_FILE' TASKS!"""
+                            "description": """
+                            The exact text you want replaced, as it appears in the initial document. 
+                            Ensure the output is a valid multi-line, triple-quote string and that any special characters
+                            are escaped. Only for 'REWRITE' tasks."""
                         },
                         "file_to_rewrite": {
                             "type": "string",
@@ -210,15 +311,16 @@ EDITOR_FUNCTION_SCHEMA = [{
                         },
                         "what_to_do": {
                             "type": "string",
-                            "description": """Your instructions to the 2nd part of the iterative process: The executor.
-                            Critical!
-                            Be concise, detailed and nuanced. Make references to the how the previous work went in order 
-                            to tell the executor what to improve on in this loop"""
+                            "description": """Instructions for the executor in the iterative process. 
+                            Be concise, detailed, and nuanced. Refer to previous work to specify improvements for this 
+                            loop."""
                         },
                         "where_to_do_it": {
                             "type": "string",
-                            "description": """The file where the output should be saved. MUST include a file from the 
-                            reference files. MUST be included for ALL task types"""
+                            "description": f"""The file where the output should be saved. 
+                            Must reference a file from 'what_to_reference'.
+                            Don't save to {Constants.meta_analysis_filename} or {Constants.execution_logs_filename} 
+                            you don't have permission."""
                         }
                     },
                     "required": ["type", "what_to_reference", "what_to_do", "where_to_do_it"]
@@ -228,32 +330,34 @@ EDITOR_FUNCTION_SCHEMA = [{
     }
 }]
 
+# ToDo: Could be good to add an example here
 REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS = """
-You are a talented, skilled and professional editor rewriting a document supplied to you piece by piece. 
-Rewrite each content in line with your objectives, don't prematurely conclude the entire report with this piece however, 
-you will be passed another piece to edit after this one.
-Your work is intended to be directly presented to the end user, so avoid including notes on how the document can be 
-improved or what steps to take next.
-Write continuously, that is so that another LLM can take your output and keep writing it, continuously, prioritise 
-maintaining the style and format of the document as it was initially brought to you, preference the style of existing 
-content over material you wrote.
-DO NOT TRY AND CONCLUDE THE DOCUMENT!!!!!!!!!!
+You are a skilled and professional editor tasked with rewriting a document supplied to you piece by piece. 
+Your objective is to rewrite each piece in line with the overall objectives without prematurely concluding the entire report.
+Subsequent pieces will be passed to you for further editing.
 
-Follow next_steps and areas_of_improvement to append an improvement to the solution.
-You have been directed to overwrite an existing file, please maintain as much of the original content as is sensible while outputing an AUGMENTED version in line with your directives.
-Do not add code block delimiters, don't add a language identifier
+Your work is intended to be directly presented to the end user, so avoid including notes on document improvement or next steps. 
+Write continuously to ensure another LLM can seamlessly continue from your output. Prioritize maintaining the style and 
+format of the original document, preferring the existing content style over your own additions.
+
+DO NOT CONCLUDE THE DOCUMENT. (!!!)
+
+Follow 'next_steps' and 'areas_of_improvement' to append improvements to the solution. 
+You have been directed to overwrite an existing file, so maintain as much of the original content as possible while outputting an augmented version in line with your directives. 
+Do not add code block delimiters or language identifiers.
+
+**Task Requirements:**
+
+- **Blend Content**: Ensure each piece integrates smoothly into the existing document. Avoid concluding each section, as your writing is part of a larger whole.
+- **Consistency**: Maintain consistency throughout your writing. Avoid repetition unless explicitly summarizing.
+- **Avoid Repetition**: Do not write conclusions or repeat headings. Ensure content is unique and non-redundant.
+- **Specificity and Detail**: Be specific and detailed in your prompts.
+- **Role Assignment**: Assume a specific role where necessary to guide the writing style and perspective (e.g., an environmental scientist or an economic analyst).
+- **Structured Approach**: Break down complex tasks into clear, sequential steps. Provide context and ensure understanding of the broader topic.
+- **Focus**: Concentrate on one task per prompt to maintain clarity and precision.
+- **Use of Examples**: Include examples or templates to guide the response.
+- **Continuous Refinement**: Continuously refine and iterate your prompts based on the outputs received.
+- **Headings**: Ensure headings are written on new lines, write EACH new heading on a new line even at the start of your response.
 
 
-Task Requirements:
-
-- Blend Content: Ensure each piece you write integrates smoothly into the existing document. Avoid concluding each section as your writing is meant to be part of a larger whole.
-- Consistency: Maintain consistency throughout your writing. Avoid repetition of previously established content unless explicitly summarizing.
-- Avoid Repetition: Do not write conclusions or repeat headings. Ensure content is unique and non-redundant.
-- Specificity and Detail: Be specific and detailed in your prompts.
-- Role Assignment: Assume a specific role where necessary to guide the writing style and perspective. For instance, write from the perspective of an environmental scientist or an economic analyst.
-- Structured Approach: Break down complex tasks into clear, sequential steps. Provide context and ensure understanding of the broader topic.
-- Focus: Concentrate on one task per prompt to maintain clarity and precision.
-- Use of Examples: Include examples or templates to guide the response.
-- Continuous Refinement: Continuously refine and iterate your prompts based on the outputs received.
-- Ensure headings are written on new lines. even if this means adding empty space to the start of your response
 """
