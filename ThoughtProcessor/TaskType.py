@@ -45,15 +45,16 @@ class TaskType(enum.Enum):
         if page_number == 1:
             return executor_task.execute(
                 PersonaConstants.WRITER_SYSTEM_INSTRUCTIONS,
-                [
-                    f"Write the first page of {task_directives.get('pages_to_write')}, answering the following: {task_directives.get('what_to_do')}"]
+                [f"""Write the first page of {task_directives.get('pages_to_write')}, 
+                answering the following: {task_directives.get('what_to_do')}"""]
             )
         else:
             return executor_task.execute(
                 PersonaConstants.WRITER_SYSTEM_INSTRUCTIONS,
                 [
                     f"So far you have written: \n\n{output}",
-                    "Continue writing the document. Please bear in mind that you are being prompted repeatedly: you don't have to write a response for everything at once."
+                    """Continue writing the document. Please bear in mind that you are being prompted repeatedly: 
+                    you don't have to write a response for everything at once."""
                 ]
             )
 
@@ -68,7 +69,7 @@ class TaskType(enum.Enum):
     @staticmethod
     def rewrite_part_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1):
         output = executor_task.execute(
-            Constants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
+            PersonaConstants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
             [f"""Just rewrite <rewrite_this>\n{task_directives.get('rewrite_this')}\n</rewrite_this>\n
             In the following way: {str(task_directives.get('what_to_do'))}"""]
         )
@@ -86,9 +87,9 @@ class TaskType(enum.Enum):
 
         re_written_file = ""
         for text_chunk in text_chunks:  # ToDo: could be parallelised
-            logging.info(f"Rewriting: {text_chunk}")
+            logging.debug(f"Rewriting: {text_chunk}")
             re_written_file += executor_task.execute(
-                Constants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
+                PersonaConstants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
                 [f"""Rewrite this section: \n<rewrite_this>\n{text_chunk}\n</rewrite_this>\n
                     In the following way: {str(task_directives.get('what_to_do'))}"""]
             )

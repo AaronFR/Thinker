@@ -10,7 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - TaskRunner for running individual tasks in order to improve solution: APPEND, REWRITE, REWRITE_FILE
-- 
+- Analyst role: reviews the current output files against the initially supplied user prompt, making comments and finally 
+ suggesting a list of workers to work on the task to improve it in line with their suggestions
+- Writer role: Writes reports, iterating multiple times to overcome ChatGpt's output limit
+- Editor role: reviews reports and rewrites the entire file 1000 tokens at a time in line with an instruction from the Analyst and its own observations
 
 ### Changed
 
@@ -21,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
--
+- Analyser.py and ExecutiveThought.py now long since integrated into Analyser.py and the executive planning process in Writer and Editor
 
 ## [0.2.1] - 2024-08-01
 

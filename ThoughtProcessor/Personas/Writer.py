@@ -25,7 +25,7 @@ class Writer(PersonaInterface):
     def work(self, current_task: str):
         """Planner-specific task execution logic
         """
-        execution_logs = "Writer Workin'...\n"
+        execution_logs = "Writer writing'...\n"
         self.files_for_evaluation = FileManagement.list_files(str(self.current_thought_id))
 
         executive_output_dict = self.generate_executive_plan(current_task)

@@ -24,14 +24,14 @@ class Analyst(PersonaInterface):
         """First create a document evaluating the current output, if any, against the initial problem
         Then generate a list of workers to improve the current solution
         """
-        execution_logs = f"Analyst Working...:\'{current_task}\'\n"
+        execution_logs = f"Analyst analysing...:\'{current_task}\'\n"
         self.files_for_evaluation = FileManagement.list_files(str(self.current_thought_id))
 
         # evaluate current files
         analyst = self.create_ai_wrapper(self.files_for_evaluation)
         analysis_report = analyst.execute(
             ["""You are an analyst strictly reviewing the quality of a solution to a given problem, at the end of your through evaluation, determine if the given solution ACTUALLY answers the original prompt sufficiently in format:
-                    Solved: True/False"""],
+                    Solved: True/False. Also make it clear that this is just a report and should not be operated on by other worker LLM's"""],
             [f"given the following user request: {current_task} how do you evaluate the current available files as a solution?:\n\n\n Make as many notes and corrections as you possibly can"]
         )
 

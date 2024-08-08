@@ -208,15 +208,6 @@ The first part has generated directives for you to follow in order to solve help
 Evaluate the following  prompt thoroughly but concisely.
 Adding as much useful detail as possible while keeping your answer curt and to the point.
 Follow next_steps and areas_of_improvement to append an improvement to the solution."""
-REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS = """You are the 2nd part of a 2 step process, iterating in a system to rewrite a section of text,
-The first part has generated general directives for you to follow in order to improve the selected text for replacement
-
-Evaluate the following  prompt thoroughly but concisely.
-Adding as much useful detail as possible while keeping your answer curt and to the point.
-Follow next_steps and areas_of_improvement to append an improvement to the solution.
-You have been directed to overwrite an existing file, please maintain as much of the original content as is sensible while outputing an AUGMENTED version in line with your directives.
-
-Do not add code block delimiters, don't add a language identifier"""
 
 EVALUATE_TASKS_INSTRUCTIONS = """
 You are an assistant to handle and process tasks and convert them into full, detailed solutions. You sould aim to provide full detail responses, not cut out relevant information from supplied reference material while making the solution engaging and interesting to read.

@@ -12,7 +12,7 @@ from ThoughtProcessor.TaskType import TaskType
 from Utility import Utility
 
 
-class Writer(PersonaInterface):
+class Editor(PersonaInterface):
 
     def __init__(self, name):
         super().__init__(name)
@@ -25,7 +25,8 @@ class Writer(PersonaInterface):
     def work(self, current_task: str):
         """Planner-specific task execution logic
         """
-        execution_logs = "Writer Workin'...\n"
+        # ToDo: furnish the execution_logs with more detail and steps
+        execution_logs = "Editor editing'...\n"
         self.files_for_evaluation = FileManagement.list_files(str(self.current_thought_id))
 
         executive_output_dict = self.generate_executive_plan(current_task)
@@ -53,11 +54,11 @@ class Writer(PersonaInterface):
         logging.info(f"Executing task: \n{pformat(task_directives)}")
         logging.debug("Type input 'bug': = " + str(type(task_directives.get('what_to_do'))))
 
-        logging.info(f"Processing Task: [{task_directives.get('type', TaskType.APPEND.value)}]"
+        logging.info(f"Processing Task: [{task_directives.get('type', TaskType.REWRITE_FILE.value)}]"
                      + str(task_directives.get('what_to_do')))
         executor_thought = PersonaInterface.create_ai_wrapper(task_directives.get('what_to_reference', []))
 
-        thought_type = TaskType(task_directives.get('type', TaskType.APPEND.value))
+        thought_type = TaskType(task_directives.get('type', TaskType.REWRITE_FILE.value))
         thought_type.execute(executor_thought, task_directives)
         logging.info(f"Task processed and saved to {task_directives.get('where_to_do_it')}.")
 
@@ -79,20 +80,20 @@ class Writer(PersonaInterface):
 
         existing_files = f"Existing files: [{', '.join(str(file) for file in self.files_for_evaluation)}]"
         executive_plan = executive_planner.execute_function(
-            [existing_files, PersonaConstants.EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS],
+            [existing_files, PersonaConstants.EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS],
             additional_user_messages + [task],
-            PersonaConstants.WRITER_FUNCTION_SCHEMA
+            PersonaConstants.EDITOR_FUNCTION_SCHEMA
         )
 
-        if Writer.invalid_function_output(executive_plan):
+        if not self.valid_function_output(executive_plan):
             logging.info("INVALID SCHEMA, RETRYING...")
             executive_plan = executive_planner.execute_function(
-                [existing_files, PersonaConstants.EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS],
+                [existing_files, PersonaConstants.EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS],
                 additional_user_messages + [task],
-                PersonaConstants.WRITER_FUNCTION_SCHEMA
+                PersonaConstants.EDITOR_FUNCTION_SCHEMA
             )
 
-            if Writer.invalid_function_output(executive_plan):
+            if not self.valid_function_output(executive_plan):
                 logging.error("2ND INVALID SCHEMA PRODUCED")
 
         return executive_plan
@@ -100,6 +101,8 @@ class Writer(PersonaInterface):
 
 
 if __name__ == '__main__':
-    writer = Writer("test")
-    writer.work("""Write a detailed report about the future of tidal technology, what innovations and possible disruptions could occur
+    editor = Editor("test")
+    editor.work("""Review the translated report for structural coherence according to Dutch reporting styles. 
+    Organize the information with clear headings and sections, including an inleiding (introduction) and conclusie (conclusion). 
+    Ensure that the formatting aligns with typical Dutch standards for academic or historical reports.
     """)

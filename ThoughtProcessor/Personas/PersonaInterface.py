@@ -41,5 +41,6 @@ class PersonaInterface:
                 if key not in task:
                     logging.error(f"Missing required key: {key} in task: {task}")
                     return False
+
         logging.info(f"Task validated successfully: {executive_plan}")
         return True
