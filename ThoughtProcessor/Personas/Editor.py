@@ -3,22 +3,21 @@ import os
 from pprint import pformat
 from typing import Dict, List
 
-from ThoughtProcessor.AiWrapper import AiWrapper
+import Constants
+import Globals
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.Personas import PersonaConstants
-from ThoughtProcessor.Personas.PersonaInterface import PersonaInterface
+from ThoughtProcessor.Personas.BasePersona import BasePersona
 from ThoughtProcessor.TaskType import TaskType
 from Utility import Utility
 
 
-class Editor(PersonaInterface):
+class Editor(BasePersona):
 
     def __init__(self, name):
         super().__init__(name)
-        self.thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
         self.files_for_evaluation = []
-        self.current_thought_id = 1  # self.get_next_thought_id()
 
         ErrorHandler.setup_logging()
 
@@ -26,12 +25,11 @@ class Editor(PersonaInterface):
         """Planner-specific task execution logic
         """
         # ToDo: furnish the execution_logs with more detail and steps
-        execution_logs = "Editor editing'...\n"
-        self.files_for_evaluation = FileManagement.list_files(str(self.current_thought_id))
+        execution_logs = f"Editor editing'...\n{current_task}\n"
+        self.files_for_evaluation = FileManagement.list_files(str(Globals.thought_id))
 
         executive_output_dict = self.generate_executive_plan(current_task)
         execution_logs += "EXEC PLAN: " + str(pformat(executive_output_dict)) + "\n"
-        # ToDo: create function that checks dicts against function definitions, if a deviation is detected the executive is re-run
 
         logging.info(f"Generated tasks: {pformat(executive_output_dict.get('tasks'))}")
 
@@ -56,7 +54,7 @@ class Editor(PersonaInterface):
 
         logging.info(f"Processing Task: [{task_directives.get('type', TaskType.REWRITE_FILE.value)}]"
                      + str(task_directives.get('what_to_do')))
-        executor_thought = PersonaInterface.create_ai_wrapper(task_directives.get('what_to_reference', []))
+        executor_thought = BasePersona.create_ai_wrapper(task_directives.get('what_to_reference', []))
 
         thought_type = TaskType(task_directives.get('type', TaskType.REWRITE_FILE.value))
         thought_type.execute(executor_thought, task_directives)

@@ -70,7 +70,7 @@ class Prompter:
             input_token_price = chat_completion.usage.prompt_tokens * 0.00000015
             output_token_price = chat_completion.usage.completion_tokens * 0.00000060
 
-            Globals.request_price += (input_token_price + output_token_price)
+            Globals.current_request_cost += (input_token_price + output_token_price)
 
             logging.info(f"input tokens: {chat_completion.usage.prompt_tokens}, price: ${round(input_token_price, 4)}")
             logging.info(f"output tokens: {chat_completion.usage.completion_tokens}, price: ${round(output_token_price, 4)}")
@@ -91,12 +91,11 @@ class Prompter:
         :param task_number: The tasks number in the execution sequence
         """
         prompt = Utility.fill_placeholders(prompt)
-        thought_id = 1  # ToDo: hardcoded for now
 
         try:
             output_text = self.generate_response(prompt).choices[0].message.content
 
-            FileManagement.save_file(output_text, "Task" + str(task_number), str(thought_id))
+            FileManagement.save_file(output_text, "Task" + str(task_number))
             logging.info(f"Task {task_number} processed successfully.")
         except Exception as e:
             logging.error(f"Error during OpenAI API call: {e}")

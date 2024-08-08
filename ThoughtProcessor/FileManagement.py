@@ -7,41 +7,41 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
+import Globals
 from ThoughtProcessor.ErrorHandler import ErrorHandler
-
-thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
 
 
 class FileManagement:
     """Class for managing files related to tasks and solutions."""
 
+    thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
+
     def __init__(self):
         ErrorHandler.setup_logging()
 
     @staticmethod
-    def initialise_file(thought_id: int, file: str):
-        """Initialize a given file as an empty file, in advance of it being opened
+    def initialise_file(file: str):
+        """Initialise a given file as an empty file, in advance of it being opened
         instance declarations, doesn't make sense.
 
-        :param thought_id: The ID of the currently executing thought.
-        :param file: The name of the file to initialize.
+        :param file: The name of the file to initialise.
         """
-        os.makedirs(f"thoughts/{thought_id}", exist_ok=True)
-        file_path = os.path.join("thoughts", str(thought_id), file)
+        os.makedirs(f"thoughts/{Globals.thought_id}", exist_ok=True)
+        file_path = os.path.join("thoughts", str(Globals.thought_id), file)
         try:
             with open(file_path, "w", encoding="utf-8"):
                 logging.info(f"File {file_path} instantiated.")
         except Exception as e:
-            logging.error(f"ERROR: could not instantiate file: {file_path}\n {str(e)} \nThought_id: {thought_id}")
+            logging.error(f"""ERROR: could not instantiate file: {file_path}\n{str(e)}""")
 
     @staticmethod
-    def list_files(thoughts_id: str = "1") -> list:
+    def list_files(thought_id: str = "1") -> list:
         """
         List all file names in the given directory.
 
         :return: A list of file names in the directory.
         """
-        thought_folder = os.path.join(os.path.dirname(__file__), "thoughts", thoughts_id)
+        thought_folder = FileManagement._get_thought_folder(thought_id)
         try:
             entries = os.listdir(thought_folder)
             file_names = [entry for entry in entries if os.path.isfile(os.path.join(thought_folder, entry))]
@@ -56,14 +56,13 @@ class FileManagement:
             return []
 
     @staticmethod
-    def read_file(file_path: str, thought_id=1) -> str:
+    def read_file(file_path: str) -> str:
         """Read the content of a file.
 
         :param file_path: The path of the file to read.
-        :param thought_id:
         :return: The content of the file or an error message to let the next llm known what happened.
         """
-        full_path = os.path.join(thoughts_folder, str(thought_id), file_path)
+        full_path = os.path.join(FileManagement.thoughts_folder, str(Globals.thought_id), file_path)
         logging.info(f"Loading file content from: {full_path}")
         try:
             with open(full_path, 'r', encoding='utf-8') as file:
@@ -89,13 +88,12 @@ class FileManagement:
         return contents
 
     @staticmethod
-    def save_file(content: str, file_name, thought_id: str, overwrite=False):
+    def save_file(content: str, file_name, overwrite=False):
         """
         Saves the response content to a file.
 
         :param content: The content to be formatted and saved.
         :param file_name: The base name for the file, (only the file name, no absolute or relative references)
-        :param thought_id: sub-folder the ThoughtProcess is running on
         :param overwrite: whether the file should be overwritten
         """
         dir_path = os.path.join(thoughts_folder, str(thought_id))
@@ -118,14 +116,13 @@ class FileManagement:
             logging.error(f"could not save file, {str(e)}")
 
     @staticmethod
-    def re_write_section(target_string: str, replacement: str, file_name, thought_id: str):
+    def re_write_section(target_string: str, replacement: str, file_name):
         """
         Replaces every instance of the target with the replacement str
 
-        :param target_string: The text to be replaced
-        :param replacement: to replace target_string
-        :param file_name: The base name for the file
-        :param thought_id: sub-folder the ThoughtProcess is running on
+        :param target_string: The text to be replaced.
+        :param replacement: The text to replace the target string.
+        :param file_name: The base name for the file.
         """
         file_content = FileManagement.read_file(file_name)
 
@@ -164,7 +161,7 @@ class FileManagement:
         :param file_name: The base name for the output HTML file.
         :param prompt_id: An identifier to make the file name unique.
         """
-        dir_path = os.path.join(thoughts_folder, str(prompt_id))
+        dir_path = os.path.join(FileManagement.thoughts_folder, str(prompt_id))
         os.makedirs(dir_path, exist_ok=True)
 
         html_text = FileManagement._format_to_html(content)
@@ -210,7 +207,7 @@ class FileManagement:
 
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         FileManagement.save_as_html(content, "solution", timestamp)
-        FileManagement.save_file(content, "solution", str(thought_id), overwrite=True)
+        FileManagement.save_file(content, "solution", overwrite=True)
 
     @staticmethod
     def get_next_thought_id() -> int:
@@ -219,13 +216,13 @@ class FileManagement:
 
         :return: Next available thought ID as an integer.
         """
-        os.makedirs(thoughts_folder, exist_ok=True)
-        return len([name for name in os.listdir(thoughts_folder) if
-                    os.path.isdir(os.path.join(thoughts_folder, name))]) + 1
+        os.makedirs(FileManagement.thoughts_folder, exist_ok=True)
+        return len([name for name in os.listdir(FileManagement.thoughts_folder) if
+                    os.path.isdir(os.path.join(FileManagement.thoughts_folder, name))]) + 1
 
 
 if __name__ == '__main__':
     # FileManagement.re_write_section("""Generate a response based on system and user prompts.
     #                                 """, "womp", "thought.py", "1")
 
-    FileManagement.save_file("Test", "test_test", "1")
+    FileManagement.save_file("Test", "test_test")

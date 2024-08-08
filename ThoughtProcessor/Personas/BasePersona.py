@@ -3,10 +3,9 @@ from typing import List, Dict
 
 from ThoughtProcessor.AiWrapper import AiWrapper
 from ThoughtProcessor.ErrorHandler import ErrorHandler
-from ThoughtProcessor.Personas import PersonaConstants
 
 
-class PersonaInterface:
+class BasePersona:
     def __init__(self, name):
         self.name = name
 
@@ -52,22 +51,21 @@ class PersonaInterface:
             additional_user_messages: List[str],
             task: str,
             function_instructions: str,
-            function_schema: str
-        ) -> Dict[str, object]:
+            function_schema: str) -> Dict[str, object]:
 
         existing_files = f"Existing files: [{', '.join(str(file) for file in files_for_evaluation)}]"
-        ai_wrapper = PersonaInterface.create_ai_wrapper(files_for_evaluation)
+        ai_wrapper = BasePersona.create_ai_wrapper(files_for_evaluation)
         executive_plan = ai_wrapper.execute_function(
             [existing_files, function_instructions], additional_user_messages + [task], function_schema
         )
 
-        if not PersonaInterface.valid_function_output(executive_plan):
+        if not BasePersona.valid_function_output(executive_plan):
             logging.info("INVALID SCHEMA, RETRYING...")
             executive_plan = ai_wrapper.execute_function(
-                [existing_files, function_instructions], additional_user_messages + [task], function_schema
+                [existing_files, function_instructions], additional_user_messages + [task] + ["HEY! You failed to produce the json to the schema's specification! Try again."], function_schema
             )
 
-            if not PersonaInterface.valid_function_output(executive_plan):
+            if not BasePersona.valid_function_output(executive_plan):
                 logging.error("2ND INVALID SCHEMA PRODUCED")
                 raise Exception("SCHEMA FAILURE")
 

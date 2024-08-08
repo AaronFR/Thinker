@@ -5,8 +5,7 @@ from ThoughtProcessor.Personas.Editor import Editor
 from ThoughtProcessor.Personas.Writer import Writer
 
 class TaskRunner:
-    def __init__(self, current_thought_id: int):
-        self.current_thought_id = current_thought_id
+    def __init__(self):
         self.thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
 
         self.personas = {

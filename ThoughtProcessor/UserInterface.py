@@ -2,10 +2,8 @@ import logging
 import os
 from collections import deque
 
-from openai import OpenAI
-
+import Constants
 import Globals
-from Prompter import Prompter
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.TaskRunner import TaskRunner
@@ -20,24 +18,19 @@ class UserInterface:
     the system to address and resolve complex problems iteratively.
 
     Attributes:
-        thoughts_folder (str): Directory where thoughts are stored.
-        files_for_evaluation (list): List of files available for evaluation.
-        current_thought_id (int): Unique identifier for the current thought process.
-        prompter (Prompter): An instance to manage prompts for task communication.
-        open_ai_client (OpenAI): Client for interaction with the OpenAI API.
-        max_tries (int): Maximum attempts to resolve a task.
+        files_for_evaluation (list): List of files to be evaluated.
+        max_tries (int): Maximum attempts allowed to resolve a task.
     """
+
+    MAX_TRIES = 15
+    BUDGET = 0.01  # $
 
     def __init__(self):
         """
-        Initialize the ThoughtProcess instance.
+        Initialize the UserInterface instance.
         """
-        self.thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
         self.files_for_evaluation = []
-        self.current_thought_id = 1  # self.get_next_thought_id()
-
-        self.task_runner = TaskRunner(self.current_thought_id)
-        self.max_tries = 15
+        self.task_runner = TaskRunner()
 
         ErrorHandler.setup_logging()
 
@@ -48,9 +41,16 @@ class UserInterface:
         This method coordinates the assessment and execution process, generating execution plans,
         attempting the resolution iteratively, and keeping logs of performance outcomes.
 
-        :param user_prompt: The description of the task to evaluate as a string.
+        The method tries to solve the provided task by executing iterations within a budget limit.
+
+        :param user_prompt: The description of the task to evaluate as a string. This should be
+                           a concise prompt that describes the desired outcome, such as a
+                           question or request
+
+        Returns:
+            None: This method does not return a value. It logs the process and updates the system state.
         """
-        current_prompt_folder = os.path.join(self.thoughts_folder, f"{self.current_thought_id}")
+        current_prompt_folder = os.path.join(FileManagement.thoughts_folder, f"{Globals.thought_id}")
         os.makedirs(current_prompt_folder, exist_ok=True)
 
         task_queue = deque([user_prompt])  # Main task queue
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     thought_process = UserInterface()
 
     thought_process.evaluate_prompt(
-        """Please write new versions of TaskRunner.py and TaskType.py call them TaskRunnerV2.py and TaskTypeV2.py respectively. Improving first for things like readability, useability, and general good coding standards.
-        THEN write into these new class files, adding in new functions, new capabilities that could be added to either for increased user value"""
+        """Make suggestions in a report markdown file on how to improve UserInterface.py, with 
+        (consise small individual) examples.
+        Demonstrate to specifically rather than theoretically how the class can be improved"""
     )
-
