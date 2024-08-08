@@ -81,11 +81,7 @@ class FileManagement:
         :param file_paths: List of file paths to read.
         :return: List of content read from the files.
         """
-        contents = []
-        for path in file_paths:
-            logging.info(f"Attempting to access {path}")
-            contents.append(FileManagement.read_file(path))
-        return contents
+        return [FileManagement.read_file(path) for path in file_paths]
 
     @staticmethod
     def save_file(content: str, file_name, overwrite=False):
@@ -96,24 +92,14 @@ class FileManagement:
         :param file_name: The base name for the file, (only the file name, no absolute or relative references)
         :param overwrite: whether the file should be overwritten
         """
-        dir_path = os.path.join(thoughts_folder, str(thought_id))
-        os.makedirs(dir_path, exist_ok=True)
-
-        file_path = os.path.join(dir_path, file_name)
+        file_path = FileManagement._get_file_path(file_name)
+        mode = "w" if overwrite or not os.path.exists(file_path) else "a"
         try:
-            if overwrite or not os.path.exists(file_path):
-                mode = "w"
-            else:
-                mode = "a"
-
             with open(file_path, mode, encoding="utf-8") as file:
                 file.write(content)
-                if overwrite:
-                    logging.info(f"File overwritten: {file_path}")
-                else:
-                    logging.info(f"File saved: {file_path}")
+                logging.info(f"File {'overwritten' if overwrite else 'saved'}: {file_path}")
         except Exception as e:
-            logging.error(f"could not save file, {str(e)}")
+            logging.error(f"ERROR: could not save file: {file_path}\n {str(e)}")
 
     @staticmethod
     def re_write_section(target_string: str, replacement: str, file_name):
@@ -125,18 +111,7 @@ class FileManagement:
         :param file_name: The base name for the file.
         """
         file_content = FileManagement.read_file(file_name)
-
-        # pattern = re.compile(re.escape(target_string), re.DOTALL)
-
-        # Escape special characters in the stripped string
-        escaped_string = re.escape(target_string)
-        # Replace escaped spaces and newline characters with \s+ for flexible matching
-        flexible_pattern = re.sub(r'\\ ', r'\\s+', escaped_string)
-        # Replace escaped newlines with \s+ for flexible matching
-        flexible_pattern = re.sub(r'\\n', r'\\s+', flexible_pattern)
-        pattern = re.compile(flexible_pattern, re.DOTALL)
-
-        modified_text = pattern.sub(replacement, file_content)
+        modified_text = FileManagement._replace_text(file_content, target_string, replacement)
 
         if file_content == modified_text:
             # You could try and recover but really the lesson is: don't use regex just *extract* lines from the document
@@ -144,13 +119,36 @@ class FileManagement:
             logging.error(f"No matches found for the target string: {target_string}")
             raise ValueError(f"No matches found for the target string: {target_string}")
 
+        FileManagement._write_to_file(modified_text, file_name)
+
+    @staticmethod
+    def _replace_text(content: str, target: str, replacement: str) -> str:
+        # pattern = re.compile(re.escape(target_string), re.DOTALL)
+
+        # Escape special characters in the stripped string
+        escaped_string = re.escape(target)
+        # Replace escaped spaces and newline characters with \s+ for flexible matching
+        flexible_pattern = re.sub(r'\\ ', r'\\s+', escaped_string)
+        # Replace escaped newlines with \s+ for flexible matching
+        flexible_pattern = re.sub(r'\\n', r'\\s+', flexible_pattern)
+        pattern = re.compile(flexible_pattern, re.DOTALL)
+
+        return pattern.sub(replacement, content)
+
+    @staticmethod
+    def _write_to_file(content: str, file_name: str):
+        """Write the content to a file.
+
+        :param content: The content to be written.
+        :param file_name: The name of the file.
+        """
+        file_path = FileManagement._get_file_path(file_name)
         try:
-            file_path = os.path.join(thoughts_folder, thought_id, file_name)
             with open(file_path, "w", encoding="utf-8") as file:
-                file.write(modified_text)
+                file.write(content)
                 logging.info(f"File overwritten: {file_path}")
         except Exception as e:
-            logging.error(f"could not save file, {str(e)}")
+            logging.error(f"ERROR: could not save file: {file_path}\n {str(e)}")
 
     @staticmethod
     def save_as_html(content: str, file_name: str, prompt_id: str):
@@ -170,8 +168,9 @@ class FileManagement:
         try:
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write(html_text)
+                logging.info(f"HTML file saved: {file_path}")
         except Exception as e:
-            logging.error(f"ERROR: could not save file, {str(e)}")
+            logging.error(f"Could not save HTML file: {file_path}\n {str(e)}")
 
     @staticmethod
     def _format_to_html(text: str) -> str:
@@ -185,29 +184,42 @@ class FileManagement:
         return highlighted_code
 
     @staticmethod
-    def aggregate_files(file_base_name, start, end, thought_id=1):
-        i = start - 1
-        end -= 1
-        content = ""
+    def aggregate_files(file_base_name, start, end):
+        """Aggregate content from multiple files into a single file.
 
-        if end >= i > -1:
-            while i <= end:
-                i += 1
-                try:
-                    with open(file_base_name + "_" + str(i) + ".txt", 'r', encoding='utf-8') as f:
-                        # Read content from each output file and write it to the consolidated file
-                        content += f.read()
-                    logging.info(f"CONTENT [{i}]: {content}")
-                except FileNotFoundError:
-                    logging.error(f"File {file_base_name + '_' + str(i) + '.txt'} not found.")
-                except UnicodeDecodeError as e:
-                    logging.error(f"Error decoding file {file_base_name + '_' + str(i) + '.txt'}: {e}")
-                except Exception as e:
-                    logging.error(f"ERROR: could not save file, {str(e)}")
+        :param file_base_name: The base name for the files to aggregate.
+        :param start: The starting index for the files.
+        :param end: The ending index for the files.
+        """
+        content = FileManagement._read_files_in_range(file_base_name, start, end)
 
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         FileManagement.save_as_html(content, "solution", timestamp)
         FileManagement.save_file(content, "solution", overwrite=True)
+
+    @staticmethod
+    def _read_files_in_range(file_base_name: str, start: int, end: int) -> str:
+        """Read content from files in the specified range.
+
+        :param file_base_name: The base name for the files.
+        :param start: The starting index for the files.
+        :param end: The ending index for the files.
+        :return: The aggregated content from the files.
+        """
+        content = ""
+        for i in range(start, end + 1):
+            file_path = f"{file_base_name}_{i}.txt"
+            try:
+                with open(file_path, 'r', encoding='utf-8') as file:
+                    content += file.read()
+                logging.info(f"CONTENT [{i}]: {content}")
+            except FileNotFoundError:
+                logging.error(f"File not found: {file_path}")
+            except UnicodeDecodeError as e:
+                logging.error(f"Error decoding file {file_path}: {e}")
+            except Exception as e:
+                logging.error(f"ERROR: could not read file {file_path}\n {str(e)}")
+        return content
 
     @staticmethod
     def get_next_thought_id() -> int:
@@ -219,6 +231,24 @@ class FileManagement:
         os.makedirs(FileManagement.thoughts_folder, exist_ok=True)
         return len([name for name in os.listdir(FileManagement.thoughts_folder) if
                     os.path.isdir(os.path.join(FileManagement.thoughts_folder, name))]) + 1
+
+    @staticmethod
+    def _get_file_path(file_name: str) -> str:
+        """Get the full path for a file in the given thought and file name.
+
+        :param file_name: The name of the file.
+        :return: The full path of the file.
+        """
+        return os.path.join(FileManagement.thoughts_folder, str(Globals.thought_id), file_name)
+
+    @staticmethod
+    def _get_thought_folder(thought_id: str) -> str:
+        """Get the folder path for a given thought ID.
+
+        :param thought_id: The ID of the currently executing thought.
+        :return: The folder path for the given thought ID.
+        """
+        return os.path.join(FileManagement.thoughts_folder, thought_id)
 
 
 if __name__ == '__main__':

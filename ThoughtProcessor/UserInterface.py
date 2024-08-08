@@ -50,6 +50,9 @@ class UserInterface:
         Returns:
             None: This method does not return a value. It logs the process and updates the system state.
         """
+        if not self.validate_prompt(user_prompt):
+            return  # Exit early on invalid input
+
         current_prompt_folder = os.path.join(FileManagement.thoughts_folder, f"{Globals.thought_id}")
         os.makedirs(current_prompt_folder, exist_ok=True)
 
@@ -62,14 +65,8 @@ class UserInterface:
 
             # Iterate through execution attempts for a given task
             while self.within_budget():
-                if attempt_count == self.max_tries:
-                    logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS")
-                    execution_logs = f"PROBLEM REMAINS UNSOLVED AFTER {self.max_tries} ATTEMPTS\n"  # Capture final attempt logs
-                    FileManagement.save_file(
-                        execution_logs,
-                        os.path.join(self.thoughts_folder, str(self.current_thought_id), "execution_logs.txt"),
-                        ""
-                    )
+                if attempt_count >= self.MAX_TRIES:
+                    self._log_and_save_unsolved_problem()
                     break
 
                 try:
@@ -88,14 +85,43 @@ class UserInterface:
 
                 attempt_count += 1
 
-            logging.info(f"""FINISHED REQUEST: [{current_task}]\nin {attempt_count} iterations
-                         \ntotal cost: ${round(Globals.request_price, 4)}""")
-            Globals.request_price = 0.0
+            self._log_process_completion(current_task, attempt_count)
+
+    def validate_prompt(self, user_prompt: str) -> bool:
+        """Validate user input prompt
+        Later will need to include content moderation
+
+        """
+        if user_prompt is None or not user_prompt.strip():
+            logging.error("Invalid input: user_prompt cannot be None or empty.")
+            return False
+        return True
+
+    def _log_and_save_unsolved_problem(self):
+        """Log and save information about an unsolved problem."""
+        logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS")
+        execution_logs = f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS\n"
+        FileManagement.save_file(execution_logs, Constants.execution_logs_filename)
 
     @staticmethod
-    def within_budget(budget=0.01):
-        logging.info(f"Current cost: ${round(Globals.request_price, 5)}")
-        return Globals.request_price <= budget
+    def _log_process_completion(current_task: str, attempt_count: int):
+        """Log the termination of a request process"""
+        logging.info(f"""FINISHED REQUEST: [{current_task}]
+                        in {attempt_count} iterations
+                        total cost: ${round(Globals.current_request_cost, 4)}""")
+        Globals.current_request_cost = 0.0
+
+    @staticmethod
+    def within_budget(budget: float = BUDGET) -> bool:
+        """
+        Check if the current cost is within the budget.
+
+        :param budget: The budget limit.
+        :return: True if within budget, False otherwise.
+        """
+        logging.info(
+            f"""Current cost: ${round(Globals.current_request_cost, 5)}, {round((Globals.current_request_cost / budget) * 100, 5)}%""")
+        return Globals.current_request_cost <= budget
 
 
 if __name__ == '__main__':

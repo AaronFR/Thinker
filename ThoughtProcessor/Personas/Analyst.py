@@ -53,9 +53,7 @@ class Analyst(BasePersona):
             PersonaConstants.ANALYST_FUNCTION_SCHEMA
         )
 
-        print(dict)
         list = dict.get('workers')
-        print(list)
 
         return list
 

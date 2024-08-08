@@ -29,7 +29,7 @@ class TaskType(enum.Enum):
             raise ValueError(f"Unknown TaskType: {self}")
 
     @staticmethod
-    def write_to_file_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1):
+    def write_to_file_task(executor_task: AiWrapper, task_directives: Dict[str, object]):
         pages_to_write = task_directives.get("pages_to_write", 1)
         output = ""
 
@@ -38,7 +38,7 @@ class TaskType(enum.Enum):
             output += text
             logging.debug(f"Page {i} written: {text}")
 
-        FileManagement.save_file(output, task_directives.get('where_to_do_it'), str(current_thought_id))
+        FileManagement.save_file(output, task_directives.get('where_to_do_it'))
 
     @staticmethod
     def _generate_text(executor_task: AiWrapper, output: str, task_directives: Dict[str, object], page_number: int):
@@ -59,12 +59,12 @@ class TaskType(enum.Enum):
             )
 
     @staticmethod
-    def append_to_file_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1):
+    def append_to_file_task(executor_task: AiWrapper, task_directives: Dict[str, object]):
         output = executor_task.execute(
             Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
             ["Primary Instructions: " + str(task_directives.get('what_to_do'))]
         )
-        FileManagement.save_file(output, task_directives.get('where_to_do_it'), str(current_thought_id))
+        FileManagement.save_file(output, task_directives.get('where_to_do_it'))
 
     @staticmethod
     def rewrite_part_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1):
@@ -76,8 +76,8 @@ class TaskType(enum.Enum):
         FileManagement.re_write_section(
             str(task_directives.get('rewrite_this')),
             output,
-            task_directives.get('where_to_do_it'),
-            str(current_thought_id))
+            task_directives.get('where_to_do_it')
+        )
 
     @staticmethod
     def rewrite_file_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1,
@@ -96,7 +96,6 @@ class TaskType(enum.Enum):
 
         FileManagement.save_file(re_written_file,
                                  task_directives.get('where_to_do_it'),
-                                 str(current_thought_id),
                                  overwrite=True)
         logging.info(f"File rewritten successfully: {task_directives.get('where_to_do_it')}")
 

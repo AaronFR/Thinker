@@ -15,14 +15,25 @@ class BasePersona:
         raise NotImplementedError("This method should be overridden by subclasses")
 
     @staticmethod
+    def run_task(task_directives: Dict[str, object]):
+        raise NotImplementedError("This method should be overridden by subclasses")
+
+    def _process_task(self, task: Dict[str, object], execution_logs: str):
+        try:
+            self.run_task(task)
+        except Exception as e:
+            failed_task = task.get('what_to_do')
+            logging.error(f"Task failed: {failed_task}: {e}")
+            execution_logs += f"Task failed: {failed_task}\n"
+
+    @staticmethod
     def create_ai_wrapper(input_data: List[str]) -> AiWrapper:
         """
         Create a new wrapper instance for llm processing.
 
         :param input_data: file references to be used as context.
-        :return: An instance of the ai wrapper class.
+        :return: An instance of the AI wrapper class.
         """
-        # Central management of thought instances
         return AiWrapper(input_data)
 
     @staticmethod

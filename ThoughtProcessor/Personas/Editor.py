@@ -35,17 +35,12 @@ class Editor(BasePersona):
 
         tasks = executive_output_dict.get('tasks', [])
         for task in tasks:
-            try:
-                self.run_task(task)
-            except Exception as e:
-                failed_task = task.get('what_to_do')
-                logging.error(f"Task failed: {failed_task}: {e}")
-                execution_logs += f"Task failed: {failed_task}\n"
-                FileManagement.save_file(
-                    execution_logs,
-                    os.path.join(self.thoughts_folder, str(self.current_thought_id), "execution_logs.txt"),
-                    str(self.current_thought_id)
-                )
+            self._process_task(task, execution_logs)
+
+        FileManagement.save_file(
+            execution_logs,
+            os.path.join(FileManagement.thoughts_folder, str(Globals.thought_id), Constants.execution_logs_filename)
+        )
 
     @staticmethod
     def run_task(task_directives: Dict[str, object]):
@@ -69,33 +64,17 @@ class Editor(BasePersona):
         :return: A dictionary parsed from the LLM's JSON format output.
         :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary.
         """
+        additional_user_messages = additional_user_messages or []
         if additional_user_messages:
             Utility.ensure_string_list(additional_user_messages)
-        else:
-            additional_user_messages = []
 
-        executive_planner = self.create_ai_wrapper(self.files_for_evaluation)
-
-        existing_files = f"Existing files: [{', '.join(str(file) for file in self.files_for_evaluation)}]"
-        executive_plan = executive_planner.execute_function(
-            [existing_files, PersonaConstants.EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS],
-            additional_user_messages + [task],
+        return self.generate_function(
+            self.files_for_evaluation,
+            additional_user_messages,
+            task,
+            PersonaConstants.EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS,
             PersonaConstants.EDITOR_FUNCTION_SCHEMA
         )
-
-        if not self.valid_function_output(executive_plan):
-            logging.info("INVALID SCHEMA, RETRYING...")
-            executive_plan = executive_planner.execute_function(
-                [existing_files, PersonaConstants.EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS],
-                additional_user_messages + [task],
-                PersonaConstants.EDITOR_FUNCTION_SCHEMA
-            )
-
-            if not self.valid_function_output(executive_plan):
-                logging.error("2ND INVALID SCHEMA PRODUCED")
-
-        return executive_plan
-
 
 
 if __name__ == '__main__':
