@@ -92,7 +92,7 @@ class UserInterface:
 
     @staticmethod
     def within_budget(budget=0.01):
-        logging.info(f"Current cost: {Globals.request_price}")
+        logging.info(f"Current cost: ${round(Globals.request_price, 5)}")
         return Globals.request_price <= budget
 
 

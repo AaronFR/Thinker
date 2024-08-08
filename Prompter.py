@@ -68,8 +68,8 @@ class Prompter:
 
             Globals.request_price += (input_token_price + output_token_price)
 
-            logging.info(f"input tokens: {chat_completion.usage.prompt_tokens}, price: ${input_token_price}")
-            logging.info(f"output tokens: {chat_completion.usage.completion_tokens}, price: ${output_token_price}")
+            logging.info(f"input tokens: {chat_completion.usage.prompt_tokens}, price: ${round(input_token_price, 4)}")
+            logging.info(f"output tokens: {chat_completion.usage.completion_tokens}, price: ${round(output_token_price, 4)}")
             response = chat_completion.choices[0].message.content
             return response or "[ERROR: NO RESPONSE FROM OpenAI API]"
         except OpenAIError as e:
