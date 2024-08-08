@@ -72,7 +72,12 @@ class UserInterface:
                     break
 
                 try:
-                    solved = self.task_runner.run_iteration(current_task)
+                    if Globals.workers:
+                        worker = Globals.workers.pop()
+                        solved = self.task_runner.run_iteration(worker.get('instructions'), worker.get('type'))
+                    else:
+                        solved = self.task_runner.run_iteration(current_task)
+
                     if solved:
                         return
                 except Exception as e:

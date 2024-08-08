@@ -94,7 +94,7 @@ class FileManagement:
         Saves the response content to a file.
 
         :param content: The content to be formatted and saved.
-        :param file_name: The base name for the file
+        :param file_name: The base name for the file, (only the file name, no absolute or relative references)
         :param thought_id: sub-folder the ThoughtProcess is running on
         :param overwrite: whether the file should be overwritten
         """

@@ -17,7 +17,7 @@ class TaskRunner:
 
         ErrorHandler.setup_logging()
 
-    def run_iteration(self, current_task: str, persona='writer'):
+    def run_iteration(self, current_task: str, persona='analyst'):
         """
         Orchestrate the execution of tasks based on the current user prompt.
         ToDo: implement system for dealing with failed tasks

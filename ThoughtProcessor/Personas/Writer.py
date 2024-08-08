@@ -25,7 +25,7 @@ class Writer(PersonaInterface):
     def work(self, current_task: str):
         """Planner-specific task execution logic
         """
-        execution_logs = ""
+        execution_logs = "Writer Workin'...\n"
         self.files_for_evaluation = FileManagement.list_files(str(self.current_thought_id))
 
         executive_output_dict = self.generate_executive_plan(current_task)
@@ -55,7 +55,7 @@ class Writer(PersonaInterface):
 
         logging.info(f"Processing Task: [{task_directives.get('type', TaskType.APPEND.value)}]"
                      + str(task_directives.get('what_to_do')))
-        executor_thought = Writer.generate_ai_wrapper(task_directives.get('what_to_reference', []))
+        executor_thought = PersonaInterface.create_ai_wrapper(task_directives.get('what_to_reference', []))
 
         thought_type = TaskType(task_directives.get('type', TaskType.APPEND.value))
         thought_type.execute(executor_thought, task_directives)
@@ -75,7 +75,7 @@ class Writer(PersonaInterface):
         else:
             additional_user_messages = []
 
-        executive_planner = Writer.create_ai_wrapper(self.files_for_evaluation)
+        executive_planner = self.create_ai_wrapper(self.files_for_evaluation)
 
         existing_files = f"Existing files: [{', '.join(str(file) for file in self.files_for_evaluation)}]"
         executive_plan = executive_planner.execute_function(
@@ -97,16 +97,6 @@ class Writer(PersonaInterface):
 
         return executive_plan
 
-    @staticmethod
-    def generate_ai_wrapper(input_data: List[str]) -> AiWrapper:
-        """
-        Create a new wrapper instance for llm processing.
-
-        :param input_data: file references to be used as context.
-        :return: An instance of the AI wrapper class.
-        """
-        # Central management of thought instances
-        return AiWrapper(input_data)
 
 
 if __name__ == '__main__':

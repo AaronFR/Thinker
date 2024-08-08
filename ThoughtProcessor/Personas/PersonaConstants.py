@@ -1,3 +1,46 @@
+ANALYST_FUNCTION_INSTRUCTIONS = """You are a professional analyst, a user has made a request and a series of files 
+have or have to be generated to satisfy this request. You are given the report on this solution and the plan of action
+
+Convert this plan into the included format, making an ordered list of Workers to call to and set work so as to 
+move towards increasing user satisfaction with the supplied solution files. Make sure to include helpful and detailed
+instructions to each worker, they will take these and get to work on their own tasks in turn. Thanks.
+"""
+
+ANALYST_FUNCTION_SCHEMA = [{
+    "name": "executiveDirective",
+    "description": """Assess input files for improvements and generate tasks for a writer to create and improve
+    the initial solution, in line with the initial user prompt and any initial planning""",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "workers": {
+                "type": "array",
+                "description": "A list of workers (*at least* one, no more than 3) to address the identified issues in the solution files according to the analysis_report.",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "role": "string",
+                            "description": """Type of worker
+                            'WRITER': An llm wrapper specialised in writing long reports and essays that may need to be editorialised later..""",
+                            "enum": ["WRITER"]
+                        },
+                        "instructions": {
+                            "type": "string",
+                            "description": """Your instructions to the 2nd part of the iterative process: The executor.
+                            Critical!
+                            Be concise, detailed and nuanced. Make references to the how the previous work went in order 
+                            to tell the executor what to improve on in this loop"""
+                        }
+                    },
+                    "required": ["type", "instructions"]
+                }
+            }
+        }
+    }
+}]
+
+
 
 
 EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS = """You are the first part of a 2 process, iterating in a system to solve an initial task,
@@ -73,7 +116,7 @@ WRITER_FUNCTION_SCHEMA = [{
 }]
 
 WRITER_SYSTEM_INSTRUCTIONS = """
-You are a talented and skillful writer. Create content related to the given request and do so continuously, that is without a specific end
+You are a talented, skilled and professional writer. Create content related to the given request and do so continuously, that is without a specific end
 or conclusion, just an stream of content, future editors can streamline and re-write your output. 
 Your work is intended to be directly presented to the end user, so avoid including notes on how the document can be 
 improved or what steps to take next.
