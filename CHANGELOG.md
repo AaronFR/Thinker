@@ -9,7 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- TaskRunner for running individual tasks in order to improve solution: APPEND, REWRITE, REWRITE_FILE
+- 
+
+### Changed
+
+-
+
+### Removed
+
+- 
+
+## [0.4.0] - 2024-08-08
+
+### Added
+
 - Analyst role: reviews the current output files against the initially supplied user prompt, making comments and finally 
  suggesting a list of workers to work on the task to improve it in line with their suggestions
 - Writer role: Writes reports, iterating multiple times to overcome ChatGpt's output limit
@@ -17,14 +30,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Total Refactor of ThoughtProcessing. 'Thought' Metaphor abandoned to more practical terminology.
 - Editor suitable tasks split out from Writer, reducing 'confusion' in executing functions
-
-
+- User, System and Function constant messages refactored with prompt engineering techniques + examples
+- thought_id directory and individual request costs passed as globals rather than through the class hierarchy
 
 ### Removed
 
 - Analyser.py and ExecutiveThought.py now long since integrated into Analyser.py and the executive planning process in Writer and Editor
+
+## [0.3.0] - 2024-08-03
+
+### Added
+
+- TaskRunner for running individual tasks in order to improve solution: APPEND, REWRITE, REWRITE_FILE
+
+### Changed
+
+- Total Refactor of ThoughtProcessing. 'Thought' Metaphor abandoned to more practical terminology.
+- Editor suitable tasks split out from Writer, reducing 'confusion' in executing functions
 
 ## [0.2.1] - 2024-08-01
 

@@ -10,9 +10,8 @@ The primary objective of this project is to create an intelligent system that ca
 
 ## Current Limitations
 
-- ***Capability***The Program operates like a public works department with its allocated budget of iterations: spend it all! The system can generate long reports but due to the inability to re-write text, the answers are not succinct.
-    - Even ChatGpt 4o can't be relied on to not to make nonsensical alterations if repeating entered text, a verification step may be required
-- **Performance**: Iterating through a sequential series of LLM api calls takes time for each request, as the output data to review grows larger the time to process each executive llm wrapper grows larger.
+- **Intelligence**: currently the program can alter and distort a files formatting or forget it entirely, occasionally making erratic decisions. Degrading usable output.
+- **Cost Effectiveness**: The Program operates like a public works department with its allocated budget of iterations: spend it all!
 - **Input Handling**: While the system manages structured tasks well, unexpected inputs can result in suboptimal or erratic outputs.
 - **Lack of Parallel Processing**: The absence of parallel task management capabilities can hinder efficiency in completing tasks.
 
@@ -30,9 +29,6 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 ## Features to implement
 To enhance the system's capabilities and efficiency, several features are planned for implementation:
-- **Role based processing**: By separating areas of concern the application's flexibility and capability can be improved
-  the process of problem solving can also be modelled more fully with different roles/personas being adopted at different stages.
-  planing at the start, editing and cleaning up near the end of the assigned budget.
 - **Execution logs**: Currently logs only write failures, they should write a statement for each individual iteration of the system
 - **Enhanced Executive Reasoning**: Develop improvements to the executive plan generator for more accurate and complex decision-making.
     - allow tasks to look at input file line numbers for increased precision.
