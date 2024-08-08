@@ -1,6 +1,8 @@
+import codecs
 import io
 import logging
 import os
+import sys
 
 
 class ErrorHandler:
@@ -21,10 +23,10 @@ class ErrorHandler:
         if logger.hasHandlers():
             logger.handlers.clear()
 
-        # Set the logging level
         logger.setLevel(logging.DEBUG)
-        file_handler = logging.FileHandler(log_file_location)
-        console_handler = logging.StreamHandler()
+        file_handler = logging.FileHandler(log_file_location, encoding='utf-8')
+        console_handler = logging.StreamHandler(codecs.getwriter('utf-8')(sys.stdout.buffer))
+        # console_handler.stream = open(sys.stdout, mode='w', encoding='utf-8', buffering=1)
 
         # Set level for handlers
         file_handler.setLevel(logging.DEBUG)
@@ -57,4 +59,5 @@ if __name__ == '__main__':
 
     logging.debug("Anything?")
     logging.info("Something please")
+    logging.info("Ł, written without crashing")
 
