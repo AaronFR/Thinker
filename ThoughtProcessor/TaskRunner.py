@@ -1,6 +1,7 @@
 import os
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.Personas.Analyst import Analyst
+from ThoughtProcessor.Personas.Editor import Editor
 from ThoughtProcessor.Personas.Writer import Writer
 
 class TaskRunner:
@@ -11,8 +12,8 @@ class TaskRunner:
         self.personas = {
             'analyst': Analyst('analyst'),
             # 'researcher': Researcher('researcher'),
-            'writer': Writer('writer')
-            # 'editor': Editor('editor')
+            'writer': Writer('writer'),
+            'editor': Editor('editor')
         }
 
         ErrorHandler.setup_logging()
@@ -25,4 +26,4 @@ class TaskRunner:
         :param current_task: the initial user prompt
         :param persona: the assigned 'role' to operate in at the given stage of the application
         """
-        self.personas.get(persona).work(current_task)
+        self.personas.get(persona.lower()).work(current_task)

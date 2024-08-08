@@ -54,6 +54,7 @@ class UserInterface:
         os.makedirs(current_prompt_folder, exist_ok=True)
 
         task_queue = deque([user_prompt])  # Main task queue
+        Globals.workers = []
 
         while task_queue:
             current_task = task_queue.popleft()  # Get the next task
@@ -79,6 +80,7 @@ class UserInterface:
                         solved = self.task_runner.run_iteration(current_task)
 
                     if solved:
+                        logging.info("TASK SOLVED")
                         return
                 except Exception as e:
                     logging.error(f"Error processing executive thought for `{current_task}`: {e}")

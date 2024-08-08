@@ -4,6 +4,9 @@ have or have to be generated to satisfy this request. You are given the report o
 Convert this plan into the included format, making an ordered list of Workers to call to and set work so as to 
 move towards increasing user satisfaction with the supplied solution files. Make sure to include helpful and detailed
 instructions to each worker, they will take these and get to work on their own tasks in turn. Thanks.
+
+It is perfectly possible and probable that *no* solution has been generated *yet* and that you need to coordinate the
+generation of this solution
 """
 
 ANALYST_FUNCTION_SCHEMA = [{
@@ -22,8 +25,10 @@ ANALYST_FUNCTION_SCHEMA = [{
                         "type": {
                             "role": "string",
                             "description": """Type of worker
-                            'WRITER': An llm wrapper specialised in writing long reports and essays that may need to be editorialised later..""",
-                            "enum": ["WRITER"]
+                            'WRITER': An LLM wrapper specialised in writing long reports and essays that may need to be editorialised later..
+                            'EDITOR': LLM wrapper 'worker' specialised in taking existing files and editing and re-writing them in line with provided priorities
+                            """,
+                            "enum": ["WRITER", "EDITOR"]
                         },
                         "instructions": {
                             "type": "string",
@@ -43,7 +48,7 @@ ANALYST_FUNCTION_SCHEMA = [{
 
 
 
-EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS = """You are the first part of a 2 process, iterating in a system to solve an initial task,
+EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS = """You are the first part of a 2 process, iterating in a system to write and keep writing a given file,
 where file input is evaluated against the existing reference files, with each step adding to the files until the initial
 task can be said to be solved.
 
@@ -53,7 +58,9 @@ for instance: it does not make sense to try and re-write a file that doesn't exi
 It doesn't make sense to try and re-write a file that doesn't exist. Write or append there first.
 
 Please don't overwrite or write to fill in content with theory, ensure that the document remains valid for its intended 
-use and that your output is to the point and practical. Notes if needs be can be made if new supplimentary files
+use and that your output is to the point and practical. Notes if needs be can be made if new supplementary files.
+Also don't plan meetings lol.
+And make sure your writing to a valid file and not a meta file, like meta_analysis_report.txt or execution_logs.txt
 """
 
 WRITER_FUNCTION_SCHEMA = [{
@@ -140,11 +147,22 @@ Task Requirements:
 """
 
 
+EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS = """You are the first part of a 2 process, iterating in a system to solve an initial task,
+where file input is evaluated against the existing reference files, with each step adding to the files until the initial
+task can be said to be solved.
 
+Your output will be made to adhere to a defined json output. Focus on creating a sensible arrangement of tasks,
+for instance: it does not make sense to try and re-write a file that doesn't exist. Instead it should be created with
+'APPEND'.
+You can only editorialise files that already exist, if you haven't been supplied with files to edit a mistake has been made.
+
+Please don't overwrite or write to fill in content with theory, ensure that the document remains valid for its intended 
+use and that your output is to the point and practical. Notes if needs be can be made if new supplimentary files
+"""
 
 EDITOR_FUNCTION_SCHEMA = [{
     "name": "executiveDirective",
-    "description": """Assess input files for improvements and generate tasks for a writer to create and improve
+    "description": """Assess input files for improvements and generate tasks for a editor to create and improve
     the initial solution, in line with the initial user prompt and any initial planning""",
     "parameters": {
         "type": "object",
@@ -209,3 +227,33 @@ EDITOR_FUNCTION_SCHEMA = [{
         }
     }
 }]
+
+REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS = """
+You are a talented, skilled and professional editor rewriting a document supplied to you piece by piece. 
+Rewrite each content in line with your objectives, don't prematurely conclude the entire report with this piece however, 
+you will be passed another piece to edit after this one.
+Your work is intended to be directly presented to the end user, so avoid including notes on how the document can be 
+improved or what steps to take next.
+Write continuously, that is so that another LLM can take your output and keep writing it, continuously, prioritise 
+maintaining the style and format of the document as it was initially brought to you, preference the style of existing 
+content over material you wrote.
+DO NOT TRY AND CONCLUDE THE DOCUMENT!!!!!!!!!!
+
+Follow next_steps and areas_of_improvement to append an improvement to the solution.
+You have been directed to overwrite an existing file, please maintain as much of the original content as is sensible while outputing an AUGMENTED version in line with your directives.
+Do not add code block delimiters, don't add a language identifier
+
+
+Task Requirements:
+
+- Blend Content: Ensure each piece you write integrates smoothly into the existing document. Avoid concluding each section as your writing is meant to be part of a larger whole.
+- Consistency: Maintain consistency throughout your writing. Avoid repetition of previously established content unless explicitly summarizing.
+- Avoid Repetition: Do not write conclusions or repeat headings. Ensure content is unique and non-redundant.
+- Specificity and Detail: Be specific and detailed in your prompts.
+- Role Assignment: Assume a specific role where necessary to guide the writing style and perspective. For instance, write from the perspective of an environmental scientist or an economic analyst.
+- Structured Approach: Break down complex tasks into clear, sequential steps. Provide context and ensure understanding of the broader topic.
+- Focus: Concentrate on one task per prompt to maintain clarity and precision.
+- Use of Examples: Include examples or templates to guide the response.
+- Continuous Refinement: Continuously refine and iterate your prompts based on the outputs received.
+- Ensure headings are written on new lines. even if this means adding empty space to the start of your response
+"""
