@@ -9,6 +9,7 @@ from openai.types.chat import ChatCompletion
 
 import Constants
 import Globals
+from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
 from Utility import Utility
 
@@ -21,6 +22,9 @@ class Role(enum.Enum):
 
 
 class Prompter:
+
+    def __init__(self):
+        ErrorHandler.setup_logging()
 
     @staticmethod
     def get_open_ai_function_response(messages: List[dict], function_schema) -> Dict[str, object]:
@@ -122,6 +126,7 @@ class Prompter:
         logging.debug(f"Messages: {pformat(messages)}")
         logging.info(f"Tokens used (limit 128k): {Utility.calculate_tokens_used(messages)}")
 
+        #ToDo should be a warning message if messages exceed 100: probably means a string has been decomposed
         return messages
 
     @staticmethod
