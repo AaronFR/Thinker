@@ -3,6 +3,7 @@ from typing import List, Dict
 
 from ThoughtProcessor.AiWrapper import AiWrapper
 from ThoughtProcessor.ErrorHandler import ErrorHandler
+from ThoughtProcessor.Personas import PersonaConstants
 
 
 class PersonaInterface:
@@ -44,3 +45,32 @@ class PersonaInterface:
 
         logging.info(f"Task validated successfully: {executive_plan}")
         return True
+
+    @staticmethod
+    def generate_function(
+            files_for_evaluation: List[str],
+            additional_user_messages: List[str],
+            task: str,
+            function_instructions: str,
+            function_schema: str
+        ) -> Dict[str, object]:
+
+        existing_files = f"Existing files: [{', '.join(str(file) for file in files_for_evaluation)}]"
+        ai_wrapper = PersonaInterface.create_ai_wrapper(files_for_evaluation)
+        executive_plan = ai_wrapper.execute_function(
+            [existing_files, function_instructions], additional_user_messages + [task], function_schema
+        )
+
+        if not PersonaInterface.valid_function_output(executive_plan):
+            logging.info("INVALID SCHEMA, RETRYING...")
+            executive_plan = ai_wrapper.execute_function(
+                [existing_files, function_instructions], additional_user_messages + [task], function_schema
+            )
+
+            if not PersonaInterface.valid_function_output(executive_plan):
+                logging.error("2ND INVALID SCHEMA PRODUCED")
+                raise Exception("SCHEMA FAILURE")
+
+            return executive_plan
+        else:
+            return executive_plan
