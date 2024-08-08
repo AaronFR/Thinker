@@ -84,7 +84,7 @@ class Writer(PersonaInterface):
             PersonaConstants.WRITER_FUNCTION_SCHEMA
         )
 
-        if Writer.invalid_function_output(executive_plan):
+        if not self.valid_function_output(executive_plan):
             logging.info("INVALID SCHEMA, RETRYING...")
             executive_plan = executive_planner.execute_function(
                 [existing_files, PersonaConstants.EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS],
@@ -92,7 +92,7 @@ class Writer(PersonaInterface):
                 PersonaConstants.WRITER_FUNCTION_SCHEMA
             )
 
-            if Writer.invalid_function_output(executive_plan):
+            if not self.valid_function_output(executive_plan):
                 logging.error("2ND INVALID SCHEMA PRODUCED")
 
         return executive_plan

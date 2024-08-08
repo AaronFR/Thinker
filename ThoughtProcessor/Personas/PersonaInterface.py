@@ -26,7 +26,7 @@ class PersonaInterface:
         return AiWrapper(input_data)
 
     @staticmethod
-    def invalid_function_output(executive_plan: Dict[str, object]) -> bool:
+    def valid_function_output(executive_plan: Dict[str, object]) -> bool:
         """
         Validate the structure and content of a task.
         # ToDo: may need to be spun out as multiple roles with differing schema's are created
