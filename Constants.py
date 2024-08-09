@@ -5,6 +5,7 @@ EXPENSIVE_MODEL_NAME = "gpt-4o"
 execution_logs_filename = "execution_logs.txt"
 meta_analysis_filename = "meta_analysis_report.txt"
 
+backoff_factor: float = 1.0
 
 
 EXECUTIVE_SYSTEM_INSTRUCTIONS = """You are the first part of a 2 process, iterating in a system to solve an initial task,
