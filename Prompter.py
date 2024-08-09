@@ -36,15 +36,17 @@ class Prompter:
         """
         try:
             logging.debug(f"Calling OpenAI API with messages: {messages}")
-            output = Globals.open_ai_client.chat.completions.create(
+            chat_completion = Globals.open_ai_client.chat.completions.create(
                 model=Constants.MODEL_NAME,
                 messages=messages,
                 functions=function_schema,
                 function_call={"name": "executiveDirective"}
                 # ToDo investigate more roles
             )
-            logging.info(f"Executive Plan: {output}")
-            function_call = output.choices[0].message.function_call
+            Prompter.calculate_prompt_cost(chat_completion)
+
+            logging.info(f"Executive Plan: {chat_completion}")
+            function_call = chat_completion.choices[0].message.function_call
             arguments = function_call.arguments
             json_object = json.loads(arguments)
             return json_object or "[ERROR: NO RESPONSE FROM OpenAI API]"
@@ -67,13 +69,8 @@ class Prompter:
             chat_completion = Globals.open_ai_client.chat.completions.create(
                 model=Constants.MODEL_NAME, messages=messages
             )
-            input_token_price = chat_completion.usage.prompt_tokens * 0.00000015
-            output_token_price = chat_completion.usage.completion_tokens * 0.00000060
+            Prompter.calculate_prompt_cost(chat_completion)
 
-            Globals.current_request_cost += (input_token_price + output_token_price)
-
-            logging.info(f"input tokens: {chat_completion.usage.prompt_tokens}, price: ${round(input_token_price, 4)}")
-            logging.info(f"output tokens: {chat_completion.usage.completion_tokens}, price: ${round(output_token_price, 4)}")
             response = chat_completion.choices[0].message.content
             return response or "[ERROR: NO RESPONSE FROM OpenAI API]"
         except OpenAIError as e:
@@ -106,13 +103,16 @@ class Prompter:
                           model=Constants.MODEL_NAME) -> ChatCompletion:
         """Generate ChatCompletion response from OpenAI API for a given prompt."""
         logging.debug(f"Generating response for prompt: {prompt[:20]}...")
-        return Globals.open_ai_client.chat.completions.create(
+        chat_completion = Globals.open_ai_client.chat.completions.create(
             model=model,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": str(prompt)}
             ]
         )
+
+        Prompter.calculate_prompt_cost(chat_completion)
+        return chat_completion
 
     @staticmethod
     def generate_messages(input_files, system_prompts: List[str] | str, user_prompts: List[str]) -> List[Dict[str, str]]:
@@ -166,6 +166,27 @@ class Prompter:
         for role, content in role_messages:
             messages.append({"role": role.value, "content": content})
         return messages
+
+    @staticmethod
+    def calculate_prompt_cost(chat_completion: ChatCompletion):
+        """
+        Currently assumes your using ChatGpt-4o mini
+
+        :param chat_completion: after the prompt has been processed
+        """
+        cost_per_input_token = 0.00000015  # $/t
+        cost_per_output_token = 0.00000060  # $/t
+
+        input_token_price = chat_completion.usage.prompt_tokens * cost_per_input_token
+        output_token_price = chat_completion.usage.completion_tokens * cost_per_output_token
+
+        Globals.current_request_cost += (input_token_price + output_token_price)
+
+        logging.info(
+            f"""Input tokens: {chat_completion.usage.prompt_tokens}, price: ${round(input_token_price, 4)}
+            Output tokens: {chat_completion.usage.completion_tokens}, price: ${round(output_token_price, 4)}
+            Total cost: ¢{round((input_token_price + output_token_price) * 100, 4)}
+        """)
 
 
 if __name__ == '__main__':

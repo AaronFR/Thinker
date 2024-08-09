@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
--
+- calculate_prompt_cost method added for *all* usages of the LLM API, letting the program give out an *accurate* value for the cost for a given run
 
 ### Removed
 
