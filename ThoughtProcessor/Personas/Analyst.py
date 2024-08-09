@@ -51,7 +51,7 @@ class Analyst(BasePersona):
         # create json file assigning next workers
         Globals.workers = self.recommend_workers(current_task)
         ExecutionLogs.add_to_logs("Analyst suggested the following workers to work with the following instructions:\n"
-                                  + pformat(Globals.workers))
+                                  + pformat(Globals.workers, width=300))
 
     def recommend_workers(self, user_request) -> List[str]:
         analyst = self.create_ai_wrapper([Constants.meta_analysis_filename])

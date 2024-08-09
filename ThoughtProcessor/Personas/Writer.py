@@ -27,8 +27,8 @@ class Writer(BasePersona):
 
         executive_output_dict = self.generate_executive_plan(current_task)
 
-        logging.info(f"Generated tasks: {pformat(executive_output_dict.get('tasks'))}")
-        ExecutionLogs.add_to_logs(f"Generated tasks: {pformat(executive_output_dict.get('tasks'))}")
+        logging.info(f"Generated tasks: {pformat(executive_output_dict.get('tasks'), width=280)}")
+        ExecutionLogs.add_to_logs(f"Generated tasks: {pformat(executive_output_dict.get('tasks'), width=280)}")
 
         tasks = executive_output_dict.get('tasks', [])
         for task in tasks:

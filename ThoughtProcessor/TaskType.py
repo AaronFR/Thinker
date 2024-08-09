@@ -3,7 +3,6 @@ import logging
 from typing import Dict, List
 
 import Constants
-import Globals
 from ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.AiWrapper import AiWrapper
@@ -68,7 +67,7 @@ class TaskType(enum.Enum):
             ["Primary Instructions: " + str(task_directives.get('what_to_do'))]
         )
         FileManagement.save_file(output, task_directives.get('where_to_do_it'))
-        ExecutionLogs.add_to_logs(f"Appended to content to {task_directives.get('where_to_do_it')}")
+        ExecutionLogs.add_to_logs(f"Appended content to {task_directives.get('where_to_do_it')}")
 
     @staticmethod
     def rewrite_part_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1):
@@ -77,11 +76,16 @@ class TaskType(enum.Enum):
             [f"""Just rewrite <rewrite_this>\n{task_directives.get('rewrite_this')}\n</rewrite_this>\n
             In the following way: {str(task_directives.get('what_to_do'))}"""]
         )
-        FileManagement.re_write_section(
-            str(task_directives.get('rewrite_this')),
-            output,
-            task_directives.get('where_to_do_it')
-        )
+
+        try:
+            FileManagement.re_write_section(
+                str(task_directives.get('rewrite_this')),
+                output,
+                task_directives.get('where_to_do_it')
+            )
+        except ValueError:
+            logging.exception(f"Failed to rewrite file {task_directives.get('rewrite_this')}")
+
         ExecutionLogs.add_to_logs(f"""Regex re-wrote {task_directives.get('rewrite_this')}
                                   In: {task_directives.get('where_to_do_it')}""")
 

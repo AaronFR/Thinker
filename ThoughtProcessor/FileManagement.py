@@ -109,6 +109,7 @@ class FileManagement:
         :param target_string: The text to be replaced.
         :param replacement: The text to replace the target string.
         :param file_name: The base name for the file.
+        :raises ValueError: if the rewrite operation fails
         """
         file_content = FileManagement.read_file(file_name)
         modified_text = FileManagement._replace_text(file_content, target_string, replacement)

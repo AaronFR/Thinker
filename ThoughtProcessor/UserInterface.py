@@ -83,9 +83,12 @@ class UserInterface:
                         return
                 except Exception as e:
                     logging.error(f"Error processing iteration({attempt_count}) for `{current_task}`: {e}")
+                    ExecutionLogs.add_to_logs(f"Error processing iteration({attempt_count})")
                     break  # Exit loop on processing executive thought failure
 
                 attempt_count += 1
+
+            self._log_and_save_unsolved_problem()
 
 
 
