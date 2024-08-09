@@ -76,7 +76,7 @@ class UserInterface:
                     else:
                         solved = self.task_runner.run_iteration(current_task)
 
-                    if solved:
+                    if Globals.solved:
                         logging.info("TASK SOLVED")
                         return
                 except Exception as e:

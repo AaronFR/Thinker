@@ -1,4 +1,5 @@
 import os
+import re
 from pprint import pformat
 from typing import List
 
@@ -38,6 +39,13 @@ class Analyst(BasePersona):
         # save to Analysis.txt file
         FileManagement.save_file(analysis_report, Constants.meta_analysis_filename, overwrite=True)
         execution_logs += "Analyst: Report written and saved"
+        # Search for the pattern
+        is_solved = re.search(r"Solved:\s*True", analysis_report)
+
+        # Check if the pattern was found and print it
+        if is_solved:
+            ExecutionLogs.add_to_logs("TASK SOLVED")
+            Globals.solved = True
 
         # create json file assigning next workers
         Globals.workers = self.recommend_workers(current_task)
