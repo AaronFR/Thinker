@@ -4,9 +4,10 @@ from ThoughtProcessor.Personas.Analyst import Analyst
 from ThoughtProcessor.Personas.Editor import Editor
 from ThoughtProcessor.Personas.Writer import Writer
 
-class TaskRunner:
+
+class PersonaSystem:
     def __init__(self):
-        self.thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
+        self.thoughts_folder = os.path.join(os.path.dirname(__file__), "../thoughts")
 
         self.personas = {
             'analyst': Analyst('analyst'),

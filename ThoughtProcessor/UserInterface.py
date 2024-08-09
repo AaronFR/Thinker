@@ -6,7 +6,7 @@ import Constants
 import Globals
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
-from ThoughtProcessor.TaskRunner import TaskRunner
+from ThoughtProcessor.TaskRunner import PersonaSystem
 
 
 class UserInterface:
@@ -30,7 +30,7 @@ class UserInterface:
         Initialize the UserInterface instance.
         """
         self.files_for_evaluation = []
-        self.task_runner = TaskRunner()
+        self.task_runner = PersonaSystem()
 
         ErrorHandler.setup_logging()
 
