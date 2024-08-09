@@ -62,6 +62,7 @@ class UserInterface:
         while task_queue:
             current_task = task_queue.popleft()  # Get the next task
             attempt_count = 0  # Reset attempt counter for the current task
+            Globals.current_request_cost = 0.0
             Globals.execution_logs = ""
 
             # Iterate through execution attempts for a given task
@@ -78,7 +79,7 @@ class UserInterface:
                         self.persona_system.run_iteration(current_task)
 
                     if Globals.solved:
-                        logging.info("TASK SOLVED")
+                        self._log_process_completion(current_task, attempt_count)
                         return
                 except Exception as e:
                     logging.error(f"Error processing iteration({attempt_count}) for `{current_task}`: {e}")
@@ -86,7 +87,7 @@ class UserInterface:
 
                 attempt_count += 1
 
-            self._log_process_completion(current_task, attempt_count)
+
 
     def validate_prompt(self, user_prompt: str) -> bool:
         """Validate user input prompt
@@ -102,6 +103,7 @@ class UserInterface:
         """Log and save information about an unsolved problem."""
         logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS")
         ExecutionLogs.add_to_logs(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS\n")
+        ExecutionLogs.save_execution_logs()
 
 
     @staticmethod
@@ -110,7 +112,6 @@ class UserInterface:
         logging.info(f"""FINISHED REQUEST: [{current_task}]
                         in {attempt_count} iterations
                         total cost: ${round(Globals.current_request_cost, 4)}""")
-        Globals.current_request_cost = 0.0
 
         ExecutionLogs.save_execution_logs()
 
