@@ -22,7 +22,7 @@ class Analyst(BasePersona):
 
         ErrorHandler.setup_logging()
 
-    def work(self, current_task: str):
+    def execute_task(self, current_task: str):
         """First create a document evaluating the current output, if any, against the initial problem
         Then generate a list of workers to improve the current solution
         """
@@ -31,9 +31,9 @@ class Analyst(BasePersona):
         # evaluate current files
         analyst = self.create_ai_wrapper(self.files_for_evaluation)
         analysis_report = analyst.execute(
-            ["""You are an analyst strictly reviewing the quality of a solution to a given problem, at the end of your through evaluation, determine if the given solution ACTUALLY answers the original prompt sufficiently in format:
-                    Solved: True/False. Also make it clear that this is just a report and should not be operated on by other worker LLM's"""],
-            [f"given the following user request: {current_task} how do you evaluate the current available files as a solution?:\n\n\n Make as many notes and corrections as you possibly can"]
+            [PersonaConstants.ANALYST_SYSTEM_INSTRUCTIONS],
+            [f"""For the following user request: {current_task} how do you evaluate the current available files as a solution?:
+            Make as many notes and corrections as you possibly can"""]
         )
 
         # save to Analysis.txt file
@@ -55,17 +55,16 @@ class Analyst(BasePersona):
 
     def recommend_workers(self, user_request) -> List[str]:
         analyst = self.create_ai_wrapper([Constants.meta_analysis_filename])
-        dict = analyst.execute_function(
+        function_output = analyst.execute_function(
             [PersonaConstants.ANALYST_FUNCTION_INSTRUCTIONS],
             [f"Initial user request: {user_request}"],
             PersonaConstants.ANALYST_FUNCTION_SCHEMA
         )
 
-        list = dict.get('workers')
-
-        return list
+        workers = function_output.get('workers')
+        return workers
 
 
 if __name__ == '__main__':
     testAnalyst = Analyst("test")
-    testAnalyst.work("Write a report on the history of Netherlands in het Nederlands")
+    testAnalyst.execute_task("Write a report on the history of Netherlands in het Nederlands")

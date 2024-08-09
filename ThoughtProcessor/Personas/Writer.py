@@ -20,7 +20,7 @@ class Writer(BasePersona):
 
         ErrorHandler.setup_logging()
 
-    def work(self, current_task: str):
+    def execute_task(self, current_task: str):
         """Planner-specific task execution logic
         """
         self.files_for_evaluation = FileManagement.list_files(str(Globals.thought_id))
@@ -34,7 +34,7 @@ class Writer(BasePersona):
         for task in tasks:
             self._process_task(task)
     @staticmethod
-    def run_task(task_directives: Dict[str, object]):
+    def execute_task_directives(task_directives: Dict[str, object]):
         ExecutionLogs.add_to_logs(f"Executing task: \n{pformat(task_directives)}")
         executor_thought = BasePersona.create_ai_wrapper(task_directives.get('what_to_reference', []))
 
@@ -65,5 +65,5 @@ class Writer(BasePersona):
 
 if __name__ == '__main__':
     writer = Writer("test")
-    writer.work("""Write a detailed report about the future of tidal technology, what innovations and possible disruptions could occur
+    writer.execute_task("""Write a detailed report about the future of tidal technology, what innovations and possible disruptions could occur
     """)

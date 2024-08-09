@@ -20,7 +20,7 @@ class Editor(BasePersona):
 
         ErrorHandler.setup_logging()
 
-    def work(self, current_task: str):
+    def execute_task(self, current_task: str):
         """Planner-specific task execution logic
         """
         self.files_for_evaluation = FileManagement.list_files(str(Globals.thought_id))
@@ -35,7 +35,7 @@ class Editor(BasePersona):
             self._process_task(task)
 
     @staticmethod
-    def run_task(task_directives: Dict[str, object]):
+    def execute_task_directives(task_directives: Dict[str, object]):
         ExecutionLogs.add_to_logs(f"Executing task: \n{pformat(task_directives)}")
         executor_thought = BasePersona.create_ai_wrapper(task_directives.get('what_to_reference', []))
 
@@ -66,7 +66,7 @@ class Editor(BasePersona):
 
 if __name__ == '__main__':
     editor = Editor("test")
-    editor.work("""Review the translated report for structural coherence according to Dutch reporting styles. 
+    editor.execute_task("""Review the translated report for structural coherence according to Dutch reporting styles. 
     Organize the information with clear headings and sections, including an inleiding (introduction) and conclusie (conclusion). 
     Ensure that the formatting aligns with typical Dutch standards for academic or historical reports.
     """)

@@ -1,5 +1,13 @@
 import Constants
 
+DEFAULT_REQUIRED_KEYS = ['type', 'what_to_reference', 'what_to_do', 'where_to_do_it']
+
+
+ANALYST_SYSTEM_INSTRUCTIONS = """You are an analyst strictly reviewing the quality of a solution to a given problem, 
+at the end of your through evaluation, determine if the given solution ACTUALLY answers the original prompt sufficiently 
+in format: Solved: True/False. 
+Also make it clear that this is just a report and should not be operated on by other worker LLM's"""
+
 ANALYST_FUNCTION_INSTRUCTIONS = """
 You are a professional analyst. A user has made a request, and a series of files need to be generated or have been generated to satisfy this request. You are given the report on this solution and the plan of action.
 
@@ -165,7 +173,7 @@ WRITER_FUNCTION_SCHEMA = [{
                             you don't have permission."""
                         }
                     },
-                    "required": ["type", "what_to_reference", "what_to_do", "where_to_do_it"]
+                    "required": DEFAULT_REQUIRED_KEYS
                 }
             }
         }
@@ -219,7 +227,6 @@ Adopting sustainable farming practices and improving irrigation techniques can m
 climate change on agriculture.
 ---
 """
-
 
 EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS = """
 You are the first part of a two-step process, iterating within a system to solve an initial task.
@@ -323,7 +330,7 @@ EDITOR_FUNCTION_SCHEMA = [{
                             you don't have permission."""
                         }
                     },
-                    "required": ["type", "what_to_reference", "what_to_do", "where_to_do_it"]
+                    "required": DEFAULT_REQUIRED_KEYS
                 }
             }
         }

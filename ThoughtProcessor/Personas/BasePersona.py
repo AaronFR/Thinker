@@ -14,8 +14,8 @@ class BasePersona:
     Base class for creating personas that execute tasks.
 
     Subclasses must implement the following methods:
-    - work(task): Define how the persona performs a specific task.
-    - run_task(task_directives): Execute specific instructions contained in the task directives.
+    - execute_task(task): Define how the persona performs a specific task.
+    - execute_task_directives(task_directives): Execute specific instructions contained in the task directives.
     """
 
     def __init__(self, name):
@@ -23,7 +23,7 @@ class BasePersona:
 
         ErrorHandler.setup_logging()
 
-    def work(self, task):
+    def execute_task(self, task):
         """
         Execute a given task.
 
@@ -33,7 +33,7 @@ class BasePersona:
         raise NotImplementedError("This method should be overridden by subclasses")
 
     @staticmethod
-    def run_task(task_directives: Dict[str, object]):
+    def execute_task_directives(task_directives: Dict[str, object]):
         """
         Execute instructions contained in task directives.
 
@@ -49,7 +49,7 @@ class BasePersona:
         :param task: A dictionary containing task information.
         """
         try:
-            self.run_task(task)
+            self.execute_task_directives(task)
         except Exception:
             failed_task = task.get('what_to_do')
             logging.exception(f"Task failed: {failed_task}")

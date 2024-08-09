@@ -135,7 +135,5 @@ if __name__ == '__main__':
     thought_process = UserInterface()
 
     thought_process.evaluate_prompt(
-        """Make suggestions in a report markdown file on how to improve UserInterface.py, with 
-        (consise small individual) examples.
-        Demonstrate to specifically rather than theoretically how the class can be improved"""
+        """Review the attached python classes and make suggestions for refactored method and variable names to improve consistency and intuition. Write these in a file called 'renamings.txt'"""
     )
