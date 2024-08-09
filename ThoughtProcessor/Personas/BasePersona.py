@@ -23,9 +23,9 @@ class BasePersona:
     def _process_task(self, task: Dict[str, object]):
         try:
             self.run_task(task)
-        except Exception as e:
+        except Exception:
             failed_task = task.get('what_to_do')
-            logging.error(f"Task failed: {failed_task}: {e}")
+            logging.exception(f"Task failed: {failed_task}")
             ExecutionLogs.add_to_logs(f"Task failed: {failed_task}\n")
 
     @staticmethod

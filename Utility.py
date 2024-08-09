@@ -50,9 +50,9 @@ class Utility:
                     logging.warning(f"FILE TOO LARGE: {file_name} exceeds token limit")
                     continue  # Skip replacing this file content if it exceeds limit
             except FileNotFoundError:
-                logging.error(f"Cannot find file {file_name}")
+                logging.exception(f"Cannot find file {file_name}")
             except Exception as e:
-                logging.error(f"Cannot read file {file_name}: {e}")
+                logging.exception(f"Cannot read file {file_name}: {e}")
 
         return prompt
 
@@ -77,7 +77,7 @@ class Utility:
                 return func()
             except Exception as e:
                 wait_time = 10 ** attempt  # Exponential backoff
-                logging.error(f"Attempt {attempt + 1} failed: {e}. Retrying in {wait_time} seconds...")
+                logging.exception(f"Attempt {attempt + 1} failed: {e}. Retrying in {wait_time} seconds...")
                 time.sleep(wait_time)  # Wait before retrying
         logging.error("Max retries exceeded. Failed to get response from callable.")
         return None

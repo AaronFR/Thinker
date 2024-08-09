@@ -31,8 +31,8 @@ class FileManagement:
         try:
             with open(file_path, "w", encoding="utf-8"):
                 logging.info(f"File {file_path} instantiated.")
-        except Exception as e:
-            logging.error(f"""ERROR: could not instantiate file: {file_path}\n{str(e)}""")
+        except Exception:
+            logging.exception(f"""ERROR: could not instantiate file: {file_path}""")
 
     @staticmethod
     def list_files(thought_id: str = "1") -> list:
@@ -49,10 +49,10 @@ class FileManagement:
 
             return file_names
         except FileNotFoundError:
-            logging.error(f"The directory {thought_folder} does not exist.")
+            logging.exception(f"The directory {thought_folder} does not exist.")
             return []
         except Exception as e:
-            logging.error(f"An error occurred: {e}")
+            logging.exception(f"An error occurred")
             return []
 
     @staticmethod
@@ -68,10 +68,10 @@ class FileManagement:
             with open(full_path, 'r', encoding='utf-8') as file:
                 return file.read()
         except FileNotFoundError:
-            logging.error(f"File not found: {file_path}")
+            logging.exception(f"File not found: {file_path}")
             return f"[FAILED TO LOAD {file_path}]"
-        except Exception as e:
-            logging.error(f"An unexpected error occurred: {str(e)}")
+        except Exception:
+            logging.exception(f"An unexpected error occurred")
             return f"[FAILED TO LOAD {file_path}]"
 
     @staticmethod
@@ -98,8 +98,8 @@ class FileManagement:
             with open(file_path, mode, encoding="utf-8") as file:
                 file.write(content)
                 logging.info(f"File {'overwritten' if overwrite else 'saved'}: {file_path}")
-        except Exception as e:
-            logging.error(f"ERROR: could not save file: {file_path}\n {str(e)}")
+        except Exception:
+            logging.exception(f"ERROR: could not save file: {file_path}")
 
     @staticmethod
     def re_write_section(target_string: str, replacement: str, file_name):
@@ -148,7 +148,7 @@ class FileManagement:
                 file.write(content)
                 logging.info(f"File overwritten: {file_path}")
         except Exception as e:
-            logging.error(f"ERROR: could not save file: {file_path}\n {str(e)}")
+            logging.exception(f"ERROR: could not save file: {file_path}")
 
     @staticmethod
     def save_as_html(content: str, file_name: str, prompt_id: str):
@@ -170,7 +170,7 @@ class FileManagement:
                 file.write(html_text)
                 logging.info(f"HTML file saved: {file_path}")
         except Exception as e:
-            logging.error(f"Could not save HTML file: {file_path}\n {str(e)}")
+            logging.exception(f"Could not save HTML file: {file_path}")
 
     @staticmethod
     def _format_to_html(text: str) -> str:
@@ -214,11 +214,11 @@ class FileManagement:
                     content += file.read()
                 logging.info(f"CONTENT [{i}]: {content}")
             except FileNotFoundError:
-                logging.error(f"File not found: {file_path}")
-            except UnicodeDecodeError as e:
-                logging.error(f"Error decoding file {file_path}: {e}")
-            except Exception as e:
-                logging.error(f"ERROR: could not read file {file_path}\n {str(e)}")
+                logging.exception(f"File not found: {file_path}")
+            except UnicodeDecodeError:
+                logging.exception(f"Error decoding file {file_path}")
+            except Exception:
+                logging.exception(f"ERROR: could not read file {file_path}")
         return content
 
     @staticmethod

@@ -97,8 +97,12 @@ class CorpusCallosum:
             sequential_tasks = {int(task_number): task_content.strip() for task_number, task_content in
                                 sequential_matches}
 
-        except ValueError as ve:
-            logging.error("Error parsing the tasks: %s; ensure the format is correct.", ve)
+        except ValueError:
+            logging.exception(
+                f"""Error parsing the tasks: 
+                Parallel_tasks: {parallel_tasks}
+                Sequential_tasks: {sequential_tasks}\n
+                Ensure the format is correct.""")
 
         logging.info(f"Parallel Tasks: {parallel_tasks}")
         logging.info(f"Sequential Tasks: {sequential_tasks}")

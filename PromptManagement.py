@@ -37,8 +37,8 @@ class PromptManagement:
                 try:
                     result = future.result()
                     logging.info(f"Task {task_number} completed with result: {result}")
-                except Exception as exc:
-                    logging.error(f'Task {task_number} raised an exception: {exc}')
+                except Exception:
+                    logging.exception(f'Task {task_number} raised an exception')
 
     def process_sequential_prompts(self, sequential_tasks: Dict[int, str]):
         """
