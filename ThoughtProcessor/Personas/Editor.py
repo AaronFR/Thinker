@@ -1,10 +1,9 @@
 import logging
-import os
 from pprint import pformat
 from typing import Dict, List
 
-import Constants
 import Globals
+from ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.Personas import PersonaConstants
@@ -24,36 +23,24 @@ class Editor(BasePersona):
     def work(self, current_task: str):
         """Planner-specific task execution logic
         """
-        # ToDo: furnish the execution_logs with more detail and steps
-        execution_logs = f"Editor editing'...\n{current_task}\n"
         self.files_for_evaluation = FileManagement.list_files(str(Globals.thought_id))
 
         executive_output_dict = self.generate_executive_plan(current_task)
-        execution_logs += "EXEC PLAN: " + str(pformat(executive_output_dict)) + "\n"
 
         logging.info(f"Generated tasks: {pformat(executive_output_dict.get('tasks'))}")
+        ExecutionLogs.add_to_logs(f"Generated tasks: {pformat(executive_output_dict.get('tasks'))}")
 
         tasks = executive_output_dict.get('tasks', [])
         for task in tasks:
-            self._process_task(task, execution_logs)
-
-        FileManagement.save_file(
-            execution_logs,
-            os.path.join(FileManagement.thoughts_folder, str(Globals.thought_id), Constants.execution_logs_filename)
-        )
+            self._process_task(task)
 
     @staticmethod
     def run_task(task_directives: Dict[str, object]):
-        logging.info(f"Executing task: \n{pformat(task_directives)}")
-        logging.debug("Type input 'bug': = " + str(type(task_directives.get('what_to_do'))))
-
-        logging.info(f"Processing Task: [{task_directives.get('type', TaskType.REWRITE_FILE.value)}]"
-                     + str(task_directives.get('what_to_do')))
+        ExecutionLogs.add_to_logs(f"Executing task: \n{pformat(task_directives)}")
         executor_thought = BasePersona.create_ai_wrapper(task_directives.get('what_to_reference', []))
 
         thought_type = TaskType(task_directives.get('type', TaskType.REWRITE_FILE.value))
         thought_type.execute(executor_thought, task_directives)
-        logging.info(f"Task processed and saved to {task_directives.get('where_to_do_it')}.")
 
     def generate_executive_plan(self, task: str, additional_user_messages: List[str] = None) -> Dict[str, object]:
         """

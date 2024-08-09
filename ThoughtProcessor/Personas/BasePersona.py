@@ -1,6 +1,8 @@
 import logging
 from typing import List, Dict
 
+import Globals
+from ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.AiWrapper import AiWrapper
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 
@@ -18,13 +20,13 @@ class BasePersona:
     def run_task(task_directives: Dict[str, object]):
         raise NotImplementedError("This method should be overridden by subclasses")
 
-    def _process_task(self, task: Dict[str, object], execution_logs: str):
+    def _process_task(self, task: Dict[str, object]):
         try:
             self.run_task(task)
         except Exception as e:
             failed_task = task.get('what_to_do')
             logging.error(f"Task failed: {failed_task}: {e}")
-            execution_logs += f"Task failed: {failed_task}\n"
+            ExecutionLogs.add_to_logs(f"Task failed: {failed_task}\n")
 
     @staticmethod
     def create_ai_wrapper(input_data: List[str]) -> AiWrapper:

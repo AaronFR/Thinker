@@ -2,11 +2,11 @@ import logging
 import os
 from collections import deque
 
-import Constants
 import Globals
+from ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
-from ThoughtProcessor.TaskRunner import PersonaSystem
+from ThoughtProcessor.Personas.PersonaSystem import PersonaSystem
 
 
 class UserInterface:
@@ -30,7 +30,7 @@ class UserInterface:
         Initialize the UserInterface instance.
         """
         self.files_for_evaluation = []
-        self.task_runner = PersonaSystem()
+        self.persona_system = PersonaSystem()
 
         ErrorHandler.setup_logging()
 
@@ -62,6 +62,7 @@ class UserInterface:
         while task_queue:
             current_task = task_queue.popleft()  # Get the next task
             attempt_count = 0  # Reset attempt counter for the current task
+            Globals.execution_logs = ""
 
             # Iterate through execution attempts for a given task
             while self.within_budget():
@@ -72,15 +73,15 @@ class UserInterface:
                 try:
                     if Globals.workers:
                         worker = Globals.workers.pop()
-                        solved = self.task_runner.run_iteration(worker.get('instructions'), worker.get('type'))
+                        self.persona_system.run_iteration(worker.get('instructions'), worker.get('type'))
                     else:
-                        solved = self.task_runner.run_iteration(current_task)
+                        self.persona_system.run_iteration(current_task)
 
                     if Globals.solved:
                         logging.info("TASK SOLVED")
                         return
                 except Exception as e:
-                    logging.error(f"Error processing executive thought for `{current_task}`: {e}")
+                    logging.error(f"Error processing iteration({attempt_count}) for `{current_task}`: {e}")
                     break  # Exit loop on processing executive thought failure
 
                 attempt_count += 1
@@ -100,8 +101,8 @@ class UserInterface:
     def _log_and_save_unsolved_problem(self):
         """Log and save information about an unsolved problem."""
         logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS")
-        execution_logs = f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS\n"
-        FileManagement.save_file(execution_logs, Constants.execution_logs_filename)
+        ExecutionLogs.add_to_logs(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS\n")
+
 
     @staticmethod
     def _log_process_completion(current_task: str, attempt_count: int):
@@ -110,6 +111,8 @@ class UserInterface:
                         in {attempt_count} iterations
                         total cost: ${round(Globals.current_request_cost, 4)}""")
         Globals.current_request_cost = 0.0
+
+        ExecutionLogs.save_execution_logs()
 
     @staticmethod
     def within_budget(budget: float = BUDGET) -> bool:

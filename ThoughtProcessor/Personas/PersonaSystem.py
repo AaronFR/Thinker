@@ -1,4 +1,7 @@
 import os
+
+import Globals
+from ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.Personas.Analyst import Analyst
 from ThoughtProcessor.Personas.Editor import Editor
@@ -26,4 +29,5 @@ class PersonaSystem:
         :param current_task: the initial user prompt
         :param persona: the assigned 'role' to operate in at the given stage of the application
         """
+        ExecutionLogs.add_to_logs(f"{persona} assigned task: {current_task}")
         self.personas.get(persona.lower()).work(current_task)

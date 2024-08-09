@@ -5,6 +5,7 @@ from typing import List
 
 import Constants
 import Globals
+from ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.Personas import PersonaConstants
@@ -25,7 +26,6 @@ class Analyst(BasePersona):
         """First create a document evaluating the current output, if any, against the initial problem
         Then generate a list of workers to improve the current solution
         """
-        execution_logs = f"Analyst analysing...:\n{current_task}\n"
         self.files_for_evaluation = FileManagement.list_files(str(Globals.thought_id))
 
         # evaluate current files
@@ -38,7 +38,8 @@ class Analyst(BasePersona):
 
         # save to Analysis.txt file
         FileManagement.save_file(analysis_report, Constants.meta_analysis_filename, overwrite=True)
-        execution_logs += "Analyst: Report written and saved"
+        ExecutionLogs.add_to_logs("Analyst: Report written and saved")
+
         # Search for the pattern
         is_solved = re.search(r"Solved:\s*True", analysis_report)
 
@@ -49,9 +50,8 @@ class Analyst(BasePersona):
 
         # create json file assigning next workers
         Globals.workers = self.recommend_workers(current_task)
-        execution_logs += "Analyst suggested the following workers to work with the following instructions:\n" + pformat(Globals.workers)
-
-        FileManagement.save_file(execution_logs, Constants.execution_logs_filename)
+        ExecutionLogs.add_to_logs("Analyst suggested the following workers to work with the following instructions:\n"
+                                  + pformat(Globals.workers))
 
     def recommend_workers(self, user_request) -> List[str]:
         analyst = self.create_ai_wrapper([Constants.meta_analysis_filename])

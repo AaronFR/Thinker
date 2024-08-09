@@ -3,6 +3,7 @@ import logging
 from typing import Dict, List
 
 import Constants
+from ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.AiWrapper import AiWrapper
 from ThoughtProcessor.Personas import PersonaConstants
@@ -39,6 +40,7 @@ class TaskType(enum.Enum):
             logging.debug(f"Page {i} written: {text}")
 
         FileManagement.save_file(output, task_directives.get('where_to_do_it'))
+        ExecutionLogs.add_to_logs(f"Saved to {task_directives.get('where_to_do_it')}")
 
     @staticmethod
     def _generate_text(executor_task: AiWrapper, output: str, task_directives: Dict[str, object], page_number: int):
@@ -65,6 +67,7 @@ class TaskType(enum.Enum):
             ["Primary Instructions: " + str(task_directives.get('what_to_do'))]
         )
         FileManagement.save_file(output, task_directives.get('where_to_do_it'))
+        ExecutionLogs.add_to_logs(f"Appended to content to {task_directives.get('where_to_do_it')}")
 
     @staticmethod
     def rewrite_part_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1):
@@ -78,6 +81,8 @@ class TaskType(enum.Enum):
             output,
             task_directives.get('where_to_do_it')
         )
+        ExecutionLogs.add_to_logs(f"""Regex re-wrote {task_directives.get('rewrite_this')}
+                                  In: {task_directives.get('where_to_do_it')}""")
 
     @staticmethod
     def rewrite_file_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1,
@@ -97,13 +102,12 @@ class TaskType(enum.Enum):
         FileManagement.save_file(re_written_file,
                                  task_directives.get('where_to_do_it'),
                                  overwrite=True)
-        logging.info(f"File rewritten successfully: {task_directives.get('where_to_do_it')}")
+        ExecutionLogs.add_to_logs(f"File rewritten successfully: {task_directives.get('where_to_do_it')}")
 
     @staticmethod
     def chunk_text(text: str, approx_max_tokens: int, char_per_token=4) -> List[str]:
         """
         Correctly split file_contents into chunks based on approx_max_chars
-
 
         :param text: text to be split apart based on token count
         :param approx_max_tokens: token limit before splitting input text into another chunk

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Global 'solved' variable, Analyst persona can now indicate that the task is finished and the process can stop iterating through work on the initial user prompt
+- ExecutionLogs.py for handling writing up the exact movements of the persona system as it works on the given task
 
 ### Changed
 
