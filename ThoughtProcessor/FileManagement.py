@@ -35,13 +35,13 @@ class FileManagement:
             logging.exception(f"""ERROR: could not instantiate file: {file_path}""")
 
     @staticmethod
-    def list_files(thought_id: str = "1") -> list:
+    def list_files() -> list:
         """
         List all file names in the given directory.
 
         :return: A list of file names in the directory.
         """
-        thought_folder = FileManagement._get_thought_folder(thought_id)
+        thought_folder = FileManagement._get_thought_folder()
         try:
             entries = os.listdir(thought_folder)
             file_names = [entry for entry in entries if os.path.isfile(os.path.join(thought_folder, entry))]
@@ -124,7 +124,6 @@ class FileManagement:
 
     @staticmethod
     def _replace_text(content: str, target: str, replacement: str) -> str:
-        # pattern = re.compile(re.escape(target_string), re.DOTALL)
 
         # Escape special characters in the stripped string
         escaped_string = re.escape(target)
@@ -243,13 +242,12 @@ class FileManagement:
         return os.path.join(FileManagement.thoughts_folder, str(Globals.thought_id), file_name)
 
     @staticmethod
-    def _get_thought_folder(thought_id: str) -> str:
+    def _get_thought_folder() -> str:
         """Get the folder path for a given thought ID.
 
-        :param thought_id: The ID of the currently executing thought.
         :return: The folder path for the given thought ID.
         """
-        return os.path.join(FileManagement.thoughts_folder, thought_id)
+        return os.path.join(FileManagement.thoughts_folder, Globals.thought_id)
 
 
 if __name__ == '__main__':

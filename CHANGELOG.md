@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - calculate_prompt_cost method added for *all* usages of the LLM API, letting the program give out an *accurate* value for the cost for a given run
+- thought_id is determined via global, while this may need to be updated if the application is every to be used in bulk this prevents the program from accessing other task folders it's not supposed to
 
 ### Removed
 

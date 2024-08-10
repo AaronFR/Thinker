@@ -23,7 +23,7 @@ class Editor(BasePersona):
     def execute_task(self, current_task: str):
         """Planner-specific task execution logic
         """
-        self.files_for_evaluation = FileManagement.list_files(str(Globals.thought_id))
+        self.files_for_evaluation = FileManagement.list_files()
 
         executive_output_dict = self.generate_executive_plan(current_task)
 

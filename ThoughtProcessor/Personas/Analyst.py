@@ -18,7 +18,6 @@ class Analyst(BasePersona):
         super().__init__(name)
         self.thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
         self.files_for_evaluation = []
-        Globals.thought_id = 1  # self.get_next_thought_id()
 
         ErrorHandler.setup_logging()
 
@@ -26,7 +25,7 @@ class Analyst(BasePersona):
         """First create a document evaluating the current output, if any, against the initial problem
         Then generate a list of workers to improve the current solution
         """
-        self.files_for_evaluation = FileManagement.list_files(str(Globals.thought_id))
+        self.files_for_evaluation = FileManagement.list_files()
 
         # evaluate current files
         analyst = self.create_ai_wrapper(self.files_for_evaluation)
