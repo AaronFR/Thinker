@@ -240,6 +240,13 @@ You can only edit files that already exist. If you have not been supplied with f
 Ensure that the document remains valid for its intended use. Your output should be practical and to the point. 
 Avoid filling content with unnecessary theory. If new supplementary files are needed, make a note.
 
+**Specific Task Type Instructions**
+
+- 'REGEX_REFACTOR': Remember 'what_to_do' is the replacement for the content in the field 'rewrite_this', 
+it must ONLY contain the replacement for the target world,
+also where_to_do_it is not critical as the function will be operated on all listed files but does provide context over,
+which file is the "main" file to change. Please only write one of these tasks per refactor.
+
 **Task Requirements:**
 
 - **Sensible Task Arrangement**: Ensure tasks are logical and sequential. For example, create a file with 'APPEND' before attempting to rewrite it.
@@ -296,8 +303,10 @@ EDITOR_FUNCTION_SCHEMA = [{
                         "type": {
                             "type": "string",
                             "description": """Type of task. Examples: 'REWRITE' for small text changes, 
-                            'REWRITE_FILE' for extensive rewrites.""",
-                            "enum": ["REWRITE", "REWRITE_FILE"]
+                            'REWRITE_FILE' for extensive rewrites.
+                            'REGEX_REFACTOR' for regex replacing a single word or words with 'what_to_do' *everywhere* 
+                            - use carefully""",
+                            "enum": ["REWRITE", "REWRITE_FILE", "REGEX_REFACTOR"]
                         },
                         "what_to_reference": {
                             "type": "array",

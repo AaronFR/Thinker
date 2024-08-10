@@ -14,13 +14,15 @@ class TaskType(enum.Enum):
     APPEND = "APPEND"
     REWRITE = "REWRITE"
     REWRITE_FILE = "REWRITE_FILE"
+    REGEX_REFACTOR = "REGEX_REFACTOR"
 
     def execute(self, executor_task: AiWrapper, task_directives: Dict[str, object]):
         action_map = {
             TaskType.WRITE: self.write_to_file_task,
             TaskType.APPEND: self.append_to_file_task,
-            TaskType.REWRITE: self.rewrite_part_task,
+            #TaskType.REWRITE: self.rewrite_file_task,
             TaskType.REWRITE_FILE: self.rewrite_file_task,
+            TaskType.REGEX_REFACTOR: self.refactor_task
         }
 
         action = action_map.get(self)
@@ -70,24 +72,27 @@ class TaskType(enum.Enum):
         ExecutionLogs.add_to_logs(f"Appended content to {task_directives.get('where_to_do_it')}")
 
     @staticmethod
-    def rewrite_part_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1):
-        output = executor_task.execute(
-            PersonaConstants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
-            [f"""Just rewrite <rewrite_this>\n{task_directives.get('rewrite_this')}\n</rewrite_this>\n
-            In the following way: {str(task_directives.get('what_to_do'))}"""]
-        )
+    def refactor_task(executor_task: AiWrapper, task_directives: Dict[str, object]):
+        """
 
-        try:
-            FileManagement.re_write_section(
-                str(task_directives.get('rewrite_this')),
-                output,
-                task_directives.get('where_to_do_it')
-            )
-        except ValueError:
-            logging.exception(f"Failed to rewrite file {task_directives.get('rewrite_this')}")
 
-        ExecutionLogs.add_to_logs(f"""Regex re-wrote {task_directives.get('rewrite_this')}
-                                  In: {task_directives.get('where_to_do_it')}""")
+        :param executor_task: initialised LLM wrapper
+        :param task_directives: key fields: 'what_to_do', 'rewrite_this',
+        :return:
+        """
+        files_for_evaluation = FileManagement.list_files()
+        for file in files_for_evaluation:
+            try:
+                FileManagement.regex_refactor(
+                    str(task_directives.get('rewrite_this')),
+                    str(task_directives.get('what_to_do')),
+                    file
+                )
+            except ValueError:
+                logging.exception(f"Failed to rewrite file {task_directives.get('rewrite_this')}")
+
+        ExecutionLogs.add_to_logs(
+            f"Regex refactored {task_directives.get('rewrite_this')} -> {task_directives.get('what_to_do')}")
 
     @staticmethod
     def rewrite_file_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1,
