@@ -5,7 +5,7 @@ from typing import List
 
 import Constants
 import Globals
-from ExecutionLogs import ExecutionLogs
+from ThoughtProcessor.ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.Personas import PersonaConstants

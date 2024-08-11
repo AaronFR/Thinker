@@ -3,7 +3,7 @@ import logging
 from typing import Dict, List
 
 import Constants
-from ExecutionLogs import ExecutionLogs
+from ThoughtProcessor.ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.AiWrapper import AiWrapper
 from ThoughtProcessor.Personas import PersonaConstants

@@ -1,5 +1,4 @@
 import codecs
-import io
 import logging
 import os
 import sys
@@ -12,12 +11,16 @@ class ErrorHandler:
     """
 
     @staticmethod
-    def setup_logging(log_file: str = 'application.log'):
+    def setup_logging(log_file: str = 'application.log', logger_name: str = None, format_scheme: str = '%(asctime)s [%(levelname)s] (%(filename)s:%(lineno)d) %(message)s'):
         """Sets up logging configuration."""
         thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
+        os.makedirs(thoughts_folder, exist_ok=True)
 
         log_file_location = os.path.join(thoughts_folder, log_file)
-        logger = logging.getLogger()
+        if logger_name:
+            logger = logging.getLogger(logger_name)
+        else:
+            logger = logging.getLogger()  # get base logger
 
         # Clear any existing handlers
         if logger.hasHandlers():
@@ -32,24 +35,13 @@ class ErrorHandler:
         console_handler.setLevel(logging.INFO)
 
         # Create formatter and add it to the handlers
-        formatter = logging.Formatter('%(asctime)s [%(levelname)s] (%(filename)s:%(lineno)d) %(message)s')
+        formatter = logging.Formatter(format_scheme)
         file_handler.setFormatter(formatter)
         console_handler.setFormatter(formatter)
 
         # Add handlers to the logger
         logger.addHandler(file_handler)
         logger.addHandler(console_handler)
-
-    @staticmethod
-    def log_error(message: str, exception: Exception):
-        """Logs an error message along with exception details."""
-        logging.error(f"{message}: {str(exception)}")
-
-    @staticmethod
-    def handle_exception(exception: Exception, custom_message: str = "An error occurred"):
-        """Handles an exception by logging the details."""
-        ErrorHandler.log_error(custom_message, exception)
-
 
 
 if __name__ == '__main__':

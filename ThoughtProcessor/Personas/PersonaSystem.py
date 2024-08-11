@@ -1,7 +1,6 @@
 import os
 
-import Globals
-from ExecutionLogs import ExecutionLogs
+from ThoughtProcessor.ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.Personas.Analyst import Analyst
 from ThoughtProcessor.Personas.Editor import Editor

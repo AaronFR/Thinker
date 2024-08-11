@@ -3,7 +3,7 @@ import time
 from typing import List, Dict
 
 import Constants
-from ExecutionLogs import ExecutionLogs
+from ThoughtProcessor.ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.AiWrapper import AiWrapper
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.Personas import PersonaConstants

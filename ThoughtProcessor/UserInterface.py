@@ -3,7 +3,7 @@ import os
 from collections import deque
 
 import Globals
-from ExecutionLogs import ExecutionLogs
+from ThoughtProcessor.ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
 from ThoughtProcessor.Personas.PersonaSystem import PersonaSystem
@@ -32,6 +32,7 @@ class UserInterface:
         self.files_for_evaluation = []
         self.persona_system = PersonaSystem()
 
+        ExecutionLogs.setup_logging()
         ErrorHandler.setup_logging()
 
     def evaluate_prompt(self, user_prompt: str):
@@ -72,6 +73,7 @@ class UserInterface:
                     break
 
                 try:
+                    ExecutionLogs.add_to_logs(f"Starting iteration: {attempt_count}")
                     if Globals.workers:
                         worker = Globals.workers.pop()
                         self.persona_system.run_iteration(worker.get('instructions'), worker.get('type'))
