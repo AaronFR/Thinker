@@ -12,6 +12,8 @@ from Utility import Utility
 
 
 class Writer(BasePersona):
+    """Writer persona, representing a role that manages writing tasks and their outputs
+    """
 
     def __init__(self, name):
         super().__init__(name)

@@ -38,6 +38,7 @@ class FileManagement:
     def list_files() -> list:
         """
         List all file names in the given directory.
+        #ToDo: should leave files tagged meta alone, as soon as we start tagging meta files...
 
         :return: A list of file names in the directory.
         """

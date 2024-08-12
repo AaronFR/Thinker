@@ -65,7 +65,7 @@ class Utility:
         return bool(match)
 
     @staticmethod
-    def execute_with_retries(func: Callable[[], Any], max_retries: int = 5) -> Any:
+    def execute_with_retries(func: Callable[[], Any], max_retries: int = Constants.MAX_PROMPT_RETRIES) -> Any:
         """Execute a callable with retries on failure.
 
         :param func: A callable that will be executed.
@@ -76,7 +76,7 @@ class Utility:
             try:
                 return func()
             except Exception as e:
-                wait_time = 10 ** attempt  # Exponential backoff
+                wait_time = Constants.BACKOFF_INITIAL ** attempt  # Exponential backoff
                 logging.exception(f"Attempt {attempt + 1} failed: {e}. Retrying in {wait_time} seconds...")
                 time.sleep(wait_time)  # Wait before retrying
         logging.error("Max retries exceeded. Failed to get response from callable.")

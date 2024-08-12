@@ -12,6 +12,10 @@ from Utility import Utility
 
 
 class Editor(BasePersona):
+    """
+    Editor persona is responsible for editorialising: reviewing an existing document and making substitutions and
+    amendments.
+    """
 
     def __init__(self, name):
         super().__init__(name)
@@ -20,7 +24,12 @@ class Editor(BasePersona):
         ErrorHandler.setup_logging()
 
     def execute_task(self, current_task: str):
-        """Planner-specific task execution logic
+        """
+        Planner-specific task execution logic.
+
+        :param current_task: The task to be executed.
+        :raises ValueError: If the current_task is empty or invalid.
+        :raises Exception: If an error occurs during task execution.
         """
         self.files_for_evaluation = FileManagement.list_files()
 
