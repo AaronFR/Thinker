@@ -143,16 +143,14 @@ class FileManagement:
 
     @staticmethod
     def _replace_text(content: str, target: str, replacement: str) -> str:
+        """Replaces every instance of the target with the replacement using simple string methods.
 
-        # Escape special characters in the stripped string
-        escaped_string = re.escape(target)
-        # Replace escaped spaces and newline characters with \s+ for flexible matching
-        flexible_pattern = re.sub(r'\\ ', r'\\s+', escaped_string)
-        # Replace escaped newlines with \s+ for flexible matching
-        flexible_pattern = re.sub(r'\\n', r'\\s+', flexible_pattern)
-        pattern = re.compile(flexible_pattern, re.DOTALL)
-
-        return pattern.sub(replacement, content)
+        :param content: The original content in which to replace text.
+        :param target: The text to be replaced.
+        :param replacement: The text to replace the target string.
+        :return: The modified content.
+        """
+        return content.replace(target, replacement)
 
     @staticmethod
     def _write_to_file(content: str, file_name: str):
