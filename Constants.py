@@ -9,6 +9,7 @@ meta_analysis_filename = "meta_analysis_report.txt"
 backoff_factor: float = 1.0
 
 
+DEFAULT_ENCODING = 'utf-8'
 
 EXECUTIVE_SYSTEM_INSTRUCTIONS = f"""You are the first part of a 2 process, iterating in a system to solve an initial task,
 where file input is evaluated against the existing reference files, with each step adding to the files until the initial

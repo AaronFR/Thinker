@@ -3,6 +3,8 @@ import logging
 import os
 import sys
 
+import Constants
+
 
 class ErrorHandler:
     """Centralized error handling class for consistent logging and exception management.
@@ -27,8 +29,8 @@ class ErrorHandler:
             logger.handlers.clear()
 
         logger.setLevel(logging.DEBUG)
-        file_handler = logging.FileHandler(log_file_location, encoding='utf-8')
-        console_handler = logging.StreamHandler(codecs.getwriter('utf-8')(sys.stdout.buffer))
+        file_handler = logging.FileHandler(log_file_location, encoding=Constants.DEFAULT_ENCODING)
+        console_handler = logging.StreamHandler(codecs.getwriter(Constants.DEFAULT_ENCODING)(sys.stdout.buffer))
 
         # Set level for handlers
         file_handler.setLevel(logging.DEBUG)

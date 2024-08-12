@@ -41,7 +41,7 @@ class Utility:
             file_path = Path(file_name)
 
             try:
-                with file_path.open('r', encoding='utf-8') as file:
+                with file_path.open('r', encoding=Constants.DEFAULT_ENCODING) as file:
                     file_content = file.read()
 
                 if Utility.is_within_token_limit(file_content):

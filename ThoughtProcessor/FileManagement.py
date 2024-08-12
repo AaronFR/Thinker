@@ -26,10 +26,10 @@ class FileManagement:
 
         :param file: The name of the file to initialise.
         """
-        os.makedirs(f"thoughts/{Globals.thought_id}", exist_ok=True)
+        os.makedirs(os.path.join('thoughts', str(Globals.thought_id)), exist_ok=True)
         file_path = os.path.join("thoughts", str(Globals.thought_id), file)
         try:
-            with open(file_path, "w", encoding="utf-8"):
+            with open(file_path, "w", encoding=Constants.DEFAULT_ENCODING):
                 logging.info(f"File {file_path} instantiated.")
         except Exception:
             logging.exception(f"""ERROR: could not instantiate file: {file_path}""")
@@ -65,7 +65,7 @@ class FileManagement:
         full_path = os.path.join(FileManagement.thoughts_folder, str(Globals.thought_id), file_path)
         logging.info(f"Loading file content from: {full_path}")
         try:
-            with open(full_path, 'r', encoding='utf-8') as file:
+            with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
                 return file.read()
         except FileNotFoundError:
             logging.exception(f"File not found: {file_path}")
@@ -227,7 +227,7 @@ class FileManagement:
         for i in range(start, end + 1):
             file_path = f"{file_base_name}_{i}.txt"
             try:
-                with open(file_path, 'r', encoding='utf-8') as file:
+                with open(file_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
                     content += file.read()
                 logging.info(f"CONTENT [{i}]: {content}")
             except FileNotFoundError:
