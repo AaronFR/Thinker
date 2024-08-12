@@ -29,7 +29,6 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 ## Features to implement
 To enhance the system's capabilities and efficiency, several features are planned for implementation:
-- **Quality v Quantity**: Currently the system *can* output lots of content, but cannot optimise on request for quality
 - **Enhanced Executive Reasoning**: Develop improvements to the executive plan generator for more accurate and complex decision-making.
     - allow tasks to look at input file line numbers for increased precision.
 - **Build from blueprint**: Worker classes should specify blueprints and then build documents from them to guarantee internal consistency

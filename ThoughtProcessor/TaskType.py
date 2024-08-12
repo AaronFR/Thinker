@@ -20,7 +20,7 @@ class TaskType(enum.Enum):
         action_map = {
             TaskType.WRITE: self.write_to_file_task,
             TaskType.APPEND: self.append_to_file_task,
-            #TaskType.REWRITE: self.rewrite_file_task,
+            TaskType.REWRITE: self.rewrite_file_lines,
             TaskType.REWRITE_FILE: self.rewrite_file_task,
             TaskType.REGEX_REFACTOR: self.refactor_task
         }
@@ -32,7 +32,80 @@ class TaskType(enum.Enum):
             raise ValueError(f"Unknown TaskType: {self}")
 
     @staticmethod
+    def rewrite_file_lines(executor_task: AiWrapper, task_directives: Dict[str, object]):
+        """
+        Refactor file lines based on directives.
+
+        :param executor_task: Initialized LLM wrapper
+        :param task_directives: Contains 'where_to_do_it' and 'what_to_do'
+        """
+        file_path = str(task_directives.get('where_to_do_it'))
+        file_lines = FileManagement.read_file_with_lines(file_path)
+        replacements = TaskType.process_replacements(executor_task, file_lines, task_directives)
+        TaskType.apply_replacements(file_lines, replacements, file_path)
+
+    @staticmethod
+    def process_replacements(executor_task: AiWrapper, file_lines: List[str], task_directives: Dict[str, object]):
+        numbered_lines = [f"{i + 1}: {line}" for i, line in enumerate(file_lines)]
+        replacements = executor_task.execute_function(
+            PersonaConstants.EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS,
+            [''.join(numbered_lines),
+             f"""For the given file: {task_directives.get('where_to_do_it')}, 
+            "replace sections with the following primary instructions: {task_directives.get('what_to_do')}"""],
+            PersonaConstants.EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA
+        )
+        return replacements
+
+    @staticmethod
+    def apply_replacements(file_lines: List[str], replacements: Dict[str, object], file_path: str):
+        """
+        Process and replace specific lines in a file based on the given replacement instructions.
+
+        This method iterates through the specified replacements, updates the content of the file accordingly,
+        and then saves the modified content back to the specified location.
+
+        The method first adds all lines before the current replacement block to the new content.
+        It then replaces the specified lines with the new content provided in the replacement instructions.
+        After processing each replacement, it updates the current line index to skip over the replaced lines.
+        Finally, it appends any remaining lines after the last replacement to the new content.
+
+        :param file_lines: A list of lines representing the content of the file to be modified.
+        :param replacements: A dictionary containing a 'changes' key, which holds a list of replacement instructions.
+         Each instruction is a dictionary with 'start', 'end', and 'replacement' keys.
+         - 'start': The starting line number (1-based index) for the replacement.
+         - 'end': The ending line number (inclusive, 1-based index) for the replacement.
+         - 'replacement': The string content to replace the specified lines with.
+        :param file_path: The file to write to.
+        """
+        new_content = []
+        current_line = 0
+        for change in sorted(replacements.get('changes'), key=lambda x: x['start']):
+            start = change['start'] - 1  # Adjust for zero-based indexing
+            end = change['end']
+
+            replacement = change['replacement']
+            ExecutionLogs.add_to_logs(
+                f"Adding the following to -> {file_path}[{start}:{end}]: \
+                    {replacement}"
+            )
+            new_content.extend(file_lines[current_line:start])
+            new_content.extend(replacement.splitlines(keepends=True))
+            current_line = end
+
+        new_content.extend(file_lines[current_line:])
+
+        FileManagement.save_file(''.join(new_content), file_path, overwrite=True)
+        ExecutionLogs.add_to_logs(f"Saved to {file_path}")
+
+    @staticmethod
     def write_to_file_task(executor_task: AiWrapper, task_directives: Dict[str, object]):
+        """
+        Repeatedly write content to the specified number of pages to write. Where one page roughly corresponds to
+        500 words (2000 tokens output)
+
+        :param executor_task: Initialized LLM wrapper
+        :param task_directives: Dict with 'where_to_do_it' and 'pages_to_write'
+        """
         pages_to_write = task_directives.get("pages_to_write", 1)
         output = ""
 
@@ -74,9 +147,10 @@ class TaskType(enum.Enum):
     @staticmethod
     def refactor_task(executor_task: AiWrapper, task_directives: Dict[str, object]):
         """
+        Refactor files based on regex patterns.
 
-
-        :param executor_task: initialised LLM wrapper
+        :param executor_task: initialised LLM wrapper, this is a pure code task but for as implemented we must declare
+        this argument anyway
         :param task_directives: key fields: 'what_to_do', 'rewrite_this',
         :return:
         """
@@ -97,6 +171,15 @@ class TaskType(enum.Enum):
     @staticmethod
     def rewrite_file_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1,
                           approx_max_tokens=1000):
+        """
+        Split a input file into chunks based on the estimated max number of output tokens (2000 tokens) taking in
+        half that number allowing the llm to either decrease word count or double it should it be required.
+
+        :param executor_task: Initialized LLM wrapper
+        :param task_directives: Dict containing 'file_to_rewrite' and 'what_to_do'
+        :param current_thought_id: Unique identifier for the current processing thought
+        :param approx_max_tokens: token chunk size to split the document by
+        """
         file_contents = FileManagement.read_file(str(task_directives.get('file_to_rewrite')))
         text_chunks = TaskType.chunk_text(file_contents, approx_max_tokens)
 

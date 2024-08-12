@@ -302,11 +302,13 @@ EDITOR_FUNCTION_SCHEMA = [{
                     "properties": {
                         "type": {
                             "type": "string",
-                            "description": """Type of task. Examples: 'REWRITE' for small text changes, 
+                            "description": """Type of task. Examples: 'REWRITE' for replacing individual linenumbers in files, 
+                            Just tell the following program which file to operate on 'where_to_do_it' and how you want the file changed
+                            go into great detail and be as helpful and extensive as possible on that front
                             'REWRITE_FILE' for extensive rewrites.
                             'REGEX_REFACTOR' for regex replacing a single word or words with 'what_to_do' *everywhere* 
                             - use carefully""",
-                            "enum": ["REWRITE", "REWRITE_FILE", "REGEX_REFACTOR"]
+                            "enum": ["REWRITE", "REGEX_REFACTOR"]  #  "REWRITE_FILE"
                         },
                         "what_to_reference": {
                             "type": "array",
@@ -314,7 +316,7 @@ EDITOR_FUNCTION_SCHEMA = [{
                             "items": {"type": "string"}
                         },
                         "rewrite_this": {
-                            "type": """string""",
+                            "type": "object",
                             "description": """
                             The exact text you want replaced, as it appears in the initial document. 
                             Ensure the output is a valid multi-line, triple-quote string and that any special characters
@@ -340,6 +342,77 @@ EDITOR_FUNCTION_SCHEMA = [{
                         }
                     },
                     "required": DEFAULT_REQUIRED_KEYS
+                }
+            }
+        }
+    }
+}]
+
+EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS = """Given the initial reference file from earlier and the directives you've
+been given rewrite sets of lines from the initial file, where the file has had its line numbers appended to each line 
+for your benefit. Choose the starting line of a replacement and finish the set at the last line you want edited. These 
+line numbers are obviously positive integers and the start of the set is before the end. Pay careful attention to the
+original spacing and formatting and preserve it as much as possible unless otherwise stated by the primary directive.
+
+
+**Example**
+Reference file: example.txt
+Instructions make the following clearer and snappier
+
+{
+    changes [
+        {
+            "start": 11,
+            "end": 13,
+            "replacement": "     ###Contents
+                 Here's the updated method to return the file content with line numbers:
+                 1. Read the file line by line.
+                 2. Prepend each line with its line number.
+                 3. Return the combined result."
+        },
+        {
+            "start": 44
+            "end": 161
+            "replacement": "In the 16th century, the Russian royal family, the Rurik dynasty, ruled with an iron grip. 
+            Ivan the Terrible, the most infamous of the bunch, centralized power, expanded the empire, and left a trail of bloodshed. 
+            His reign marked the beginning of autocratic rule in Russia, setting the stage for centuries of tsarist control. 
+            The family’s legacy? A mix of ruthless power, territorial expansion, and a reputation for unpredictability.
+        }
+    
+    ]
+}
+
+"""
+
+EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA = [{
+    "name": "executiveDirective",
+    "description": """With referenced to the assigned file, replace the given lines with new content in line with your specific objectives
+    Note: The line numbers have been added to the reference file for your ease of review, please DO NOT include line numbers in your output.
+    Make sure no sets overlaps and that the sets progress down the document, that is the filelines are bigger with each following entry""",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "changes": {
+                "type": "array",
+                "description": """A list of replacements of the texts lines (at least one), replacing the content of the 
+                file for particular line numbers.""",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "start": {
+                            "type": "integer",
+                            "description": "The first line of the initial document to replace"
+                        },
+                        "end": {
+                            "type": "integer",
+                            "description": "The last line of the initial document to replace in this set, higher number than the starting number"
+                        },
+                        "replacement": {
+                            "type": "string",
+                            "description": "The replacement for the given line numbers"
+                        }
+                    },
+                    "required": ["start", "end", "replacement"]
                 }
             }
         }

@@ -75,6 +75,25 @@ class FileManagement:
             return f"[FAILED TO LOAD {file_path}]"
 
     @staticmethod
+    def read_file_with_lines(file_path: str) -> List[str]:
+        """Read the content of a file, with line numbers prepended to each line.
+
+        :param file_path: The path of the file to read.
+        :return: The content of the file with line numbers, or an error message to let the next LLM know what happened.
+        """
+        full_path = os.path.join(FileManagement.thoughts_folder, str(Globals.thought_id), file_path)
+        logging.info(f"Loading file content from: {full_path}")
+        try:
+            with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
+                return file.readlines()
+        except FileNotFoundError:
+            logging.exception(f"File not found: {file_path}")
+            return [f"[FAILED TO LOAD {file_path}]"]
+        except Exception:
+            logging.exception(f"An unexpected error occurred")
+            return [f"[FAILED TO LOAD {file_path}]"]
+
+    @staticmethod
     def read_files(file_paths: List[str]) -> List[str]:
         """Read content from multiple files.
 

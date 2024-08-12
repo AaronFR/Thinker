@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Global 'solved' variable, Analyst persona can now indicate that the task is finished and the process can stop iterating through work on the initial user prompt
 - ExecutionLogs.py for handling writing up the exact movements of the persona system as it works on the given task
 - 'regex refactor' task: regex replacing large sections of text repeatedly fails, so the application was refactored (🙃) to replace a word or words for all files.
+- 'rewrite' task: instead of trying to replace lines of text with regex which is very error prone, instead the replacement is done by swapping out the content based on line number
 
 ### Changed
 
