@@ -102,7 +102,7 @@ class FileManagement:
             logging.exception(f"ERROR: could not save file: {file_path}")
 
     @staticmethod
-    def re_write_section(target_string: str, replacement: str, file_name):
+    def regex_refactor(target_string: str, replacement: str, file_name):
         """
         Replaces every instance of the target with the replacement str
 
@@ -247,7 +247,7 @@ class FileManagement:
 
         :return: The folder path for the given thought ID.
         """
-        return os.path.join(FileManagement.thoughts_folder, Globals.thought_id)
+        return os.path.join(FileManagement.thoughts_folder, str(Globals.thought_id))
 
 
 if __name__ == '__main__':

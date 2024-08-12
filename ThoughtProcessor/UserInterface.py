@@ -11,23 +11,23 @@ from ThoughtProcessor.Personas.PersonaSystem import PersonaSystem
 
 class UserInterface:
     """
-    Handles user input tasks for processing by the iterative system
+    Manages user input for processing within the iterative system.
 
-    The UserInterface orchestrates the flow of task evaluation by breaking user prompts down into actionable
-    chunks. The process includes multiple retries for task execution, allowing
-    the system to address and resolve complex problems iteratively.
+    The UserInterface coordinates task evaluation by decomposing user prompts into manageable components, to be
+    iterated upon by a worker or 'Persona' making individual llm calls.
 
     Attributes:
         files_for_evaluation (list): List of files to be evaluated.
-        max_tries (int): Maximum attempts allowed to resolve a task.
+        MAX_TRIES (int): Maximum attempts allowed to resolve a task.
+        BUDGET (float): used budget for calling ai API's
     """
 
-    MAX_TRIES = 15
+    MAX_TRIES = 5
     BUDGET = 0.01  # $
 
     def __init__(self):
         """
-        Initialize the UserInterface instance.
+        Initialize the UserInterface instance and set up logging.
         """
         self.files_for_evaluation = []
         self.persona_system = PersonaSystem()
@@ -35,25 +35,20 @@ class UserInterface:
         ExecutionLogs.setup_logging()
         ErrorHandler.setup_logging()
 
-    def evaluate_prompt(self, user_prompt: str):
+    def process_user_prompt(self, user_prompt: str):
         """
-        Evaluate and execute a task based on its description.
+        Validate and manage the execution of the user's input prompt.
 
-        This method coordinates the assessment and execution process, generating execution plans,
-        attempting the resolution iteratively, and keeping logs of performance outcomes.
+        Upon validation of user input, it establishes a new 'thought' folder for the user request, holding user input
+        files and application created solution files
+        The user prompt is added to a task queue, enabling the system to manage prompt resolution
+        while allowing for early exit conditions if warranted.
 
-        The method tries to solve the provided task by executing iterations within a budget limit.
-
-        :param user_prompt: The description of the task to evaluate as a string. This should be
-                           a concise prompt that describes the desired outcome, such as a
-                           question or request
-
-        Returns:
-            None: This method does not return a value. It logs the process and updates the system state.
+        Parameters:
+            user_prompt (str): The prompt provided by the user for processing.
         """
-        if not self.validate_prompt(user_prompt):
+        if not self.is_prompt_valid(user_prompt):
             return  # Exit early on invalid input
-
         current_prompt_folder = os.path.join(FileManagement.thoughts_folder, f"{Globals.thought_id}")
         os.makedirs(current_prompt_folder, exist_ok=True)
 
@@ -61,39 +56,73 @@ class UserInterface:
         Globals.workers = []
 
         while task_queue:
-            current_task = task_queue.popleft()  # Get the next task
-            attempt_count = 0  # Reset attempt counter for the current task
-            Globals.current_request_cost = 0.0
+            current_task_prompt = task_queue.popleft()  # Retrieve the next task
+            self.handle_task_iterations(current_task_prompt)
 
-            # Iterate through execution attempts for a given task
-            while self.within_budget():
-                if attempt_count >= self.MAX_TRIES:
-                    self._log_and_save_unsolved_problem()
-                    break
+    def handle_task_iterations(self, current_task_prompt: str):
+        """
+        Oversee the iterative processing of the task prompt until resolution is achieved or
+        the maximum number of attempts is reached.
 
-                try:
-                    ExecutionLogs.add_to_logs(f"Starting iteration: {attempt_count}")
-                    if Globals.workers:
-                        worker = Globals.workers.pop()
-                        self.persona_system.run_iteration(worker.get('instructions'), worker.get('type'))
-                    else:
-                        self.persona_system.run_iteration(current_task)
+        Parameters:
+            current_task_prompt (str): The task prompt currently being processed.
+        """
+        attempt_count = 0  # Reset attempt counter for the current task
+        Globals.current_request_cost = 0.0
 
-                    if Globals.is_solved:
-                        self._log_process_completion(current_task, attempt_count)
-                        return
-                except Exception as e:
-                    logging.error(f"Error processing iteration({attempt_count}) for `{current_task}`: {e}")
-                    ExecutionLogs.add_to_logs(f"Error processing iteration({attempt_count})")
-                    break  # Exit loop on processing executive thought failure
+        while self.within_budget():
+            if attempt_count >= self.MAX_TRIES:
+                self._log_and_save_unsolved_problem()
+                break
 
-                attempt_count += 1
+            self._process_task_iteration(current_task_prompt, attempt_count)
+            attempt_count += 1
+        self._log_and_save_unsolved_problem()
 
-            self._log_and_save_unsolved_problem()
+    def _process_task_iteration(self, current_user_prompt: str, attempt_count: int):
+        """
+        Execute a single iteration of task processing for the given user prompt
 
+        Parameters:
+            current_user_prompt (str): The prompt being processed.
+            attempt_count (int): The current attempt number for processing.
+        """
+        try:
+            ExecutionLogs.add_to_logs(f"Starting iteration: {attempt_count}")
+            if Globals.workers:
+                worker = Globals.workers.pop()
+                self.persona_system.run_iteration(worker.get('instructions'), worker.get('type'))
+            else:
+                self.persona_system.run_iteration(current_user_prompt)
 
+            if Globals.is_solved:
+                self._log_request_completion(current_user_prompt, attempt_count)
+                return
+        except Exception as e:
+            logging.error(f"Failed to process iteration {attempt_count} for prompt: '{current_user_prompt}'. " 
+            f"Error encountered: {str(e)}; Reason: {e.__class__.__name__} occurred during processing.")
+            ExecutionLogs.add_to_logs(f"Iteration {attempt_count} failed due to: {str(e)}.")
 
-    def validate_prompt(self, user_prompt: str) -> bool:
+    @staticmethod
+    def is_prompt_valid(user_prompt: str) -> bool:
+        """Validate the user's input prompt against content and length restrictions.  # ToDo eventually...
+
+        This method checks if the user prompt is appropriate for processing.
+
+        Parameters:
+            user_prompt (str): The prompt to be validated.
+
+        Returns:
+            bool: True if valid, False otherwise.
+        """
+        if not isinstance(user_prompt, str):
+            logging.error("Invalid input: user_prompt must be a non-empty string.")
+            return False
+
+        return True
+
+    @staticmethod
+    def validate_prompt(user_prompt: str) -> bool:
         """Validate user input prompt
         Later will need to include content moderation
 
@@ -105,12 +134,18 @@ class UserInterface:
 
     def _log_and_save_unsolved_problem(self):
         """Log and save information about an unsolved problem."""
+
         logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS")
         ExecutionLogs.add_to_logs(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS\n")
 
     @staticmethod
-    def _log_process_completion(current_task: str, attempt_count: int):
-        """Log the termination of a request process"""
+    def _log_request_completion(current_task: str, attempt_count: int):
+        """Log the termination of a request process.
+
+        Parameters:
+            current_user_prompt (str): The prompt that was processed.
+            attempt_count (int): Number of attempts made to fulfill the request.
+        """
         logging.info(f"""FINISHED REQUEST: [{current_task}]
                         in {attempt_count} iterations
                         total cost: ${round(Globals.current_request_cost, 4)}""")
@@ -118,10 +153,16 @@ class UserInterface:
     @staticmethod
     def within_budget(budget: float = BUDGET) -> bool:
         """
-        Check if the current cost is within the budget.
+        Evaluate whether the current request cost aligns with predefined budgetary constraints.
 
-        :param budget: The budget limit.
-        :return: True if within budget, False otherwise.
+        This method compares the total costs incurred with the specified budget, returning
+        True if expenses remain within limits, thereby preventing overspending on API calls.
+
+        Parameters:
+            budget (float): The budget cap for assessment. Default is the class-level BUDGET.
+
+        Returns:
+            bool: True if costs are within budget, False otherwise.
         """
         logging.info(
             f"""Current cost: ${round(Globals.current_request_cost, 5)}, {round((Globals.current_request_cost / budget) * 100, 5)}%""")
@@ -131,6 +172,6 @@ class UserInterface:
 if __name__ == '__main__':
     thought_process = UserInterface()
 
-    thought_process.evaluate_prompt(
-        """Review the attached python classes and make suggestions for refactored method and variable names to improve consistency and intuition. Write these in a file called 'renamings.txt'"""
+    thought_process.process_user_prompt(
+        """Using only the Editor role and only the REWRITE task, rewrite UserInterface to be better, more intuitive and to improve structural failures"""
     )
