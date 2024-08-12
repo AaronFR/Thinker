@@ -45,7 +45,7 @@ class Analyst(BasePersona):
         # Check if the pattern was found and print it
         if is_solved:
             ExecutionLogs.add_to_logs("TASK SOLVED")
-            Globals.solved = True
+            Globals.is_solved = True
 
         # create json file assigning next workers
         Globals.workers = self.recommend_workers(current_task)

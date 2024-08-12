@@ -64,7 +64,6 @@ class UserInterface:
             current_task = task_queue.popleft()  # Get the next task
             attempt_count = 0  # Reset attempt counter for the current task
             Globals.current_request_cost = 0.0
-            Globals.execution_logs = ""
 
             # Iterate through execution attempts for a given task
             while self.within_budget():
@@ -80,7 +79,7 @@ class UserInterface:
                     else:
                         self.persona_system.run_iteration(current_task)
 
-                    if Globals.solved:
+                    if Globals.is_solved:
                         self._log_process_completion(current_task, attempt_count)
                         return
                 except Exception as e:
@@ -108,8 +107,6 @@ class UserInterface:
         """Log and save information about an unsolved problem."""
         logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS")
         ExecutionLogs.add_to_logs(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS\n")
-        ExecutionLogs.save_execution_logs()
-
 
     @staticmethod
     def _log_process_completion(current_task: str, attempt_count: int):
@@ -117,8 +114,6 @@ class UserInterface:
         logging.info(f"""FINISHED REQUEST: [{current_task}]
                         in {attempt_count} iterations
                         total cost: ${round(Globals.current_request_cost, 4)}""")
-
-        ExecutionLogs.save_execution_logs()
 
     @staticmethod
     def within_budget(budget: float = BUDGET) -> bool:
