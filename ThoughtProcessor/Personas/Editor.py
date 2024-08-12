@@ -26,10 +26,10 @@ class Editor(BasePersona):
 
         executive_output_dict = self.generate_executive_plan(current_task)
 
-        logging.info(f"Generated tasks: {pformat(executive_output_dict.get('tasks'), width=280)}")
-        ExecutionLogs.add_to_logs(f"Generated tasks: {pformat(executive_output_dict.get('tasks'), width=280)}")
+        logging.info(f"Generated tasks: {pformat(executive_output_dict.get(PersonaConstants.TASKS), width=280)}")
+        ExecutionLogs.add_to_logs(f"Generated tasks: {pformat(executive_output_dict.get(PersonaConstants.TASKS), width=280)}")
 
-        tasks = executive_output_dict.get('tasks', [])
+        tasks = executive_output_dict.get(PersonaConstants.TASKS, [])
         for task in tasks:
             self._process_task(task)
 

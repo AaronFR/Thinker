@@ -1,12 +1,12 @@
 import os
 import logging
-import re
 from typing import List
 from datetime import datetime
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
+import Constants
 import Globals
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 

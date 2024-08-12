@@ -5,6 +5,7 @@ from typing import List
 
 import Constants
 import Globals
+import ThoughtProcessor.Personas.PersonaConstants
 from ThoughtProcessor.ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
@@ -36,7 +37,7 @@ class Analyst(BasePersona):
         )
 
         # save to Analysis.txt file
-        FileManagement.save_file(analysis_report, Constants.meta_analysis_filename, overwrite=True)
+        FileManagement.save_file(analysis_report, ThoughtProcessor.Personas.PersonaConstants.meta_analysis_filename, overwrite=True)
         ExecutionLogs.add_to_logs("Analyst: Report written and saved")
 
         # Search for the pattern
@@ -53,14 +54,14 @@ class Analyst(BasePersona):
                                   + pformat(Globals.workers, width=300))
 
     def recommend_workers(self, user_request) -> List[str]:
-        analyst = self.create_ai_wrapper([Constants.meta_analysis_filename])
+        analyst = self.create_ai_wrapper([ThoughtProcessor.Personas.PersonaConstants.meta_analysis_filename])
         function_output = analyst.execute_function(
             [PersonaConstants.ANALYST_FUNCTION_INSTRUCTIONS],
             [f"Initial user request: {user_request}"],
             PersonaConstants.ANALYST_FUNCTION_SCHEMA
         )
 
-        workers = function_output.get('workers')
+        workers = function_output.get(PersonaConstants.WORKERS)
         return workers
 
 

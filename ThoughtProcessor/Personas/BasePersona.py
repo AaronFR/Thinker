@@ -7,7 +7,6 @@ from ThoughtProcessor.ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.AiWrapper import AiWrapper
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.Personas import PersonaConstants
-from Utility import Utility
 
 
 class BasePersona:

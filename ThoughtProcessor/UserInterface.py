@@ -91,7 +91,7 @@ class UserInterface:
         try:
             if Globals.workers:
                 worker = Globals.workers.pop()
-                self.persona_system.run_iteration(worker.get(PersonaConstants.INSTRUCTION), worker.get(PersonaConstants.TYPE))
+                self.persona_system.run_iteration(worker.get(PersonaConstants.INSTRUCTIONS), worker.get(PersonaConstants.TYPE))
             else:
                 self.persona_system.run_iteration(current_user_prompt)
 

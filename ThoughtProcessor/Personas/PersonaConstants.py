@@ -1,16 +1,12 @@
-import Constants
-
-
 TYPE = "type"
-REFERENCE = "what_to_reference"
-INSTRUCTION = "what_to_do"
-SAVE_TO = "where_to_do_it"
-
-
-
-
+REFERENCE = "reference"
+INSTRUCTION = "instruction"
+INSTRUCTIONS = "instructions"
+SAVE_TO = "save_to"
 DEFAULT_REQUIRED_KEYS = [TYPE, REFERENCE, INSTRUCTION, SAVE_TO]
 
+TASKS = "tasks"
+WORKERS = "workers"
 
 ANALYST_SYSTEM_INSTRUCTIONS = """You are an analyst strictly reviewing the quality of a solution to a given problem, 
 at the end of your through evaluation, determine if the given solution ACTUALLY answers the original prompt sufficiently 
@@ -37,14 +33,14 @@ workers *should* instead save/improve user presented files or new solution files
 
 ```json
 {{
-  "workers": [
+  "{WORKERS}": [
     {{
-      {TYPE}: "WRITER",
-      "instructions": "Create an initial draft of the solution for the user's request: Explain magnetism. Ensure the content is well-structured and detailed."
+      "{TYPE}": "WRITER",
+      "{INSTRUCTIONS}": "Create an initial draft of the solution for the user's request: Explain magnetism. Ensure the content is well-structured and detailed."
     }},
     {{
-      {TYPE}: "EDITOR",
-      "instructions": "Review and refine the draft of the solution file. Ensure consistency in style and format, and address any gaps in the content. Focus on improving readability and coherence."
+      "{TYPE}": "EDITOR",
+      "{INSTRUCTIONS}": "Review and refine the draft of the solution file. Ensure consistency in style and format, and address any gaps in the content. Focus on improving readability and coherence."
     }}
   ]
 }}"""
@@ -56,7 +52,7 @@ ANALYST_FUNCTION_SCHEMA = [{
     "parameters": {
         TYPE: "object",
         "properties": {
-            "workers": {
+            WORKERS: {
                 TYPE: "array",
                 "description": """A list of workers (*at least* one, no more than 3) to address the identified issues in 
                 the solution files according to the analysis_report.""",
@@ -72,18 +68,21 @@ ANALYST_FUNCTION_SCHEMA = [{
                             provided priorities.""",
                             "enum": ["WRITER", "EDITOR"]
                         },
-                        "instructions": {
+                        INSTRUCTIONS: {
                             TYPE: "string",
                             "description": """Your instructions to the executor. Be concise, detailed, and nuanced. 
                             Reference previous work to specify improvements for this loop."""
                         }
                     },
-                    "required": [TYPE, "instructions"]
+                    "required": [TYPE, INSTRUCTIONS]
                 }
             }
         }
     }
 }]
+
+meta_analysis_filename = "meta_analysis_report.txt"
+execution_logs_filename = "execution_logs.txt"
 
 EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS = f"""
 You are the first part of a two-step process, iterating within a system to write and keep writing a given file. 
@@ -97,7 +96,7 @@ Ensure the document remains valid for its intended use and that your output is p
 Avoid filling content with unnecessary theory. If new supplementary files are needed, make a note.
 
 Also, avoid planning meetings. Ensure you are writing to a valid file and not a meta file like 
-{Constants.meta_analysis_filename} or {Constants.execution_logs_filename}
+{meta_analysis_filename} or {execution_logs_filename}
 
 **Task Requirements:**
 
@@ -113,7 +112,7 @@ Also, avoid planning meetings. Ensure you are writing to a valid file and not a 
 {{
   {TYPE}: "Initial Setup",
   "areas_of_improvement": "Current input files are missing key sections needed for the final document.",
-  "tasks": [
+  {TASKS}: [
     {{
       {TYPE}: "APPEND",
       {REFERENCE}: ["new_section.txt"],
@@ -146,7 +145,7 @@ WRITER_FUNCTION_SCHEMA = [{
                 TYPE: "string",
                 "description": "Detailed explanation of how the current input files do not meet the criteria or how they do satisfy the conditions."
             },
-            "tasks": {
+            TASKS: {
                 TYPE: "array",
                 "description": "A list of tasks (*at least* one) to address the identified issues.",
                 "items": {
@@ -178,7 +177,7 @@ WRITER_FUNCTION_SCHEMA = [{
                             TYPE: "string",
                             "description": f"""The file where the output should be saved. MUST include a file from the 
                             reference files. 
-                            Don't save to {Constants.meta_analysis_filename} or {Constants.execution_logs_filename} 
+                            Don't save to {meta_analysis_filename} or {execution_logs_filename} 
                             you don't have permission."""
                         }
                     },
@@ -270,7 +269,7 @@ which file is the "main" file to change. Please only write one of these tasks pe
 {{
   "{TYPE}": "Initial Setup",
   "areas_of_improvement": "Current input files are missing key sections needed for the final document.",
-  "tasks": [
+  "{TASKS}": [
     {{
       "{TYPE}": "APPEND",
       "{REFERENCE}": ["new_section.txt"],
@@ -304,7 +303,7 @@ EDITOR_FUNCTION_SCHEMA = [{
                 TYPE: "string",
                 "description": "Detailed explanation of how the current input files do not meet the criteria or how they do satisfy the conditions."
             },
-            "tasks": {
+            TASKS: {
                 TYPE: "array",
                 "description": "A list of tasks (*at least* one) to address the identified issues.",
                 "items": {
@@ -347,7 +346,7 @@ EDITOR_FUNCTION_SCHEMA = [{
                             TYPE: "string",
                             "description": f"""The file where the output should be saved. 
                             Must reference a file from 'what_to_reference'.
-                            Don't save to {Constants.meta_analysis_filename} or {Constants.execution_logs_filename} 
+                            Don't save to {meta_analysis_filename} or {execution_logs_filename} 
                             you don't have permission."""
                         }
                     },

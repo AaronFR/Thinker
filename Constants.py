@@ -3,10 +3,11 @@ from ThoughtProcessor.Personas import PersonaConstants
 MODEL_NAME = "gpt-4o-mini"
 EXPENSIVE_MODEL_NAME = "gpt-4o"
 
-execution_logs_filename = "execution_logs.txt"
-meta_analysis_filename = "meta_analysis_report.txt"
+MAX_SCHEMA_RETRIES = 2
 
-backoff_factor: float = 1.0
+MAX_PROMPT_RETRIES = 3
+BACKOFF_INITIAL = 5
+BACKOFF_FACTOR: float = 1.0
 
 
 DEFAULT_ENCODING = 'utf-8'

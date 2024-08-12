@@ -26,12 +26,14 @@ class Writer(BasePersona):
 
         executive_output_dict = self.generate_executive_plan(current_task)
 
-        logging.info(f"Generated tasks: {pformat(executive_output_dict.get('tasks'), width=280)}")
-        ExecutionLogs.add_to_logs(f"Generated tasks: {pformat(executive_output_dict.get('tasks'), width=280)}")
+        ExecutionLogs.add_to_logs(f"Initiating task processing. Current task: {current_task}")
+        logging.info(f"Generated tasks: {pformat(executive_output_dict.get(PersonaConstants.TASKS), width=280)}")
+        ExecutionLogs.add_to_logs(f"Generated tasks: {pformat(executive_output_dict.get(PersonaConstants.TASKS), width=280)}")
 
-        tasks = executive_output_dict.get('tasks', [])
+        tasks = executive_output_dict.get(PersonaConstants.TASKS, [])
         for task in tasks:
             self._process_task(task)
+
     @staticmethod
     def execute_task_directives(task_directives: Dict[str, object]):
         ExecutionLogs.add_to_logs(f"Executing task: \n{pformat(task_directives)}")
