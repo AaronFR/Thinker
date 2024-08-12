@@ -10,6 +10,7 @@ from ThoughtProcessor.Personas import PersonaConstants
 
 
 class TaskType(enum.Enum):
+    #ToDo: should be seperated to its own enum class with the task logic tied to the persona's -> clearer structure
     WRITE = "WRITE"
     APPEND = "APPEND"
     REWRITE = "REWRITE"

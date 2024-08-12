@@ -1,3 +1,9 @@
+ANALYST = "analyst"
+WRITER = "writer"
+EDITOR = "editor"
+
+EXECUTOR_PERSONAS = [WRITER, EDITOR]
+
 TYPE = "type"
 REFERENCE = "reference"
 INSTRUCTION = "instruction"
@@ -14,7 +20,7 @@ in format: Solved: True/False.
 Also make it clear that this is just a report and should not be operated on by other worker LLM's"""
 
 ANALYST_FUNCTION_INSTRUCTIONS = f"""
-You are a professional analyst. A user has made a request, and a series of files need to be generated or have been generated to satisfy this request. You are given the report on this solution and the plan of action.
+You are a professional {ANALYST}. A user has made a request, and a series of files need to be generated or have been generated to satisfy this request. You are given the report on this solution and the plan of action.
 
 Your task is to convert this plan into the specified format, creating an ordered list of workers to call upon and assigning tasks to them to increase user satisfaction with the supplied solution files. Include helpful and detailed instructions for each worker, as they will use these to complete their tasks in turn.
 
@@ -23,7 +29,7 @@ It is possible that no solution has been generated yet, and you need to coordina
 **Task Requirements:**
 
 - **Convert Plan to Format**: Translate the given plan of action into the specified format.
-- **Order Workers**: Create an ordered list of workers (WRITER and EDITOR) to address the tasks.
+- **Order Workers**: Create an ordered list of workers ({WRITER} and {EDITOR}) to address the tasks.
 - **Detailed Instructions**: Provide detailed and helpful instructions for each worker. Reference previous work and specify what to improve in this iteration.
 - **Coordinate Generation**: If no solution exists yet, coordinate the generation of this solution by assigning initial tasks.
 - **Sensible saving an referencing**: Do not instruct workers to write to execution_logs or your report file unless strictly necessary.
@@ -35,11 +41,11 @@ workers *should* instead save/improve user presented files or new solution files
 {{
   "{WORKERS}": [
     {{
-      "{TYPE}": "WRITER",
+      "{TYPE}": "{WRITER}",
       "{INSTRUCTIONS}": "Create an initial draft of the solution for the user's request: Explain magnetism. Ensure the content is well-structured and detailed."
     }},
     {{
-      "{TYPE}": "EDITOR",
+      "{TYPE}": "{EDITOR}",
       "{INSTRUCTIONS}": "Review and refine the draft of the solution file. Ensure consistency in style and format, and address any gaps in the content. Focus on improving readability and coherence."
     }}
   ]
@@ -47,7 +53,7 @@ workers *should* instead save/improve user presented files or new solution files
 
 ANALYST_FUNCTION_SCHEMA = [{
     "name": "executiveDirective",
-    "description": """Assess input files for improvements and generate tasks for a writer to create and improve
+    "description": f"""Assess input files for improvements and generate tasks for a {WRITER} to create and improve
     the initial solution, in line with the initial user prompt and any initial planning""",
     "parameters": {
         TYPE: "object",
@@ -61,12 +67,12 @@ ANALYST_FUNCTION_SCHEMA = [{
                     "properties": {
                         TYPE: {
                             "role": "string",
-                            "description": """Type of worker. 
-                            'WRITER': An LLM wrapper specialized in writing long reports and essays that may need to be 
+                            "description": f"""Type of worker. 
+                            '{WRITER}': An LLM wrapper specialized in writing long reports and essays that may need to be 
                             editorialized later. 
-                            'EDITOR': LLM wrapper specialized in editing and rewriting existing files in line with 
+                            '{EDITOR}': LLM wrapper specialized in editing and rewriting existing files in line with 
                             provided priorities.""",
-                            "enum": ["WRITER", "EDITOR"]
+                            "enum": EXECUTOR_PERSONAS
                         },
                         INSTRUCTIONS: {
                             TYPE: "string",
@@ -132,7 +138,7 @@ Also, avoid planning meetings. Ensure you are writing to a valid file and not a 
 
 WRITER_FUNCTION_SCHEMA = [{
     "name": "executiveDirective",
-    "description": """Assess input files for improvements and generate tasks for a writer to create and improve
+    "description": f"""Assess input files for improvements and generate tasks for a {WRITER} to create and improve
     the initial solution, in line with the initial user prompt and any initial planning""",
     "parameters": {
         TYPE: "object",
@@ -188,8 +194,8 @@ WRITER_FUNCTION_SCHEMA = [{
     }
 }]
 
-WRITER_SYSTEM_INSTRUCTIONS = """
-You are a talented, skilled, and professional writer. Your task is to create content related to the given request in a 
+WRITER_SYSTEM_INSTRUCTIONS = f"""
+You are a talented, skilled, and professional {WRITER}. Your task is to create content related to the given request in a 
 continuous stream without a specific end or conclusion. Future editors will streamline and rewrite your output.
 
 Your work is intended to be directly presented to the end user, 

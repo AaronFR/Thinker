@@ -106,8 +106,8 @@ class Prompter:
         chat_completion = Globals.open_ai_client.chat.completions.create(
             model=model,
             messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": str(prompt)}
+                {"role": Role.SYSTEM, "content": system_prompt},
+                {"role": Role.USER, "content": str(prompt)}
             ]
         )
 
