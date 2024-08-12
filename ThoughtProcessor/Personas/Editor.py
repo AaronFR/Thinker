@@ -38,7 +38,7 @@ class Editor(BasePersona):
         ExecutionLogs.add_to_logs(f"Executing task: \n{pformat(task_directives)}")
         executor_thought = BasePersona.create_ai_wrapper(task_directives.get('what_to_reference', []))
 
-        thought_type = TaskType(task_directives.get('type', TaskType.REWRITE_FILE.value))
+        thought_type = TaskType(task_directives.get(PersonaConstants.TYPE, TaskType.REWRITE_FILE.value))
         thought_type.execute(executor_thought, task_directives)
 
     def generate_executive_plan(self, task: str, additional_user_messages: List[str] = None) -> Dict[str, object]:

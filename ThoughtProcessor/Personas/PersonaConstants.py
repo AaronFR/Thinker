@@ -1,6 +1,15 @@
 import Constants
 
-DEFAULT_REQUIRED_KEYS = ['type', 'what_to_reference', 'what_to_do', 'where_to_do_it']
+
+TYPE = "type"
+REFERENCE = "what_to_reference"
+INSTRUCTION = "what_to_do"
+SAVE_TO = "where_to_do_it"
+
+
+
+
+DEFAULT_REQUIRED_KEYS = [TYPE, REFERENCE, INSTRUCTION, SAVE_TO]
 
 
 ANALYST_SYSTEM_INSTRUCTIONS = """You are an analyst strictly reviewing the quality of a solution to a given problem, 
@@ -8,7 +17,7 @@ at the end of your through evaluation, determine if the given solution ACTUALLY 
 in format: Solved: True/False. 
 Also make it clear that this is just a report and should not be operated on by other worker LLM's"""
 
-ANALYST_FUNCTION_INSTRUCTIONS = """
+ANALYST_FUNCTION_INSTRUCTIONS = f"""
 You are a professional analyst. A user has made a request, and a series of files need to be generated or have been generated to satisfy this request. You are given the report on this solution and the plan of action.
 
 Your task is to convert this plan into the specified format, creating an ordered list of workers to call upon and assigning tasks to them to increase user satisfaction with the supplied solution files. Include helpful and detailed instructions for each worker, as they will use these to complete their tasks in turn.
@@ -27,34 +36,34 @@ workers *should* instead save/improve user presented files or new solution files
 **Example of an Ordered List of Workers:**
 
 ```json
-{
+{{
   "workers": [
-    {
-      "type": "WRITER",
+    {{
+      {TYPE}: "WRITER",
       "instructions": "Create an initial draft of the solution for the user's request: Explain magnetism. Ensure the content is well-structured and detailed."
-    },
-    {
-      "type": "EDITOR",
+    }},
+    {{
+      {TYPE}: "EDITOR",
       "instructions": "Review and refine the draft of the solution file. Ensure consistency in style and format, and address any gaps in the content. Focus on improving readability and coherence."
-    }
+    }}
   ]
-}"""
+}}"""
 
 ANALYST_FUNCTION_SCHEMA = [{
     "name": "executiveDirective",
     "description": """Assess input files for improvements and generate tasks for a writer to create and improve
     the initial solution, in line with the initial user prompt and any initial planning""",
     "parameters": {
-        "type": "object",
+        TYPE: "object",
         "properties": {
             "workers": {
-                "type": "array",
+                TYPE: "array",
                 "description": """A list of workers (*at least* one, no more than 3) to address the identified issues in 
                 the solution files according to the analysis_report.""",
                 "items": {
-                    "type": "object",
+                    TYPE: "object",
                     "properties": {
-                        "type": {
+                        TYPE: {
                             "role": "string",
                             "description": """Type of worker. 
                             'WRITER': An LLM wrapper specialized in writing long reports and essays that may need to be 
@@ -64,19 +73,19 @@ ANALYST_FUNCTION_SCHEMA = [{
                             "enum": ["WRITER", "EDITOR"]
                         },
                         "instructions": {
-                            "type": "string",
+                            TYPE: "string",
                             "description": """Your instructions to the executor. Be concise, detailed, and nuanced. 
                             Reference previous work to specify improvements for this loop."""
                         }
                     },
-                    "required": ["type", "instructions"]
+                    "required": [TYPE, "instructions"]
                 }
             }
         }
     }
 }]
 
-EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS = """
+EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS = f"""
 You are the first part of a two-step process, iterating within a system to write and keep writing a given file. 
 Your task involves evaluating file input against the existing reference files, 
 with each step adding to the files until the initial task is completed.
@@ -88,7 +97,7 @@ Ensure the document remains valid for its intended use and that your output is p
 Avoid filling content with unnecessary theory. If new supplementary files are needed, make a note.
 
 Also, avoid planning meetings. Ensure you are writing to a valid file and not a meta file like 
-""" + Constants.meta_analysis_filename + " or " + Constants.execution_logs_filename + """
+{Constants.meta_analysis_filename} or {Constants.execution_logs_filename}
 
 **Task Requirements:**
 
@@ -101,25 +110,25 @@ Also, avoid planning meetings. Ensure you are writing to a valid file and not a 
 **Example of a JSON Output:**
 
 ```json
-{
-  "type": "Initial Setup",
+{{
+  {TYPE}: "Initial Setup",
   "areas_of_improvement": "Current input files are missing key sections needed for the final document.",
   "tasks": [
-    {
-      "type": "APPEND",
-      "what_to_reference": ["new_section.txt"],
-      "what_to_do": "Create a new chapter outlining the project scope.",
-      "where_to_do_it": "new_section_chapter_2.txt"
-    },
-    {
-      "type": "WRITE",
-      "what_to_reference": ["existing_file.txt"],
+    {{
+      {TYPE}: "APPEND",
+      {REFERENCE}: ["new_section.txt"],
+      {INSTRUCTION}: "Create a new chapter outlining the project scope.",
+      {SAVE_TO}: "new_section_chapter_2.txt"
+    }},
+    {{
+      {TYPE}: "WRITE",
+      {REFERENCE}: ["existing_file.txt"],
       "pages_to_write": 5,
-      "what_to_do": "Expand this section with detailed analysis and recent data.",
-      "where_to_do_it": "detailed_analysis.txt"
-    }
+      {INSTRUCTION}: "Expand this section with detailed analysis and recent data.",
+      {SAVE_TO}: "detailed_analysis.txt"
+    }}
   ]
-}
+}}
 """
 
 WRITER_FUNCTION_SCHEMA = [{
@@ -127,46 +136,46 @@ WRITER_FUNCTION_SCHEMA = [{
     "description": """Assess input files for improvements and generate tasks for a writer to create and improve
     the initial solution, in line with the initial user prompt and any initial planning""",
     "parameters": {
-        "type": "object",
+        TYPE: "object",
         "properties": {
-            "type": {
-                "type": "string",
+            TYPE: {
+                TYPE: "string",
                 "description": "A summary of what the tasks in this directive are supposed to accomplish"
             },
             "areas_of_improvement": {
-                "type": "string",
+                TYPE: "string",
                 "description": "Detailed explanation of how the current input files do not meet the criteria or how they do satisfy the conditions."
             },
             "tasks": {
-                "type": "array",
+                TYPE: "array",
                 "description": "A list of tasks (*at least* one) to address the identified issues.",
                 "items": {
-                    "type": "object",
+                    TYPE: "object",
                     "properties": {
-                        "type": {
-                            "type": "string",
+                        TYPE: {
+                            TYPE: "string",
                             "description": """
                             Type of task, e.g., 'WRITE' for repeatedly appending pages of content or 'APPEND' for adding
                              content to the end of a file or creating a new file.""",
                             "enum": ["APPEND", "WRITE"]
                         },
-                        "what_to_reference": {
-                            "type": "array",
+                        REFERENCE: {
+                            TYPE: "array",
                             "description": "List of file names with extensions, relevant to the task.",
-                            "items": {"type": "string"}
+                            "items": {TYPE: "string"}
                         },
                         "pages_to_write": {
-                            "type": "integer",
+                            TYPE: "integer",
                             "description": """Number of pages of content to be written.
                             Recommended starting place is 5 pages, with a maximum of 10 pages. Only for 'WRITE' tasks."""
                         },
-                        "what_to_do": {
-                            "type": "string",
+                        INSTRUCTION: {
+                            TYPE: "string",
                             "description": """Instructions to the executor for the iterative process. Be concise, 
                             detailed, and nuanced. Reference previous work to specify improvements for this loop."""
                         },
-                        "where_to_do_it": {
-                            "type": "string",
+                        SAVE_TO: {
+                            TYPE: "string",
                             "description": f"""The file where the output should be saved. MUST include a file from the 
                             reference files. 
                             Don't save to {Constants.meta_analysis_filename} or {Constants.execution_logs_filename} 
@@ -228,7 +237,7 @@ climate change on agriculture.
 ---
 """
 
-EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS = """
+EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS = f"""
 You are the first part of a two-step process, iterating within a system to solve an initial task.
 Your role involves evaluating file inputs against existing reference files, progressively adding to the files until the 
 initial task is complete.
@@ -244,7 +253,7 @@ Avoid filling content with unnecessary theory. If new supplementary files are ne
 
 - 'REGEX_REFACTOR': Remember 'what_to_do' is the replacement for the content in the field 'rewrite_this', 
 it must ONLY contain the replacement for the target world,
-also where_to_do_it is not critical as the function will be operated on all listed files but does provide context over,
+also {SAVE_TO} is not critical as the function will be operated on all listed files but does provide context over,
 which file is the "main" file to change. Please only write one of these tasks per refactor.
 
 **Task Requirements:**
@@ -258,83 +267,84 @@ which file is the "main" file to change. Please only write one of these tasks pe
 **Example of a JSON Output:**
 
 ```json
-{
-  "type": "Initial Setup",
+{{
+  "{TYPE}": "Initial Setup",
   "areas_of_improvement": "Current input files are missing key sections needed for the final document.",
   "tasks": [
-    {
-      "type": "APPEND",
-      "what_to_reference": ["new_section.txt"],
-      "what_to_do": "Create a new section outlining the project scope.",
-      "where_to_do_it": "project_overview.txt"
-    },
-    {
-      "type": "REWRITE",
-      "what_to_reference": ["existing_file.txt"],
+    {{
+      "{TYPE}": "APPEND",
+      "{REFERENCE}": ["new_section.txt"],
+      "{INSTRUCTION}": "Create a new section outlining the project scope.",
+      "{SAVE_TO}": "project_overview.txt"
+    }},
+    {{
+      "{TYPE}": "REWRITE",
+      "{REFERENCE}": ["existing_file.txt"],
       "rewrite_this": "Original text to be replaced.",
-      "what_to_do": "Update this section with the latest data.",
-      "where_to_do_it": "updated_file.txt"
-    }
+      "{INSTRUCTION}": "Update this section with the latest data.",
+      "{SAVE_TO}": "updated_file.txt"
+    }}
   ]
-}
+}}
 """
+
 
 EDITOR_FUNCTION_SCHEMA = [{
     "name": "executiveDirective",
     "description": """Assess input files for improvements and generate tasks for a editor to create and improve
     the initial solution, in line with the initial user prompt and any initial planning""",
     "parameters": {
-        "type": "object",
+        TYPE: "object",
         "properties": {
-            "type": {
-                "type": "string",
+            TYPE: {
+                TYPE: "string",
                 "description": "A summarisation of what the tasks in this directive are supposed to accomplish"
             },
             "areas_of_improvement": {
-                "type": "string",
+                TYPE: "string",
                 "description": "Detailed explanation of how the current input files do not meet the criteria or how they do satisfy the conditions."
             },
             "tasks": {
-                "type": "array",
+                TYPE: "array",
                 "description": "A list of tasks (*at least* one) to address the identified issues.",
                 "items": {
-                    "type": "object",
+                    TYPE: "object",
                     "properties": {
-                        "type": {
-                            "type": "string",
+                        TYPE: {
+                            TYPE: "string",
                             "description": """Type of task. Examples: 'REWRITE' for replacing individual linenumbers in files, 
-                            Just tell the following program which file to operate on 'where_to_do_it' and how you want the file changed
+                            Just tell the following program which file to operate on '{SAVE_TO}' and how you want the file changed
                             go into great detail and be as helpful and extensive as possible on that front
                             'REWRITE_FILE' for extensive rewrites.
                             'REGEX_REFACTOR' for regex replacing a single word or words with 'what_to_do' *everywhere* 
                             - use carefully""",
                             "enum": ["REWRITE", "REGEX_REFACTOR"]  #  "REWRITE_FILE"
                         },
-                        "what_to_reference": {
-                            "type": "array",
+                        REFERENCE: {
+                            TYPE: "array",
                             "description": "List of file names with extensions, relevant to the task.",
-                            "items": {"type": "string"}
+                            "items": {TYPE: "string"}
                         },
                         "rewrite_this": {
-                            "type": "object",
+                            TYPE: "object",
                             "description": """
                             The exact text you want replaced, as it appears in the initial document. 
                             Ensure the output is a valid multi-line, triple-quote string and that any special characters
                             are escaped. Only for 'REWRITE' tasks."""
                         },
                         "file_to_rewrite": {
-                            "type": "string",
+                            TYPE: "string",
                             "description": """The file including its extension that you want to rewrite.
                             Only for 'REWRITE_FILE' tasks."""
                         },
-                        "what_to_do": {
-                            "type": "string",
+                        INSTRUCTION: {
+                            TYPE: "string",
                             "description": """Instructions for the executor in the iterative process. 
                             Be concise, detailed, and nuanced. Refer to previous work to specify improvements for this 
                             loop."""
                         },
-                        "where_to_do_it": {
-                            "type": "string",
+                        SAVE_TO: {
+                            TYPE: "string",
                             "description": f"""The file where the output should be saved. 
                             Must reference a file from 'what_to_reference'.
                             Don't save to {Constants.meta_analysis_filename} or {Constants.execution_logs_filename} 
@@ -390,25 +400,25 @@ EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA = [{
     Note: The line numbers have been added to the reference file for your ease of review, please DO NOT include line numbers in your output.
     Make sure no sets overlaps and that the sets progress down the document, that is the filelines are bigger with each following entry""",
     "parameters": {
-        "type": "object",
+        TYPE: "object",
         "properties": {
             "changes": {
-                "type": "array",
+                TYPE: "array",
                 "description": """A list of replacements of the texts lines (at least one), replacing the content of the 
                 file for particular line numbers.""",
                 "items": {
-                    "type": "object",
+                    TYPE: "object",
                     "properties": {
                         "start": {
-                            "type": "integer",
+                            TYPE: "integer",
                             "description": "The first line of the initial document to replace"
                         },
                         "end": {
-                            "type": "integer",
+                            TYPE: "integer",
                             "description": "The last line of the initial document to replace in this set, higher number than the starting number"
                         },
                         "replacement": {
-                            "type": "string",
+                            TYPE: "string",
                             "description": "The replacement for the given line numbers"
                         }
                     },

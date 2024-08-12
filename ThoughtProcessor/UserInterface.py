@@ -6,6 +6,7 @@ import Globals
 from ThoughtProcessor.ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.FileManagement import FileManagement
+from ThoughtProcessor.Personas import PersonaConstants
 from ThoughtProcessor.Personas.PersonaSystem import PersonaSystem
 
 
@@ -90,7 +91,7 @@ class UserInterface:
         try:
             if Globals.workers:
                 worker = Globals.workers.pop()
-                self.persona_system.run_iteration(worker.get('instructions'), worker.get('type'))
+                self.persona_system.run_iteration(worker.get(PersonaConstants.INSTRUCTION), worker.get(PersonaConstants.TYPE))
             else:
                 self.persona_system.run_iteration(current_user_prompt)
 

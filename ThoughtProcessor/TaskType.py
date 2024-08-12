@@ -37,9 +37,9 @@ class TaskType(enum.Enum):
         Refactor file lines based on directives.
 
         :param executor_task: Initialized LLM wrapper
-        :param task_directives: Contains 'where_to_do_it' and 'what_to_do'
+        :param task_directives: Contains SAVE_TO and INSTRUCTION
         """
-        file_path = str(task_directives.get('where_to_do_it'))
+        file_path = str(task_directives.get(PersonaConstants.SAVE_TO))
         file_lines = FileManagement.read_file_with_lines(file_path)
         replacements = TaskType.process_replacements(executor_task, file_lines, task_directives)
         TaskType.apply_replacements(file_lines, replacements, file_path)
@@ -50,8 +50,8 @@ class TaskType(enum.Enum):
         replacements = executor_task.execute_function(
             PersonaConstants.EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS,
             [''.join(numbered_lines),
-             f"""For the given file: {task_directives.get('where_to_do_it')}, 
-            "replace sections with the following primary instructions: {task_directives.get('what_to_do')}"""],
+             f"""For the given file: {task_directives.get(PersonaConstants.SAVE_TO)}, 
+            "replace sections with the following primary instructions: {task_directives.get(PersonaConstants.INSTRUCTION)}"""],
             PersonaConstants.EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA
         )
         return replacements
@@ -104,7 +104,7 @@ class TaskType(enum.Enum):
         500 words (2000 tokens output)
 
         :param executor_task: Initialized LLM wrapper
-        :param task_directives: Dict with 'where_to_do_it' and 'pages_to_write'
+        :param task_directives: Dict with SAVE_TO and 'pages_to_write'
         """
         pages_to_write = task_directives.get("pages_to_write", 1)
         output = ""
@@ -114,8 +114,8 @@ class TaskType(enum.Enum):
             output += text
             logging.debug(f"Page {i} written: {text}")
 
-        FileManagement.save_file(output, task_directives.get('where_to_do_it'))
-        ExecutionLogs.add_to_logs(f"Saved to {task_directives.get('where_to_do_it')}")
+        FileManagement.save_file(output, task_directives.get(PersonaConstants.SAVE_TO))
+        ExecutionLogs.add_to_logs(f"Saved to {task_directives.get(PersonaConstants.SAVE_TO)}")
 
     @staticmethod
     def _generate_text(executor_task: AiWrapper, output: str, task_directives: Dict[str, object], page_number: int):
@@ -123,7 +123,7 @@ class TaskType(enum.Enum):
             return executor_task.execute(
                 PersonaConstants.WRITER_SYSTEM_INSTRUCTIONS,
                 [f"""Write the first page of {task_directives.get('pages_to_write')}, 
-                answering the following: {task_directives.get('what_to_do')}"""]
+                answering the following: {task_directives.get(PersonaConstants.INSTRUCTION)}"""]
             )
         else:
             return executor_task.execute(
@@ -139,10 +139,10 @@ class TaskType(enum.Enum):
     def append_to_file_task(executor_task: AiWrapper, task_directives: Dict[str, object]):
         output = executor_task.execute(
             Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
-            ["Primary Instructions: " + str(task_directives.get('what_to_do'))]
+            ["Primary Instructions: " + str(task_directives.get(PersonaConstants.INSTRUCTION))]
         )
-        FileManagement.save_file(output, task_directives.get('where_to_do_it'))
-        ExecutionLogs.add_to_logs(f"Appended content to {task_directives.get('where_to_do_it')}")
+        FileManagement.save_file(output, task_directives.get(PersonaConstants.SAVE_TO))
+        ExecutionLogs.add_to_logs(f"Appended content to {task_directives.get(PersonaConstants.SAVE_TO)}")
 
     @staticmethod
     def refactor_task(executor_task: AiWrapper, task_directives: Dict[str, object]):
@@ -151,7 +151,7 @@ class TaskType(enum.Enum):
 
         :param executor_task: initialised LLM wrapper, this is a pure code task but for as implemented we must declare
         this argument anyway
-        :param task_directives: key fields: 'what_to_do', 'rewrite_this',
+        :param task_directives: key fields: INSTRUCTION, 'rewrite_this',
         :return:
         """
         files_for_evaluation = FileManagement.list_files()
@@ -159,14 +159,14 @@ class TaskType(enum.Enum):
             try:
                 FileManagement.regex_refactor(
                     str(task_directives.get('rewrite_this')),
-                    str(task_directives.get('what_to_do')),
+                    str(task_directives.get(PersonaConstants.INSTRUCTION)),
                     file
                 )
             except ValueError:
                 logging.exception(f"Failed to rewrite file {task_directives.get('rewrite_this')}")
 
         ExecutionLogs.add_to_logs(
-            f"Regex refactored {task_directives.get('rewrite_this')} -> {task_directives.get('what_to_do')}")
+            f"Regex refactored {task_directives.get('rewrite_this')} -> {task_directives.get(PersonaConstants.INSTRUCTION)}")
 
     @staticmethod
     def rewrite_file_task(executor_task: AiWrapper, task_directives: Dict[str, object], current_thought_id=1,
@@ -176,7 +176,7 @@ class TaskType(enum.Enum):
         half that number allowing the llm to either decrease word count or double it should it be required.
 
         :param executor_task: Initialized LLM wrapper
-        :param task_directives: Dict containing 'file_to_rewrite' and 'what_to_do'
+        :param task_directives: Dict containing 'file_to_rewrite' and INSTRUCTION
         :param current_thought_id: Unique identifier for the current processing thought
         :param approx_max_tokens: token chunk size to split the document by
         """
@@ -189,13 +189,13 @@ class TaskType(enum.Enum):
             re_written_file += executor_task.execute(
                 PersonaConstants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
                 [f"""Rewrite this section: \n<rewrite_this>\n{text_chunk}\n</rewrite_this>\n
-                    In the following way: {str(task_directives.get('what_to_do'))}"""]
+                    In the following way: {str(task_directives.get(PersonaConstants.INSTRUCTION))}"""]
             )
 
         FileManagement.save_file(re_written_file,
-                                 task_directives.get('where_to_do_it'),
+                                 task_directives.get(PersonaConstants.SAVE_TO),
                                  overwrite=True)
-        ExecutionLogs.add_to_logs(f"File rewritten successfully: {task_directives.get('where_to_do_it')}")
+        ExecutionLogs.add_to_logs(f"File rewritten successfully: {task_directives.get(PersonaConstants.SAVE_TO)}")
 
     @staticmethod
     def chunk_text(text: str, approx_max_tokens: int, char_per_token=4) -> List[str]:
