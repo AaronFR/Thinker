@@ -174,11 +174,9 @@ class Prompter:
 
         :param chat_completion: after the prompt has been processed
         """
-        cost_per_input_token = 0.00000015  # $/t
-        cost_per_output_token = 0.00000060  # $/t
 
-        input_token_price = chat_completion.usage.prompt_tokens * cost_per_input_token
-        output_token_price = chat_completion.usage.completion_tokens * cost_per_output_token
+        input_token_price = chat_completion.usage.prompt_tokens * Constants.cost_per_input_token
+        output_token_price = chat_completion.usage.completion_tokens * Constants.cost_per_output_token
 
         Globals.current_request_cost += (input_token_price + output_token_price)
 

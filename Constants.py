@@ -9,6 +9,9 @@ MAX_PROMPT_RETRIES = 3
 BACKOFF_INITIAL = 5
 BACKOFF_FACTOR: float = 1.0
 
+cost_per_input_token = 0.00000015  # $/t
+cost_per_output_token = 0.00000060  # $/t
+
 
 DEFAULT_ENCODING = 'utf-8'
 

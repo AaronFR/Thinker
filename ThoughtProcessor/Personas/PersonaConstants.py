@@ -362,7 +362,7 @@ been given rewrite sets of lines from the initial file, where the file has had i
 for your benefit. Choose the starting line of a replacement and finish the set at the last line you want edited. These 
 line numbers are obviously positive integers and the start of the set is before the end. Pay careful attention to the
 original spacing and formatting and preserve it as much as possible unless otherwise stated by the primary directive.
-
+Make sure your set STARTS on what you want replaced and ENDS there too.
 
 **Example**
 Reference file: example.txt
@@ -373,19 +373,19 @@ Instructions make the following clearer and snappier
         {
             "start": 11,
             "end": 13,
-            "replacement": "     ###Contents
-                 Here's the updated method to return the file content with line numbers:
-                 1. Read the file line by line.
-                 2. Prepend each line with its line number.
-                 3. Return the combined result."
+            "replacement": "     ###Contents\\n
+                 Here's the updated method to return the file content with line numbers:\\n
+                 1. Read the file line by line.\\n
+                 2. Prepend each line with its line number.\\n
+                 3. Return the combined result."\\n
         },
         {
             "start": 44
             "end": 161
-            "replacement": "In the 16th century, the Russian royal family, the Rurik dynasty, ruled with an iron grip. 
-            Ivan the Terrible, the most infamous of the bunch, centralized power, expanded the empire, and left a trail of bloodshed. 
-            His reign marked the beginning of autocratic rule in Russia, setting the stage for centuries of tsarist control. 
-            The family’s legacy? A mix of ruthless power, territorial expansion, and a reputation for unpredictability.
+            "replacement": "In the 16th century, the Russian royal family, the Rurik dynasty, ruled with an iron grip.\\n
+            Ivan the Terrible, the most infamous of the bunch, centralized power, expanded the empire, and left a trail of bloodshed.\\n
+            His reign marked the beginning of autocratic rule in Russia, setting the stage for centuries of tsarist control.\\n
+            The family’s legacy? A mix of ruthless power, territorial expansion, and a reputation for unpredictability.\\n
         }
     
     ]
