@@ -49,6 +49,7 @@ class UserInterface:
         """
         if not self.is_prompt_valid(user_prompt):
             return  # Exit early on invalid input
+
         current_prompt_folder = os.path.join(FileManagement.thoughts_folder, f"{Globals.thought_id}")
         os.makedirs(current_prompt_folder, exist_ok=True)
 
@@ -70,14 +71,12 @@ class UserInterface:
         attempt_count = 0  # Reset attempt counter for the current task
         Globals.current_request_cost = 0.0
 
-        while self.within_budget():
-            if attempt_count >= self.MAX_TRIES:
-                self._log_and_save_unsolved_problem()
-                break
-
+        while self.within_budget() and attempt_count < self.MAX_TRIES:
             self._process_task_iteration(current_task_prompt, attempt_count)
             attempt_count += 1
-        self._log_and_save_unsolved_problem()
+
+        if not self.within_budget() or attempt_count >= self.MAX_TRIES:
+            self._log_and_save_unsolved_problem()
 
     def _process_task_iteration(self, current_user_prompt: str, attempt_count: int):
         """
@@ -87,8 +86,8 @@ class UserInterface:
             current_user_prompt (str): The prompt being processed.
             attempt_count (int): The current attempt number for processing.
         """
+        ExecutionLogs.add_to_logs(f"Starting iteration: {attempt_count}")
         try:
-            ExecutionLogs.add_to_logs(f"Starting iteration: {attempt_count}")
             if Globals.workers:
                 worker = Globals.workers.pop()
                 self.persona_system.run_iteration(worker.get('instructions'), worker.get('type'))
@@ -99,8 +98,10 @@ class UserInterface:
                 self._log_request_completion(current_user_prompt, attempt_count)
                 return
         except Exception as e:
-            logging.error(f"Failed to process iteration {attempt_count} for prompt: '{current_user_prompt}'. " 
-            f"Error encountered: {str(e)}; Reason: {e.__class__.__name__} occurred during processing.")
+            logging.exception(
+                f"""Retry {attempt_count + 1}/{self.MAX_TRIES} failed for iteration {attempt_count} with prompt: 
+                '{current_user_prompt}'"
+                f"Error encountered: {str(e)}; Reason: {e.__class__.__name__} occurred during processing.""")
             ExecutionLogs.add_to_logs(f"Iteration {attempt_count} failed due to: {str(e)}.")
 
     @staticmethod
@@ -121,17 +122,6 @@ class UserInterface:
 
         return True
 
-    @staticmethod
-    def validate_prompt(user_prompt: str) -> bool:
-        """Validate user input prompt
-        Later will need to include content moderation
-
-        """
-        if user_prompt is None or not user_prompt.strip():
-            logging.error("Invalid input: user_prompt cannot be None or empty.")
-            return False
-        return True
-
     def _log_and_save_unsolved_problem(self):
         """Log and save information about an unsolved problem."""
 
@@ -147,8 +137,8 @@ class UserInterface:
             attempt_count (int): Number of attempts made to fulfill the request.
         """
         logging.info(f"""FINISHED REQUEST: [{current_task}]
-                        in {attempt_count} iterations
-                        total cost: ${round(Globals.current_request_cost, 4)}""")
+                        Completed in {attempt_count} iterations
+                        Total cost incurred: ${round(Globals.current_request_cost, 4)}""")
 
     @staticmethod
     def within_budget(budget: float = BUDGET) -> bool:
@@ -165,7 +155,8 @@ class UserInterface:
             bool: True if costs are within budget, False otherwise.
         """
         logging.info(
-            f"""Current cost: ${round(Globals.current_request_cost, 5)}, {round((Globals.current_request_cost / budget) * 100, 5)}%""")
+            f"""Current cost: ${round(Globals.current_request_cost, 5)}, 
+            {round((Globals.current_request_cost / budget) * 100, 5)}%""")
         return Globals.current_request_cost <= budget
 
 
