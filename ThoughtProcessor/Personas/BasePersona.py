@@ -7,6 +7,7 @@ from ThoughtProcessor.ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.AiWrapper import AiWrapper
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.Personas import PersonaConstants
+from Utility import Utility
 
 
 class BasePersona:
@@ -76,7 +77,7 @@ class BasePersona:
         :param required_keys: the necessary keys for a Dict to be evaluated as valid
         :return: True if the task is valid, False otherwise.
         """
-        tasks = executive_plan.get('tasks')
+        tasks = executive_plan.get(PersonaConstants.TASKS)
         for task in tasks:
             for key in required_keys:
                 if key not in task:
@@ -93,7 +94,7 @@ class BasePersona:
             task: str,
             function_instructions: str,
             function_schema: str,
-            max_retries: int = 2) -> Dict[str, object]:
+            max_retries: int = Constants.MAX_SCHEMA_RETRIES) -> Dict[str, object]:
         """
         Generate a function based on provided evaluation files and instructions.
 
@@ -124,10 +125,6 @@ class BasePersona:
             if BasePersona.valid_function_output(executive_plan):
                 return executive_plan
 
-            if attempt < max_retries:
-                wait_time = Constants.backoff_factor * (2 ** attempt)
-                logging.info(f"INVALID SCHEMA, RETRYING in {wait_time:.2f} seconds...")
-                time.sleep(wait_time)
             else:
                 logging.error("Exceeded maximum retries for generating a valid executive plan.")
                 raise Exception("SCHEMA FAILURE after maximum retries")
