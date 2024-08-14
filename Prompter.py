@@ -26,6 +26,8 @@ class Prompter:
     def __init__(self):
         ErrorHandler.setup_logging()
 
+        self.open_ai_client = OpenAI()
+
     @staticmethod
     def get_open_ai_function_response(messages: List[dict], function_schema, model=Constants.MODEL_NAME) -> Dict[str, object]:
         """Requests a structured response from the OpenAI API for function calling.
@@ -67,7 +69,7 @@ class Prompter:
         """
         try:
             logging.debug(f"Calling OpenAI API with messages: {messages}")
-            chat_completion = Globals.open_ai_client.chat.completions.create(
+            chat_completion = self.open_ai_client.chat.completions.create(
                 model=model, messages=messages
             )
             Prompter.calculate_prompt_cost(chat_completion, model)
@@ -98,13 +100,12 @@ class Prompter:
         except Exception as e:
             logging.error(f"Error during OpenAI API call: {e}")
 
-    @staticmethod
-    def generate_response(prompt: str,
+    def generate_response(self, prompt: str,
                           system_prompt=Constants.EVALUATE_TASKS_INSTRUCTIONS,
                           model=Constants.MODEL_NAME) -> ChatCompletion:
         """Generate ChatCompletion response from OpenAI API for a given prompt."""
         logging.debug(f"Generating response for prompt: {prompt[:20]}...")
-        chat_completion = Globals.open_ai_client.chat.completions.create(
+        chat_completion = self.open_ai_client.chat.completions.create(
             model=model,
             messages=[
                 {"role": Role.SYSTEM, "content": system_prompt},

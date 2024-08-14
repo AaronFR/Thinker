@@ -23,6 +23,7 @@ class AiWrapper:
         :param open_ai_client: The OpenAI API client instance.
         """
         self.input_files = input_files
+        self.prompter = Prompter()
 
         ErrorHandler.setup_logging()
 
@@ -40,7 +41,7 @@ class AiWrapper:
         """
         messages = Prompter.generate_messages(self.input_files, system_prompts, user_prompts)
 
-        response = Utility.execute_with_retries(lambda: Globals.prompter.get_open_ai_response(messages))
+        response = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_response(messages))
         if not response:
             logging.error("No response from OpenAI API.")
             raise Exception("Failed to get response from OpenAI API.")
@@ -67,7 +68,7 @@ class AiWrapper:
         messages = Prompter.generate_messages(self.input_files, system_prompts, user_prompts)
 
         response = Utility.execute_with_retries(
-            lambda: Globals.prompter.get_open_ai_function_response(messages, function_schema)
+            lambda: self.prompter.get_open_ai_function_response(messages, function_schema, model)
         )
 
         if not response:

@@ -1,7 +1,5 @@
 from openai import OpenAI
-from Prompter import Prompter
 
-prompter = Prompter()
 open_ai_client = OpenAI()
 is_solved = False
 thought_id = 1
