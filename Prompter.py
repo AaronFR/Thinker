@@ -27,23 +27,24 @@ class Prompter:
         ErrorHandler.setup_logging()
 
     @staticmethod
-    def get_open_ai_function_response(messages: List[dict], function_schema) -> Dict[str, object]:
+    def get_open_ai_function_response(messages: List[dict], function_schema, model=Constants.MODEL_NAME) -> Dict[str, object]:
         """Requests a structured response from the OpenAI API for function calling.
 
         :param messages: The system and user messages to send to the ChatGpt client
         :param function_schema:  The schema to apply to the output json
+        :param model: the actual llm to call
         :return: The content of the response from OpenAI or an error message to inform the next executor task
         """
         try:
             logging.debug(f"Calling OpenAI API with messages: {messages}")
             chat_completion = Globals.open_ai_client.chat.completions.create(
-                model=Constants.MODEL_NAME,
+                model=model,
                 messages=messages,
                 functions=function_schema,
                 function_call={"name": "executiveDirective"}
                 # ToDo investigate more roles
             )
-            Prompter.calculate_prompt_cost(chat_completion)
+            Prompter.calculate_prompt_cost(chat_completion, model)
 
             logging.info(f"Executive Plan: {chat_completion}")
             function_call = chat_completion.choices[0].message.function_call
@@ -57,19 +58,19 @@ class Prompter:
             logging.error(f"Unexpected error")
             raise
 
-    @staticmethod
-    def get_open_ai_response(messages: List[dict]) -> str | None:
+    def get_open_ai_response(self, messages: List[dict], model=Constants.MODEL_NAME) -> str | None:
         """Request a response from the OpenAI API.
 
         :param messages: The system and user messages to send to the ChatGpt client
+        :param model: the actual llm being called
         :return: The content of the response from OpenAI or an error message to inform the next Executor.
         """
         try:
             logging.debug(f"Calling OpenAI API with messages: {messages}")
             chat_completion = Globals.open_ai_client.chat.completions.create(
-                model=Constants.MODEL_NAME, messages=messages
+                model=model, messages=messages
             )
-            Prompter.calculate_prompt_cost(chat_completion)
+            Prompter.calculate_prompt_cost(chat_completion, model)
 
             response = chat_completion.choices[0].message.content
             return response or "[ERROR: NO RESPONSE FROM OpenAI API]"
@@ -111,7 +112,7 @@ class Prompter:
             ]
         )
 
-        Prompter.calculate_prompt_cost(chat_completion)
+        Prompter.calculate_prompt_cost(chat_completion, model)
         return chat_completion
 
     @staticmethod
@@ -168,15 +169,20 @@ class Prompter:
         return messages
 
     @staticmethod
-    def calculate_prompt_cost(chat_completion: ChatCompletion):
+    def calculate_prompt_cost(chat_completion: ChatCompletion, model):
         """
         Currently assumes your using ChatGpt-4o mini
 
         :param chat_completion: after the prompt has been processed
         """
 
-        input_token_price = chat_completion.usage.prompt_tokens * Constants.cost_per_input_token
-        output_token_price = chat_completion.usage.completion_tokens * Constants.cost_per_output_token
+        if model == Constants.MODEL_NAME:
+            input_token_price = chat_completion.usage.prompt_tokens * Constants.cost_per_input_token_gpt4o_mini
+            output_token_price = chat_completion.usage.completion_tokens * Constants.cost_per_output_token_gpt4o_mini
+        if model == Constants.EXPENSIVE_MODEL_NAME:
+            logging.warning("EXPENSIVE MODEL USED!")
+            input_token_price = chat_completion.usage.prompt_tokens * Constants.cost_per_input_token_gpt4o_mini
+            output_token_price = chat_completion.usage.completion_tokens * Constants.cost_per_output_token_gpt4o_mini
 
         Globals.current_request_cost += (input_token_price + output_token_price)
 

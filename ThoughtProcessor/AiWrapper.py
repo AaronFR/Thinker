@@ -51,7 +51,8 @@ class AiWrapper:
     def execute_function(self,
                          system_prompts: List[str] | str,
                          user_prompts: List[str] | str,
-                         function_schema: str) -> Dict[str, object]:
+                         function_schema: str,
+                         model: str=Constants.MODEL_NAME) -> Dict[str, object]:
         """Generates a structured response based on system and user prompts.
         ToDo: At some point actions other than writing will be needed, e.g. 'web search'
         #Solved if executive files only review summaries of input files
