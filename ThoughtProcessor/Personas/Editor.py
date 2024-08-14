@@ -77,5 +77,5 @@ if __name__ == '__main__':
     # editor.execute_task("""Review the translated report for structural coherence according to Dutch reporting styles.
     #     Organize the information with clear headings and sections, including an inleiding (introduction) and conclusie (conclusion).
     #     Ensure that the formatting aligns with typical Dutch standards for academic or historical reports.""")
-    editor.execute_task("""Regex replace every use of the phrase 'self.thoughts_folder' with the words 'self.WOAH'
+    editor.execute_task("""re-write the code for each method, with a focus retaining functionality while just making thhe code 'smarter' perhaps reducing line counts, implementing functionality in clever, better ways, code quality, readability. All that
     """)
