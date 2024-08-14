@@ -272,4 +272,6 @@ if __name__ == '__main__':
     # FileManagement.re_write_section("""Generate a response based on system and user prompts.
     #                                 """, "womp", "thought.py", "1")
 
-    FileManagement.save_file("Test", "test_test")
+    file_lines = FileManagement.read_file_with_lines("TaskType.py")
+    numbered_lines = [f"{i + 1}: {line}" for i, line in enumerate(file_lines)]
+    print(numbered_lines)

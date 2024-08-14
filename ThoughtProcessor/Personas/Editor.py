@@ -68,7 +68,7 @@ class Editor(BasePersona):
             additional_user_messages,
             task,
             PersonaConstants.EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS,
-            PersonaConstants.EDITOR_FUNCTION_SCHEMA
+            PersonaConstants.EDITOR_EXECUTIVE_FUNCTION_SCHEMA
         )
 
 

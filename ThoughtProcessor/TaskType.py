@@ -47,13 +47,20 @@ class TaskType(enum.Enum):
 
     @staticmethod
     def process_replacements(executor_task: AiWrapper, file_lines: List[str], task_directives: Dict[str, object]):
-        numbered_lines = [f"{i + 1}: {line}" for i, line in enumerate(file_lines)]
+        def get_numbered_lines(lines):
+            return [f"{i + 1}: {line}" for i, line in enumerate(lines)]
+
+        replacement_instructions = [
+                ''.join(get_numbered_lines(file_lines)),
+                f"""For the given file: {task_directives.get(PersonaConstants.SAVE_TO)}, 
+                replace sections with the following primary instructions: {task_directives.get(PersonaConstants.INSTRUCTION)}"""
+            ]
+
         replacements = executor_task.execute_function(
             PersonaConstants.EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS,
-            [''.join(numbered_lines),
-             f"""For the given file: {task_directives.get(PersonaConstants.SAVE_TO)}, 
-            "replace sections with the following primary instructions: {task_directives.get(PersonaConstants.INSTRUCTION)}"""],
-            PersonaConstants.EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA
+            replacement_instructions,
+            PersonaConstants.EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA,
+            model=Constants.MODEL_NAME
         )
         return replacements
 
@@ -84,10 +91,21 @@ class TaskType(enum.Enum):
             start = change['start'] - 1  # Adjust for zero-based indexing
             end = change['end']
 
-            replacement = change['replacement']
-            ExecutionLogs.add_to_logs(
-                f"Adding the following to -> {file_path}[{start}:{end}]: \
-                    {replacement}"
+            instruction = change['instruction']
+            text_to_rewrite = "".join(file_lines[start:end])
+            replacement = executor_task.execute(
+                [PersonaConstants.EDITOR_LINE_REPLACEMENT_INSTRUCTIONS],
+                [f"""For the given text: \n<input_text>\n{text_to_rewrite}\n</input_text>, 
+                "re-write the text with the given instructions in mind WHILE ensuring consistency of the original file is maintained: {instruction}"""]
+            )
+            # Ensure the replacement ends with a newline
+            if not replacement.endswith('\n'):
+                replacement += '\n'
+
+            ExecutionLogs.add_to_logs(f"""Replacing {target_file_path}[{change['start']}:{change['end']}]:
+                {text_to_rewrite}
+                With -> :
+                {replacement}"""
             )
             new_content.extend(file_lines[current_line:start])
             new_content.extend(replacement.splitlines(keepends=True))
@@ -95,8 +113,8 @@ class TaskType(enum.Enum):
 
         new_content.extend(file_lines[current_line:])
 
-        FileManagement.save_file(''.join(new_content), file_path, overwrite=True)
-        ExecutionLogs.add_to_logs(f"Saved to {file_path}")
+        FileManagement.save_file(''.join(new_content), target_file_path, overwrite=True)
+        ExecutionLogs.add_to_logs(f"Saved to {target_file_path}")
 
     @staticmethod
     def write_to_file_task(executor_task: AiWrapper, task_directives: Dict[str, object]):

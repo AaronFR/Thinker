@@ -293,8 +293,7 @@ which file is the "main" file to change. Please only write one of these tasks pe
 }}
 """
 
-
-EDITOR_FUNCTION_SCHEMA = [{
+EDITOR_EXECUTIVE_FUNCTION_SCHEMA = [{
     "name": "executiveDirective",
     "description": """Assess input files for improvements and generate tasks for a editor to create and improve
     the initial solution, in line with the initial user prompt and any initial planning""",
@@ -363,71 +362,102 @@ EDITOR_FUNCTION_SCHEMA = [{
     }
 }]
 
-EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS = """Given the initial reference file from earlier and the directives you've
-been given rewrite sets of lines from the initial file, where the file has had its line numbers appended to each line 
-for your benefit. Choose the starting line of a replacement and finish the set at the last line you want edited. These 
-line numbers are obviously positive integers and the start of the set is before the end. Pay careful attention to the
-original spacing and formatting and preserve it as much as possible unless otherwise stated by the primary directive.
-Make sure your set STARTS on what you want replaced and ENDS there too.
+EDITOR_LINE_REPLACEMENT_INSTRUCTIONS = """I am giving you an input_text string, I need you to rewrite this string with the"
+instructions that I'm about to give you in mind, HOWEVER please retain the structural cohesion of the original input_text:
+this means content, structure and even indentation must be preserved. 
+This is because the purpose of your task is to take a given block of text in a document and to rewrite in line with the 
+instructions provided to improve the document, if you deviate from the original structure and indentation you will actually
+make the document WORSE. Please avoid doing this.
 
-**Example**
-Reference file: example.txt
-Instructions make the following clearer and snappier
+Just output the re-written document without any comment or theory. your response will immediately replace the input_text
+Do not add code block delimiters or language identifiers. ONLY the re-written original input_text
+Don't add in the <input_text> tags, I will add these just to help clarify EXACTLY what is being re-written
+"""
 
+EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS = """You are provided with an initial reference file and specific directives.
+Your task is to select a block of code with a 'start' and 'end' line number and then 
+generate precise instructions for replacing specific sets of lines from the initial file. 
+These instructions will be used by another system to perform the actual modifications.
+
+**Primary Objective**:
+- **Generate Accurate Instructions**: Your task is to specify which lines need to be replaced without altering the content yourself. Clearly define the starting and ending line numbers for each set and provide a clear description of what needs to be done.
+
+**Task Requirements**:
+- **Precision**: Identify the exact lines that need modification based on the directives provided. Your output should include only the necessary line numbers and a brief description of the required change, not the actual replacement content.
+- **Instruction Clarity**: Ensure that the instructions are clear and concise so that another LLM can perform the changes without ambiguity. Avoid giving instructions that involve unnecessary changes or modifications to unrelated lines.
+- **Set Boundaries**: Clearly define the start and end of each set of lines that need modification, ensuring there is no overlap between sets. Ensure the start and end lines are clearly specified and are within the correct range.
+- **Provide Context**: First in your instructions to a reasonable, practical degree but also in the set itself, if you 
+think the editor that works on each block would benefit from information include it in the set to a reasonable degree.
+- **Avoid Redundancy**: Make sure the instructions are meaningful and do not include unnecessary steps. Only include lines that need to be changed and provide sufficient information to carry out the modification without altering the rest of the file.
+
+**Illustrative Example**:
+
+*Reference Text*:
+1: @staticmethod
+2: def rewrite_file_lines(executor_task: AiWrapper, task_directives: Dict[str, object]):
+3:     \"\"\"
+4:     Rewrite the specified lines in the specified file based on the instructions and save the changes.
+5:     
+6:     executor_task: Initialized LLM wrapper used for executing directives.
+7:     task_directives: Contains keys 'SAVE_TO' for the file name and 'INSTRUCTION' for processing details.
+8:     \"\"\"
+9:     file_path = str(task_directives.get(PersonaConstants.SAVE_TO))
+10:     file_lines = FileManagement.read_file_with_lines(file_path)
+11:     
+12:     print("HEYOO!")
+13:     print([f"{i + 1}: {line}" for i, line in enumerate(file_lines)])
+14:
+15:     replacements = TaskType.process_replacements(executor_task, file_lines, task_directives)
+16:     TaskType.apply_replacements(file_lines, replacements, file_path)
+
+*Directive*: Make the docstring clearer and more concise.
+
+*Proper Replacement Set*:
+```json
 {
-    changes [
+    "changes": [
         {
-            "start": 11,
-            "end": 13,
-            "replacement": "     ###Contents\\n
-                 Here's the updated method to return the file content with line numbers:\\n
-                 1. Read the file line by line.\\n
-                 2. Prepend each line with its line number.\\n
-                 3. Return the combined result."\\n
-        },
-        {
-            "start": 44
-            "end": 161
-            "replacement": "In the 16th century, the Russian royal family, the Rurik dynasty, ruled with an iron grip.\\n
-            Ivan the Terrible, the most infamous of the bunch, centralized power, expanded the empire, and left a trail of bloodshed.\\n
-            His reign marked the beginning of autocratic rule in Russia, setting the stage for centuries of tsarist control.\\n
-            The family’s legacy? A mix of ruthless power, territorial expansion, and a reputation for unpredictability.\\n
+            "start": 4,
+            "end": 7,
+            "instruction": Rewrite the docstring to make it clearer and more concise. Ensure that the formatting is preserved."
         }
-    
     ]
 }
-
 """
+
 
 EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA = [{
     "name": "executiveDirective",
-    "description": """With referenced to the assigned file, replace the given lines with new content in line with your specific objectives
-    Note: The line numbers have been added to the reference file for your ease of review, please DO NOT include line numbers in your output.
-    Make sure no sets overlaps and that the sets progress down the document, that is the filelines are bigger with each following entry""",
+    "description": """Replace specific lines in the assigned file with new content according to the provided objectives.
+    The line numbers have been included in the reference file to assist you in identifying the correct lines. 
+    Ensure that no sets overlap, and that the start line number is smaller than the end line number. 
+    The line numbers are 1-indexed, and each set of changes should be processed in the order they appear in the document.""",
     "parameters": {
-        TYPE: "object",
+        "type": "object",
         "properties": {
             "changes": {
-                TYPE: "array",
-                "description": """A list of replacements of the texts lines (at least one), replacing the content of the 
-                file for particular line numbers.""",
+                "type": "array",
+                "description": """An array of objects, each representing a replacement operation on a specific range of 
+                lines in the document, a block. Each object must specify the start and end line numbers of the block, as well as the replacement 
+                content which represents the original block modified as closely as possible to its original bearing the given instructions.
+                Please choose the smallest possible block size, for the changes you would want implemented""",
                 "items": {
-                    TYPE: "object",
+                    "type": "object",
                     "properties": {
                         "start": {
-                            TYPE: "integer",
-                            "description": "The first line of the initial document to replace"
+                            "type": "integer",
+                            "description": "The first line number of the block to be replaced (1-indexed). This must be a positive integer and smaller than the 'end' value."
                         },
                         "end": {
-                            TYPE: "integer",
-                            "description": "The last line of the initial document to replace in this set, higher number than the starting number"
+                            "type": "integer",
+                            "description": "The last line number of the block to be replaced (1-indexed). This must be a positive integer, greater than the 'start' value, and must refer to a line within the document."
                         },
-                        "replacement": {
-                            TYPE: "string",
-                            "description": "The replacement for the given line numbers"
+                        "instruction": {
+                            "type": "string",
+                            "description": "How you want these lines to be changed"
                         }
                     },
-                    "required": ["start", "end", "replacement"]
+                    "required": ["start", "end", "instruction"]
                 }
             }
         }
