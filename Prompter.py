@@ -82,38 +82,6 @@ class Prompter:
             logging.error(f"Unexpected error: {e}")
             raise
 
-    def process_prompt(self, prompt: str, task_number: int):
-        """
-        Process a prompt to generate a response from the OpenAI API.
-
-        :param prompt: The content of the task
-        :param task_number: The tasks number in the execution sequence
-        """
-        prompt = Utility.fill_placeholders(prompt)
-
-        try:
-            output_text = self.generate_response(prompt).choices[0].message.content
-
-            FileManagement.save_file(output_text, "Task" + str(task_number))
-            logging.info(f"Task {task_number} processed successfully.")
-        except Exception as e:
-            logging.error(f"Error during OpenAI API call: {e}")
-
-    def generate_response(self, prompt: str,
-                          system_prompt=Constants.EVALUATE_TASKS_INSTRUCTIONS,
-                          model=Constants.MODEL_NAME) -> ChatCompletion:
-        """Generate ChatCompletion response from OpenAI API for a given prompt."""
-        logging.debug(f"Generating response for prompt: {prompt[:20]}...")
-        chat_completion = self.open_ai_client.chat.completions.create(
-            model=model,
-            messages=[
-                {"role": Role.SYSTEM, "content": system_prompt},
-                {"role": Role.USER, "content": str(prompt)}
-            ]
-        )
-
-        Prompter.calculate_prompt_cost(chat_completion, model)
-        return chat_completion
 
     @staticmethod
     def generate_messages(input_files, system_prompts: List[str] | str, user_prompts: List[str]) -> List[Dict[str, str]]:
