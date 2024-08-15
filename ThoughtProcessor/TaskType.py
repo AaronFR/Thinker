@@ -142,9 +142,14 @@ class TaskType(enum.Enum):
             instruction = change['instruction']
             text_to_rewrite = "".join(file_lines[start:end])
             replacement = executor_task.execute(
-                [PersonaConstants.EDITOR_LINE_REPLACEMENT_INSTRUCTIONS],
-                [f"""For the given text: \n<input_text>\n{text_to_rewrite}\n</input_text>, 
-                "re-write the text with the given instructions in mind WHILE ensuring consistency of the original file is maintained: {instruction}"""]
+                [PersonaConstants.EDITOR_LINE_REPLACEMENT_INSTRUCTIONS, instruction],
+                [text_to_rewrite],
+                3,
+                [f"""Select and output the change that rewrites these lines:\n{text_to_rewrite}\n
+                Following the following instructions the best: {instruction}
+                DO not select any answer that would break the coherency of the document. E.g. breaking indentation
+                Adding things which should not be added, removing things that may be needed, etc.
+                Do not add code block delimiters or language identifiers. ONLY the re-written original input_text."""]
             )
             # Ensure the replacement ends with a newline
             if not replacement.endswith('\n'):
@@ -153,8 +158,8 @@ class TaskType(enum.Enum):
             ExecutionLogs.add_to_logs(f"""Replacing {target_file_path}[{change['start']}:{change['end']}]:
                 {text_to_rewrite}
                 With -> :
-                {replacement}"""
-            )
+                {replacement}""")
+
             new_content.extend(file_lines[current_line:start])
             new_content.extend(replacement.splitlines(keepends=True))
             current_line = end
@@ -232,6 +237,7 @@ class TaskType(enum.Enum):
 
         :param executor_task: Initialized LLM wrapper. Although this is a pure code task, this argument
          is required as per implementation.
+        :param task_parameters: key fields: INSTRUCTION, 'rewrite_this',
         :return:
         """
         evaluation_files = FileManagement.list_file_names()

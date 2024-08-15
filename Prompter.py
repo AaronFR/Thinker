@@ -59,29 +59,30 @@ class Prompter:
             logging.error(f"Unexpected error")
             raise
 
-    def get_open_ai_response(self, messages: List[dict], model=Constants.MODEL_NAME) -> str | None:
+    def get_open_ai_response(self, messages: List[dict], model=Constants.MODEL_NAME, n=1) -> str | List[str]:
         """Request a response from the OpenAI API.
 
         :param messages: The system and user messages to send to the ChatGpt client
         :param model: the actual llm being called
+        :param n: number of times to rerun the promptt
         :return: The content of the response from OpenAI or an error message to inform the next Executor.
         """
         try:
             logging.debug(f"Calling OpenAI API with messages: {messages}")
+
             chat_completion = self.open_ai_client.chat.completions.create(
-                model=model, messages=messages
+                model=model, messages=messages, n=n
             )
             Prompter.calculate_prompt_cost(chat_completion, model)
 
-            response = chat_completion.choices[0].message.content
-            return response or "[ERROR: NO RESPONSE FROM OpenAI API]"
+            responses = [choice.message.content for choice in chat_completion.choices]
+            return responses[0] if n == 1 else responses or "[ERROR: NO RESPONSE FROM OpenAI API]"
         except OpenAIError as e:
             logging.error(f"OpenAI API error: {e}")
             raise
         except Exception as e:
             logging.error(f"Unexpected error: {e}")
             raise
-
 
     @staticmethod
     def calculate_prompt_cost(chat_completion: ChatCompletion, model):
