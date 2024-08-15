@@ -77,15 +77,16 @@ class AiWrapper:
         """
         if not function_schema:
             logging.error("No function schema found")
+            raise ValueError("Function schema cannot be empty.")
         messages = AiWrapper.generate_messages(self.input_files, system_prompts, user_prompts)
 
         response = Utility.execute_with_retries(
             lambda: self.prompter.get_open_ai_function_response(messages, function_schema, model)
         )
 
-        if not response:
-            logging.error("No response from OpenAI API.")
-            raise Exception("Failed to get response from OpenAI API.")
+        if response is None:
+            logging.error("Failed to obtain a valid response from OpenAI API.")
+            raise RuntimeError("OpenAI API returned no response.")
 
         logging.info(f"Executive Task Finished")
         return response

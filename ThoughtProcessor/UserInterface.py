@@ -88,12 +88,12 @@ class UserInterface:
             attempt_count (int): The current attempt number for processing.
         """
         ExecutionLogs.add_to_logs(f"Starting iteration: {attempt_count}")
+
+        worker = Globals.workers.pop() if Globals.workers else None
+        prompt_to_process = worker.get(PersonaConstants.INSTRUCTIONS) if worker else current_user_prompt
+
         try:
-            if Globals.workers:
-                worker = Globals.workers.pop()
-                self.persona_system.run_iteration(worker.get(PersonaConstants.INSTRUCTIONS), worker.get(PersonaConstants.TYPE))
-            else:
-                self.persona_system.run_iteration(current_user_prompt)
+            self.persona_system.run_iteration(prompt_to_process, worker.get(PersonaConstants.TYPE) if worker else None)
 
             if Globals.is_solved:
                 self._log_request_completion(current_user_prompt, attempt_count)

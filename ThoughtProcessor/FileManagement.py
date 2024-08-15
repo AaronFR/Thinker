@@ -25,13 +25,14 @@ class FileManagement:
 
         :param file_name: The name of the file to initialise.
         """
-        os.makedirs(os.path.join('thoughts', str(Globals.current_thought_id)), exist_ok=True)
-        file_path = os.path.join("thoughts", str(Globals.current_thought_id), file_name)
+        directory_path = os.path.join('thoughts', str(Globals.current_thought_id))
+        file_path = os.path.join(directory_path, file_name)
         try:
+            os.makedirs(directory_path, exist_ok=True)
             with open(file_path, "w", encoding=Constants.DEFAULT_ENCODING):
-                logging.info(f"File {file_path} instantiated.")
+                logging.info(f"Successfully created and opened file: {file_path}.")
         except Exception:
-            logging.exception(f"""ERROR: could not instantiate file_name: {file_path}""")
+            logging.exception(f"ERROR: Failed to create directory or open file: {file_path}.")
 
     @staticmethod
     def list_file_names() -> List[str]:
@@ -51,22 +52,31 @@ class FileManagement:
         except FileNotFoundError:
             logging.exception(f"The directory {thought_directory} does not exist.")
             return []
-        except Exception as e:
+        except Exception:
             logging.exception(f"An error occurred")
             return []
 
     @staticmethod
-    def read_file(file_path: str) -> str:
+    def get_numbered_lines(lines):
+        return ''.join([f"{i + 1}: {line}" for i, line in enumerate(lines)])
+
+    @staticmethod
+    def read_file(file_path: str, return_numbered_lines: bool = False) -> str:
         """Read the content of a specified file.
 
         :param file_path: The path of the file_name to read.
+        :param return_numbered_lines: Flag to determine if the content should be returned as numbered lines.
         :return: The content of the file or an error message to inform the next LLM what happened.
         """
         full_path = os.path.join(FileManagement.thoughts_directory, str(Globals.current_thought_id), file_path)
         logging.info(f"Loading file_name content from: {full_path}")
+
         try:
             with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
-                return file.read()
+                if return_numbered_lines:
+                    return FileManagement.get_numbered_lines(file.readlines())
+                else:
+                    return file.read()
         except FileNotFoundError:
             logging.exception(f"File not found: {file_path}")
             return f"[FAILED TO LOAD {file_path}]"
@@ -164,7 +174,7 @@ class FileManagement:
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write(content)
                 logging.info(f"File overwritten: {file_path}")
-        except Exception as e:
+        except Exception:
             logging.exception(f"ERROR: could not save file_name: {file_path}")
 
     @staticmethod
@@ -186,7 +196,7 @@ class FileManagement:
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write(html_text)
                 logging.info(f"HTML file_name saved: {file_path}")
-        except Exception as e:
+        except Exception:
             logging.exception(f"Could not save HTML file_name: {file_path}")
 
     @staticmethod
@@ -235,7 +245,7 @@ class FileManagement:
             except UnicodeDecodeError:
                 logging.exception(f"Error decoding file_name {file_path}")
             except Exception:
-                logging.exception(f"ERROR: could not read file_name {file_path}")
+                logging.exception(f"Could not read file_name {file_path}")
         return files_content
 
     @staticmethod
@@ -271,6 +281,5 @@ if __name__ == '__main__':
     # FileManagement.re_write_section("""Generate a response based on system and user prompts.
     #                                 """, "womp", "thought.py", "1")
 
-    file_lines = FileManagement.read_file_with_lines("TaskType.py")
-    numbered_lines = [f"{i + 1}: {line}" for i, line in enumerate(file_lines)]
+    numbered_lines = FileManagement.read_file("TaskType.py", return_numbered_lines=True)
     print(numbered_lines)

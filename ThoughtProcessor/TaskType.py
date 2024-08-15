@@ -12,6 +12,7 @@ from ThoughtProcessor.Personas import PersonaConstants
 class TaskType(enum.Enum):
     """
     TaskType is an enumeration for various task types utilized within the persona system.
+    # ToDo: should be separated to its own enum class with the task logic tied to the persona's -> clearer structure
 
     Overview:
         It encapsulates the logic for executing different types of tasks for file manipulation and content management.
@@ -23,7 +24,6 @@ class TaskType(enum.Enum):
         - FULL_REWRITE: Used for completely rewriting the content of a file.
         - REGEX_REFACTORING: Used for refactoring file contents based on regex patterns.
     """
-    #ToDo: should be seperated to its own enum class with the task logic tied to the persona's -> clearer structure
     WRITE = "WRITE"
     APPEND = "APPEND"
     REWRITE = "REWRITE"
@@ -90,11 +90,8 @@ class TaskType(enum.Enum):
             task_parameters (Dict[str, object]): A dictionary containing directives for the task, including the file_name to
             save to and the primary instructions for replacement.
         """
-        def get_numbered_lines(lines):
-            return [f"{i + 1}: {line}" for i, line in enumerate(lines)]
-
         replacement_instructions = [
-                ''.join(get_numbered_lines(file_lines)),
+                ''.join(FileManagement.get_numbered_lines(file_lines)),
                 f"""For the given file_name: {task_parameters.get(PersonaConstants.SAVE_TO)}, 
                 replace sections with the following primary instructions: {task_parameters.get(PersonaConstants.INSTRUCTION)}"""
             ]
@@ -234,6 +231,7 @@ class TaskType(enum.Enum):
     def refactor_task(executor_task: AiWrapper, task_parameters: Dict[str, object]):
         """
         Refactor files based on regex patterns provided in the task directives.
+        #ToDo: It would make sense to add a check of the output to make sure a name isn't being changed which *shouldn't*
 
         :param executor_task: Initialized LLM wrapper. Although this is a pure code task, this argument
          is required as per implementation.
@@ -292,13 +290,12 @@ class TaskType(enum.Enum):
         :param char_per_token: approximate number of characters to token's, typically 4 but can vary based on model
         :return:
         """
-        def split_into_chunks(text: str, max_chars: int) -> List[str]:
-            return [text[i:i + max_chars] for i in range(0, len(text), max_chars)]
+        def split_into_chunks(to_chunk: str, max_chars: int) -> List[str]:
+            return [to_chunk[i:i + max_chars] for i in range(0, len(to_chunk), max_chars)]
 
         approx_max_chars = approx_max_tokens * char_per_token
         return split_into_chunks(text, approx_max_chars)
 
 if __name__ == '__main__':
-    file_lines = FileManagement.read_file_with_lines("TaskType.py")
-    numbered_lines = [f"{i + 1}: {line}" for i, line in enumerate(file_lines)]
+    numbered_lines = FileManagement.read_file("TaskType.py", return_numbered_lines=True)
     print(numbered_lines)

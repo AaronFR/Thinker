@@ -9,8 +9,6 @@ from openai.types.chat import ChatCompletion
 import Constants
 import Globals
 from ThoughtProcessor.ErrorHandler import ErrorHandler
-from ThoughtProcessor.FileManagement import FileManagement
-from Utility import Utility
 
 
 class ChatGptRole(enum.Enum):
@@ -48,10 +46,8 @@ class Prompter:
             Prompter.calculate_prompt_cost(chat_completion, model)
 
             logging.info(f"Executive Plan: {chat_completion}")
-            function_call = chat_completion.choices[0].message.function_call
-            arguments = function_call.arguments
-            json_object = json.loads(arguments)
-            return json_object or "[ERROR: NO RESPONSE FROM OpenAI API]"
+            arguments = chat_completion.choices[0].message.function_call.arguments
+            return json.loads(arguments) if arguments else {"error": "NO RESPONSE FROM OpenAI API"}
         except OpenAIError:
             logging.error(f"OpenAI API error:")
             raise
@@ -87,7 +83,7 @@ class Prompter:
     @staticmethod
     def calculate_prompt_cost(chat_completion: ChatCompletion, model):
         """
-        Currently assumes your using ChatGpt-4o mini
+        Calculates the estimated cost of a call to OpenAi ChatGpt Api
 
         :param chat_completion: after the prompt has been processed
         """
