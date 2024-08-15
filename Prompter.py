@@ -1,7 +1,6 @@
 import enum
 import json
 import logging
-from pprint import pformat
 from typing import List, Dict
 
 from openai import OpenAI, OpenAIError
@@ -14,7 +13,7 @@ from ThoughtProcessor.FileManagement import FileManagement
 from Utility import Utility
 
 
-class Role(enum.Enum):
+class ChatGptRole(enum.Enum):
     SYSTEM = "system"
     USER = "user"
     ASSISTANT = "assistant"
