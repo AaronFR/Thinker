@@ -1,13 +1,9 @@
 import logging
 from typing import List, Dict
 import Constants
-import Globals
 from Prompter import Prompter
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from Utility import Utility
-
-
-
 
 
 class AiWrapper:

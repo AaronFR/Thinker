@@ -18,7 +18,7 @@ class UserInterface:
     iterated upon by a worker or 'Persona' making individual llm calls.
 
     Attributes:
-        files_for_evaluation (list): List of files to be evaluated.
+        evaluation_files (list): List of files to be evaluated.
         MAX_TRIES (int): Maximum attempts allowed to resolve a task.
         BUDGET (float): used budget for calling ai API's
     """
@@ -30,7 +30,7 @@ class UserInterface:
         """
         Initialize the UserInterface instance and set up logging.
         """
-        self.files_for_evaluation = []
+        self.evaluation_files = []
         self.persona_system = PersonaSystem()
 
         ExecutionLogs.setup_logging()
@@ -51,29 +51,29 @@ class UserInterface:
         if not self.is_prompt_valid(user_prompt):
             return  # Exit early on invalid input
 
-        current_prompt_folder = os.path.join(FileManagement.thoughts_folder, f"{Globals.thought_id}")
+        current_prompt_folder = os.path.join(FileManagement.thoughts_directory, f"{Globals.current_thought_id}")
         os.makedirs(current_prompt_folder, exist_ok=True)
 
         task_queue = deque([user_prompt])  # Main task queue
         Globals.workers = []
 
         while task_queue:
-            current_task_prompt = task_queue.popleft()  # Retrieve the next task
-            self.handle_task_iterations(current_task_prompt)
+            task_to_execute_prompt = task_queue.popleft()  # Retrieve the next task
+            self.handle_task_iterations(task_to_execute_prompt)
 
-    def handle_task_iterations(self, current_task_prompt: str):
+    def handle_task_iterations(self, task_to_execute_prompt: str):
         """
         Oversee the iterative processing of the task prompt until resolution is achieved or
         the maximum number of attempts is reached.
 
         Parameters:
-            current_task_prompt (str): The task prompt currently being processed.
+            task_to_execute_prompt (str): The task prompt currently being processed.
         """
         attempt_count = 0  # Reset attempt counter for the current task
         Globals.current_request_cost = 0.0
 
         while self.within_budget() and attempt_count < self.MAX_TRIES:
-            self._process_task_iteration(current_task_prompt, attempt_count)
+            self._process_task_iteration(task_to_execute_prompt, attempt_count)
             attempt_count += 1
 
         if not self.within_budget() or attempt_count >= self.MAX_TRIES:
@@ -101,8 +101,7 @@ class UserInterface:
         except Exception as e:
             logging.exception(
                 f"""Retry {attempt_count + 1}/{self.MAX_TRIES} failed for iteration {attempt_count} with prompt: 
-                '{current_user_prompt}'"
-                f"Error encountered: {str(e)}; Reason: {e.__class__.__name__} occurred during processing.""")
+                '{current_user_prompt}'""")
             ExecutionLogs.add_to_logs(f"Iteration {attempt_count} failed due to: {str(e)}.")
 
     @staticmethod
@@ -130,14 +129,14 @@ class UserInterface:
         ExecutionLogs.add_to_logs(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS\n")
 
     @staticmethod
-    def _log_request_completion(current_task: str, attempt_count: int):
+    def _log_request_completion(task_to_execute: str, attempt_count: int):
         """Log the termination of a request process.
 
         Parameters:
             current_user_prompt (str): The prompt that was processed.
             attempt_count (int): Number of attempts made to fulfill the request.
         """
-        logging.info(f"""FINISHED REQUEST: [{current_task}]
+        logging.info(f"""FINISHED REQUEST: [{task_to_execute}]
                         Completed in {attempt_count} iterations
                         Total cost incurred: ${round(Globals.current_request_cost, 4)}""")
 
@@ -165,5 +164,5 @@ if __name__ == '__main__':
     thought_process = UserInterface()
 
     thought_process.process_user_prompt(
-        """Using only the Editor role and only the REWRITE task, rewrite UserInterface to be better, more intuitive and to improve structural failures"""
+        """Make improvements to the available python file_name TaskType.py, focusing on improving logic and method flow, on clever solutions and to a much lesser degree readability. Consider changing variable names. Do not append to the document only rewrite bits of it"""
     )

@@ -1,5 +1,4 @@
 import logging
-import time
 from typing import List, Dict
 
 import Constants
@@ -15,7 +14,7 @@ class BasePersona:
 
     Subclasses must implement the following methods:
     - execute_task(task): Define how the persona performs a specific task.
-    - execute_task_directives(task_directives): Execute specific instructions contained in the task directives.
+    - execute_task_parameters(task_parameters): Execute specific instructions contained in the task directives.
     """
 
     def __init__(self, name):
@@ -33,11 +32,11 @@ class BasePersona:
         raise NotImplementedError("This method should be overridden by subclasses")
 
     @staticmethod
-    def execute_task_directives(task_directives: Dict[str, object]):
+    def execute_task_parameters(task_parameters: Dict[str, object]):
         """
         Execute instructions contained in task directives.
 
-        :param task_directives: A dictionary containing directives for task execution.
+        :param task_parameters: A dictionary containing directives for task execution.
         Raises: NotImplementedError: If not overridden by a subclass.
         """
         raise NotImplementedError("This method should be overridden by subclasses")
@@ -49,7 +48,7 @@ class BasePersona:
         :param task: A dictionary containing task information.
         """
         try:
-            self.execute_task_directives(task)
+            self.execute_task_parameters(task)
         except Exception:
             failed_task = task.get('what_to_do')
             logging.exception(f"Task failed: {failed_task}")
@@ -60,7 +59,7 @@ class BasePersona:
         """
         Create a new wrapper instance for llm processing.
 
-        :param input_data: file references to be used as context.
+        :param input_data: file_name references to be used as context.
         :return: An instance of the AI wrapper class.
         """
         return AiWrapper(input_data)
@@ -88,8 +87,8 @@ class BasePersona:
 
     @staticmethod
     def generate_function(
-            files_for_evaluation: List[str],
-            additional_user_messages: List[str],
+            evaluation_files: List[str],
+            extra_user_inputs: List[str],
             task: str,
             function_instructions: str,
             function_schema: str,
@@ -101,8 +100,8 @@ class BasePersona:
         executive plan. Includes a maximum retry mechanism with exponential backoff
         for failure cases.
 
-        :param files_for_evaluation: List of file paths to be evaluated.
-        :param additional_user_messages: Any additional messages to provide context.
+        :param evaluation_files: List of file_name paths to be evaluated.
+        :param extra_user_inputs: Any additional messages to provide context.
         :param task: The main task to be performed.
         :param function_instructions: Instructions on how to perform the function.
         :param function_schema: Schema that the function output must adhere to.
@@ -111,13 +110,13 @@ class BasePersona:
         :raises Exception: If the generated output does not conform to the expected schema after retries.
         """
 
-        existing_files = f"Existing files: [{', '.join(str(file) for file in files_for_evaluation)}]"
-        ai_wrapper = BasePersona.create_ai_wrapper(files_for_evaluation)
+        existing_files = f"Existing files: [{', '.join(str(file) for file in evaluation_files)}]"
+        ai_wrapper = BasePersona.create_ai_wrapper(evaluation_files)
 
         for attempt in range(max_retries + 1):
             executive_plan = ai_wrapper.execute_function(
                 [existing_files, function_instructions],
-                additional_user_messages + [task],
+                extra_user_inputs + [task],
                 function_schema
             )
 

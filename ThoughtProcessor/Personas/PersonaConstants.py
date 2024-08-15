@@ -345,7 +345,8 @@ EDITOR_EXECUTIVE_FUNCTION_SCHEMA = [{
                             TYPE: "string",
                             "description": """Instructions for the executor in the iterative process. 
                             Be concise, detailed, and nuanced. Refer to previous work to specify improvements for this 
-                            loop."""
+                            loop.
+                            For REGEX_REFACTOR tasks *ONLY* write what you want to replace the rewrite_this content with."""
                         },
                         SAVE_TO: {
                             TYPE: "string",
@@ -362,21 +363,26 @@ EDITOR_EXECUTIVE_FUNCTION_SCHEMA = [{
     }
 }]
 
-EDITOR_LINE_REPLACEMENT_INSTRUCTIONS = """I am giving you an input_text string, I need you to rewrite this string with the"
-instructions that I'm about to give you in mind, HOWEVER please retain the structural cohesion of the original input_text:
-this means content, structure and even indentation must be preserved. 
+EDITOR_LINE_REPLACEMENT_INSTRUCTIONS = """For the given text that I give please re-write with the instructions in mind."
+HOWEVER please retain the structural cohesion of the original input text I'm about to give you, this means:
+- **content**: This means do not add content, I am asking you to REWRITE content *not* to write NEW content.
+- **structure** (this means if you are given the first part of something you should leave it as the first part, do not try
+and "complete" it.
+- **indentation**. Critical, ensure this is preserved as much as possible, pay close attention to the EXACT number of spaces
+necessary.
+Must be preserved (unless directly, explicitly stated by the instructions)
 This is because the purpose of your task is to take a given block of text in a document and to rewrite in line with the 
 instructions provided to improve the document, if you deviate from the original structure and indentation you will actually
 make the document WORSE. Please avoid doing this.
 
-Just output the re-written document without any comment or theory. your response will immediately replace the input_text
-Do not add code block delimiters or language identifiers. ONLY the re-written original input_text
-Don't add in the <input_text> tags, I will add these just to help clarify EXACTLY what is being re-written
+Just output the re-written document without any comment or theory. Your response will immediately replace the input text
+in my document.
+Do not add code block delimiters or language identifiers. ONLY the re-written original input_text.
 """
 
-EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS = """You are provided with an initial reference file and specific directives.
+EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS = """You are provided with an initial reference file_name and specific directives.
 Your task is to select a block of code with a 'start' and 'end' line number and then 
-generate precise instructions for replacing specific sets of lines from the initial file. 
+generate precise instructions for replacing specific sets of lines from the initial file_name. 
 These instructions will be used by another system to perform the actual modifications.
 
 **Primary Objective**:
@@ -394,20 +400,20 @@ think the editor that works on each block would benefit from information include
 
 *Reference Text*:
 1: @staticmethod
-2: def rewrite_file_lines(executor_task: AiWrapper, task_directives: Dict[str, object]):
+2: def rewrite_file_lines(executor_task: AiWrapper, task_parameters: Dict[str, object]):
 3:     \"\"\"
 4:     Rewrite the specified lines in the specified file based on the instructions and save the changes.
 5:     
 6:     executor_task: Initialized LLM wrapper used for executing directives.
 7:     task_directives: Contains keys 'SAVE_TO' for the file name and 'INSTRUCTION' for processing details.
 8:     \"\"\"
-9:     file_path = str(task_directives.get(PersonaConstants.SAVE_TO))
+9:     file_path = str(task_parameters.get(PersonaConstants.SAVE_TO))
 10:     file_lines = FileManagement.read_file_with_lines(file_path)
 11:     
 12:     print("HEYOO!")
 13:     print([f"{i + 1}: {line}" for i, line in enumerate(file_lines)])
 14:
-15:     replacements = TaskType.process_replacements(executor_task, file_lines, task_directives)
+15:     replacements = TaskType.process_replacements(executor_task, file_lines, task_parameters)
 16:     TaskType.apply_replacements(file_lines, replacements, file_path)
 
 *Directive*: Make the docstring clearer and more concise.
@@ -428,8 +434,8 @@ think the editor that works on each block would benefit from information include
 
 EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA = [{
     "name": "executiveDirective",
-    "description": """Replace specific lines in the assigned file with new content according to the provided objectives.
-    The line numbers have been included in the reference file to assist you in identifying the correct lines. 
+    "description": """Replace specific lines in the assigned file_name with new content according to the provided objectives.
+    The line numbers have been included in the reference file_name to assist you in identifying the correct lines. 
     Ensure that no sets overlap, and that the start line number is smaller than the end line number. 
     The line numbers are 1-indexed, and each set of changes should be processed in the order they appear in the document.""",
     "parameters": {

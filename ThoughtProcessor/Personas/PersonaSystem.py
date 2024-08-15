@@ -10,7 +10,7 @@ from ThoughtProcessor.Personas.Writer import Writer
 
 class PersonaSystem:
     def __init__(self):
-        self.thoughts_folder = os.path.join(os.path.dirname(__file__), "../thoughts")
+        self.thoughts_directory = os.path.join(os.path.dirname(__file__), "../thoughts")
 
         self.personas = {
             PersonaConstants.ANALYST: Analyst(PersonaConstants.ANALYST),
@@ -21,13 +21,13 @@ class PersonaSystem:
 
         ErrorHandler.setup_logging()
 
-    def run_iteration(self, current_task: str, persona=PersonaConstants.ANALYST):
+    def run_iteration(self, task_to_execute: str, persona=PersonaConstants.ANALYST):
         """
         Orchestrate the execution of tasks based on the current user prompt.
         ToDo: implement system for dealing with failed tasks
 
-        :param current_task: the initial user prompt
+        :param task_to_execute: the initial user prompt
         :param persona: the assigned 'role' to operate in at the given stage of the application
         """
-        ExecutionLogs.add_to_logs(f"{persona} assigned task: {current_task}")
-        self.personas.get(persona.lower()).execute_task(current_task)
+        ExecutionLogs.add_to_logs(f"{persona} assigned task: {task_to_execute}")
+        self.personas.get(persona.lower()).execute_task(task_to_execute)

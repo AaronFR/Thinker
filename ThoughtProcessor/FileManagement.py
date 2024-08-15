@@ -14,43 +14,42 @@ from ThoughtProcessor.ErrorHandler import ErrorHandler
 class FileManagement:
     """Class for managing files related to tasks and solutions."""
 
-    thoughts_folder = os.path.join(os.path.dirname(__file__), "thoughts")
+    thoughts_directory = os.path.join(os.path.dirname(__file__), "thoughts")
 
     def __init__(self):
         ErrorHandler.setup_logging()
 
     @staticmethod
-    def initialise_file(file: str):
+    def initialise_file(file_name: str):
         """Initialise a given file as an empty file, in advance of it being opened
-        instance declarations, doesn't make sense.
 
-        :param file: The name of the file to initialise.
+        :param file_name: The name of the file to initialise.
         """
-        os.makedirs(os.path.join('thoughts', str(Globals.thought_id)), exist_ok=True)
-        file_path = os.path.join("thoughts", str(Globals.thought_id), file)
+        os.makedirs(os.path.join('thoughts', str(Globals.current_thought_id)), exist_ok=True)
+        file_path = os.path.join("thoughts", str(Globals.current_thought_id), file_name)
         try:
             with open(file_path, "w", encoding=Constants.DEFAULT_ENCODING):
                 logging.info(f"File {file_path} instantiated.")
         except Exception:
-            logging.exception(f"""ERROR: could not instantiate file: {file_path}""")
+            logging.exception(f"""ERROR: could not instantiate file_name: {file_path}""")
 
     @staticmethod
-    def list_files() -> list:
+    def list_file_names() -> List[str]:
         """
-        List all file names in the given directory.
+        List all file_name names in the given directory.
         #ToDo: should leave files tagged meta alone, as soon as we start tagging meta files...
 
-        :return: A list of file names in the directory.
+        :return: A list of file_name names in the directory.
         """
-        thought_folder = FileManagement._get_thought_folder()
+        thought_directory = FileManagement._get_thought_folder()
         try:
-            entries = os.listdir(thought_folder)
-            file_names = [entry for entry in entries if os.path.isfile(os.path.join(thought_folder, entry))]
+            entries = os.listdir(thought_directory)
+            file_names = [entry for entry in entries if os.path.isfile(os.path.join(thought_directory, entry))]
             logging.info(f"Found the following files in Thought space: {file_names}")
 
             return file_names
         except FileNotFoundError:
-            logging.exception(f"The directory {thought_folder} does not exist.")
+            logging.exception(f"The directory {thought_directory} does not exist.")
             return []
         except Exception as e:
             logging.exception(f"An error occurred")
@@ -58,13 +57,13 @@ class FileManagement:
 
     @staticmethod
     def read_file(file_path: str) -> str:
-        """Read the content of a file.
+        """Read the content of a specified file.
 
-        :param file_path: The path of the file to read.
-        :return: The content of the file or an error message to let the next llm known what happened.
+        :param file_path: The path of the file_name to read.
+        :return: The content of the file or an error message to inform the next LLM what happened.
         """
-        full_path = os.path.join(FileManagement.thoughts_folder, str(Globals.thought_id), file_path)
-        logging.info(f"Loading file content from: {full_path}")
+        full_path = os.path.join(FileManagement.thoughts_directory, str(Globals.current_thought_id), file_path)
+        logging.info(f"Loading file_name content from: {full_path}")
         try:
             with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
                 return file.read()
@@ -82,7 +81,7 @@ class FileManagement:
         :param file_path: The path of the file to read.
         :return: The content of the file with line numbers, or an error message to let the next LLM know what happened.
         """
-        full_path = os.path.join(FileManagement.thoughts_folder, str(Globals.thought_id), file_path)
+        full_path = os.path.join(FileManagement.thoughts_directory, str(Globals.current_thought_id), file_path)
         logging.info(f"Loading file content from: {full_path}")
         try:
             with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
@@ -98,19 +97,19 @@ class FileManagement:
     def read_files(file_paths: List[str]) -> List[str]:
         """Read content from multiple files.
 
-        :param file_paths: List of file paths to read.
-        :return: List of content read from the files.
+        :param file_paths: List of file_name paths to read.
+        :return:  List of content read from the specified files.
         """
         return [FileManagement.read_file(path) for path in file_paths]
 
     @staticmethod
     def save_file(content: str, file_name, overwrite=False):
         """
-        Saves the response content to a file.
+        Saves the response content to a file_name.
 
         :param content: The content to be formatted and saved.
-        :param file_name: The base name for the file, (only the file name, no absolute or relative references)
-        :param overwrite: whether the file should be overwritten
+        :param file_name: The base name for the file_name, (only the file_name name, no absolute or relative references)
+        :param overwrite: whether the file_name should be overwritten
         """
         file_path = FileManagement._get_file_path(file_name)
         mode = "w" if overwrite or not os.path.exists(file_path) else "a"
@@ -119,7 +118,7 @@ class FileManagement:
                 file.write(content)
                 logging.info(f"File {'overwritten' if overwrite else 'saved'}: {file_path}")
         except Exception:
-            logging.exception(f"ERROR: could not save file: {file_path}")
+            logging.exception(f"ERROR: could not save file_name: {file_path}")
 
     @staticmethod
     def regex_refactor(target_string: str, replacement: str, file_name):
@@ -128,7 +127,7 @@ class FileManagement:
 
         :param target_string: The text to be replaced.
         :param replacement: The text to replace the target string.
-        :param file_name: The base name for the file.
+        :param file_name: The base name for the file_name.
         :raises ValueError: if the rewrite operation fails
         """
         file_content = FileManagement.read_file(file_name)
@@ -155,10 +154,10 @@ class FileManagement:
 
     @staticmethod
     def _write_to_file(content: str, file_name: str):
-        """Write the content to a file.
+        """Write the content to a file_name.
 
         :param content: The content to be written.
-        :param file_name: The name of the file.
+        :param file_name: The name of the file_name.
         """
         file_path = FileManagement._get_file_path(file_name)
         try:
@@ -166,18 +165,18 @@ class FileManagement:
                 file.write(content)
                 logging.info(f"File overwritten: {file_path}")
         except Exception as e:
-            logging.exception(f"ERROR: could not save file: {file_path}")
+            logging.exception(f"ERROR: could not save file_name: {file_path}")
 
     @staticmethod
-    def save_as_html(content: str, file_name: str, prompt_id: str):
+    def save_content_as_html(content: str, file_name: str, prompt_id: str):
         """
-        Saves the response content in HTML format to a file.
+        Saves the response content in HTML format to a given file.
 
         :param content: The content to be formatted and saved.
-        :param file_name: The base name for the output HTML file.
-        :param prompt_id: An identifier to make the file name unique.
+        :param file_name: The base name for the output HTML file_name.
+        :param prompt_id: An identifier to make the file_name name unique.
         """
-        dir_path = os.path.join(FileManagement.thoughts_folder, str(prompt_id))
+        dir_path = os.path.join(FileManagement.thoughts_directory, str(prompt_id))
         os.makedirs(dir_path, exist_ok=True)
 
         html_text = FileManagement._format_to_html(content)
@@ -186,9 +185,9 @@ class FileManagement:
         try:
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write(html_text)
-                logging.info(f"HTML file saved: {file_path}")
+                logging.info(f"HTML file_name saved: {file_path}")
         except Exception as e:
-            logging.exception(f"Could not save HTML file: {file_path}")
+            logging.exception(f"Could not save HTML file_name: {file_path}")
 
     @staticmethod
     def _format_to_html(text: str) -> str:
@@ -203,17 +202,17 @@ class FileManagement:
 
     @staticmethod
     def aggregate_files(file_base_name, start, end):
-        """Aggregate content from multiple files into a single file.
+        """Aggregate file content from multiple files into a single file.
 
         :param file_base_name: The base name for the files to aggregate.
-        :param start: The starting index for the files.
-        :param end: The ending index for the files.
+        :param start: The starting index for the range of files to aggregate.
+        :param end: The ending index for the range of files to aggregate.
         """
-        content = FileManagement._read_files_in_range(file_base_name, start, end)
+        files_content = FileManagement._read_files_in_range(file_base_name, start, end)
 
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        FileManagement.save_as_html(content, "solution", timestamp)
-        FileManagement.save_file(content, "solution", overwrite=True)
+        FileManagement.save_content_as_html(files_content, "solution", timestamp)
+        FileManagement.save_file(files_content, "solution", overwrite=True)
 
     @staticmethod
     def _read_files_in_range(file_base_name: str, start: int, end: int) -> str:
@@ -224,40 +223,40 @@ class FileManagement:
         :param end: The ending index for the files.
         :return: The aggregated content from the files.
         """
-        content = ""
+        files_content = ""
         for i in range(start, end + 1):
             file_path = f"{file_base_name}_{i}.txt"
             try:
                 with open(file_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
-                    content += file.read()
-                logging.info(f"CONTENT [{i}]: {content}")
+                    files_content += file.read()
+                logging.info(f"CONTENT [{i}]: {files_content}")
             except FileNotFoundError:
                 logging.exception(f"File not found: {file_path}")
             except UnicodeDecodeError:
-                logging.exception(f"Error decoding file {file_path}")
+                logging.exception(f"Error decoding file_name {file_path}")
             except Exception:
-                logging.exception(f"ERROR: could not read file {file_path}")
-        return content
+                logging.exception(f"ERROR: could not read file_name {file_path}")
+        return files_content
 
     @staticmethod
-    def get_next_thought_id() -> int:
+    def get_current_thought_id() -> int:
         """
         Get the next available thought ID based on existing directories.
 
         :return: Next available thought ID as an integer.
         """
-        os.makedirs(FileManagement.thoughts_folder, exist_ok=True)
-        return len([name for name in os.listdir(FileManagement.thoughts_folder) if
-                    os.path.isdir(os.path.join(FileManagement.thoughts_folder, name))]) + 1
+        os.makedirs(FileManagement.thoughts_directory, exist_ok=True)
+        return len([name for name in os.listdir(FileManagement.thoughts_directory) if
+                    os.path.isdir(os.path.join(FileManagement.thoughts_directory, name))]) + 1
 
     @staticmethod
     def _get_file_path(file_name: str) -> str:
-        """Get the full path for a file in the given thought and file name.
+        """Get the full path for a file_name in the given thought and file_name name.
 
-        :param file_name: The name of the file.
-        :return: The full path of the file.
+        :param file_name: The name of the file_name.
+        :return: The full path of the file_name.
         """
-        return os.path.join(FileManagement.thoughts_folder, str(Globals.thought_id), file_name)
+        return os.path.join(FileManagement.thoughts_directory, str(Globals.current_thought_id), file_name)
 
     @staticmethod
     def _get_thought_folder() -> str:
@@ -265,7 +264,7 @@ class FileManagement:
 
         :return: The folder path for the given thought ID.
         """
-        return os.path.join(FileManagement.thoughts_folder, str(Globals.thought_id))
+        return os.path.join(FileManagement.thoughts_directory, str(Globals.current_thought_id))
 
 
 if __name__ == '__main__':

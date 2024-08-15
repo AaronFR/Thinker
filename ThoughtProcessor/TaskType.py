@@ -30,14 +30,14 @@ class TaskType(enum.Enum):
     REWRITE_FILE = "REWRITE_FILE"
     REGEX_REFACTOR = "REGEX_REFACTOR"
 
-    def execute(self, executor_task: AiWrapper, task_directives: Dict[str, object]):
+    def execute(self, executor_task: AiWrapper, task_parameters: Dict[str, object]):
         """
         Overview:
         Executes a specified task type.
 
         Parameters:
         executor_task (AiWrapper): The task wrapper object that contains the details of the task to be executed.
-        task_directives (Dict[str, object]): A dictionary containing directives and parameters needed for the task.
+        task_parameters (Dict[str, object]): A dictionary containing directives and parameters needed for the task.
 
         Raises:
         ValueError: If an unknown TaskType is encountered.
@@ -55,39 +55,39 @@ class TaskType(enum.Enum):
 
         action = get_action(self)
         if action is not None:
-            action(executor_task, task_directives)
+            action(executor_task, task_parameters)
         else:
             raise ValueError(f"Unknown TaskType: {self}")
 
     @staticmethod
-    def rewrite_file_lines(executor_task: AiWrapper, task_directives: Dict[str, object]):
+    def rewrite_file_lines(executor_task: AiWrapper, task_parameters: Dict[str, object]):
         """
-        Rewrite the specified lines in the given file based on the provided instructions and save the updated content.
+        Rewrite the specified lines in the given file_name based on the provided instructions and save the updated content.
 
         :param executor_task: AiWrapper - An initialized AI wrapper responsible for executing the rewrite directives.
-        :param task_directives: Dict[str, object] - A dictionary containing:
-            'SAVE_TO': str - The file path where updates should be saved.
+        :param task_parameters: Dict[str, object] - A dictionary containing:
+            'SAVE_TO': str - The file_name path where updates should be saved.
             'INSTRUCTION': str - Detailed instructions on how to process and rewrite the lines.
 
-        The function takes the rewrite instructions from 'task_directives', locates the specified lines in the file
-        indicated by 'SAVE_TO', processes the instructions using the 'executor_task', and saves the modified file.
-        This ensures the original file's consistency is maintained with the integrated changes.
+        The function takes the rewrite instructions from 'task_parameters', locates the specified lines in the file_name
+        indicated by 'SAVE_TO', processes the instructions using the 'executor_task', and saves the modified file_name.
+        This ensures the original file_name's consistency is maintained with the integrated changes.
         """
-        file_path = str(task_directives.get(PersonaConstants.SAVE_TO))
+        file_path = str(task_parameters.get(PersonaConstants.SAVE_TO))
         file_lines = FileManagement.read_file_with_lines(file_path)
 
-        replacements = TaskType.process_replacements(executor_task, file_lines, task_directives)
+        replacements = TaskType.process_replacements(executor_task, file_lines, task_parameters)
         TaskType.apply_replacements(executor_task, file_lines, replacements, file_path)
 
     @staticmethod
-    def process_replacements(executor_task: AiWrapper, file_lines: List[str], task_directives: Dict[str, object]):
+    def process_replacements(executor_task: AiWrapper, file_lines: List[str], task_parameters: Dict[str, object]):
         """
-        Performs line-by-line replacements in a provided file using directives given to an AI executor.
+        Performs line-by-line replacements in a provided file_name using directives given to an AI executor.
 
         Parameters:
             executor_task (AiWrapper): An instance of AiWrapper to execute the replacement instructions.
-            file_lines (List[str]): A list of strings, each representing a line of the file to be processed.
-            task_directives (Dict[str, object]): A dictionary containing directives for the task, including the file to
+            file_lines (List[str]): A list of strings, each representing a line of the file_name to be processed.
+            task_parameters (Dict[str, object]): A dictionary containing directives for the task, including the file_name to
             save to and the primary instructions for replacement.
         """
         def get_numbered_lines(lines):
@@ -95,8 +95,8 @@ class TaskType(enum.Enum):
 
         replacement_instructions = [
                 ''.join(get_numbered_lines(file_lines)),
-                f"""For the given file: {task_directives.get(PersonaConstants.SAVE_TO)}, 
-                replace sections with the following primary instructions: {task_directives.get(PersonaConstants.INSTRUCTION)}"""
+                f"""For the given file_name: {task_parameters.get(PersonaConstants.SAVE_TO)}, 
+                replace sections with the following primary instructions: {task_parameters.get(PersonaConstants.INSTRUCTION)}"""
             ]
 
         replacements = executor_task.execute_function(
@@ -165,27 +165,27 @@ class TaskType(enum.Enum):
         ExecutionLogs.add_to_logs(f"Saved to {target_file_path}")
 
     @staticmethod
-    def write_to_file_task(executor_task: AiWrapper, task_directives: Dict[str, object]):
+    def write_to_file_task(executor_task: AiWrapper, task_parameters: Dict[str, object]):
         """
         Repeatedly write content to the specified number of pages to write. Where one page roughly corresponds to
         500 words (2000 tokens output)
 
         :param executor_task: Initialized LLM wrapper
-        :param task_directives: Dict with SAVE_TO and 'pages_to_write'
+        :param task_parameters: Dict with SAVE_TO and 'pages_to_write'
         """
-        pages_to_write = task_directives.get("pages_to_write", 1)
+        pages_to_write = task_parameters.get("pages_to_write", 1)
         output = ""
 
         for i in range(1, pages_to_write + 1):
-            text = TaskType._generate_text(executor_task, output, task_directives, i)
+            text = TaskType._generate_text(executor_task, output, task_parameters, i)
             output += text
             logging.debug(f"Page {i} written: {text}")
 
-        FileManagement.save_file(output, task_directives.get(PersonaConstants.SAVE_TO))
-        ExecutionLogs.add_to_logs(f"Saved to {task_directives.get(PersonaConstants.SAVE_TO)}")
+        FileManagement.save_file(output, task_parameters.get(PersonaConstants.SAVE_TO))
+        ExecutionLogs.add_to_logs(f"Saved to {task_parameters.get(PersonaConstants.SAVE_TO)}")
 
     @staticmethod
-    def _generate_text(executor_task: AiWrapper, output: str, task_directives: Dict[str, object], page_number: int):
+    def _generate_text(executor_task: AiWrapper, output: str, task_parameters: Dict[str, object], page_number: int):
         """
         Generates text for individual pages of a document based on given task directives and previously generated output.
 
@@ -193,7 +193,7 @@ class TaskType(enum.Enum):
         str: The generated text for the specified page.
         :param executor_task: The task executor instance responsible for text generation.
         :param output: Previously generated output to continue from.
-        :param task_directives: A dictionary of directives detailing the task specifics.
+        :param task_parameters: A dictionary of directives detailing the task specifics.
         :param page_number: The current page number being generated.
         """
         instructions = [
@@ -205,62 +205,61 @@ class TaskType(enum.Enum):
         return executor_task.execute(
             PersonaConstants.WRITER_SYSTEM_INSTRUCTIONS,
             [
-                f"Write the first page of {task_directives.get('pages_to_write')}, answering the following: {task_directives.get(PersonaConstants.INSTRUCTION)}"
+                f"Write the first page of {task_parameters.get('pages_to_write')}, answering the following: {task_parameters.get(PersonaConstants.INSTRUCTION)}"
                 if page_number == 1 else instructions
             ]
         )
 
     @staticmethod
-    def append_to_file_task(executor_task: AiWrapper, task_directives: Dict[str, object]):
+    def append_to_file_task(executor_task: AiWrapper, task_parameters: Dict[str, object]):
         """
-        Appends generated content to a specified file and logs the operation.
+        Appends generated content to a specified file_name and logs the operation.
 
         :param executor_task: The AI executor tasked with generating content.
-        :param task_directives: Contains task-specific directives, including the instruction and file path for saving.
+        :param task_parameters: Contains task-specific directives, including the instruction and file_name path for saving.
         """
         output = executor_task.execute(
             Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
-            ["Primary Instructions: " + str(task_directives.get(PersonaConstants.INSTRUCTION))]
+            ["Primary Instructions: " + str(task_parameters.get(PersonaConstants.INSTRUCTION))]
         )
-        FileManagement.save_file(output, task_directives.get(PersonaConstants.SAVE_TO))
-        ExecutionLogs.add_to_logs(f"Appended content to {task_directives.get(PersonaConstants.SAVE_TO)}")
+        FileManagement.save_file(output, task_parameters.get(PersonaConstants.SAVE_TO))
+        ExecutionLogs.add_to_logs(f"Appended content to {task_parameters.get(PersonaConstants.SAVE_TO)}")
 
     @staticmethod
-    def refactor_task(executor_task: AiWrapper, task_directives: Dict[str, object]):
+    def refactor_task(executor_task: AiWrapper, task_parameters: Dict[str, object]):
         """
         Refactor files based on regex patterns provided in the task directives.
 
         :param executor_task: Initialized LLM wrapper. Although this is a pure code task, this argument
          is required as per implementation.
-        :param task_directives: key fields: INSTRUCTION, 'rewrite_this',
         :return:
         """
-        files_for_evaluation = FileManagement.list_files()
-        for file in files_for_evaluation:
+        evaluation_files = FileManagement.list_file_names()
+        for file in evaluation_files:
             try:
                 FileManagement.regex_refactor(
-                    str(task_directives.get('rewrite_this')),
-                    str(task_directives.get(PersonaConstants.INSTRUCTION)),
+                    str(task_parameters.get('rewrite_this')),
+                    str(task_parameters.get(PersonaConstants.INSTRUCTION)),
                     file
                 )
             except ValueError:
                 logging.exception(f"Failed to rewrite file {file}")
 
         ExecutionLogs.add_to_logs(
-            f"Regex refactored {task_directives.get('rewrite_this')} -> {task_directives.get(PersonaConstants.INSTRUCTION)}")
+            f"Regex refactored {task_parameters.get('rewrite_this')} -> {task_parameters.get(PersonaConstants.INSTRUCTION)}")
 
     @staticmethod
-    def rewrite_file_task(executor_task: AiWrapper, task_directives: Dict[str, object],
+    def rewrite_file_task(executor_task: AiWrapper, task_parameters: Dict[str, object],
                           approx_max_tokens=1000):
         """
         Split an input file into chunks based on the estimated max number of output tokens (2000 tokens) taking in
         half that number allowing the llm to either decrease word count or double it should it be required.
 
         :param executor_task: Initialized LLM wrapper
-        :param task_directives: directives including 'file_to_rewrite' and INSTRUCTION
+        :param task_parameters: directives including 'file_to_rewrite' and INSTRUCTION
         :param approx_max_tokens: token chunk size to split the document by
         """
-        file_contents = FileManagement.read_file(str(task_directives.get('file_to_rewrite')))
+        file_contents = FileManagement.read_file(str(task_parameters.get('file_to_rewrite')))
         text_chunks = TaskType.chunk_text(file_contents, approx_max_tokens)
 
         re_written_file = ""
@@ -269,13 +268,13 @@ class TaskType(enum.Enum):
             re_written_file += executor_task.execute(
                 PersonaConstants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
                 [f"""Rewrite this section: \n<rewrite_this>\n{text_chunk}\n</rewrite_this>\n
-                    In the following way: {str(task_directives[PersonaConstants.INSTRUCTION])}"""]
+                    In the following way: {str(task_parameters[PersonaConstants.INSTRUCTION])}"""]
             )
 
         FileManagement.save_file(re_written_file,
-                                 task_directives[PersonaConstants.SAVE_TO],
+                                 task_parameters[PersonaConstants.SAVE_TO],
                                  overwrite=True)
-        ExecutionLogs.add_to_logs(f"File rewritten successfully: {task_directives[PersonaConstants.SAVE_TO]}")
+        ExecutionLogs.add_to_logs(f"File rewritten successfully: {task_parameters[PersonaConstants.SAVE_TO]}")
 
     @staticmethod
     def chunk_text(text: str, approx_max_tokens: int, char_per_token=4) -> List[str]:
