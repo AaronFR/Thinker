@@ -6,6 +6,7 @@ from typing import List, Dict, Callable, Any
 
 import tiktoken
 import Constants
+from ThoughtProcessor.AiOrchestration.ChatGptWrapper import ChatGptModel
 
 
 class Utility:
@@ -21,11 +22,11 @@ class Utility:
         return token_count <= limit
 
     @staticmethod
-    def calculate_tokens_used(messages: List[Dict[str, str]], model="gpt-4o-mini"):
+    def calculate_tokens_used(messages: List[Dict[str, str]], model: ChatGptModel=ChatGptModel.CHAT_GPT_4_OMNI_MINI):
         token_count = 0
         for message in messages:
-            enc = tiktoken.encoding_for_model(model)
-            token_count += len(enc.encode(str(message.get('content'))))
+            enc = tiktoken.encoding_for_model(model.value)
+            token_count += len(enc.encode(str(message['content'])))
 
         return token_count
 

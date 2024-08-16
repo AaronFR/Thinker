@@ -3,7 +3,7 @@ from typing import List, Dict
 
 import Constants
 from ThoughtProcessor.ExecutionLogs import ExecutionLogs
-from ThoughtProcessor.AiWrapper import AiWrapper
+from ThoughtProcessor.AiWrapper import AiOrchestrator
 from ThoughtProcessor.ErrorHandler import ErrorHandler
 from ThoughtProcessor.Personas import PersonaConstants
 
@@ -55,14 +55,14 @@ class BasePersona:
             ExecutionLogs.add_to_logs(f"Task failed: {failed_task}\n")
 
     @staticmethod
-    def create_ai_wrapper(input_data: List[str]) -> AiWrapper:
+    def create_ai_wrapper(input_data: List[str]) -> AiOrchestrator:
         """
         Create a new wrapper instance for llm processing.
 
         :param input_data: file_name references to be used as context.
         :return: An instance of the AI wrapper class.
         """
-        return AiWrapper(input_data)
+        return AiOrchestrator(input_data)
 
     @staticmethod
     def valid_function_output(

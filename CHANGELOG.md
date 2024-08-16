@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- ChatGptModel enum added for representing OpenAi models
+
+### Changed
+
+- Refactored: AiWrapper -> AiOrchestrator, Prompter -> ChatGptWrapper and to new AiOrchestration directory.
+ To make their purpose in the project clearer
+
+### Removed
+
+- 
+
 ## 0.5.0 - 2024-08-15 - Quality
 
 ### Added

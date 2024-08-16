@@ -400,7 +400,7 @@ think the editor that works on each block would benefit from information include
 
 *Reference Text*:
 1: @staticmethod
-2: def rewrite_file_lines(executor_task: AiWrapper, task_parameters: Dict[str, object]):
+2: def rewrite_file_lines(executor_task: AiOrchestrator, task_parameters: Dict[str, object]):
 3:     \"\"\"
 4:     Rewrite the specified lines in the specified file based on the instructions and save the changes.
 5:     

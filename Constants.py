@@ -1,7 +1,5 @@
 from ThoughtProcessor.Personas import PersonaConstants
 
-MODEL_NAME = "gpt-4o-mini"
-EXPENSIVE_MODEL_NAME = "gpt-4o"
 
 MAX_SCHEMA_RETRIES = 2
 
@@ -9,10 +7,6 @@ MAX_PROMPT_RETRIES = 3
 BACKOFF_INITIAL = 5
 BACKOFF_FACTOR: float = 1.0
 
-cost_per_input_token_gpt4o_mini = 0.00000015  # $/t
-cost_per_output_token_gpt4o_mini = 0.00000060  # $/t
-cost_per_input_token_gpt4o = 0.000005  # $/t
-cost_per_output_token_gpt4o = 0.000015  # $/t
 
 DEFAULT_ENCODING = 'utf-8'
 

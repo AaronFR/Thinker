@@ -3,9 +3,10 @@ import logging
 from typing import Dict, List
 
 import Constants
+from ThoughtProcessor.AiOrchestration.AiOrchestrator import AiOrchestrator
+from ThoughtProcessor.AiOrchestration.ChatGptWrapper import ChatGptModel
 from ThoughtProcessor.ExecutionLogs import ExecutionLogs
 from ThoughtProcessor.FileManagement import FileManagement
-from ThoughtProcessor.AiWrapper import AiWrapper
 from ThoughtProcessor.Personas import PersonaConstants
 
 
@@ -30,13 +31,13 @@ class TaskType(enum.Enum):
     REWRITE_FILE = "REWRITE_FILE"
     REGEX_REFACTOR = "REGEX_REFACTOR"
 
-    def execute(self, executor_task: AiWrapper, task_parameters: Dict[str, object]):
+    def execute(self, executor_task: AiOrchestrator, task_parameters: Dict[str, object]):
         """
         Overview:
         Executes a specified task type.
 
         Parameters:
-        executor_task (AiWrapper): The task wrapper object that contains the details of the task to be executed.
+        executor_task (AiOrchestrator): The task wrapper object that contains the details of the task to be executed.
         task_parameters (Dict[str, object]): A dictionary containing directives and parameters needed for the task.
 
         Raises:
@@ -60,11 +61,11 @@ class TaskType(enum.Enum):
             raise ValueError(f"Unknown TaskType: {self}")
 
     @staticmethod
-    def rewrite_file_lines(executor_task: AiWrapper, task_parameters: Dict[str, object]):
+    def rewrite_file_lines(executor_task: AiOrchestrator, task_parameters: Dict[str, object]):
         """
         Rewrite the specified lines in the given file_name based on the provided instructions and save the updated content.
 
-        :param executor_task: AiWrapper - An initialized AI wrapper responsible for executing the rewrite directives.
+        :param executor_task: AiOrchestrator - An initialized AI wrapper responsible for executing the rewrite directives.
         :param task_parameters: Dict[str, object] - A dictionary containing:
             'SAVE_TO': str - The file_name path where updates should be saved.
             'INSTRUCTION': str - Detailed instructions on how to process and rewrite the lines.
@@ -80,12 +81,12 @@ class TaskType(enum.Enum):
         TaskType.apply_replacements(executor_task, file_lines, replacements, file_path)
 
     @staticmethod
-    def process_replacements(executor_task: AiWrapper, file_lines: List[str], task_parameters: Dict[str, object]):
+    def process_replacements(executor_task: AiOrchestrator, file_lines: List[str], task_parameters: Dict[str, object]):
         """
         Performs line-by-line replacements in a provided file_name using directives given to an AI executor.
 
         Parameters:
-            executor_task (AiWrapper): An instance of AiWrapper to execute the replacement instructions.
+            executor_task (AiOrchestrator): An instance of AiWrapper to execute the replacement instructions.
             file_lines (List[str]): A list of strings, each representing a line of the file_name to be processed.
             task_parameters (Dict[str, object]): A dictionary containing directives for the task, including the file_name to
             save to and the primary instructions for replacement.
@@ -100,12 +101,12 @@ class TaskType(enum.Enum):
             PersonaConstants.EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS,
             replacement_instructions,
             PersonaConstants.EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA,
-            model=Constants.MODEL_NAME
+            model=ChatGptModel.CHAT_GPT_4_OMNI_MINI.value
         )
         return replacements
 
     @staticmethod
-    def apply_replacements(executor_task: AiWrapper, file_lines: List[str], replacements: Dict[str, object], target_file_path: str):
+    def apply_replacements(executor_task: AiOrchestrator, file_lines: List[str], replacements: Dict[str, object], target_file_path: str):
         """
         Process and replace specific lines in a file based on the given replacement instructions.
 
@@ -167,7 +168,7 @@ class TaskType(enum.Enum):
         ExecutionLogs.add_to_logs(f"Saved to {target_file_path}")
 
     @staticmethod
-    def write_to_file_task(executor_task: AiWrapper, task_parameters: Dict[str, object]):
+    def write_to_file_task(executor_task: AiOrchestrator, task_parameters: Dict[str, object]):
         """
         Repeatedly write content to the specified number of pages to write. Where one page roughly corresponds to
         500 words (2000 tokens output)
@@ -187,7 +188,7 @@ class TaskType(enum.Enum):
         ExecutionLogs.add_to_logs(f"Saved to {task_parameters.get(PersonaConstants.SAVE_TO)}")
 
     @staticmethod
-    def _generate_text(executor_task: AiWrapper, output: str, task_parameters: Dict[str, object], page_number: int):
+    def _generate_text(executor_task: AiOrchestrator, output: str, task_parameters: Dict[str, object], page_number: int):
         """
         Generates text for individual pages of a document based on given task directives and previously generated output.
 
@@ -213,7 +214,7 @@ class TaskType(enum.Enum):
         )
 
     @staticmethod
-    def append_to_file_task(executor_task: AiWrapper, task_parameters: Dict[str, object]):
+    def append_to_file_task(executor_task: AiOrchestrator, task_parameters: Dict[str, object]):
         """
         Appends generated content to a specified file_name and logs the operation.
 
@@ -228,7 +229,7 @@ class TaskType(enum.Enum):
         ExecutionLogs.add_to_logs(f"Appended content to {task_parameters.get(PersonaConstants.SAVE_TO)}")
 
     @staticmethod
-    def refactor_task(executor_task: AiWrapper, task_parameters: Dict[str, object]):
+    def refactor_task(executor_task: AiOrchestrator, task_parameters: Dict[str, object]):
         """
         Refactor files based on regex patterns provided in the task directives.
         #ToDo: It would make sense to add a check of the output to make sure a name isn't being changed which *shouldn't*
@@ -253,7 +254,7 @@ class TaskType(enum.Enum):
             f"Regex refactored {task_parameters.get('rewrite_this')} -> {task_parameters.get(PersonaConstants.INSTRUCTION)}")
 
     @staticmethod
-    def rewrite_file_task(executor_task: AiWrapper, task_parameters: Dict[str, object],
+    def rewrite_file_task(executor_task: AiOrchestrator, task_parameters: Dict[str, object],
                           approx_max_tokens=1000):
         """
         Split an input file into chunks based on the estimated max number of output tokens (2000 tokens) taking in
