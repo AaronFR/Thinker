@@ -3,7 +3,9 @@ import logging
 from typing import Dict, List
 
 from Utilities import Constants
-import Personas.PersonaSpecification.EditorSpecification
+from Personas.PersonaSpecification.EditorSpecification import REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS, \
+    EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA, EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS, \
+    EDITOR_LINE_REPLACEMENT_INSTRUCTIONS
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptWrapper import ChatGptModel
 from Utilities.ExecutionLogs import ExecutionLogs
@@ -99,9 +101,9 @@ class TaskType(enum.Enum):
             ]
 
         replacements = executor_task.execute_function(
-            Personas.PersonaSpecification.EditorSpecification.EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS,
+            EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS,
             replacement_instructions,
-            Personas.PersonaSpecification.EditorSpecification.EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA,
+            EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA,
             model=ChatGptModel.CHAT_GPT_4_OMNI_MINI
         )
         return replacements
@@ -141,7 +143,7 @@ class TaskType(enum.Enum):
             instruction = change['instruction']
             text_to_rewrite = "".join(file_lines[start:end])
             replacement = executor_task.execute(
-                [Personas.PersonaSpecification.EditorSpecification.EDITOR_LINE_REPLACEMENT_INSTRUCTIONS, instruction],
+                [EDITOR_LINE_REPLACEMENT_INSTRUCTIONS, instruction],
                 [text_to_rewrite],
                 3,
                 [f"""Select and output the change that rewrites these lines:\n{text_to_rewrite}\n
@@ -272,7 +274,7 @@ class TaskType(enum.Enum):
         for text_chunk in text_chunks:  # ToDo: could be parallelised
             logging.debug(f"Rewriting: {text_chunk}")
             re_written_file += executor_task.execute(
-                PersonaConstants.REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
+                REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS,
                 [f"""Rewrite this section: \n<rewrite_this>\n{text_chunk}\n</rewrite_this>\n
                     In the following way: {str(task_parameters[PersonaConstants.INSTRUCTION])}"""]
             )

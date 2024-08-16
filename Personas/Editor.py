@@ -1,9 +1,9 @@
-import enum
 import logging
 from pprint import pformat
 from typing import Dict, List
 
-import Personas.PersonaSpecification.EditorSpecification
+from Personas.PersonaSpecification.EditorSpecification import EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS, \
+    EDITOR_EXECUTIVE_FUNCTION_SCHEMA
 from Utilities.ExecutionLogs import ExecutionLogs
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.FileManagement import FileManagement
@@ -11,13 +11,6 @@ from Personas.PersonaSpecification import PersonaConstants
 from Personas.BasePersona import BasePersona
 from Utilities.TaskType import TaskType
 from Utilities.Utility import Utility
-
-
-class EditorTasks(enum.Enum):
-    REWRITE = "rewrite"
-    REWRITE_FILE = "rewrite_file"
-    REGEX_REFACTOR = "regex_refactor"
-
 
 
 class Editor(BasePersona):
@@ -76,8 +69,8 @@ class Editor(BasePersona):
             self.evaluation_files,
             extra_user_inputs,
             task,
-            Personas.PersonaSpecification.EditorSpecification.EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS,
-            Personas.PersonaSpecification.EditorSpecification.EDITOR_EXECUTIVE_FUNCTION_SCHEMA
+            EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS,
+            EDITOR_EXECUTIVE_FUNCTION_SCHEMA
         )
 
 
