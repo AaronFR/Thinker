@@ -1,5 +1,5 @@
 import logging
-from ThoughtProcessor.ErrorHandler import ErrorHandler
+from Utilities.ErrorHandler import ErrorHandler
 
 
 class ExecutionLogs:

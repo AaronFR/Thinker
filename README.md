@@ -22,9 +22,9 @@ The primary objective of this project is to create an intelligent system that ca
 ## Architecture
 The project's architecture is designed with modularity in mind, allowing for the easy addition of new features and components. The key modules are structured as follows:
 
-- **TaskRunner**: Coordinates the overall workflow. It initializes the task driven process, evaluates tasks iteratively, manages logs, and saves outputs.
-- **AI_Wrapper**: Represents an individual call to a LLM api, the current state of a task and provides methods for interacting with the AI model to generate responses.
-- **Prompter**: Interfaces with the AI model, sending requests and retrieving outputs based on specified prompts.
+- **PersonaSystem**: Coordinates the overall workflow. It initializes the task driven process, evaluates tasks iteratively, manages logs, and saves outputs.
+- **AiOrchestrator**: Represents an individual call to a LLM api, the current state of a task and provides methods for interacting with the AI model to generate responses.
+    - **ChatGptWrapper**: Interfaces with the Chat Gpt API, sending requests and retrieving outputs based on specified prompts.
 
 
 ## Features to implement

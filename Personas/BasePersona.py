@@ -1,11 +1,11 @@
 import logging
 from typing import List, Dict
 
-import Constants
-from ThoughtProcessor.ExecutionLogs import ExecutionLogs
-from ThoughtProcessor.AiWrapper import AiOrchestrator
-from ThoughtProcessor.ErrorHandler import ErrorHandler
-from ThoughtProcessor.Personas import PersonaConstants
+from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Utilities import Constants
+from Utilities.ExecutionLogs import ExecutionLogs
+from Utilities.ErrorHandler import ErrorHandler
+from Personas.PersonaSpecification import PersonaConstants
 
 
 class BasePersona:

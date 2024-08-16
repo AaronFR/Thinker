@@ -1,11 +1,12 @@
 import logging
 from pprint import pformat
 from typing import List, Dict
-import Constants
-from ChatGptWrapper import ChatGptWrapper, ChatGptRole, ChatGptModel
-from ThoughtProcessor.ErrorHandler import ErrorHandler
-from ThoughtProcessor.FileManagement import FileManagement
-from Utility import Utility
+
+from AiOrchestration.ChatGptWrapper import ChatGptModel, ChatGptWrapper, ChatGptRole
+from Utilities import Constants
+from Utilities.ErrorHandler import ErrorHandler
+from Utilities.FileManagement import FileManagement
+from Utilities.Utility import Utility
 
 
 class AiOrchestrator:

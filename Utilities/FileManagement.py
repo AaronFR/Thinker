@@ -6,15 +6,14 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
-import Constants
-import Globals
-from ThoughtProcessor.ErrorHandler import ErrorHandler
+from Utilities import Globals, Constants
+from Utilities.ErrorHandler import ErrorHandler
 
 
 class FileManagement:
     """Class for managing files related to tasks and solutions."""
 
-    thoughts_directory = os.path.join(os.path.dirname(__file__), "thoughts")
+    thoughts_directory = os.path.join(os.path.dirname(__file__), "../thoughts")
 
     def __init__(self):
         ErrorHandler.setup_logging()
@@ -25,7 +24,7 @@ class FileManagement:
 
         :param file_name: The name of the file to initialise.
         """
-        directory_path = os.path.join('thoughts', str(Globals.current_thought_id))
+        directory_path = os.path.join('../thoughts', str(Globals.current_thought_id))
         file_path = os.path.join(directory_path, file_name)
         try:
             os.makedirs(directory_path, exist_ok=True)

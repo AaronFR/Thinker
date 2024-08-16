@@ -3,13 +3,13 @@ import re
 from pprint import pformat
 from typing import List
 
-import Globals
-import ThoughtProcessor.Personas.PersonaConstants
-from ThoughtProcessor.ExecutionLogs import ExecutionLogs
-from ThoughtProcessor.ErrorHandler import ErrorHandler
-from ThoughtProcessor.FileManagement import FileManagement
-from ThoughtProcessor.Personas import PersonaConstants
-from ThoughtProcessor.Personas.BasePersona import BasePersona
+from Utilities import Globals
+import Personas.PersonaSpecification.PersonaConstants
+from Utilities.ExecutionLogs import ExecutionLogs
+from Utilities.ErrorHandler import ErrorHandler
+from Utilities.FileManagement import FileManagement
+from Personas.PersonaSpecification import PersonaConstants
+from Personas.BasePersona import BasePersona
 
 
 class Analyst(BasePersona):
@@ -36,7 +36,7 @@ class Analyst(BasePersona):
         )
 
         # save to Analysis.txt file_name
-        FileManagement.save_file(analysis_report, ThoughtProcessor.Personas.PersonaConstants.meta_analysis_filename, overwrite=True)
+        FileManagement.save_file(analysis_report, Personas.PersonaSpecification.PersonaConstants.meta_analysis_filename, overwrite=True)
         ExecutionLogs.add_to_logs("Analyst: Report written and saved")
 
         # Search for the pattern
@@ -53,7 +53,8 @@ class Analyst(BasePersona):
                                   + pformat(Globals.workers, width=300))
 
     def recommend_workers(self, user_request) -> List[str]:
-        analyst = self.create_ai_wrapper([ThoughtProcessor.Personas.PersonaConstants.meta_analysis_filename])
+        analyst = self.create_ai_wrapper([
+                                             Personas.PersonaSpecification.PersonaConstants.meta_analysis_filename])
         function_output = analyst.execute_function(
             [PersonaConstants.ANALYST_FUNCTION_INSTRUCTIONS],
             [f"Initial user request: {user_request}"],

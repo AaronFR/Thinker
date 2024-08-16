@@ -1,14 +1,23 @@
+import enum
 import logging
 from pprint import pformat
 from typing import Dict, List
 
-from ThoughtProcessor.ExecutionLogs import ExecutionLogs
-from ThoughtProcessor.ErrorHandler import ErrorHandler
-from ThoughtProcessor.FileManagement import FileManagement
-from ThoughtProcessor.Personas import PersonaConstants
-from ThoughtProcessor.Personas.BasePersona import BasePersona
-from ThoughtProcessor.TaskType import TaskType
-from Utility import Utility
+import Personas.PersonaSpecification.EditorSpecification
+from Utilities.ExecutionLogs import ExecutionLogs
+from Utilities.ErrorHandler import ErrorHandler
+from Utilities.FileManagement import FileManagement
+from Personas.PersonaSpecification import PersonaConstants
+from Personas.BasePersona import BasePersona
+from Utilities.TaskType import TaskType
+from Utilities.Utility import Utility
+
+
+class EditorTasks(enum.Enum):
+    REWRITE = "rewrite"
+    REWRITE_FILE = "rewrite_file"
+    REGEX_REFACTOR = "regex_refactor"
+
 
 
 class Editor(BasePersona):
@@ -67,8 +76,8 @@ class Editor(BasePersona):
             self.evaluation_files,
             extra_user_inputs,
             task,
-            PersonaConstants.EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS,
-            PersonaConstants.EDITOR_EXECUTIVE_FUNCTION_SCHEMA
+            Personas.PersonaSpecification.EditorSpecification.EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS,
+            Personas.PersonaSpecification.EditorSpecification.EDITOR_EXECUTIVE_FUNCTION_SCHEMA
         )
 
 

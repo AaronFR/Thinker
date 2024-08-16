@@ -1,5 +1,4 @@
-from ThoughtProcessor.Personas import PersonaConstants
-
+from Personas.PersonaSpecification import PersonaConstants
 
 MAX_SCHEMA_RETRIES = 2
 

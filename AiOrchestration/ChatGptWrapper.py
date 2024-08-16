@@ -6,8 +6,8 @@ from typing import List, Dict
 from openai import OpenAI, OpenAIError
 from openai.types.chat import ChatCompletion
 
-import Globals
-from ThoughtProcessor.ErrorHandler import ErrorHandler
+from Utilities import Globals
+from Utilities.ErrorHandler import ErrorHandler
 
 
 class ChatGptRole(enum.Enum):
@@ -95,6 +95,8 @@ class ChatGptWrapper:
         Calculates the estimated cost of a call to OpenAi ChatGpt Api
 
         :param chat_completion: after the prompt has been processed
+        :param model: the specific OpenAI model being used, the non Mini version is *very* expensive,
+        and should be used rarely
         """
         input_token_price, output_token_price = 0, 0
 

@@ -2,12 +2,13 @@ import enum
 import logging
 from typing import Dict, List
 
-import Constants
-from ThoughtProcessor.AiOrchestration.AiOrchestrator import AiOrchestrator
-from ThoughtProcessor.AiOrchestration.ChatGptWrapper import ChatGptModel
-from ThoughtProcessor.ExecutionLogs import ExecutionLogs
-from ThoughtProcessor.FileManagement import FileManagement
-from ThoughtProcessor.Personas import PersonaConstants
+from Utilities import Constants
+import Personas.PersonaSpecification.EditorSpecification
+from AiOrchestration.AiOrchestrator import AiOrchestrator
+from AiOrchestration.ChatGptWrapper import ChatGptModel
+from Utilities.ExecutionLogs import ExecutionLogs
+from Utilities.FileManagement import FileManagement
+from Personas.PersonaSpecification import PersonaConstants
 
 
 class TaskType(enum.Enum):
@@ -98,10 +99,10 @@ class TaskType(enum.Enum):
             ]
 
         replacements = executor_task.execute_function(
-            PersonaConstants.EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS,
+            Personas.PersonaSpecification.EditorSpecification.EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS,
             replacement_instructions,
-            PersonaConstants.EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA,
-            model=ChatGptModel.CHAT_GPT_4_OMNI_MINI.value
+            Personas.PersonaSpecification.EditorSpecification.EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA,
+            model=ChatGptModel.CHAT_GPT_4_OMNI_MINI
         )
         return replacements
 
@@ -140,7 +141,7 @@ class TaskType(enum.Enum):
             instruction = change['instruction']
             text_to_rewrite = "".join(file_lines[start:end])
             replacement = executor_task.execute(
-                [PersonaConstants.EDITOR_LINE_REPLACEMENT_INSTRUCTIONS, instruction],
+                [Personas.PersonaSpecification.EditorSpecification.EDITOR_LINE_REPLACEMENT_INSTRUCTIONS, instruction],
                 [text_to_rewrite],
                 3,
                 [f"""Select and output the change that rewrites these lines:\n{text_to_rewrite}\n

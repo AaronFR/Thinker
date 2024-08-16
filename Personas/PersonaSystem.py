@@ -1,11 +1,11 @@
 import os
 
-from ThoughtProcessor.ExecutionLogs import ExecutionLogs
-from ThoughtProcessor.ErrorHandler import ErrorHandler
-from ThoughtProcessor.Personas import PersonaConstants
-from ThoughtProcessor.Personas.Analyst import Analyst
-from ThoughtProcessor.Personas.Editor import Editor
-from ThoughtProcessor.Personas.Writer import Writer
+from Utilities.ExecutionLogs import ExecutionLogs
+from Utilities.ErrorHandler import ErrorHandler
+from Personas.PersonaSpecification.PersonaConstants import ANALYST, WRITER, EDITOR
+from Personas.Analyst import Analyst
+from Personas.Editor import Editor
+from Personas.Writer import Writer
 
 
 class PersonaSystem:
@@ -13,15 +13,15 @@ class PersonaSystem:
         self.thoughts_directory = os.path.join(os.path.dirname(__file__), "../thoughts")
 
         self.personas = {
-            PersonaConstants.ANALYST: Analyst(PersonaConstants.ANALYST),
+            ANALYST: Analyst(ANALYST),
             # 'researcher': Researcher('researcher'),
-            PersonaConstants.WRITER: Writer(PersonaConstants.WRITER),
-            PersonaConstants.EDITOR: Editor(PersonaConstants.EDITOR)
+            WRITER: Writer(WRITER),
+            EDITOR: Editor(EDITOR)
         }
 
         ErrorHandler.setup_logging()
 
-    def run_iteration(self, task_to_execute: str, persona=PersonaConstants.ANALYST):
+    def run_iteration(self, task_to_execute: str, persona=ANALYST):
         """
         Orchestrate the execution of tasks based on the current user prompt.
         ToDo: implement system for dealing with failed tasks

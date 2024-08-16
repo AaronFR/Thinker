@@ -2,7 +2,7 @@ ANALYST = "analyst"
 WRITER = "writer"
 EDITOR = "editor"
 
-EXECUTOR_PERSONAS = [WRITER, EDITOR]
+EXECUTOR_PERSONAS = [EDITOR]  # WRITER
 
 TYPE = "type"
 REFERENCE = "reference"

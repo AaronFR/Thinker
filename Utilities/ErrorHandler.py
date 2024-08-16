@@ -3,7 +3,7 @@ import logging
 import os
 import sys
 
-import Constants
+from Utilities import Constants
 
 
 class ErrorHandler:
@@ -15,7 +15,7 @@ class ErrorHandler:
     @staticmethod
     def setup_logging(log_file: str = 'application.log', logger_name: str = None, format_scheme: str = '%(asctime)s [%(levelname)s] (%(filename)s:%(lineno)d) %(message)s'):
         """Sets up logging configuration."""
-        thoughts_directory = os.path.join(os.path.dirname(__file__), "thoughts")
+        thoughts_directory = os.path.join(os.path.dirname(__file__), "../thoughts")
         os.makedirs(thoughts_directory, exist_ok=True)
 
         log_file_location = os.path.join(thoughts_directory, log_file)

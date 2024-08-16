@@ -2,12 +2,12 @@ import logging
 import os
 from collections import deque
 
-import Globals
-from ThoughtProcessor.ExecutionLogs import ExecutionLogs
-from ThoughtProcessor.ErrorHandler import ErrorHandler
-from ThoughtProcessor.FileManagement import FileManagement
-from ThoughtProcessor.Personas import PersonaConstants
-from ThoughtProcessor.Personas.PersonaSystem import PersonaSystem
+from Utilities import Globals
+from Utilities.ExecutionLogs import ExecutionLogs
+from Utilities.ErrorHandler import ErrorHandler
+from Utilities.FileManagement import FileManagement
+from Personas.PersonaSpecification import PersonaConstants
+from Personas.PersonaSystem import PersonaSystem
 
 
 class UserInterface:
