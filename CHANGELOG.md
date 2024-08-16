@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## 0.5.0 - 2024-08-15 - Quality
+
+### Added
+
 - Global 'solved' variable, Analyst persona can now indicate that the task is finished and the process can stop iterating through work on the initial user prompt
 - ExecutionLogs.py for handling writing up the exact movements of the persona system as it works on the given task
 - 'regex refactor' task: regex replacing large sections of text repeatedly fails, so the application was refactored (🙃) to replace a word or words for all files.
@@ -24,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - CorpusCallosum.py, PromptManagement.py and config.json as these files are deprecated and no relevant to the main application
 
-## [0.4.0] - 2024-08-08
+## [0.4.0] - 2024-08-08 - Quantity
 
 ### Added
 

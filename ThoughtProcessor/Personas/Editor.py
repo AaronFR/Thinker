@@ -77,5 +77,11 @@ if __name__ == '__main__':
     # editor.execute_task("""Review the translated report for structural coherence according to Dutch reporting styles.
     #     Organize the information with clear headings and sections, including an inleiding (introduction) and conclusie (conclusion).
     #     Ensure that the formatting aligns with typical Dutch standards for academic or historical reports.""")
-    editor.execute_task("""Re-write the code of each method where appropriate focusing on making it smarter, reducing line count where appropriate and overall improving the readability and utility of the methods
+    editor.execute_task("""Rewrite the README for generally improved quality and coherency. In particular focus on 
+    rewriting the #Features to implement section
+    I'm thinking about this section as I reference it often while developing, in particular I think a greater emphassis 
+    needs to be put on refining the architecture and improving overall executive thought processes.
+    That is processes which govern the implementation of a target solution to a user request, rather than
+    the processes which directly improve a given solution under direction from these executive processes.
+    Be creative, I'm only taking interesting ideas to influence how **I** update the README.
     """)

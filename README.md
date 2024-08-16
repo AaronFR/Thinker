@@ -28,13 +28,12 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 
 ## Features to implement
-To enhance the system's capabilities and efficiency, several features are planned for implementation:
-- **Enhanced Executive Reasoning**: Develop improvements to the executive plan generator for more accurate and complex decision-making.
-    - allow tasks to look at input file line numbers for increased precision.
-- **Build from blueprint**: Worker classes should specify blueprints and then build documents from them to guarantee internal consistency
-- **Coder**: Persona, specifically for code files, focusing on maintaining consistency and not making excess notes
-- **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.
-- **DAG Structure for Task Management**: Introduce a Directed Acyclic Graph (DAG) structure to optimize decision-making efficiency in task management.
+To refine the system's architecture and enhance its capabilities and efficiency, several key features are intended for implementation:
+- **Enhanced Executive Reasoning**: Advance the executive planning processes to enable more accurate and sophisticated decision-making that aligns closely with user needs.
+- **Build from Blueprint**: Executor classes should follow clearly outlined blueprints, which will guide the construction of documents, ensuring internal consistency and coherence.
+- **Coder**: Develop a defined persona for code files that emphasizes maintaining consistency while minimizing unnecessary commentary, fostering a cleaner code environment.- **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.
+- **Parallel Processing**: Introduce mechanisms for parallel processing to facilitate the simultaneous handling of multiple tasks, thereby enhancing overall performance and reducing time for task completion.
+- **DAG Structure for Task Management**: Introduce a Directed Acyclic Graph (DAG) framework to streamline decision-making efficiency, enabling better organization and oversight of tasks.
 - **API Integrations**: Integrate additional AI models for improved capability and accuracy, along with the ability to search resources like Wikipedia and the web.
 
 
