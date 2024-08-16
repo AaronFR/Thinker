@@ -119,7 +119,7 @@ class AiWrapper:
         for file in input_files:
             try:
                 content = FileManagement.read_file(file)
-                role_messages.append((ChatGptRole.USER, f"{file}: \n{content}"))
+                role_messages.append({"role": ChatGptRole.USER.value, "content": content})
             except FileNotFoundError:
                 logging.error(f"File not found: {file}. Please ensure the file exists.")
                 role_messages.append((ChatGptRole.USER, f"File not found: {file}"))
