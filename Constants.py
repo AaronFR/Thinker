@@ -38,12 +38,3 @@ The first part has generated directives for you to follow in order to solve help
 Evaluate the following  prompt thoroughly but concisely.
 Adding as much useful detail as possible while keeping your answer curt and to the point.
 Follow next_steps and areas_of_improvement to append an improvement to the solution."""
-
-EVALUATE_TASKS_INSTRUCTIONS = """
-You are an assistant to handle and process tasks and convert them into full, detailed solutions. You sould aim to provide full detail responses, not cut out relevant information from supplied reference material while making the solution engaging and interesting to read.
-Include a markdown title heading for your answer
-"""
-FIND_SQUARE_BRACKET_CLUE_REGEX = r'\[(.*?)\]'
-
-
-

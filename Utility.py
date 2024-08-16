@@ -31,41 +31,6 @@ class Utility:
         return token_count
 
     @staticmethod
-    def fill_placeholders(prompt: str) -> str:
-        """Replace placeholders in prompt with actual file content if within token limit."""
-        file_references = re.findall(Constants.FIND_SQUARE_BRACKET_CLUE_REGEX, prompt)
-
-        for original_file_name in file_references:
-            file_name = original_file_name.replace(" ", "_")
-            if not Utility.has_file_prefix(file_name):
-                file_name += ".txt"
-            file_path = Path(file_name)
-
-            try:
-                with file_path.open('r', encoding=Constants.DEFAULT_ENCODING) as file:
-                    file_content = file.read()
-
-                if Utility.is_within_token_limit(file_content):
-                    prompt = prompt.replace(f"[{original_file_name}]", file_content)  # Replace the clue with the actual file content
-                else:
-                    logging.warning(f"FILE TOO LARGE: {file_name} exceeds token limit")
-                    continue  # Skip replacing this file content if it exceeds limit
-            except FileNotFoundError:
-                logging.exception(f"Cannot find file {file_name}")
-            except Exception as e:
-                logging.exception(f"Cannot read file {file_name}: {e}")
-
-        return prompt
-
-    @staticmethod
-    def has_file_prefix(clue: str) -> bool:
-        # Define the regex pattern to detect file prefixes
-        file_prefix_pattern = r'.*\.\w{2,4}'
-
-        match = re.match(file_prefix_pattern, clue.strip())
-        return bool(match)
-
-    @staticmethod
     def execute_with_retries(func: Callable[[], Any], max_retries: int = Constants.MAX_PROMPT_RETRIES) -> Any:
         """Execute a callable with retries on failure.
 
