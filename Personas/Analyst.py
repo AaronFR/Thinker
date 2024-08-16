@@ -61,7 +61,7 @@ class Analyst(BasePersona):
             PersonaConstants.ANALYST_FUNCTION_SCHEMA
         )
 
-        return function_output.get(PersonaConstants.WORKERS)
+        return function_output[PersonaConstants.WORKERS]
 
 
 if __name__ == '__main__':

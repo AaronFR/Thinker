@@ -50,7 +50,7 @@ class BasePersona:
         try:
             self.execute_task_parameters(task)
         except Exception:
-            failed_task = task.get('what_to_do')
+            failed_task = task['what_to_do']
             logging.exception(f"Task failed: {failed_task}")
             ExecutionLogs.add_to_logs(f"Task failed: {failed_task}\n")
 
@@ -75,7 +75,7 @@ class BasePersona:
         :param required_keys: the necessary keys for a Dict to be evaluated as valid
         :return: True if the task is valid, False otherwise.
         """
-        tasks = executive_plan.get(PersonaConstants.TASKS)
+        tasks = executive_plan[PersonaConstants.TASKS]
         for task in tasks:
             for key in required_keys:
                 if key not in task:

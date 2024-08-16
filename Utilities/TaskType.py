@@ -53,7 +53,7 @@ class TaskType(enum.Enum):
                 TaskType.REWRITE_FILE: self.rewrite_file_task,
                 TaskType.REGEX_REFACTOR: self.refactor_task
             }
-            return action_map.get(task_type)
+            return action_map[task_type]
 
         action = get_action(self)
         if action is not None:
@@ -75,7 +75,7 @@ class TaskType(enum.Enum):
         indicated by 'SAVE_TO', processes the instructions using the 'executor_task', and saves the modified file_name.
         This ensures the original file_name's consistency is maintained with the integrated changes.
         """
-        file_path = str(task_parameters.get(PersonaConstants.SAVE_TO))
+        file_path = str(task_parameters[PersonaConstants.SAVE_TO])
         file_lines = FileManagement.read_file_with_lines(file_path)
 
         replacements = TaskType.process_replacements(executor_task, file_lines, task_parameters)
@@ -94,8 +94,8 @@ class TaskType(enum.Enum):
         """
         replacement_instructions = [
                 ''.join(FileManagement.get_numbered_lines(file_lines)),
-                f"""For the given file_name: {task_parameters.get(PersonaConstants.SAVE_TO)}, 
-                replace sections with the following primary instructions: {task_parameters.get(PersonaConstants.INSTRUCTION)}"""
+                f"""For the given file_name: {task_parameters[PersonaConstants.SAVE_TO]}, 
+                replace sections with the following primary instructions: {task_parameters[PersonaConstants.INSTRUCTION]}"""
             ]
 
         replacements = executor_task.execute_function(
@@ -134,7 +134,7 @@ class TaskType(enum.Enum):
         """
         new_content = []
         current_line = 0
-        for change in sorted(replacements.get('changes'), key=lambda x: x['start']):
+        for change in sorted(replacements['changes'], key=lambda x: x['start']):
             start = change['start'] - 1  # Adjust for zero-based indexing
             end = change['end']
 
@@ -185,8 +185,8 @@ class TaskType(enum.Enum):
             output += text
             logging.debug(f"Page {i} written: {text}")
 
-        FileManagement.save_file(output, task_parameters.get(PersonaConstants.SAVE_TO))
-        ExecutionLogs.add_to_logs(f"Saved to {task_parameters.get(PersonaConstants.SAVE_TO)}")
+        FileManagement.save_file(output, task_parameters[PersonaConstants.SAVE_TO])
+        ExecutionLogs.add_to_logs(f"Saved to {task_parameters[PersonaConstants.SAVE_TO]}")
 
     @staticmethod
     def _generate_text(executor_task: AiOrchestrator, output: str, task_parameters: Dict[str, object], page_number: int):
@@ -209,7 +209,7 @@ class TaskType(enum.Enum):
         return executor_task.execute(
             PersonaConstants.WRITER_SYSTEM_INSTRUCTIONS,
             [
-                f"Write the first page of {task_parameters.get('pages_to_write')}, answering the following: {task_parameters.get(PersonaConstants.INSTRUCTION)}"
+                f"Write the first page of {task_parameters['pages_to_write']}, answering the following: {task_parameters[PersonaConstants.INSTRUCTION]}"
                 if page_number == 1 else instructions
             ]
         )
@@ -224,10 +224,10 @@ class TaskType(enum.Enum):
         """
         output = executor_task.execute(
             Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
-            ["Primary Instructions: " + str(task_parameters.get(PersonaConstants.INSTRUCTION))]
+            ["Primary Instructions: " + str(task_parameters[PersonaConstants.INSTRUCTION])]
         )
-        FileManagement.save_file(output, task_parameters.get(PersonaConstants.SAVE_TO))
-        ExecutionLogs.add_to_logs(f"Appended content to {task_parameters.get(PersonaConstants.SAVE_TO)}")
+        FileManagement.save_file(output, task_parameters[PersonaConstants.SAVE_TO])
+        ExecutionLogs.add_to_logs(f"Appended content to {task_parameters[PersonaConstants.SAVE_TO]}")
 
     @staticmethod
     def refactor_task(executor_task: AiOrchestrator, task_parameters: Dict[str, object]):
@@ -244,15 +244,15 @@ class TaskType(enum.Enum):
         for file in evaluation_files:
             try:
                 FileManagement.regex_refactor(
-                    str(task_parameters.get('rewrite_this')),
-                    str(task_parameters.get(PersonaConstants.INSTRUCTION)),
+                    str(task_parameters['rewrite_this']),
+                    str(task_parameters[PersonaConstants.INSTRUCTION]),
                     file
                 )
             except ValueError:
                 logging.exception(f"Failed to rewrite file {file}")
 
         ExecutionLogs.add_to_logs(
-            f"Regex refactored {task_parameters.get('rewrite_this')} -> {task_parameters.get(PersonaConstants.INSTRUCTION)}")
+            f"Regex refactored {task_parameters['rewrite_this']} -> {task_parameters[PersonaConstants.INSTRUCTION]}")
 
     @staticmethod
     def rewrite_file_task(executor_task: AiOrchestrator, task_parameters: Dict[str, object],
@@ -265,7 +265,7 @@ class TaskType(enum.Enum):
         :param task_parameters: directives including 'file_to_rewrite' and INSTRUCTION
         :param approx_max_tokens: token chunk size to split the document by
         """
-        file_contents = FileManagement.read_file(str(task_parameters.get('file_to_rewrite')))
+        file_contents = FileManagement.read_file(str(task_parameters['file_to_rewrite']))
         text_chunks = TaskType.chunk_text(file_contents, approx_max_tokens)
 
         re_written_file = ""

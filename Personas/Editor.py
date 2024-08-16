@@ -44,10 +44,10 @@ class Editor(BasePersona):
 
         executive_plan = self.generate_executive_plan(task_to_execute)
 
-        logging.info(f"Generated tasks: {pformat(executive_plan.get(PersonaConstants.TASKS), width=280)}")
-        ExecutionLogs.add_to_logs(f"Generated tasks: {pformat(executive_plan.get(PersonaConstants.TASKS), width=280)}")
+        logging.info(f"Generated tasks: {pformat(executive_plan[PersonaConstants.TASKS], width=280)}")
+        ExecutionLogs.add_to_logs(f"Generated tasks: {pformat(executive_plan[PersonaConstants.TASKS], width=280)}")
 
-        tasks = executive_plan.get(PersonaConstants.TASKS, [])
+        tasks = executive_plan[PersonaConstants.TASKS]
         for task in tasks:
             self._process_task(task)
 

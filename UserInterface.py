@@ -90,7 +90,7 @@ class UserInterface:
         ExecutionLogs.add_to_logs(f"Starting iteration: {attempt_count}")
 
         worker = Globals.workers.pop() if Globals.workers else None
-        prompt_to_process = worker.get(PersonaConstants.INSTRUCTIONS) if worker else current_user_prompt
+        prompt_to_process = worker[PersonaConstants.INSTRUCTIONS] if worker else current_user_prompt
 
         try:
             self.persona_system.run_iteration(prompt_to_process, worker.get(PersonaConstants.TYPE) if worker else None)

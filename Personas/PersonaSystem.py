@@ -30,4 +30,4 @@ class PersonaSystem:
         :param persona: the assigned 'role' to operate in at the given stage of the application
         """
         ExecutionLogs.add_to_logs(f"{persona} assigned task: {task_to_execute}")
-        self.personas.get(persona.lower()).execute_task(task_to_execute)
+        self.personas[persona.lower()].execute_task(task_to_execute)
