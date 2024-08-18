@@ -168,11 +168,11 @@ think the editor that works on each block would benefit from information include
 
 *Reference Text*:
 1: @staticmethod
-2: def rewrite_file_lines(executor_task: AiOrchestrator, task_parameters: Dict[str, object]):
+2: def rewrite_file_lines(ai_orchestrator: AiOrchestrator, task_parameters: Dict[str, object]):
 3:     \"\"\"
 4:     Rewrite the specified lines in the specified file based on the instructions and save the changes.
 5:     
-6:     executor_task: Initialized LLM wrapper used for executing directives.
+6:     ai_orchestrator: Initialized LLM wrapper used for executing directives.
 7:     task_directives: Contains keys 'SAVE_TO' for the file name and 'INSTRUCTION' for processing details.
 8:     \"\"\"
 9:     file_path = str(task_parameters[PersonaConstants.SAVE_TO)]
@@ -181,8 +181,8 @@ think the editor that works on each block would benefit from information include
 12:     print("HEYOO!")
 13:     print([f"{i + 1}: {line}" for i, line in enumerate(file_lines)])
 14:
-15:     replacements = TaskType.process_replacements(executor_task, file_lines, task_parameters)
-16:     TaskType.apply_replacements(file_lines, replacements, file_path)
+15:     replacements = Writing.process_replacements(ai_orchestrator, file_lines, task_parameters)
+16:     Writing.apply_replacements(file_lines, replacements, file_path)
 
 *Directive*: Make the docstring clearer and more concise.
 

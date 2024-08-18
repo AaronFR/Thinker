@@ -2,6 +2,7 @@ import enum
 import logging
 from typing import Dict, List
 
+from Personas.BasePersona import BasePersona
 from Utilities import Constants
 from Personas.PersonaSpecification.EditorSpecification import REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS, \
     EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA, EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS, \
@@ -13,9 +14,9 @@ from Utilities.FileManagement import FileManagement
 from Personas.PersonaSpecification import PersonaConstants
 
 
-class TaskType(enum.Enum):
+class Writing(enum.Enum):
     """
-    TaskType is an enumeration for various task types utilized within the persona system.
+    Writing is an enumeration for various task types utilized within the persona system.
     # ToDo: should be separated to its own enum class with the task logic tied to the persona's -> clearer structure
 
     Overview:
@@ -34,34 +35,35 @@ class TaskType(enum.Enum):
     REWRITE_FILE = "REWRITE_FILE"
     REGEX_REFACTOR = "REGEX_REFACTOR"
 
-    def execute(self, executor_task: AiOrchestrator, task_parameters: Dict[str, object]):
+    def execute(self, task_parameters: Dict[str, object]):
         """
         Overview:
         Executes a specified task type.
 
         Parameters:
-        executor_task (AiOrchestrator): The task wrapper object that contains the details of the task to be executed.
+        ai_orchestrator (AiOrchestrator): The task wrapper object that contains the details of the task to be executed.
         task_parameters (Dict[str, object]): A dictionary containing directives and parameters needed for the task.
 
         Raises:
-        ValueError: If an unknown TaskType is encountered.
+        ValueError: If an unknown Writing is encountered.
         """
-
         def get_action(task_type):
             action_map = {
-                TaskType.WRITE: self.write_to_file_task,
-                TaskType.APPEND: self.append_to_file_task,
-                TaskType.REWRITE: self.rewrite_file_lines,
-                TaskType.REWRITE_FILE: self.rewrite_file_task,
-                TaskType.REGEX_REFACTOR: self.refactor_task
+                Writing.WRITE: self.write_to_file_task,
+                Writing.APPEND: self.append_to_file_task,
+                Writing.REWRITE: self.rewrite_file_lines,
+                Writing.REWRITE_FILE: self.rewrite_file_task,
+                Writing.REGEX_REFACTOR: self.refactor_task
             }
             return action_map[task_type]
 
+        ai_orchestrator = BasePersona.create_ai_wrapper(task_parameters.get(PersonaConstants.REFERENCE, []))
+
         action = get_action(self)
         if action is not None:
-            action(executor_task, task_parameters)
+            action(ai_orchestrator, task_parameters)
         else:
-            raise ValueError(f"Unknown TaskType: {self}")
+            raise ValueError(f"Unknown Writing: {self}")
 
     @staticmethod
     def rewrite_file_lines(executor_task: AiOrchestrator, task_parameters: Dict[str, object]):
@@ -74,14 +76,14 @@ class TaskType(enum.Enum):
             'INSTRUCTION': str - Detailed instructions on how to process and rewrite the lines.
 
         The function takes the rewrite instructions from 'task_parameters', locates the specified lines in the file_name
-        indicated by 'SAVE_TO', processes the instructions using the 'executor_task', and saves the modified file_name.
+        indicated by 'SAVE_TO', processes the instructions using the 'ai_orchestrator', and saves the modified file_name.
         This ensures the original file_name's consistency is maintained with the integrated changes.
         """
         file_path = str(task_parameters[PersonaConstants.SAVE_TO])
         file_lines = FileManagement.read_file_with_lines(file_path)
 
-        replacements = TaskType.process_replacements(executor_task, file_lines, task_parameters)
-        TaskType.apply_replacements(executor_task, file_lines, replacements, file_path)
+        replacements = Writing.process_replacements(executor_task, file_lines, task_parameters)
+        Writing.apply_replacements(executor_task, file_lines, replacements, file_path)
 
     @staticmethod
     def process_replacements(executor_task: AiOrchestrator, file_lines: List[str], task_parameters: Dict[str, object]):
@@ -183,7 +185,7 @@ class TaskType(enum.Enum):
         output = ""
 
         for i in range(1, pages_to_write + 1):
-            text = TaskType._generate_text(executor_task, output, task_parameters, i)
+            text = Writing._generate_text(executor_task, output, task_parameters, i)
             output += text
             logging.debug(f"Page {i} written: {text}")
 
@@ -232,12 +234,12 @@ class TaskType(enum.Enum):
         ExecutionLogs.add_to_logs(f"Appended content to {task_parameters[PersonaConstants.SAVE_TO]}")
 
     @staticmethod
-    def refactor_task(executor_task: AiOrchestrator, task_parameters: Dict[str, object]):
+    def refactor_task(task_parameters: Dict[str, object]):
         """
         Refactor files based on regex patterns provided in the task directives.
         #ToDo: It would make sense to add a check of the output to make sure a name isn't being changed which *shouldn't*
 
-        :param executor_task: Initialized LLM wrapper. Although this is a pure code task, this argument
+        :param ai_orchestrator: Initialized LLM wrapper. Although this is a pure code task, this argument
          is required as per implementation.
         :param task_parameters: key fields: INSTRUCTION, 'rewrite_this',
         :return:
@@ -268,7 +270,7 @@ class TaskType(enum.Enum):
         :param approx_max_tokens: token chunk size to split the document by
         """
         file_contents = FileManagement.read_file(str(task_parameters['file_to_rewrite']))
-        text_chunks = TaskType.chunk_text(file_contents, approx_max_tokens)
+        text_chunks = Writing.chunk_text(file_contents, approx_max_tokens)
 
         re_written_file = ""
         for text_chunk in text_chunks:  # ToDo: could be parallelised
@@ -301,5 +303,5 @@ class TaskType(enum.Enum):
         return split_into_chunks(text, approx_max_chars)
 
 if __name__ == '__main__':
-    numbered_lines = FileManagement.read_file("TaskType.py", return_numbered_lines=True)
+    numbered_lines = FileManagement.read_file("Writing.py", return_numbered_lines=True)
     print(numbered_lines)

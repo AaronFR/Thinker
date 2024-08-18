@@ -93,7 +93,8 @@ class UserInterface:
         prompt_to_process = worker[PersonaConstants.INSTRUCTIONS] if worker else current_user_prompt
 
         try:
-            self.persona_system.run_iteration(prompt_to_process, worker.get(PersonaConstants.TYPE) if worker else None)
+            persona = worker[PersonaConstants.TYPE] if worker else PersonaConstants.ANALYST
+            self.persona_system.run_iteration(prompt_to_process, persona)
 
             if Globals.is_solved:
                 self._log_request_completion(current_user_prompt, attempt_count)

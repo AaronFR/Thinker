@@ -2,18 +2,20 @@ import logging
 from pprint import pformat
 from typing import Dict, List
 
+from Functionality.Writing import Writing
 from Utilities.ExecutionLogs import ExecutionLogs
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.FileManagement import FileManagement
 from Personas.PersonaSpecification import PersonaConstants
 from Personas.BasePersona import BasePersona
-from Utilities.TaskType import TaskType
 from Utilities.Utility import Utility
 
 
 class Writer(BasePersona):
     """Writer persona, representing a role that manages writing tasks and their outputs
     """
+
+    writing_tasks = [Writing.WRITE, Writing.APPEND]
 
     def __init__(self, name):
         super().__init__(name)
@@ -39,10 +41,12 @@ class Writer(BasePersona):
     @staticmethod
     def execute_task_parameters(task_parameters: Dict[str, object]):
         ExecutionLogs.add_to_logs(f"Executing task: \n{pformat(task_parameters)}")
-        executor_thought = BasePersona.create_ai_wrapper(task_parameters.get('what_to_reference', []))
 
-        thought_type = TaskType(task_parameters.get(PersonaConstants.TYPE, TaskType.APPEND.value))
-        thought_type.execute(executor_thought, task_parameters)
+        writing_task = Writing(task_parameters.get(PersonaConstants.TYPE, Writing.APPEND.value))
+        if writing_task in Writer.writing_tasks:
+            writing_task.execute(task_parameters)
+        else:
+            raise ValueError("Invalid task type used for this persona")
 
     def generate_executive_plan(self, task: str, extra_user_inputs: List[str] = None) -> Dict[str, object]:
         """
