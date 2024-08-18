@@ -50,7 +50,7 @@ class BasePersona:
         try:
             self.execute_task_parameters(task)
         except Exception:
-            failed_task = task['what_to_do']
+            failed_task = task[PersonaConstants.INSTRUCTION]
             logging.exception(f"Task failed: {failed_task}")
             ExecutionLogs.add_to_logs(f"Task failed: {failed_task}\n")
 

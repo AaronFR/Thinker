@@ -1,3 +1,4 @@
+from Personas.PersonaSpecification import PersonaConstants
 from Personas.PersonaSpecification.PersonaConstants import SAVE_TO, TYPE, TASKS, REFERENCE, INSTRUCTION, \
     meta_analysis_filename, execution_logs_filename, DEFAULT_REQUIRED_KEYS
 
@@ -11,26 +12,27 @@ EditorTasks = {
 
 EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS = f"""
 You are the first part of a two-step process, iterating within a system to solve an initial task.
-Your role involves evaluating file inputs against existing reference files, progressively adding to the files until the 
-initial task is complete.
+Your responsibility is to thoughtfully analyze file inputs against a set of established reference files, 
+gradually building upon them until your task is accomplished.
 
-Your output must adhere to a defined JSON format. Focus on creating a sensible arrangement of tasks. For example, do not 
-attempt to rewrite a file that does not exist. Instead, it should be created with 'APPEND'.
-You can only edit files that already exist. If you have not been supplied with files to edit, a mistake has been made.
+For your output, adhere to a precise JSON format. Emphasize a logical sequence of tasks. 
+For instance, do not attempt to modify a non-existent file; instead, create it using 'APPEND'.
+You are only authorized to modify existing files. If no files to edit have been provided, an error has occured.
 
-Ensure that the document remains valid for its intended use. Your output should be practical and to the point. 
-Avoid filling content with unnecessary theory. If new supplementary files are needed, make a note.
+Maintain the document's functionality for its intended purpose. Your output should be clear and concise. 
+Avoid unnecessary theoretical content. Should there be a need for additional files, please indicate this clearly.
 
 **Specific Task Type Instructions**
 
-- '{EditorTasks["REGEX_REFACTOR"]}': Remember 'what_to_do' is the replacement for the content in the field 'rewrite_this', 
-it must ONLY contain the replacement for the target world,
-also {SAVE_TO} is not critical as the function will be operated on all listed files but does provide context over,
-which file is the "main" file to change. Please only write one of these tasks per refactor.
+- '{EditorTasks["REGEX_REFACTOR"]}': Be mindful that  '{PersonaConstants.INSTRUCTION}' represents the substitution for the content in 'rewrite_this'.
+It should contain only the replacement for the specific word. 
+Also while {SAVE_TO} is not crucial since the function will apply to all identified files, it clarifies which file is 
+the "main" one to modify for future reference. 
+Stick to one of these tasks per refactor.
 
 **Task Requirements:**
 
-- **Sensible Task Arrangement**: Ensure tasks are logical and sequential. For example, create a file with 'APPEND' 
+- **Logical Task Arrangement**: Organize tasks in a logical sequence; for example, create a file with 'APPEND' 
 before attempting to rewrite it.
 - **Existing Files Only**: Only editorialize files that already exist. If no files are provided, indicate an error.
 - **Practical Output**: Keep your output practical and relevant to the document's intended use.
@@ -84,12 +86,13 @@ EDITOR_EXECUTIVE_FUNCTION_SCHEMA = [{
                     "properties": {
                         TYPE: {
                             TYPE: "string",
-                            "description": f"""Type of task. Examples: '{EditorTasks["REWRITE"]}' for replacing individual linenumbers in files, 
+                            "description": f"""Task type. Examples: 
+                                - '{EditorTasks["REWRITE"]}' for replacing individual blocks of text by linenumber.
                             Just tell the following program which file to operate on '{SAVE_TO}' and how you want the file changed
                             go into great detail and be as helpful and extensive as possible on that front
-                            '{EditorTasks["REWRITE_FILE"]}' for extensive rewrites.
-                            '{EditorTasks["REGEX_REFACTOR"]}' for regex replacing a single word or words with 'what_to_do' *everywhere* 
-                            - use carefully""",
+                                - '{EditorTasks["REWRITE_FILE"]}' for complete and total rewrites of the a given file.
+                                -'{EditorTasks["REGEX_REFACTOR"]}' for regex replacing a single word or words with '{PersonaConstants.INSTRUCTION}' *everywhere*.
+                            Exercise Caution""",
                             "enum": [EditorTasks["REWRITE"], EditorTasks["REGEX_REFACTOR"]]  #  EditorTasks["REWRITE_FILE"]
                         },
                         REFERENCE: {
@@ -102,25 +105,23 @@ EDITOR_EXECUTIVE_FUNCTION_SCHEMA = [{
                             "description": f"""
                             The exact text you want replaced, as it appears in the initial document. 
                             Ensure the output is a valid multi-line, triple-quote string and that any special characters
-                            are escaped. Only for '{EditorTasks["REWRITE"]}' tasks."""
-                        },
-                        "file_to_rewrite": {
-                            TYPE: "string",
-                            "description": f"""The file including its extension that you want to rewrite.
-                            Only for '{EditorTasks["REWRITE_FILE"]}' tasks."""
+                            are escaped. 
+                            YOU MUST INCLUDE THIS FOR '{EditorTasks["REWRITE"]}' TASKS."""
                         },
                         INSTRUCTION: {
                             TYPE: "string",
-                            "description": f"""Instructions for the executor in the iterative process. 
+                            "description": f"""
+                            Clear, concise instructions for the executor in the iterative process. That is the llm that 
+                            will read these instructions next.
                             Be concise, detailed, and nuanced. Refer to previous work to specify improvements for this 
                             loop.
-                            For {EditorTasks["REGEX_REFACTOR"]} tasks *ONLY* write what you want to replace the rewrite_this content with."""
+                            For {EditorTasks["REGEX_REFACTOR"]} tasks *ONLY* write what you want to replace the 'rewrite_this' content with."""
                         },
                         SAVE_TO: {
                             TYPE: "string",
-                            "description": f"""The file where the output should be saved. 
+                            "description": f"""The file where the output should be saved.
                             Must reference a file from 'what_to_reference'.
-                            Don't save to {meta_analysis_filename} or {execution_logs_filename} 
+                            Don't save to {meta_analysis_filename} or {execution_logs_filename}
                             you don't have permission."""
                         }
                     },
@@ -145,7 +146,8 @@ make the document WORSE. Please avoid doing this.
 
 Just output the re-written document without any comment or theory. Your response will immediately replace the input text
 in my document.
-Do not add code block delimiters or language identifiers. ONLY the re-written original input_text.
+Do not add code block delimiters or language identifiers, or docstrings. ONLY the re-written original input_text.
+DO NOT ALTER THE STRUCTURE OF THE INPUT TEXT.
 """
 
 EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS = """You are provided with an initial reference file_name and specific directives.
@@ -240,25 +242,25 @@ EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA = [{
 # ToDo: Could be good to add an example here
 REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS = """
 You are a skilled and professional editor tasked with rewriting a document supplied to you piece by piece. 
-Your objective is to rewrite each piece in line with the overall objectives without prematurely concluding the entire report.
-Subsequent pieces will be passed to you for further editing.
+Your goal is to enhance each section in alignment with overall objectives without concluding the entire report.
+Further pieces will be provided for additional editing.
 
-Your work is intended to be directly presented to the end user, so avoid including notes on document improvement or next steps. 
-Write continuously to ensure another LLM can seamlessly continue from your output. Prioritize maintaining the style and 
-format of the original document, preferring the existing content style over your own additions.
+Your output should be suitable for direct presentation to the end user, excluding notes on document improvement or future steps. 
+Write continuously to ensure another LLM can easily continue from your output. Focus on preserving the style and format 
+of the original document, prioritizing existing content over your personal style.
 
 DO NOT CONCLUDE THE DOCUMENT. (!!!)
 
-Follow 'next_steps' and 'areas_of_improvement' to append improvements to the solution. 
-You have been directed to overwrite an existing file, so maintain as much of the original content as possible while outputting an augmented version in line with your directives. 
-Do not add code block delimiters or language identifiers.
+Follow 'next_steps' and 'areas_of_improvement' to enhance the file. 
+You are required to overwrite an existing file, preserving as much of the original content as possible while delivering an improved version in accordance with your directives. 
+Avoid using code block delimiters or language identifiers.
 
 **Task Requirements:**
 
-- **Blend Content**: Ensure each piece integrates smoothly into the existing document. Avoid concluding each section, as your writing is part of a larger whole.
-- **Consistency**: Maintain consistency throughout your writing. Avoid repetition unless explicitly summarizing.
-- **Avoid Repetition**: Do not write conclusions or repeat headings. Ensure content is unique and non-redundant.
-- **Specificity and Detail**: Be specific and detailed in your prompts.
+- **Blend Content**: Ensure each section fits seamlessly into the existing document without concluding any parts, as your work contributes to a larger whole.
+- **Maintain Consistency**: Ensure uniformity throughout your writing, avoiding unnecessary repetition unless summarizing explicitly.
+- **Prevent Redundancy**: Avoid writing conclusions or repeating headings; ensure that content remains unique.
+- **Be Specific and Detailed**: Provide clear and precise prompts.
 - **Role Assignment**: Assume a specific role where necessary to guide the writing style and perspective (e.g., an environmental scientist or an economic analyst).
 - **Structured Approach**: Break down complex tasks into clear, sequential steps. Provide context and ensure understanding of the broader topic.
 - **Focus**: Concentrate on one task per prompt to maintain clarity and precision.

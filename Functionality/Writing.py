@@ -45,7 +45,7 @@ class Writing(enum.Enum):
         task_parameters (Dict[str, object]): A dictionary containing directives and parameters needed for the task.
 
         Raises:
-        ValueError: If an unknown Writing is encountered.
+        ValueError: If an unknown task type is encountered.
         """
         def get_action(task_type):
             action_map = {
@@ -68,9 +68,11 @@ class Writing(enum.Enum):
     @staticmethod
     def rewrite_file_lines(executor_task: AiOrchestrator, task_parameters: Dict[str, object]):
         """
-        Rewrite the specified lines in the given file_name based on the provided instructions and save the updated content.
+        Rewrite the specified lines in the given file_name based on the provided instructions and
+        save the updated content.
 
-        :param executor_task: AiOrchestrator - An initialized AI wrapper responsible for executing the rewrite directives.
+        :param executor_task: AiOrchestrator - An initialized AI wrapper responsible
+        for executing the rewrite directives.
         :param task_parameters: Dict[str, object] - A dictionary containing:
             'SAVE_TO': str - The file_name path where updates should be saved.
             'INSTRUCTION': str - Detailed instructions on how to process and rewrite the lines.
@@ -93,13 +95,15 @@ class Writing(enum.Enum):
         Parameters:
             executor_task (AiOrchestrator): An instance of AiWrapper to execute the replacement instructions.
             file_lines (List[str]): A list of strings, each representing a line of the file_name to be processed.
-            task_parameters (Dict[str, object]): A dictionary containing directives for the task, including the file_name to
+            task_parameters (Dict[str, object]): A dictionary containing directives for the task,
+            including the file_name to
             save to and the primary instructions for replacement.
         """
         replacement_instructions = [
                 ''.join(FileManagement.get_numbered_lines(file_lines)),
                 f"""For the given file_name: {task_parameters[PersonaConstants.SAVE_TO]}, 
-                replace sections with the following primary instructions: {task_parameters[PersonaConstants.INSTRUCTION]}"""
+                replace sections with the following primary instructions: 
+                {task_parameters[PersonaConstants.INSTRUCTION]}"""
             ]
 
         replacements = executor_task.execute_function(
@@ -111,7 +115,11 @@ class Writing(enum.Enum):
         return replacements
 
     @staticmethod
-    def apply_replacements(executor_task: AiOrchestrator, file_lines: List[str], replacements: Dict[str, object], target_file_path: str):
+    def apply_replacements(
+            executor_task: AiOrchestrator,
+            file_lines: List[str],
+            replacements: Dict[str, object],
+            target_file_path: str):
         """
         Process and replace specific lines in a file based on the given replacement instructions.
 
@@ -133,7 +141,8 @@ class Writing(enum.Enum):
 
         :param executor_task: Task executor for generating replacement content.
         :param file_lines: List of lines representing the file content to be modified.
-        :param replacements: Dict containing 'changes', a list of replacement instructions with 'start', 'end', and 'replacement'.
+        :param replacements: Dict containing 'changes', a list of replacement instructions with:
+         'start', 'end', and 'replacement'.
         :param target_file_path: Path to the file to write the updated content.
         """
         new_content = []
@@ -213,7 +222,8 @@ class Writing(enum.Enum):
         return executor_task.execute(
             PersonaConstants.WRITER_SYSTEM_INSTRUCTIONS,
             [
-                f"Write the first page of {task_parameters['pages_to_write']}, answering the following: {task_parameters[PersonaConstants.INSTRUCTION]}"
+                f"""Write the first page of {task_parameters['pages_to_write']}, 
+                answering the following: {task_parameters[PersonaConstants.INSTRUCTION]}"""
                 if page_number == 1 else instructions
             ]
         )
@@ -239,8 +249,6 @@ class Writing(enum.Enum):
         Refactor files based on regex patterns provided in the task directives.
         #ToDo: It would make sense to add a check of the output to make sure a name isn't being changed which *shouldn't*
 
-        :param ai_orchestrator: Initialized LLM wrapper. Although this is a pure code task, this argument
-         is required as per implementation.
         :param task_parameters: key fields: INSTRUCTION, 'rewrite_this',
         :return:
         """
@@ -266,10 +274,10 @@ class Writing(enum.Enum):
         half that number allowing the llm to either decrease word count or double it should it be required.
 
         :param executor_task: Initialized LLM wrapper
-        :param task_parameters: directives including 'file_to_rewrite' and INSTRUCTION
+        :param task_parameters: directives including 'SAVE_TO' and INSTRUCTION
         :param approx_max_tokens: token chunk size to split the document by
         """
-        file_contents = FileManagement.read_file(str(task_parameters['file_to_rewrite']))
+        file_contents = FileManagement.read_file(str(task_parameters[PersonaConstants.SAVE_TO]))
         text_chunks = Writing.chunk_text(file_contents, approx_max_tokens)
 
         re_written_file = ""
@@ -301,6 +309,7 @@ class Writing(enum.Enum):
 
         approx_max_chars = approx_max_tokens * char_per_token
         return split_into_chunks(text, approx_max_chars)
+
 
 if __name__ == '__main__':
     numbered_lines = FileManagement.read_file("Writing.py", return_numbered_lines=True)
