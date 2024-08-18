@@ -24,7 +24,7 @@ Avoid unnecessary theoretical content. Should there be a need for additional fil
 
 **Specific Task Type Instructions**
 
-- '{EditorTasks["REGEX_REFACTOR"]}': Be mindful that  '{PersonaConstants.INSTRUCTION}' represents the substitution for the content in 'rewrite_this'.
+- '{EditorTasks["REGEX_REFACTOR"]}': Be mindful that  '{PersonaConstants.INSTRUCTION}' represents the substitution for the content in '{PersonaConstants.REWRITE_THIS}'.
 It should contain only the replacement for the specific word. 
 Also while {SAVE_TO} is not crucial since the function will apply to all identified files, it clarifies which file is 
 the "main" one to modify for future reference. 
@@ -106,7 +106,7 @@ EDITOR_EXECUTIVE_FUNCTION_SCHEMA = [{
                             The exact text you want replaced, as it appears in the initial document. 
                             Ensure the output is a valid multi-line, triple-quote string and that any special characters
                             are escaped. 
-                            YOU MUST INCLUDE THIS FOR '{EditorTasks["REWRITE"]}' TASKS."""
+                            YOU MUST INCLUDE THIS FOR '{EditorTasks["REGEX_REFACTOR"]}' TASKS."""
                         },
                         INSTRUCTION: {
                             TYPE: "string",
@@ -115,7 +115,8 @@ EDITOR_EXECUTIVE_FUNCTION_SCHEMA = [{
                             will read these instructions next.
                             Be concise, detailed, and nuanced. Refer to previous work to specify improvements for this 
                             loop.
-                            For {EditorTasks["REGEX_REFACTOR"]} tasks *ONLY* write what you want to replace the 'rewrite_this' content with."""
+                            For {EditorTasks["REGEX_REFACTOR"]} tasks *ONLY* write what you want to replace the 
+                            '{PersonaConstants.REWRITE_THIS}' content with."""
                         },
                         SAVE_TO: {
                             TYPE: "string",

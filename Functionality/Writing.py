@@ -249,14 +249,14 @@ class Writing(enum.Enum):
         Refactor files based on regex patterns provided in the task directives.
         #ToDo: It would make sense to add a check of the output to make sure a name isn't being changed which *shouldn't*
 
-        :param task_parameters: key fields: INSTRUCTION, 'rewrite_this',
+        :param task_parameters: key fields: INSTRUCTION, 'REWRITE_THIS',
         :return:
         """
         evaluation_files = FileManagement.list_file_names()
         for file in evaluation_files:
             try:
                 FileManagement.regex_refactor(
-                    str(task_parameters['rewrite_this']),
+                    str(task_parameters[PersonaConstants.REWRITE_THIS]),
                     str(task_parameters[PersonaConstants.INSTRUCTION]),
                     file
                 )
@@ -264,7 +264,7 @@ class Writing(enum.Enum):
                 logging.exception(f"Failed to rewrite file {file}")
 
         ExecutionLogs.add_to_logs(
-            f"Regex refactored {task_parameters['rewrite_this']} -> {task_parameters[PersonaConstants.INSTRUCTION]}")
+            f"Regex refactored {task_parameters[PersonaConstants.REWRITE_THIS]} -> {task_parameters[PersonaConstants.INSTRUCTION]}")
 
     @staticmethod
     def rewrite_file_task(executor_task: AiOrchestrator, task_parameters: Dict[str, object],

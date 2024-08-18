@@ -24,7 +24,7 @@ ONLY ONLY ONLY EVER PRODUCE THE FOLLOWING JSON FORMAT, NEVER ***EVER*** PRODUCE 
     {{
         "{PersonaConstants.TYPE}": (default: "APPEND" task, special types "REWRITE": program will produce output re-writing a part of the text via a regex replace, list the ***exact*** text you want re-written and how you would like the exeuctor to re-write it)
         "{PersonaConstants.REFERENCE}": [] (strings of file names and their extensions in double quotes, only reference files that have been previously supplied to you by me, appropriate to what the task has to do, if appending writing to a file they at least have to see its current contents, and perhaps another reference file)
-        "rewrite_this" (OPTIONAL: only for REWRITE Tasks) (EXACT text in the document to regex replace with this tasks output, change any commas to be escaped for the regex formating to follow)
+        "{PersonaConstants.REWRITE_THIS}" (OPTIONAL: only for REWRITE Tasks) (EXACT text in the document to regex replace with this tasks output, change any commas to be escaped for the regex formating to follow)
         "{PersonaConstants.INSTRUCTION}": (description of the actual activity the llm needs to perform which helps the above task
         "{PersonaConstants.SAVE_TO}": (file to save output to, can ONLY be one singular file create another task for another file if necessary, include just the file name and extension, nothing more)
     }}

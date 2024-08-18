@@ -11,6 +11,8 @@ INSTRUCTIONS = "instructions"
 SAVE_TO = "save_to"
 DEFAULT_REQUIRED_KEYS = [TYPE, REFERENCE, INSTRUCTION, SAVE_TO]
 
+REWRITE_THIS = "rewrite_this"
+
 TASKS = "tasks"
 WORKERS = "workers"
 
