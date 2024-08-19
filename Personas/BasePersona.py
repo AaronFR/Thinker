@@ -77,6 +77,11 @@ class BasePersona:
         """
         tasks = executive_plan[PersonaConstants.TASKS]
         for task in tasks:
+            if task[PersonaConstants.TYPE] == "REGEX_REFACTOR":
+                required_keys = PersonaConstants.DEFAULT_REQUIRED_KEYS + [PersonaConstants.REWRITE_THIS]
+            else:
+                required_keys = PersonaConstants.DEFAULT_REQUIRED_KEYS
+
             for key in required_keys:
                 if key not in task:
                     logging.error(f"Missing required key: {key} in task: {task}")
