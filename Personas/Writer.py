@@ -24,7 +24,13 @@ class Writer(BasePersona):
         ErrorHandler.setup_logging()
 
     def execute_task(self, task_to_execute: str):
-        """Planner-specific task execution logic
+        """Executes the specified writing task.
+
+        This method is responsible for managing the execution of a writing task by first retrieving
+        the evaluation files, then generating an executive plan based on the given task, and
+        finally processing the individual tasks outlined in that plan.
+
+        :param: task_to_execute (str): The writing task that needs to be executed.
         """
         self.evaluation_files = FileManagement.list_file_names()
 
@@ -40,6 +46,16 @@ class Writer(BasePersona):
 
     @staticmethod
     def execute_task_parameters(task_parameters: Dict[str, object]):
+        """Executes a writing task based on provided parameters.
+
+        This method retrieves the task type from the given parameters and attempts to execute
+        the corresponding writing task.
+
+        :param task_parameters: A dictionary containing the parameters for the writing task,
+                               including the task type and other relevant details.
+        :raises ValueError: If the task type specified in the parameters is invalid or
+                            not supported by this persona.
+        """
         ExecutionLogs.add_to_logs(f"Executing task: \n{pformat(task_parameters)}")
 
         writing_task = Writing(task_parameters.get(PersonaConstants.TYPE, Writing.APPEND.value))
