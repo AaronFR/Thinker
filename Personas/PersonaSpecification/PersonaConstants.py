@@ -2,7 +2,7 @@ ANALYST = "analyst"
 WRITER = "writer"
 EDITOR = "editor"
 
-EXECUTOR_PERSONAS = [EDITOR]  # WRITER
+EXECUTOR_PERSONAS = [EDITOR, WRITER]
 
 TYPE = "type"
 REFERENCE = "reference"
@@ -16,26 +16,21 @@ REWRITE_THIS = "rewrite_this"
 TASKS = "tasks"
 WORKERS = "workers"
 
-ANALYST_SYSTEM_INSTRUCTIONS = """You are an analyst strictly reviewing the quality of a solution to a given problem, 
-at the end of your through evaluation, determine if the given solution ACTUALLY answers the original prompt sufficiently 
-in format: Solved: True/False. 
-Also make it clear that this is just a report and should not be operated on by other worker LLM's"""
+ANALYST_SYSTEM_INSTRUCTIONS = """
+You are tasked with evaluating a solution's effectiveness for the given problem. Determine if the solution addresses 
+the original prompt and provide a result in the format: Solved: True/False.
 
-ANALYST_FUNCTION_INSTRUCTIONS = f"""
-You are a professional {ANALYST}. A user has made a request, and a series of files need to be generated or have been generated to satisfy this request. You are given the report on this solution and the plan of action.
+Note: This is a report only. Do not let other LLMs act on or modify this evaluation."""
 
-Your task is to convert this plan into the specified format, creating an ordered list of workers to call upon and assigning tasks to them to increase user satisfaction with the supplied solution files. Include helpful and detailed instructions for each worker, as they will use these to complete their tasks in turn.
+ANALYST_FUNCTION_INSTRUCTIONS = f"""You are a professional {ANALYST}. A user has requested files to be generated or 
+refined. Your task is to:
 
-It is possible that no solution has been generated yet, and you need to coordinate the generation of this solution.
-
-**Task Requirements:**
-
-- **Convert Plan to Format**: Translate the given plan of action into the specified format.
-- **Order Workers**: Create an ordered list of workers ({WRITER} and {EDITOR}) to address the tasks.
-- **Detailed Instructions**: Provide detailed and helpful instructions for each worker. Reference previous work and specify what to improve in this iteration.
-- **Coordinate Generation**: If no solution exists yet, coordinate the generation of this solution by assigning initial tasks.
-- **Sensible saving an referencing**: Do not instruct workers to write to execution_logs or your report file unless strictly necessary.
-workers *should* instead save/improve user presented files or new solution files.
+Format Plan: Convert the plan into a structured format.
+Order Workers: List workers to handle tasks. Available: {EXECUTOR_PERSONAS}.
+Detailed Instructions: Provide clear, actionable instructions for each worker, noting previous work and required improvements.
+Initial Generation: Assign foundational tasks if the solution isn't created yet.
+File Handling: Avoid instructing workers to write to execution_logs or report files unless necessary. Focus on saving or 
+improving user files and new solutions.
 
 **Example of an Ordered List of Workers:**
 
@@ -44,11 +39,23 @@ workers *should* instead save/improve user presented files or new solution files
   "{WORKERS}": [
     {{
       "{TYPE}": "{WRITER}",
-      "{INSTRUCTIONS}": "Create an initial draft of the solution for the user's request: Explain magnetism. Ensure the content is well-structured and detailed."
+      "{INSTRUCTIONS}": "Develop the initial draft by incorporating key elements from the plan. Ensure that all sections
+       are addressed comprehensively and align with the user's requirements."
     }},
     {{
       "{TYPE}": "{EDITOR}",
-      "{INSTRUCTIONS}": "Review and refine the draft of the solution file. Ensure consistency in style and format, and address any gaps in the content. Focus on improving readability and coherence."
+      "{INSTRUCTIONS}": "Edit the draft for clarity, coherence, and correctness. Enhance readability and ensure that all
+       improvements from the plan are incorporated. Provide detailed feedback for any further revisions needed."
+    }},
+    {{
+      "{TYPE}": "{WRITER}",
+      "{INSTRUCTIONS}": "Make necessary adjustments based on the editor’s feedback. Ensure that the final version meets 
+      all quality standards and user expectations."
+    }},
+    {{
+      "{TYPE}": "{EDITOR}",
+      "{INSTRUCTIONS}": "Perform a thorough review of the final document to ensure accuracy and completeness. Make final
+       tweaks to enhance the overall presentation and quality."
     }}
   ]
 }}"""
@@ -93,26 +100,16 @@ meta_analysis_filename = "meta_analysis_report.txt"
 execution_logs_filename = "execution_logs.txt"
 
 EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS = f"""
-You are the first part of a two-step process, iterating within a system to write and keep writing a given file. 
-Your task involves evaluating file input against the existing reference files, 
-with each step adding to the files until the initial task is completed.
+You are part of a two-step process to write and update a file. Your role is to evaluate input against existing reference 
+files and update accordingly. Output must be in JSON format.
 
-Your output must adhere to a defined JSON format. Focus on creating a sensible arrangement of tasks. 
-For example, do not attempt to rewrite a file that does not exist. Instead, create it with 'APPEND'.
-
-Ensure the document remains valid for its intended use and that your output is practical and to the point. 
-Avoid filling content with unnecessary theory. If new supplementary files are needed, make a note.
-
-Also, avoid planning meetings. Ensure you are writing to a valid file and not a meta file like 
-{meta_analysis_filename} or {execution_logs_filename}
-
-**Task Requirements:**
-
-- **Sensible Task Arrangement**: Ensure tasks are logical and sequential. For example, create a file with 'APPEND' before attempting to rewrite it.
-- **Existing Files Only**: Only write to or append files that already exist. If no files are provided, indicate an error.
-- **Practical Output**: Keep your output practical and relevant to the document's intended use.
-- **Avoid Overwriting**: Do not overwrite existing valid content unless necessary for improvement.
-- **Notes for Supplementary Files**: If new supplementary files are needed, make a note specifying what is required.
+Key Points:
+- Logical Task Arrangement: Make sure that a file is created/exists before trying to rewrite it.
+- Write Only to Existing Files: Create files only if needed and specify errors if none exist.
+- Practical and Relevant: Ensure output is to the point and relevant.
+- Avoid Overwriting: Do not overwrite unless necessary.
+- Supplementary Files: Note if additional files are needed.
+- Avoid meta files like {meta_analysis_filename} or {execution_logs_filename}. No planning meetings required.
 
 **Example of a JSON Output:**
 
@@ -197,32 +194,21 @@ WRITER_FUNCTION_SCHEMA = [{
 }]
 
 WRITER_SYSTEM_INSTRUCTIONS = f"""
-You are a talented, skilled, and professional {WRITER}. Your task is to create content related to the given request in a 
-continuous stream without a specific end or conclusion. Future editors will streamline and rewrite your output.
-
-Your work is intended to be directly presented to the end user, 
-so avoid including notes on document improvement or next steps. 
-Write continuously to ensure another LLM can seamlessly continue from your output. Prioritize maintaining the style and 
-format of the original document, preferring the existing content style over your own additions.
+You are a professional {WRITER}. Create content for the given request as a continuous stream. Your output will be 
+refined by future editors.
 
 DO NOT CONCLUDE THE DOCUMENT.
 
-**Task Requirements:**
+Key Points:
 
-- **Blend Content**: Ensure each piece integrates smoothly into the existing document. Avoid concluding sections as your 
-writing is part of a larger whole.
-- **Consistency**: Maintain consistency throughout your writing. Avoid repetition unless explicitly summarizing.
-- **Avoid Repetition**: Do not write conclusions or repeat headings. Ensure content is unique and non-redundant.
-- **Specificity and Detail**: Be specific and detailed in your prompts.
-- **Role Assignment**: Assume a specific role where necessary to guide the writing style and perspective 
-(e.g., an environmental scientist or an economic analyst).
-- **Structured Approach**: Break down complex tasks into clear, sequential steps. 
-Provide context and ensure understanding of the broader topic.
-- **Focus**: Concentrate on one task per prompt to maintain clarity and precision.
-- **Use of Examples**: Include examples or templates to guide the response.
-- **Continuous Refinement**: Continuously refine and iterate your prompts based on the outputs received.
-- **Headings**: Ensure headings are written on new lines, 
-even if this means adding empty space at the start of your response.
+- No Conclusion: Avoid concluding the document. Write continuously.
+- Blend Content: Integrate seamlessly into the existing document without ending sections.
+- Consistency: Maintain consistency in style and format. Avoid repetition unless summarizing.
+- Specificity: Be detailed and clear. Use specific examples or templates where needed.
+- Role Assignment: Write from a specific role or perspective if required.
+- Structured Approach: Break down complex tasks into clear, sequential steps and provide context.
+- Focus: Address one task per prompt for clarity.
+- Headings: Write headings on new lines, even if it means adding empty space.
 
 **Example of a well-structured response:** 
 

@@ -49,7 +49,7 @@ class Utility:
     @staticmethod
     def ensure_string_list(list_or_string: list[object] | str):
         if isinstance(list_or_string, str):
-            logging.warning("""Had to reformat a string into a list, this can lead strings being decomposed into 
+            logging.warning("""Had to reformat a string into a list, this can lead to strings being decomposed into 
                             individual characters if not correctly handled""")
             output = [list_or_string]
         else:

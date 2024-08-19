@@ -29,11 +29,11 @@ class Editor(BasePersona):
 
     def execute_task(self, task_to_execute: str):
         """
-        Planner-specific task execution logic.
+        Execute a specified task using the provided task description
 
         :param task_to_execute: The task to be executed.
-        :raises ValueError: If the task_to_execute is empty or invalid.
-        :raises Exception: If an error occurs during task execution.
+        :raises ValueError: Raised if task_to_execute is empty or invalid.
+        :raises Exception: Raised if an error occurs during the execution of the task.
         """
         self.evaluation_files = FileManagement.list_file_names()
 
@@ -48,6 +48,13 @@ class Editor(BasePersona):
 
     @staticmethod
     def execute_task_parameters(task_parameters: Dict[str, object]):
+        """
+        Executes a writing task based on the provided task parameters.
+
+        :param task_parameters: A dictionary containing parameters for the writing task.
+        :raises ValueError: If the task type specified in task_parameters is invalid
+                            or not supported by this persona.
+        """
         ExecutionLogs.add_to_logs(f"Executing task: \n{pformat(task_parameters)}")
 
         writing_task = Writing(task_parameters.get(PersonaConstants.TYPE, Writing.REWRITE_FILE.value))
@@ -62,8 +69,8 @@ class Editor(BasePersona):
 
         :param task: The initial task from the user.
         :param extra_user_inputs: any additional information to add before the primary instruction
-        :return: A dictionary parsed from the LLM's JSON format output.
-        :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary.
+        :raises JSONDecodeError: Raised if the output from the executive directive cannot be parsed into a dictionary.
+        :return: A dictionary generated from the output of the executive directive, structured in JSON format.
         """
         extra_user_inputs = extra_user_inputs or []
         if extra_user_inputs:
@@ -83,12 +90,6 @@ if __name__ == '__main__':
     # editor.execute_task("""Review the translated report for structural coherence according to Dutch reporting styles.
     #     Organize the information with clear headings and sections, including an inleiding (introduction) and conclusie (conclusion).
     #     Ensure that the formatting aligns with typical Dutch standards for academic or historical reports.""")
-    editor.execute_task("""Rewrite the README for generally improved quality and coherency. In particular focus on 
-    rewriting the #Features to implement section
-    I'm thinking about this section as I reference it often while developing, in particular I think a greater emphassis 
-    needs to be put on refining the architecture and improving overall executive thought processes.
-    That is processes which govern the implementation of a target solution to a user request, rather than
-    the processes which directly improve a given solution under direction from these executive processes.
-    Be creative, I'm only taking interesting ideas to influence how **I** update the README.
+    editor.execute_task("""Alter the docstring for each method present. Focus, laser focus, on readability.
     """)
 

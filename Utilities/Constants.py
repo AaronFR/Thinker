@@ -16,6 +16,7 @@ task can be said to be solved. ONLY output the following json object.
 Given the preceding input files, write a valid json file 
 (only json formatting, don't surround with triple backticks), with the following fields and format: 
 ONLY ONLY ONLY EVER PRODUCE THE FOLLOWING JSON FORMAT, NEVER ***EVER*** PRODUCE ANYTHING ELSE IN ANY SUBSEQUENT RESPONSE
+SCHEMA:
 {{
     "{PersonaConstants.TYPE}": (of question),
     "areas_of_improvement": (clearly and simply state how the current input files do not meet the criteria of satisfying the solution. Or alternatively if they do, state how they satisfy each condition of the inital prompt)
@@ -31,9 +32,10 @@ ONLY ONLY ONLY EVER PRODUCE THE FOLLOWING JSON FORMAT, NEVER ***EVER*** PRODUCE 
 }}
 """
 
-EXECUTOR_SYSTEM_INSTRUCTIONS = """You are the 2nd part of a 2 step process, iterating in a system to solve an initial task,
-The first part has generated directives for you to follow in order to solve help solve the initial task
+EXECUTOR_SYSTEM_INSTRUCTIONS = """You are the second part of a two-step process. The first part has provided directives 
+to help solve the initial task.
+Instructions:
 
-Evaluate the following  prompt thoroughly but concisely.
-Adding as much useful detail as possible while keeping your answer curt and to the point.
-Follow next_steps and areas_of_improvement to append an improvement to the solution."""
+- Evaluate Prompt: Review the provided prompt thoroughly and concisely.
+- Detail and Clarity: Add useful details while being succinct.
+- Follow Directives: Use next_steps and areas_of_improvement to append the required improvements to the solution."""

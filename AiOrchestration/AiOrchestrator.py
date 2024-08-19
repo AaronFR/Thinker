@@ -52,7 +52,7 @@ class AiOrchestrator:
             response = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_response(messages, model))
         else:
             responses = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_response(messages, model, n=n))
-            logging.debug(f"Messages({n}: \n" + pformat(responses, width=500))
+            logging.info(f"Messages({n}: \n" + pformat(responses, width=500))
 
             messages = AiOrchestrator.generate_messages("", judgement_criteria, responses)
             response = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_response(messages, model))
@@ -61,7 +61,7 @@ class AiOrchestrator:
             logging.error("No response from OpenAI API.")
             raise Exception("Failed to get response from OpenAI API.")
 
-        logging.info(f"Executor Task Finished")
+        logging.info(f"Executor Task Finished, with response:\n{response}")
         return response
 
     def execute_function(self,
