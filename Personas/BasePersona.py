@@ -66,13 +66,11 @@ class BasePersona:
 
     @staticmethod
     def valid_function_output(
-            executive_plan: Dict[str, object],
-            required_keys: List[str] = PersonaConstants.DEFAULT_REQUIRED_KEYS) -> bool:
+            executive_plan: Dict[str, object]) -> bool:
         """
         Validate the structure and content of a task.
 
         :param executive_plan: A dictionary containing task information.
-        :param required_keys: the necessary keys for a Dict to be evaluated as valid
         :return: True if the task is valid, False otherwise.
         """
         tasks = executive_plan[PersonaConstants.TASKS]
