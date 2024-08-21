@@ -61,6 +61,19 @@ class Utility:
 
         return output
 
+    @staticmethod
+    def is_exit_command(user_input: str) -> bool:
+        """Check if the user intends to exit the input loop."""
+        return user_input.lower() == 'exit'
+
+    @staticmethod
+    def is_valid_question(user_input: str) -> bool:
+        """Validate if the user input is a non-empty question."""
+        if not user_input.strip():
+            print("Please enter a valid question.")
+            return False
+        return True
+
 
 if __name__ == '__main__':
     example = "replace_file_clues"

@@ -1,3 +1,5 @@
+from typing import List
+
 from Personas.PersonaSpecification.PersonaConstants import TYPE
 
 SELECT_FILES_FUNCTION_SCHEMA = [{
@@ -17,3 +19,9 @@ SELECT_FILES_FUNCTION_SCHEMA = [{
         }
     }
 }]
+
+
+def build_file_query_prompt(evaluation_files: List[str]) -> str:
+    """Construct the prompt for selecting relevant files."""
+    return f"""From the list of files, choose which files are expressively explicitly relevant to my prompt. This could be one, many, or NO files. Be cautious about including files.
+    files: {evaluation_files}: A file concerned with implementing a Thinker class in python, to implement AI calls."""
