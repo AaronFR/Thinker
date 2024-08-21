@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - ChatGptModel enum added for representing OpenAi models
 - Thinker persona, thinks through problems and interacts closely with the user. It illustrates the general path of solving a given problem in detail which will be followed by ""subconscious"" executors.
+- Summariser persona, summarises documents in a brief summary with notes for features/points of improvement. For reducing the amount of tokens necessary to understand a given directory of files.
 
 ### Changed
 

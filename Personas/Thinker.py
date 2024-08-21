@@ -3,6 +3,7 @@ import logging
 
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
+from Personas.Summariser import Summariser
 from Utilities.FileManagement import FileManagement
 
 
@@ -12,13 +13,13 @@ class Thinker:
         self.history = []
 
     def think(self, input: str) -> str:
-        selected_files = self.selectively_include_files(input)
         executor = BasePersona.create_ai_wrapper(selected_files)
         output = executor.execute(
             ["Just think through the question, step by step, ok?"],
             [input],
             assistant_messages=self.history
         )
+            selected_files = self.get_relevant_files(input)
 
         return output
 
@@ -30,8 +31,11 @@ class Thinker:
                 break
             self.history.append(self.think(new_question))
 
-    def selectively_include_files(self, input):
+    @staticmethod
+    def get_relevant_files(input):
         evaluation_files = FileManagement.list_file_names()
+        summariser = Summariser("in_thinker")
+        summariser.summarise_files(evaluation_files)
         executor = BasePersona.create_ai_wrapper([])
 
         output = executor.execute_function(

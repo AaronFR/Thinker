@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import PersonaConstants, SummariserSpecification
@@ -25,11 +26,30 @@ class Summariser(BasePersona):
 
         # Create summary for each file
         for file in evaluation_files:
-            summary = self.summarize_file(file)
-            # Save the summary into the summaries directory, with the same name but a different extension or suffix
-            summary_filename = self.create_summary_filename(file)
-            FileManagement.save_file(summary, summary_filename, overwrite=True)
-            ExecutionLogs.add_to_logs(f"Summariser: Summary for {file} written and saved as {summary_filename}")
+            self.create_summary_file(file)
+
+
+    def summarise_files(self, evaluation_files: List[str]):
+        summary_files = set()
+        evaluation_files_set = set(evaluation_files)
+
+        regular_files_set = {file for file in evaluation_files if not file.endswith("_summary.txt")}
+
+        # Identify summary files first
+        for file in regular_files_set:
+            name_parts = file.rsplit('.', 1)
+            # Reconstruct the summary file name with the prefix before the extension
+            summary_file = f"{name_parts[0]}_summary.{name_parts[1]}"
+
+            # Add to summary_files set if it exists
+            if summary_file in evaluation_files_set:
+                summary_files.add(file)  # Keep track of original files that have summaries
+
+        # Now, determine which files need summarization (i.e., those without summaries)
+        for file in regular_files_set:
+            if file not in summary_files:
+                # File doesn't have a summary, so we should include it for summarization
+                self.create_summary_file(file)
 
     def summarize_file(self, file_name: str) -> str:
         """Generate a summary for the given file."""
@@ -47,6 +67,14 @@ class Summariser(BasePersona):
         """Create a new filename for the summary based on the original filename."""
         base, _ = os.path.splitext(original_filename)
         return f"{base}_summary.txt"
+
+    def create_summary_file(self, file: str):
+        """Save the summary into the summaries directory, with the same name but a different extension or suffix"""
+        summary = self.summarize_file(file)
+
+        summary_filename = self.create_summary_filename(file)
+        FileManagement.save_file(summary, summary_filename, overwrite=True)
+        ExecutionLogs.add_to_logs(f"Summariser: Summary for {file} written and saved as {summary_filename}")
 
 
 if __name__ == '__main__':
