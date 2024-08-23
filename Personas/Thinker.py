@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import List
+from typing import List, Tuple
 
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import ThinkerSpecification
@@ -13,20 +13,23 @@ from Utilities.Utility import Utility
 class Thinker:
     MAX_HISTORY = 5
 
-    def __init__(self):
-        self.history = []
+    def __init__(self, name):
+        super().__init__(name)
+        self.history: List[Tuple[str, str]] = []  # To maintain question-response pairs
 
     def think(self, input: str) -> str:
         """Process the input question and think through a response."""
         logging.info("Thinking through the input: %s", input)
         try:
-            selected_files = self.get_relevant_files(input)
+            selected_files = self.get_relevant_files(user_messages)
             executor = BasePersona.create_ai_wrapper(selected_files)
 
+            #ToDo: How the application accesses and gives history to the llm will need to be optimised
+            recent_history = [entry[1] for entry in self.history[-self.MAX_HISTORY:]]
             output = executor.execute(
-                ["Just think through the question, step by step, ok?"],
-                [input],
-                assistant_messages=self.history
+                ["Just think through the question, step by step, prioritizing the most recent user prompt."],
+                user_messages,
+                assistant_messages=recent_history
             )
         except Exception as e:
             logging.exception("An error occurred while thinking: %s", e)
@@ -46,8 +49,8 @@ class Thinker:
 
     def process_question(self, question: str):
         """Process and store the user's question."""
-        response = self.think(question)
-        self.append_to_history(response)
+        response = self.think([question])
+        self.history.append((question, response))
 
     @staticmethod
     def get_relevant_files(input):
@@ -66,11 +69,6 @@ class Thinker:
         logging.info(f"Selected: {selected_files}, \nfrom: {evaluation_files}")
         return selected_files
 
-    def append_to_history(self, entry):
-        """Append a new entry to the history, maintaining a size limit."""
-        self.history.append(entry)
-        if len(self.history) > self.MAX_HISTORY:
-            self.history.pop(0)  # remove the oldest entry
 
 
 if __name__ == '__main__':
