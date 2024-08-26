@@ -48,10 +48,21 @@ class Thinker(BasePersona):
             if Utility.is_exit_command(new_question):
                 print("Exiting the question loop.")
                 break
+            elif new_question.lower() == 'history':
+                self.display_history()
             elif Utility.is_valid_question(new_question):
                 self.process_question(new_question)
             else:
                 print("Invalid question. Please try again.")
+
+    def display_history(self):
+        """Display the conversation history to the user."""
+        if not self.history:
+            print("No interaction history available.")
+            return
+        print("Interaction History:")
+        for i, (question, response) in enumerate(self.history):
+            print(f"{i + 1}: Q: {question}\n    A: {response}")
 
     def process_question(self, question: str):
         """Process and store the user's question."""
