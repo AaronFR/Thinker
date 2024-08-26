@@ -12,7 +12,14 @@ from Utilities.Utility import Utility
 
 
 class Writer(BasePersona):
-    """Writer persona, representing a role that manages writing tasks and their outputs
+    """
+    Writer persona, representing a role that manages writing tasks and their outputs
+
+    This persona handles tasks such as creating new documents or appending to existing files.
+
+    Supported writing tasks:
+        - WRITE: Create a new document.
+        - APPEND: Add content to an existing document.
     """
 
     writing_tasks = [Writing.WRITE, Writing.APPEND]
@@ -33,14 +40,17 @@ class Writer(BasePersona):
         :param: task_to_execute (str): The writing task that needs to be executed.
         """
         self.evaluation_files = FileManagement.list_file_names()
-
         executive_plan = self.generate_executive_plan(task_to_execute)
 
         ExecutionLogs.add_to_logs(f"Initiating task processing. Current task: {task_to_execute}")
-        logging.info(f"Generated tasks: {pformat(executive_plan[PersonaConstants.TASKS], width=280)}")
-        ExecutionLogs.add_to_logs(f"Generated tasks: {pformat(executive_plan[PersonaConstants.TASKS], width=280)}")
+        logging.info(f"Generated tasks: {pformat(executive_plan[PersonaConstants.TASKS], width=580)}")
+        ExecutionLogs.add_to_logs(f"Generated tasks: {pformat(executive_plan[PersonaConstants.TASKS], width=580)}")
 
         tasks = executive_plan.get(PersonaConstants.TASKS, [])
+        if not tasks:
+            logging.error("No tasks found in the executive plan.")
+            return
+
         for task in tasks:
             self._process_task(task)
 
@@ -51,18 +61,19 @@ class Writer(BasePersona):
         This method retrieves the task type from the given parameters and attempts to execute
         the corresponding writing task.
 
-        :param task_parameters: A dictionary containing the parameters for the writing task,
-                               including the task type and other relevant details.
-        :raises ValueError: If the task type specified in the parameters is invalid or
-                            not supported by this persona.
+        :param task_parameters: A dictionary containing the parameters for the writing task, including the task type
+         and other relevant details.
+        :raises ValueError: If the task type specified in the parameters is invalid or not supported by this persona.
         """
         ExecutionLogs.add_to_logs(f"Executing task: \n{pformat(task_parameters)}")
 
-        writing_task = Writing(task_parameters.get(PersonaConstants.TYPE, Writing.APPEND.value))
+        writing_task_type = task_parameters.get(PersonaConstants.TYPE, Writing.APPEND.value)
+        writing_task = Writing(writing_task_type)
         if writing_task in Writer.writing_tasks:
             writing_task.execute(task_parameters)
         else:
-            raise ValueError("Invalid task type used for this persona")
+            raise ValueError(
+                f"Invalid task type '{writing_task_type}' used for this persona. Supported types: {Writer.writing_tasks}")
 
     def generate_executive_plan(self, task: str, extra_user_inputs: List[str] = None) -> Dict[str, object]:
         """
@@ -70,7 +81,7 @@ class Writer(BasePersona):
 
         :param task: The initial task from the user.
         :param extra_user_inputs: any additional information to add before the primary instruction
-        :return: A dictionary parsed from the LLM's JSON format output.
+        :return A dictionary parsed from the LLM's JSON format output.
         :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary.
         """
         extra_user_inputs = extra_user_inputs or []
