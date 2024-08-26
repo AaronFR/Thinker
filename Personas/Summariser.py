@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import List
 
@@ -38,6 +39,9 @@ class Summariser(BasePersona):
         # Identify summary files first
         for file in regular_files_set:
             name_parts = file.rsplit('.', 1)
+            if len(name_parts) == 1:
+                logging.warning("File without file extension")
+                name_parts = [name_parts, "txt"]
             # Reconstruct the summary file name with the prefix before the extension
             summary_file = f"{name_parts[0]}_summary.{name_parts[1]}"
 
