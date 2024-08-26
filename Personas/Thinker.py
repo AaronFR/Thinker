@@ -17,19 +17,23 @@ class Thinker(BasePersona):
 
     def __init__(self, name):
         super().__init__(name)
-        self.history: List[Tuple[str, str]] = []  # To maintain question-response pairs
+        self.history: List[Tuple[str, str]] = []  # question-response pairs
 
     def think(self, user_messages: List[str]) -> str:
         """Process the input question and think through a response.
 
-        :param: input: List of existing user messagse"""
-        logging.info("Thinking through the input: %s", user_messages)
-        try:
-            selected_files = self.get_relevant_files(user_messages)
-            executor = BasePersona.create_ai_wrapper(selected_files)
+        :param: input: List of existing user message
+        :return: str: The generated response or error message.
+        """
+        logging.info("Processing user messages: %s", user_messages)
 
-            #ToDo: How the application accesses and gives history to the llm will need to be optimised
-            recent_history = [entry[1] for entry in self.history[-self.MAX_HISTORY:]]
+        selected_files = self.get_relevant_files(user_messages)
+        executor = BasePersona.create_ai_wrapper(selected_files)
+
+        #ToDo: How the application accesses and gives history to the llm will need to be optimised
+        recent_history = [entry[1] for entry in self.history[-self.MAX_HISTORY:]]
+
+        try:
             output = executor.execute(
                 ["Just think through the question, step by step, prioritizing the most recent user prompt."],
                 user_messages,
@@ -51,9 +55,9 @@ class Thinker(BasePersona):
             elif new_question.lower() == 'history':
                 self.display_history()
             elif Utility.is_valid_question(new_question):
-                self.process_question(new_question)
+                self.self_converse(new_question)
             else:
-                print("Invalid question. Please try again.")
+                print("Invalid input. Please ask a clear and valid question.")
 
     def display_history(self):
         """Display the conversation history to the user."""
@@ -68,29 +72,37 @@ class Thinker(BasePersona):
         """Process and store the user's question."""
         response = self.think([question])
         self.history.append((question, response))
+        return response
 
     @staticmethod
     def get_relevant_files(input: List[str]) -> List[str]:
         """Retrieves relevant files based on the input question.
 
         :param: input (List[str]): A list of input questions.
-        :return: List[str]: A list of selected file names that are deemed relevant.
+        :return: List[str]: A list of selected file names that are deemed relevant to the input questions.
         """
         evaluation_files = FileManagement.list_file_names()
+        if not evaluation_files:
+            logging.warning("No evaluation files found.")
+            return []
+
         summariser = Summariser("in_thinker")
         summariser.summarise_files(evaluation_files)
 
         executor = BasePersona.create_ai_wrapper([])
+        try:
+            output = executor.execute_function(
+                [ThinkerSpecification.build_file_query_prompt(evaluation_files)],
+                input,
+                SELECT_FILES_FUNCTION_SCHEMA
+            )
+            selected_files = output.get('files', [])
 
-        output = executor.execute_function(
-            [ThinkerSpecification.build_file_query_prompt(evaluation_files)],
-            input,
-            SELECT_FILES_FUNCTION_SCHEMA
-        )
-        selected_files = output.get('files', [])
-
-        logging.info(f"Selected: {selected_files}, \nfrom: {evaluation_files}")
-        return selected_files
+            logging.info(f"Selected: {selected_files}, \nfrom: {evaluation_files}")
+            return selected_files
+        except Exception as e:
+            logging.exception("Error retrieving relevant files", e)
+            return []
 
     def self_converse(self, initial_message: str):
         """
@@ -106,8 +118,8 @@ class Thinker(BasePersona):
 
         prompt_messages = [initial_message] + analyser_messages
         for iteration, message in enumerate(prompt_messages):
-            self.process_question(message)
-            logging.info(f"Iteration {iteration} completed.")
+            response = self.process_question(message)
+            logging.info("Iteration %d completed with response: %s", iteration, response)
 
 
 if __name__ == '__main__':
