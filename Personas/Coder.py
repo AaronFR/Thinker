@@ -3,7 +3,7 @@ from typing import List, Tuple
 
 from Functionality.Coding import Coding
 from Personas.BasePersona import BasePersona
-from Personas.PersonaSpecification import ThinkerSpecification, PersonaConstants
+from Personas.PersonaSpecification import ThinkerSpecification, PersonaConstants, CoderSpecification
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
 from Personas.Summariser import Summariser
 from Utilities.FileManagement import FileManagement
@@ -36,7 +36,7 @@ class Coder(BasePersona):
 
         try:
             output = executor.execute(
-                ["Just think through the question, step by step, prioritizing the most recent user prompt."],
+                [CoderSpecification.CODER_INSTRUCTIONS, CoderSpecification.load_configuration()],
                 user_messages,
                 assistant_messages=recent_history
             )
