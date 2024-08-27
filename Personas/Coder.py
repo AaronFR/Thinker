@@ -89,11 +89,12 @@ class Coder(BasePersona):
 
         summariser = Summariser("in_thinker")
         summariser.summarise_files(evaluation_files)
+        summaries = summariser.get_files_with_summary()
 
         executor = BasePersona.create_ai_wrapper([])
         try:
             output = executor.execute_function(
-                [ThinkerSpecification.build_file_query_prompt(evaluation_files)],
+                [ThinkerSpecification.build_file_query_prompt(summaries)],
                 input,
                 SELECT_FILES_FUNCTION_SCHEMA
             )

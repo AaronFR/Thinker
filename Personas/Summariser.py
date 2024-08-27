@@ -42,6 +42,7 @@ class Summariser(BasePersona):
             if len(name_parts) == 1:
                 logging.warning("File without file extension")
                 name_parts = [name_parts, "txt"]
+
             # Reconstruct the summary file name with the prefix before the extension
             summary_file = f"{name_parts[0]}_summary.{name_parts[1]}"
 
@@ -55,6 +56,30 @@ class Summariser(BasePersona):
                 # File doesn't have a summary, so we should include it for summarization
                 self.create_summary_file(file)
 
+    @staticmethod
+    def get_files_with_summary():
+        files_with_summary = ()
+        evaluation_files = FileManagement.list_file_names()
+        evaluation_files_set = set(evaluation_files)
+
+        regular_files_set = {file for file in evaluation_files if not file.endswith("_summary.txt")}
+
+        # Identify summary files first
+        for file in regular_files_set:
+            name_parts = file.rsplit('.', 1)
+            if len(name_parts) == 1:
+                logging.warning("File without file extension")
+                name_parts.append("txt")
+
+            # Reconstruct the summary file name with the prefix before the extension
+            summary_file = f"{name_parts[0]}_summary.txt"
+
+            #
+            if summary_file in evaluation_files_set:
+                files_with_summary += ((file, summary_file),)
+
+        return files_with_summary
+
     def summarize_file(self, file_name: str) -> str:
         """Generate a summary for the given file."""
         content = FileManagement.read_file(file_name)  # Assuming there's a method to load file contents
@@ -62,7 +87,7 @@ class Summariser(BasePersona):
 
         summary = summarizer.execute(
             [SummariserSpecification.SUMMARISER_SYSTEM_INSTRUCTIONS],
-            [f"Please summarize the following content: {content}"]
+            [f"Please summarize the content I previously gave you"]
         )
 
         return summary
