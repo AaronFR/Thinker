@@ -37,7 +37,7 @@ class FileManagement:
     def list_file_names() -> List[str]:
         """
         List all file_name names in the given directory.
-        #ToDo: should leave files tagged meta alone, as soon as we start tagging meta files...
+        ToDo: should leave files tagged meta alone, as soon as we start tagging meta files...
 
         :return: A list of file_name names in the directory.
         """

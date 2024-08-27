@@ -71,7 +71,7 @@ class AiOrchestrator:
                          model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> Dict[str, object]:
         """Generates a structured response based on system and user prompts.
         ToDo: At some point actions other than writing will be needed, e.g. 'web search'
-        #Solved if executive files only review summaries of input files
+         Solved if executive files only review summaries of input files
 
         :param system_prompts: The system prompts to guide the thinking process.
         :param user_prompts: The specific task to address.
