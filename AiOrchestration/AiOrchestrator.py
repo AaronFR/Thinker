@@ -130,20 +130,21 @@ class AiOrchestrator:
         """
         role_messages = []
 
+        role_messages.extend({"role": ChatGptRole.SYSTEM.value, "content": prompt} for prompt in system_prompts)
+        role_messages.extend({"role": ChatGptRole.USER.value, "content": prompt} for prompt in user_prompts)
+
         # Add input file contents as user messages
         for file in input_files:
             try:
                 content = FileManagement.read_file(file)
-                role_messages.append({"role": ChatGptRole.USER.value, "content": content})
+                role_messages.append({"role": ChatGptRole.SYSTEM.value, "content": content})
             except FileNotFoundError:
                 logging.error(f"File not found: {file}. Please ensure the file exists.")
-                role_messages.append((ChatGptRole.USER, f"File not found: {file}"))
+                role_messages.append((ChatGptRole.SYSTEM, f"File not found: {file}"))
             except Exception as e:
                 logging.error(f"Error reading file {file}: {e}")
-                role_messages.append((ChatGptRole.USER, f"Error reading file {file}. Exception: {e}"))
+                role_messages.append((ChatGptRole.SYSTEM, f"Error reading file {file}. Exception: {e}"))
 
-        role_messages.extend({"role": ChatGptRole.USER.value, "content": prompt} for prompt in user_prompts)
-        role_messages.extend({"role": ChatGptRole.SYSTEM.value, "content": prompt} for prompt in system_prompts)
         if assistant_messages:
             role_messages.extend({"role": ChatGptRole.ASSISTANT.value, "content": prompt} for prompt in assistant_messages)
 
