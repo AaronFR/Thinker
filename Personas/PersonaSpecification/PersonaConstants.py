@@ -229,5 +229,3 @@ Adopting sustainable farming practices and improving irrigation techniques can m
 climate change on agriculture.
 ---
 """
-
-

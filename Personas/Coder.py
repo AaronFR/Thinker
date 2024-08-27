@@ -31,7 +31,7 @@ class Coder(BasePersona):
         selected_files = self.get_relevant_files(user_messages)
         executor = BasePersona.create_ai_wrapper(selected_files)
 
-        #ToDo: How the application accesses and gives history to the llm will need to be optimised
+        # ToDo: How the application accesses and gives history to the llm will need to be optimised
         recent_history = [entry[1] for entry in self.history[-self.MAX_HISTORY:]]
 
         try:
@@ -110,7 +110,7 @@ class Coder(BasePersona):
         """
         Engage in a back-and-forth dialogue with itself.
         """
-        #ToDo should be selected from via AI call
+        # ToDo should be selected from via AI call
         analyser_messages = [
             "Examine the current implementation and your answer for any logical inconsistencies or flaws. Identify specific areas where the logic might fail or where the implementation does not meet the requirements. Provide a revised version addressing these issues.",
             "Evaluate the current implementation for opportunities to enhance features, improve naming conventions, and increase documentation clarity. Assess readability and flexibility. Provide a revised version that incorporates these improvements.",

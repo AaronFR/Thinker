@@ -3,7 +3,7 @@ import os
 from typing import List
 
 from Personas.BasePersona import BasePersona
-from Personas.PersonaSpecification import PersonaConstants, SummariserSpecification
+from Personas.PersonaSpecification import SummariserSpecification
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.ExecutionLogs import ExecutionLogs
 from Utilities.FileManagement import FileManagement
@@ -28,7 +28,6 @@ class Summariser(BasePersona):
         # Create summary for each file
         for file in evaluation_files:
             self.create_summary_file(file)
-
 
     def summarise_files(self, evaluation_files: List[str]):
         summary_files = set()
@@ -92,7 +91,8 @@ class Summariser(BasePersona):
 
         return summary
 
-    def create_summary_filename(self, original_filename: str) -> str:
+    @staticmethod
+    def create_summary_filename(original_filename: str) -> str:
         """Create a new filename for the summary based on the original filename."""
         base, _ = os.path.splitext(original_filename)
         return f"{base}_summary.txt"

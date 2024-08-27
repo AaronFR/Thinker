@@ -9,7 +9,7 @@ from Personas.PersonaSpecification.EditorSpecification import EXECUTIVE_EDITOR_F
 from Utilities.ExecutionLogs import ExecutionLogs
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.FileManagement import FileManagement
-from Personas.PersonaSpecification.PersonaConstants import TASKS, TYPE
+from Personas.PersonaSpecification.PersonaConstants import TASKS
 from Personas.BasePersona import BasePersona
 from Utilities.Utility import Utility
 
@@ -92,4 +92,3 @@ if __name__ == '__main__':
     #     Ensure that the formatting aligns with typical Dutch standards for academic or historical reports.""")
     editor.execute_task("""Alter the docstring for each method present. Focus, laser focus, on readability.
     """)
-

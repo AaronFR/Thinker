@@ -15,8 +15,7 @@ from Personas.PersonaSpecification import PersonaConstants
 
 
 class Writing(enum.Enum):
-    """
-    Writing is an enumeration representing various task types used within the persona system.
+    """Writing is an enumeration representing various task types used within the persona system.
 
     Methods:
         - WRITING: Used for writing new content to files.
@@ -32,10 +31,10 @@ class Writing(enum.Enum):
     REGEX_REFACTOR = "REGEX_REFACTOR"
 
     def execute(self, task_parameters: Dict[str, object]):
-        """
-        Executes a specified type of task based on the parameters provided.
+        """Executes a specified type of task based on the parameters provided.
 
-        :param: task_parameters (Dict[str, object]): A dictionary containing directives and parameters needed for the task.
+        :param: task_parameters (Dict[str, object]): A dictionary containing directives and parameters needed
+         for the task.
         :Raises: ValueError: If an unknown task type is encountered.
         """
         def get_action(task_type):
@@ -56,8 +55,7 @@ class Writing(enum.Enum):
 
     @staticmethod
     def rewrite_file_lines(task_parameters: Dict[str, object]):
-        """
-        Rewrite the specified lines in a file based on provided instructions and save the updated content.
+        """Rewrite the specified lines in a file based on provided instructions and save the updated content.
         NOTE: This is especially bad, at formatting code. ChatGpt wants to fill in ANY incomplete structural elements
         i.e. if it gets a set with only one half of a pair of docstrings commas it ***WILL*** create a new docstring
         triple comma, no amount of instructions can dissuade it.
@@ -75,8 +73,7 @@ class Writing(enum.Enum):
 
     @staticmethod
     def process_replacements(file_lines: List[str], task_parameters: Dict[str, object]):
-        """
-        Performs replacements line by line in a specified file using instructions provided to an AI executor.
+        """Performs replacements line by line in a specified file using instructions provided to an AI executor.
 
         Parameters:
             file_lines (List[str]): The lines from the file that need to be processed.
@@ -85,13 +82,13 @@ class Writing(enum.Enum):
         """
         executor = BasePersona.create_ai_wrapper(task_parameters.get(PersonaConstants.REFERENCE, []))
         replacement_instructions = [
-                ''.join(FileManagement.get_numbered_lines(file_lines)),
-                f"""For the specified file: {task_parameters[PersonaConstants.SAVE_TO]}, 
-                perform replacements based on the following instructions: 
-                {task_parameters[PersonaConstants.INSTRUCTION]}
-                Additionally: Make sure to included enough necessary information for the instruction to be followed accurately
-                """
-            ]
+            ''.join(FileManagement.get_numbered_lines(file_lines)),
+            f"""For the specified file: {task_parameters[PersonaConstants.SAVE_TO]}, 
+            perform replacements based on the following instructions: 
+            {task_parameters[PersonaConstants.INSTRUCTION]}
+            Additionally: Make sure to included enough necessary information for the instruction to be followed accurately
+            """
+        ]
 
         replacements = executor.execute_function(
             EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS,
@@ -165,8 +162,7 @@ class Writing(enum.Enum):
 
     @staticmethod
     def write_to_file_task(task_parameters: Dict[str, object]):
-        """
-        Repeatedly writes content to the specified number of pages. Where one page roughly corresponds to 500 words
+        """Repeatedly writes content to the specified number of pages. Where one page roughly corresponds to 500 words
         (2000 tokens output)
 
         :param task_parameters: Dict with SAVE_TO and 'pages_to_write'
@@ -184,9 +180,9 @@ class Writing(enum.Enum):
         ExecutionLogs.add_to_logs(f"Saved to {task_parameters[PersonaConstants.SAVE_TO]}")
 
     @staticmethod
-    def _generate_text(executor_task: AiOrchestrator, output: str, task_parameters: Dict[str, object], page_number: int):
-        """
-        Generates text for individual pages of a document based on specified directives and prior content.
+    def _generate_text(
+            executor_task: AiOrchestrator, output: str, task_parameters: Dict[str, object], page_number: int):
+        """Generates text for individual pages of a document based on specified directives and prior content.
 
         :param executor_task: The instance of AiOrchestrator responsible for generating text.
         :param output: The previously generated text to build upon.
@@ -212,11 +208,10 @@ class Writing(enum.Enum):
 
     @staticmethod
     def append_to_file_task(task_parameters: Dict[str, object]):
-        """
-        Appends generated content to a specified file_name.
+        """Appends generated content to a specified file_name.
 
-        :param executor_task: The AI executor tasked with generating content.
-        :param task_parameters: Contains task-specific directives, including the instruction and file_name path for saving.
+        :param task_parameters: Contains task-specific directives, including the instruction and file_name path
+         for saving.
         """
         executor = BasePersona.create_ai_wrapper(task_parameters.get(PersonaConstants.REFERENCE, []))
         output = executor.execute(
@@ -228,9 +223,9 @@ class Writing(enum.Enum):
 
     @staticmethod
     def refactor_task(task_parameters: Dict[str, object]):
-        """
-        Refactor files based on regex patterns provided in the task directives.
-        #ToDo: It would make sense to add a check of the output to make sure a name isn't being changed which *shouldn't*
+        """Refactor files based on regex patterns provided in the task directives.
+        # ToDo: It would make sense to add a check of the output
+         to make sure a name isn't being changed which *shouldn't*
 
         :param task_parameters: A dictionary containing key fields:
             - INSTRUCTION: The regex pattern and modifications to be applied.
@@ -253,11 +248,9 @@ class Writing(enum.Enum):
     @staticmethod
     def rewrite_file_task(task_parameters: Dict[str, object],
                           approx_max_tokens=1000):
-        """
-        Split an input file into chunks based on the estimated max number of output tokens (2000 tokens) taking in
+        """Split an input file into chunks based on the estimated max number of output tokens (2000 tokens) taking in
         half that number allowing the llm to either decrease word count or double it should it be required.
 
-        :param executor_task: Initialized LLM wrapper
         :param task_parameters: A dictionary containing directives, specifically:
             - 'SAVE_TO': File path where the rewritten content will be saved.
             - 'INSTRUCTION': Detailed instructions on how to modify the text.
@@ -283,12 +276,12 @@ class Writing(enum.Enum):
 
     @staticmethod
     def chunk_text(text: str, approx_max_tokens: int, char_per_token=4) -> List[str]:
-        """
-        Splits the provided text into manageable chunks based on an approximate maximum character limit.
+        """Splits the provided text into manageable chunks based on an approximate maximum character limit.
 
         :param text: The text that needs to be divided into chunks according to the token count.
         :param approx_max_tokens: The maximum number of tokens allowed in each chunk before a split occurs.
-        :param char_per_token: The estimated number of characters that correspond to a single token, typically around 4, but may vary depending on the model used.
+        :param char_per_token: The estimated number of characters that correspond to a single token, typically around 4,
+         but may vary depending on the model used.
         :return: A list of text chunks created from the original input, each respecting the token limit.
         """
         def split_into_chunks(to_chunk: str, max_chars: int) -> List[str]:

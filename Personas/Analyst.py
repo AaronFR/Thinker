@@ -36,7 +36,7 @@ class Analyst(BasePersona):
         )
 
         # save to Analysis.txt file_name
-        FileManagement.save_file(analysis_report, Personas.PersonaSpecification.PersonaConstants.meta_analysis_filename, overwrite=True)
+        FileManagement.save_file(analysis_report, PersonaConstants.meta_analysis_filename, overwrite=True)
         ExecutionLogs.add_to_logs("Analyst: Report written and saved")
 
         # Search for the pattern

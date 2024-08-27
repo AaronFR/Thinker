@@ -51,13 +51,13 @@ EDITOR_EXECUTIVE_FUNCTION_SCHEMA = [{
                         TYPE: {
                             TYPE: "string",
                             "description": f"""Task type. Examples: 
-                                - '{EditorTasks["REWRITE"]}' for replacing individual blocks of text by linenumber.
+                                - '{EditorTasks["REWRITE"]}' for replacing individual blocks of text by line-number.
                             Just tell the following program which file to operate on '{SAVE_TO}' and how you want the file changed
                             go into great detail and be as helpful and extensive as possible on that front
                                 - '{EditorTasks["REWRITE_FILE"]}' for complete and total rewrites of the a given file.
                                 -'{EditorTasks["REGEX_REFACTOR"]}' for regex replacing a single word or words with '{PersonaConstants.INSTRUCTION}' *everywhere*.
                             Exercise Caution""",
-                            "enum": [EditorTasks["REWRITE"], EditorTasks["REGEX_REFACTOR"]]  #  EditorTasks["REWRITE_FILE"]
+                            "enum": [EditorTasks["REWRITE"], EditorTasks["REGEX_REFACTOR"]]  # EditorTasks["REWRITE_FILE"]
                         },
                         REFERENCE: {
                             TYPE: "array",

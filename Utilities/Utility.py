@@ -20,7 +20,7 @@ class Utility:
         return token_count <= limit
 
     @staticmethod
-    def calculate_tokens_used(messages: List[Dict[str, str]], model: ChatGptModel=ChatGptModel.CHAT_GPT_4_OMNI_MINI):
+    def calculate_tokens_used(messages: List[Dict[str, str]], model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI):
         token_count = 0
         for message in messages:
             enc = tiktoken.encoding_for_model(model.value)

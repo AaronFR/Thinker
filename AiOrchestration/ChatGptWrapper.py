@@ -33,7 +33,8 @@ class ChatGptWrapper:
         ErrorHandler.setup_logging()
         self.open_ai_client = OpenAI()
 
-    def get_open_ai_response(self, messages: List[dict], model=ChatGptModel.CHAT_GPT_4_OMNI_MINI, n=1) -> str | List[str]:
+    def get_open_ai_response(
+            self, messages: List[dict], model=ChatGptModel.CHAT_GPT_4_OMNI_MINI, n=1) -> str | List[str]:
         """Request a response from the OpenAI API.
 
         :param messages: The system and user messages to send to the ChatGpt client

@@ -19,13 +19,13 @@ ONLY ONLY ONLY EVER PRODUCE THE FOLLOWING JSON FORMAT, NEVER ***EVER*** PRODUCE 
 SCHEMA:
 {{
     "{PersonaConstants.TYPE}": (of question),
-    "areas_of_improvement": (clearly and simply state how the current input files do not meet the criteria of satisfying the solution. Or alternatively if they do, state how they satisfy each condition of the inital prompt)
+    "areas_of_improvement": (clearly and simply state how the current input files do not meet the criteria of satisfying the solution. Or alternatively if they do, state how they satisfy each condition of the initial prompt)
     "solved": (false if answer can be improved),
     "tasks": [ (Can and provided the context aligns SHOULD be multiple tasks in this list, sensibly compile default and special tasks)
     {{
-        "{PersonaConstants.TYPE}": (default: "APPEND" task, special types "REWRITE": program will produce output re-writing a part of the text via a regex replace, list the ***exact*** text you want re-written and how you would like the exeuctor to re-write it)
+        "{PersonaConstants.TYPE}": (default: "APPEND" task, special types "REWRITE": program will produce output re-writing a part of the text via a regex replace, list the ***exact*** text you want re-written and how you would like the executor to re-write it)
         "{PersonaConstants.REFERENCE}": [] (strings of file names and their extensions in double quotes, only reference files that have been previously supplied to you by me, appropriate to what the task has to do, if appending writing to a file they at least have to see its current contents, and perhaps another reference file)
-        "{PersonaConstants.REWRITE_THIS}" (OPTIONAL: only for REWRITE Tasks) (EXACT text in the document to regex replace with this tasks output, change any commas to be escaped for the regex formating to follow)
+        "{PersonaConstants.REWRITE_THIS}" (OPTIONAL: only for REWRITE Tasks) (EXACT text in the document to regex replace with this tasks output, change any commas to be escaped for the regex formatting to follow)
         "{PersonaConstants.INSTRUCTION}": (description of the actual activity the llm needs to perform which helps the above task
         "{PersonaConstants.SAVE_TO}": (file to save output to, can ONLY be one singular file create another task for another file if necessary, include just the file name and extension, nothing more)
     }}
