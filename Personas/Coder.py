@@ -56,7 +56,7 @@ class Coder(BasePersona):
             elif new_question.lower() == 'history':
                 self.display_history()
             elif Utility.is_valid_question(new_question):
-                self.self_converse(new_question)
+                self.run_workflow(new_question)
             else:
                 print("Invalid input. Please ask a clear and valid question.")
 
@@ -105,9 +105,9 @@ class Coder(BasePersona):
             logging.exception("Error retrieving relevant files", e)
             return []
 
-    def self_converse(self, initial_message: str):
+    def run_workflow(self, initial_message: str):
         """
-        Engage in a back-and-forth dialogue with another Thinker instance.
+        Engage in a back-and-forth dialogue with itself.
         """
         #ToDo should be selected from via AI call
         analyser_messages = [
