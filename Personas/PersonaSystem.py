@@ -22,8 +22,7 @@ class PersonaSystem:
         ErrorHandler.setup_logging()
 
     def run_iteration(self, task_to_execute: str, persona=ANALYST):
-        """
-        Orchestrate the execution of tasks based on the current user prompt.
+        """Orchestrate the execution of tasks based on the current user prompt.
         ToDo: implement system for dealing with failed tasks
 
         :param task_to_execute: the initial user prompt

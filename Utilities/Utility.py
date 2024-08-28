@@ -11,8 +11,7 @@ class Utility:
 
     @staticmethod
     def is_within_token_limit(content: str, limit=128000, model="gpt-4o-mini") -> bool:
-        """Check if content size is within token limit.
-        """
+        """Check if content size is within token limit."""
         # To get the tokeniser corresponding to a specific model in the OpenAI API:
         enc = tiktoken.encoding_for_model(model)
         token_count = len(enc.encode(content))
@@ -32,9 +31,9 @@ class Utility:
     def execute_with_retries(func: Callable[[], Any], max_retries: int = Constants.MAX_PROMPT_RETRIES) -> Any:
         """Execute a callable with retries on failure.
 
-        :param func: A callable that will be executed.
-        :param max_retries: Maximum number of retries for the callable.
-        :return: The return value of the callable if successful, or None if all retries fail.
+        :param func: A callable that will be executed
+        :param max_retries: Maximum number of retries for the callable
+        :return: The return value of the callable if successful, or None if all retries fail
         """
         for attempt in range(max_retries):
             try:

@@ -40,7 +40,7 @@ class ChatGptWrapper:
         :param messages: The system and user messages to send to the ChatGpt client
         :param model: the actual llm being called
         :param n: number of times to rerun the prompt
-        :return: The content of the response from OpenAI or an error message to inform the next Executor.
+        :return: The content of the response from OpenAI or an error message to inform the next Executor
         """
         try:
             logging.debug(f"Calling OpenAI API with messages: {messages}")
@@ -77,7 +77,7 @@ class ChatGptWrapper:
                 messages=messages,
                 functions=function_schema,
                 function_call={"name": "executiveDirective"}
-                # ToDo investigate more roles
+                # ToDo:investigate more roles
             )
             self.calculate_prompt_cost(chat_completion, model)
 
@@ -92,8 +92,7 @@ class ChatGptWrapper:
             raise
 
     def calculate_prompt_cost(self, chat_completion: ChatCompletion, model: ChatGptModel):
-        """
-        Calculates the estimated cost of a call to OpenAi ChatGpt Api
+        """Calculates the estimated cost of a call to OpenAi ChatGpt Api
 
         :param chat_completion: after the prompt has been processed
         :param model: the specific OpenAI model being used, the non Mini version is *very* expensive,

@@ -31,9 +31,9 @@ class Editor(BasePersona):
         """
         Execute a specified task using the provided task description
 
-        :param task_to_execute: The task to be executed.
-        :raises ValueError: Raised if task_to_execute is empty or invalid.
-        :raises Exception: Raised if an error occurs during the execution of the task.
+        :param task_to_execute: The task to be executed
+        :raises ValueError: Raised if task_to_execute is empty or invalid
+        :raises Exception: Raised if an error occurs during the execution of the task
         """
         self.evaluation_files = FileManagement.list_file_names()
 
@@ -48,12 +48,11 @@ class Editor(BasePersona):
 
     @staticmethod
     def execute_task_parameters(task_parameters: Dict[str, object]):
-        """
-        Executes a writing task based on the provided task parameters.
+        """Executes a writing task based on the provided task parameters.
 
-        :param task_parameters: A dictionary containing parameters for the writing task.
+        :param task_parameters: A dictionary containing parameters for the writing task
         :raises ValueError: If the task type specified in task_parameters is invalid
-                            or not supported by this persona.
+                            or not supported by this persona
         """
         ExecutionLogs.add_to_logs(f"Executing task: \n{pformat(task_parameters)}")
 
@@ -64,13 +63,12 @@ class Editor(BasePersona):
             raise ValueError("Invalid task type used for this persona")
 
     def generate_executive_plan(self, task: str, extra_user_inputs: List[str] = None) -> Dict[str, object]:
-        """
-        Process and obtain the new executive directive for the initial task.
+        """Process and obtain the new executive directive for the initial task.
 
-        :param task: The initial task from the user.
+        :param task: The initial task from the user
         :param extra_user_inputs: any additional information to add before the primary instruction
-        :raises JSONDecodeError: Raised if the output from the executive directive cannot be parsed into a dictionary.
-        :return: A dictionary generated from the output of the executive directive, structured in JSON format.
+        :raises JSONDecodeError: Raised if the output from the executive directive cannot be parsed into a dictionary
+        :return: A dictionary generated from the output of the executive directive, structured in JSON format
         """
         extra_user_inputs = extra_user_inputs or []
         if extra_user_inputs:

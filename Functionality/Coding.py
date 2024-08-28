@@ -8,8 +8,7 @@ from Personas.PersonaSpecification import PersonaConstants
 
 
 class Coding(enum.Enum):
-    """
-    Coding is an enumeration representing various task types used within the persona system.
+    """Coding is an enumeration representing various task types used within the persona system.
 
     Methods:
         - WRITING: write new code file

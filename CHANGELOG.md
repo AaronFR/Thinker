@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refactored: AiWrapper -> AiOrchestrator, Prompter -> ChatGptWrapper and to new AiOrchestration directory.
  To make their purpose in the project clearer
+- Docstrings: all refactored in the reStructuredText format
 
 ### Removed
 
@@ -32,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Global 'solved' variable, Analyst persona can now indicate that the task is finished and the process can stop iterating through work on the initial user prompt
 - ExecutionLogs.py for handling writing up the exact movements of the persona system as it works on the given task
 - 'regex refactor' task: regex replacing large sections of text repeatedly fails, so the application was refactored (🙃) to replace a word or words for all files.
-- 'rewrite' task: instead of trying to replace lines of text with regex which is very error prone, instead the replacement is done by swapping out the content based on line number
+- 'rewrite' task: instead of trying to replace lines of text with regex which is very error-prone, instead the replacement is done by swapping out the content based on line number
 - multiple prompts functionality: AiWrapper can now be instructed to output multiple answers, selecting one according to judgement criteria
 
 ### Changed
@@ -50,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Analyst role: reviews the current output files against the initially supplied user prompt, making comments and finally 
  suggesting a list of workers to work on the task to improve it in line with their suggestions
-- Writer role: Writes reports, iterating multiple times to overcome ChatGpt's output limit
+- Writer role: Writes reports, iterating multiple times to overcome ChatGPT's output limit
 - Editor role: reviews reports and rewrites the entire file 1000 tokens at a time in line with an instruction from the Analyst and its own observations
 
 ### Changed
@@ -78,7 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- FileManagment.py for /Thoughts splitting out methods from ThoughtProcess.py
+- FileManagement.py for /Thoughts splitting out methods from ThoughtProcess.py
 - Docstrings to each major method
 
 ### Changed
@@ -99,7 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Affordable alternative to using Chat-Gpt 4o base for creating initial plans of actions for initial prompts, enabled by default
-  - Current method performs better than a single base omni model prompt but takes longer. Still has a bad habit of writing tasks that are not used and deadends in the task chain.
+  - Current method performs better than a single base omni model prompt but takes longer. Still has a bad habit of writing tasks that are not used and dead-ends in the task chain.
 - A method 'aggregate_files' in FileManagement.py
 
 ### Changed
@@ -130,8 +131,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Analyser.py method for analysing a target output against initial prompt and recommending if the process needs to be retriggered
-- HtmlProcessing.py methods for outputing html and text files (to be split out later)
+- Analyser.py method for analysing a target output against initial prompt and recommending if the process needs to be re-triggered
+- HtmlProcessing.py methods for outputting html and text files (to be split out later)
 
 ## [0.0.0] - 2024-07-19
 

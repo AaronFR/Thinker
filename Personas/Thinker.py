@@ -22,8 +22,8 @@ class Thinker(BasePersona):
     def think(self, user_messages: List[str]) -> str:
         """Process the input question and think through a response.
 
-        :param: input: List of existing user message
-        :return: str: The generated response or error message.
+        :param user_messages: List of existing user message
+        :return: The generated response or error message
         """
         logging.info("Processing user messages: %s", user_messages)
 
@@ -78,8 +78,8 @@ class Thinker(BasePersona):
     def get_relevant_files(input: List[str]) -> List[str]:
         """Retrieves relevant files based on the input question.
 
-        :param: input (List[str]): A list of input questions.
-        :return: List[str]: A list of selected file names that are deemed relevant to the input questions.
+        :param input: A list of input questions
+        :return A list of selected file names that are deemed relevant to the input questions
         """
         evaluation_files = FileManagement.list_file_names()
         if not evaluation_files:
@@ -105,10 +105,9 @@ class Thinker(BasePersona):
             return []
 
     def run_workflow(self, initial_message: str):
+        """Engage in a back-and-forth dialogue with itself
+        ToDo: should be selected from via AI call
         """
-        Engage in a back-and-forth dialogue with itself.
-        """
-        # ToDo should be selected from via AI call
         analyser_messages = [
             "Examine the current implementation and your answer for any logical inconsistencies or flaws. Identify specific areas where the logic might fail or where the implementation does not meet the requirements. Provide a revised version addressing these issues.",
             "Evaluate the current implementation for opportunities to enhance features, improve naming conventions, and increase documentation clarity. Assess readability and flexibility. Provide a revised version that incorporates these improvements.",

@@ -37,7 +37,7 @@ class Writer(BasePersona):
         the evaluation files, then generating an executive plan based on the given task, and
         finally processing the individual tasks outlined in that plan.
 
-        :param: task_to_execute (str): The writing task that needs to be executed.
+        :param task_to_execute: The writing task that needs to be executed
         """
         self.evaluation_files = FileManagement.list_file_names()
         executive_plan = self.generate_executive_plan(task_to_execute)
@@ -62,8 +62,8 @@ class Writer(BasePersona):
         the corresponding writing task.
 
         :param task_parameters: A dictionary containing the parameters for the writing task, including the task type
-         and other relevant details.
-        :raises ValueError: If the task type specified in the parameters is invalid or not supported by this persona.
+         and other relevant details
+        :raises ValueError: If the task type specified in the parameters is invalid or not supported by this persona
         """
         ExecutionLogs.add_to_logs(f"Executing task: \n{pformat(task_parameters)}")
 
@@ -79,10 +79,10 @@ class Writer(BasePersona):
         """
         Process and obtain the new executive directive for the initial task.
 
-        :param task: The initial task from the user.
+        :param task: The initial task from the user
         :param extra_user_inputs: any additional information to add before the primary instruction
-        :return A dictionary parsed from the LLM's JSON format output.
-        :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary.
+        :return A dictionary parsed from the LLM's JSON format output
+        :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary
         """
         extra_user_inputs = extra_user_inputs or []
         if extra_user_inputs:

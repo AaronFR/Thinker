@@ -15,15 +15,7 @@ from Personas.PersonaSpecification import PersonaConstants
 
 
 class Writing(enum.Enum):
-    """Writing is an enumeration representing various task types used within the persona system.
-
-    Methods:
-        - WRITING: Used for writing new content to files.
-        - APPENDING: Used for appending content to the end of existing files.
-        - REWRITING_LINES: Used for rewriting specific lines in files.
-        - FULL_REWRITE: Used for completely rewriting the content of a file.
-        - REGEX_REFACTORING: Used for refactoring file contents based on regex patterns.
-    """
+    """Writing is an enumeration representing various task types used within the persona system."""
     WRITE = "WRITE"
     APPEND = "APPEND"
     REWRITE = "REWRITE"
@@ -33,9 +25,9 @@ class Writing(enum.Enum):
     def execute(self, task_parameters: Dict[str, object]):
         """Executes a specified type of task based on the parameters provided.
 
-        :param: task_parameters (Dict[str, object]): A dictionary containing directives and parameters needed
-         for the task.
-        :Raises: ValueError: If an unknown task type is encountered.
+        :param task_parameters: A dictionary containing directives and parameters needed
+         for the task
+        :raises ValueError: If an unknown task type is encountered
         """
         def get_action(task_type):
             action_map = {
@@ -58,11 +50,11 @@ class Writing(enum.Enum):
         """Rewrite the specified lines in a file based on provided instructions and save the updated content.
         NOTE: This is especially bad, at formatting code. ChatGpt wants to fill in ANY incomplete structural elements
         i.e. if it gets a set with only one half of a pair of docstrings commas it ***WILL*** create a new docstring
-        triple comma, no amount of instructions can dissuade it.
+        triple comma, no amount of instructions can dissuade it. (Better to instruct what TO do)
 
         :param task_parameters: Dict[str, object]:
-            'SAVE_TO': str - The path to the file where updates should be saved.
-            'INSTRUCTION': str - Detailed instructions on how to process and rewrite the file lines.
+            'SAVE_TO': str - The path to the file where updates should be saved
+            'INSTRUCTION': str - Detailed instructions on how to process and rewrite the file lines
         """
         executor = BasePersona.create_ai_wrapper(task_parameters.get(PersonaConstants.REFERENCE, []))
         file_path = str(task_parameters[PersonaConstants.SAVE_TO])
@@ -75,10 +67,9 @@ class Writing(enum.Enum):
     def process_replacements(file_lines: List[str], task_parameters: Dict[str, object]):
         """Performs replacements line by line in a specified file using instructions provided to an AI executor.
 
-        Parameters:
-            file_lines (List[str]): The lines from the file that need to be processed.
-            task_parameters (Dict[str, object]): A dictionary containing directives for the task, including the file
-            name to save to and the instructions for the replacements.
+        :param file_lines: The lines from the file that need to be processed
+        :param task_parameters: A dictionary containing directives for the task, including the file
+         name to save to and the instructions for the replacements
         """
         executor = BasePersona.create_ai_wrapper(task_parameters.get(PersonaConstants.REFERENCE, []))
         replacement_instructions = [
@@ -104,17 +95,16 @@ class Writing(enum.Enum):
             file_lines: List[str],
             replacements: Dict[str, object],
             target_file_path: str):
-        """
-        Modifies specific lines in a file based on provided replacement instructions.
+        """Modifies specific lines in a file based on provided replacement instructions.
 
         This method processes a list of replacement instructions, updating the file content
         according to the specified changes, and saves the modified content to the given file path.
 
-        :param executor_task: An instance of AiOrchestrator that generates replacement content.
-        :param file_lines: A list of strings representing the original lines of the file.
+        :param executor_task: An instance of AiOrchestrator that generates replacement content
+        :param file_lines: A list of strings representing the original lines of the file
         :param replacements: Dict containing 'changes', a list of replacement instructions with:
-         'start', 'end', and 'replacement'.
-        :param target_file_path: The file path where the updated content will be saved.
+         'start', 'end', and 'replacement'
+        :param target_file_path: The file path where the updated content will be saved
         """
         new_content = []
         current_line = 0
@@ -184,12 +174,11 @@ class Writing(enum.Enum):
             executor_task: AiOrchestrator, output: str, task_parameters: Dict[str, object], page_number: int):
         """Generates text for individual pages of a document based on specified directives and prior content.
 
-        :param executor_task: The instance of AiOrchestrator responsible for generating text.
-        :param output: The previously generated text to build upon.
-        :param task_parameters: A dictionary containing details of the task specifications.
-        :param page_number: The current page number being generated.
-
-        :return: The generated text for the specified page.
+        :param executor_task: The instance of AiOrchestrator responsible for generating text
+        :param output: The previously generated text to build upon
+        :param task_parameters: A dictionary containing details of the task specifications
+        :param page_number: The current page number being generated
+        :return: The generated text for the specified page
         """
         instructions = [
             f"So far you have written: \n\n{output}",
@@ -211,7 +200,7 @@ class Writing(enum.Enum):
         """Appends generated content to a specified file_name.
 
         :param task_parameters: Contains task-specific directives, including the instruction and file_name path
-         for saving.
+         for saving
         """
         executor = BasePersona.create_ai_wrapper(task_parameters.get(PersonaConstants.REFERENCE, []))
         output = executor.execute(
@@ -228,8 +217,8 @@ class Writing(enum.Enum):
          to make sure a name isn't being changed which *shouldn't*
 
         :param task_parameters: A dictionary containing key fields:
-            - INSTRUCTION: The regex pattern and modifications to be applied.
-            - REWRITE_THIS: The target string or pattern that needs to be rewritten.
+            - INSTRUCTION: The regex pattern and modifications to be applied
+            - REWRITE_THIS: The target string or pattern that needs to be rewritten
         """
         evaluation_files = FileManagement.list_file_names()
         for file in evaluation_files:
@@ -252,8 +241,8 @@ class Writing(enum.Enum):
         half that number allowing the llm to either decrease word count or double it should it be required.
 
         :param task_parameters: A dictionary containing directives, specifically:
-            - 'SAVE_TO': File path where the rewritten content will be saved.
-            - 'INSTRUCTION': Detailed instructions on how to modify the text.
+            - 'SAVE_TO': File path where the rewritten content will be saved
+            - 'INSTRUCTION': Detailed instructions on how to modify the text
         :param approx_max_tokens: token chunk size to split the document by
         """
         executor = BasePersona.create_ai_wrapper(task_parameters.get(PersonaConstants.REFERENCE, []))
@@ -278,11 +267,11 @@ class Writing(enum.Enum):
     def chunk_text(text: str, approx_max_tokens: int, char_per_token=4) -> List[str]:
         """Splits the provided text into manageable chunks based on an approximate maximum character limit.
 
-        :param text: The text that needs to be divided into chunks according to the token count.
-        :param approx_max_tokens: The maximum number of tokens allowed in each chunk before a split occurs.
+        :param text: The text that needs to be divided into chunks according to the token count
+        :param approx_max_tokens: The maximum number of tokens allowed in each chunk before a split occurs
         :param char_per_token: The estimated number of characters that correspond to a single token, typically around 4,
-         but may vary depending on the model used.
-        :return: A list of text chunks created from the original input, each respecting the token limit.
+         but may vary depending on the model used
+        :return: A list of text chunks created from the original input, each respecting the token limit
         """
         def split_into_chunks(to_chunk: str, max_chars: int) -> List[str]:
             return [to_chunk[i:i + max_chars] for i in range(0, len(to_chunk), max_chars)]
