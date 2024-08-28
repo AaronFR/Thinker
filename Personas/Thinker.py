@@ -1,6 +1,7 @@
 import logging
 from typing import List, Tuple
 
+from Functionality.Organising import Organising
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import ThinkerSpecification
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
@@ -27,7 +28,7 @@ class Thinker(BasePersona):
         """
         logging.info("Processing user messages: %s", user_messages)
 
-        selected_files = self.get_relevant_files(user_messages)
+        selected_files = Organising.get_relevant_files(user_messages)
         executor = BasePersona.create_ai_wrapper(selected_files)
 
         # ToDo: How the application accesses and gives history to the llm will need to be optimised
@@ -73,36 +74,6 @@ class Thinker(BasePersona):
         response = self.think([question])
         self.history.append((question, response))
         return response
-
-    @staticmethod
-    def get_relevant_files(input: List[str]) -> List[str]:
-        """Retrieves relevant files based on the input question.
-
-        :param input: A list of input questions
-        :return A list of selected file names that are deemed relevant to the input questions
-        """
-        evaluation_files = FileManagement.list_file_names()
-        if not evaluation_files:
-            logging.warning("No evaluation files found.")
-            return []
-
-        summariser = Summariser("in_thinker")
-        summariser.summarise_files(evaluation_files)
-
-        executor = BasePersona.create_ai_wrapper([])
-        try:
-            output = executor.execute_function(
-                [ThinkerSpecification.build_file_query_prompt(evaluation_files)],
-                input,
-                SELECT_FILES_FUNCTION_SCHEMA
-            )
-            selected_files = output.get('files', [])
-
-            logging.info(f"Selected: {selected_files}, \nfrom: {evaluation_files}")
-            return selected_files
-        except Exception as e:
-            logging.exception("Error retrieving relevant files", e)
-            return []
 
     def run_workflow(self, initial_message: str):
         """Engage in a back-and-forth dialogue with itself

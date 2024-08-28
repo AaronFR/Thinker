@@ -11,11 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - ChatGptModel enum added for representing OpenAi models
 - Thinker persona: thinks through problems and interacts closely with the user. It illustrates the general path of solving a given problem in detail which will be followed by ""subconscious"" executors.
-- Summariser persona: summarises documents in a brief summary with notes for features/points of improvement. For reducing the amount of tokens necessary to understand a given directory of files.
 - created 'self_converse' functionality: allowing a persona to be prompted with a given set of questions tailored to the prompt genre, for guiding it to improve its answer over time.
 - Coder persona: for creating new software files
 - Configuration: Persona's will load configuration dependent on their role that instructs how they operate, e.g. tone,
  style, length of replies, etc
+- Coding, Organising and Writing functionality classes to be used by Persona roles as per their function.
 
 ### Changed
 
