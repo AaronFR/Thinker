@@ -71,6 +71,7 @@ class Utility:
         if not user_input.strip():
             print("Please enter a valid question.")
             return False
+
         return True
 
 

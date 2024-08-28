@@ -4,10 +4,6 @@ from typing import List, Tuple
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Functionality.Organising import Organising
 from Personas.BasePersona import BasePersona
-from Personas.PersonaSpecification import ThinkerSpecification
-from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
-from Personas.Summariser import Summariser
-from Utilities.FileManagement import FileManagement
 from Utilities.Utility import Utility
 
 

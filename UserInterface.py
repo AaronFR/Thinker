@@ -17,7 +17,6 @@ class UserInterface:
     iterated upon by a worker or 'Persona' making individual llm calls.
 
     Attributes:
-        evaluation_files (list): List of files to be evaluated
         MAX_TRIES (int): Maximum attempts allowed to resolve a task
         BUDGET (float): used budget for calling AI API's
     """
@@ -27,7 +26,6 @@ class UserInterface:
 
     def __init__(self):
         """Initialize the UserInterface instance and set up logging."""
-        self.evaluation_files = []
         self.persona_system = PersonaSystem()
 
         ExecutionLogs.setup_logging()

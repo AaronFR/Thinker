@@ -45,15 +45,15 @@ class Coder(BasePersona):
     def run_workflow(self, initial_message: str):
         """Engage in a back-and-forth dialogue with itself."""
         executor = AiOrchestrator()
-        new_file = executor.execute(
+        file_name = executor.execute(
             "Give just a filename (with extension) that should be worked on given the following prompt. No commentary",
             initial_message)
 
         analyser_messages = [
-            f"Examine the current implementation of {new_file} and your answer for any logical inconsistencies or flaws. Identify specific areas where the logic might fail or where the implementation does not meet the requirements. Provide a revised version addressing these issues.",
-            f"Evaluate the current implementation of {new_file} for opportunities to enhance features, improve naming conventions, and increase documentation clarity. Assess readability and flexibility. Provide a revised version that incorporates these improvements.",
-            f"Review the structure and flow of the documentation in {new_file}. Suggest and implement changes to improve the organization, clarity, and ease of understanding of the documentation. Provide a revised version with these changes.",
-            f"Present the final revised version of the code in {new_file}, incorporating all previous improvements we discussed. Additionally, provide a summary of the key changes made, explaining how each change enhances the code."
+            f"Examine the current implementation of {file_name} and your answer for any logical inconsistencies or flaws. Identify specific areas where the logic might fail or where the implementation does not meet the requirements. Provide a revised version addressing these issues.",
+            f"Evaluate the current implementation of {file_name} for opportunities to enhance features, improve naming conventions, and increase documentation clarity. Assess readability and flexibility. Provide a revised version that incorporates these improvements.",
+            f"Review the structure and flow of the documentation in {file_name}. Suggest and implement changes to improve the organization, clarity, and ease of understanding of the code and its documentation. Provide a new and improved version of the code with its improved documentation.",
+            f"Present the final revised version of the code in {file_name}, incorporating all previous improvements we discussed. Additionally, provide a summary of the key changes made, explaining how each change enhances the code."
         ]
 
         prompt_messages = [initial_message] + analyser_messages
@@ -63,7 +63,7 @@ class Coder(BasePersona):
 
             if iteration == 4:
                 Coding.write_to_file_task({
-                    PersonaConstants.SAVE_TO: new_file,
+                    PersonaConstants.SAVE_TO: file_name,
                     PersonaConstants.INSTRUCTION: response
                 })
 

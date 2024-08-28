@@ -41,16 +41,16 @@ class BasePersona:
         """
         raise NotImplementedError("This method should be overridden by subclasses")
 
-    def _process_task(self, task: Dict[str, object]):
+    def _process_task(self, task_parameters: Dict[str, object]):
         """
         Processes a task and handles any exceptions that occur during execution
 
-        :param task: A dictionary containing task information
+        :param task_parameters: A dictionary containing task information
         """
         try:
-            self.execute_task_parameters(task)
+            self.execute_task_parameters(task_parameters)
         except Exception:
-            failed_task = task[PersonaConstants.INSTRUCTION]
+            failed_task = task_parameters[PersonaConstants.INSTRUCTION]
             logging.exception(f"Task failed: {failed_task}")
             ExecutionLogs.add_to_logs(f"Task failed: {failed_task}\n")
 
