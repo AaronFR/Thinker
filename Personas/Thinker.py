@@ -21,6 +21,51 @@ class Thinker(BasePersona):
         super().__init__(name)
         self.history: List[Tuple[str, str]] = []  # question-response pairs
 
+    def query_user_for_input(self):
+        """ Continuously prompts the user for questions until they choose to exit. """
+        while True:
+            new_question = input("Please enter your question (or type 'exit' to quit): ")
+            if Utility.is_exit_command(new_question):
+                print("Exiting the question loop.")
+                break
+            elif new_question.lower() == 'history':
+                self.display_history()
+            elif Utility.is_valid_question(new_question):
+                self.run_workflow(new_question)
+            else:
+                print("Invalid input. Please ask a clear and valid question.")
+
+    def display_history(self):
+        """Display the conversation history to the user."""
+        if not self.history:
+            print("No interaction history available.")
+            return
+        print("Interaction History:")
+        for i, (question, response) in enumerate(self.history):
+            print(f"{i + 1}: Q: {question}\n    A: {response}")
+
+    def run_workflow(self, initial_message: str):
+        """Engage in a back-and-forth dialogue with itself
+        ToDo: should be selected from via AI call
+        """
+        analyser_messages = [
+            "Examine the current implementation and your answer for any logical inconsistencies or flaws. Identify specific areas where the logic might fail or where the implementation does not meet the requirements. Provide a revised version addressing these issues.",
+            "Evaluate the current implementation for opportunities to enhance features, improve naming conventions, and increase documentation clarity. Assess readability and flexibility. Provide a revised version that incorporates these improvements.",
+            "Review the structure and flow of the documentation in Thinker.py. Suggest and implement changes to improve the organization, clarity, and ease of understanding of the documentation. Provide a revised version with these changes.",
+            "Present the final revised version of the code, incorporating all previous improvements we discussed. Additionally, provide a summary of the key changes made, explaining how each change enhances the code."
+        ]
+
+        prompt_messages = [initial_message] + analyser_messages
+        for iteration, message in enumerate(prompt_messages):
+            response = self.process_question(message)
+            logging.info("Iteration %d completed with response: %s", iteration, response)
+
+    def process_question(self, question: str):
+        """Process and store the user's question."""
+        response = self.think([question])
+        self.history.append((question, response))
+        return response
+
     def think(self, user_messages: List[str]) -> str:
         """Process the input question and think through a response.
 
@@ -46,51 +91,6 @@ class Thinker(BasePersona):
             return f"An error occurred while processing: {e}"
 
         return output
-
-    def query_user_for_input(self):
-        """ Continuously prompts the user for questions until they choose to exit. """
-        while True:
-            new_question = input("Please enter your question (or type 'exit' to quit): ")
-            if Utility.is_exit_command(new_question):
-                print("Exiting the question loop.")
-                break
-            elif new_question.lower() == 'history':
-                self.display_history()
-            elif Utility.is_valid_question(new_question):
-                self.run_workflow(new_question)
-            else:
-                print("Invalid input. Please ask a clear and valid question.")
-
-    def display_history(self):
-        """Display the conversation history to the user."""
-        if not self.history:
-            print("No interaction history available.")
-            return
-        print("Interaction History:")
-        for i, (question, response) in enumerate(self.history):
-            print(f"{i + 1}: Q: {question}\n    A: {response}")
-
-    def process_question(self, question: str):
-        """Process and store the user's question."""
-        response = self.think([question])
-        self.history.append((question, response))
-        return response
-
-    def run_workflow(self, initial_message: str):
-        """Engage in a back-and-forth dialogue with itself
-        ToDo: should be selected from via AI call
-        """
-        analyser_messages = [
-            "Examine the current implementation and your answer for any logical inconsistencies or flaws. Identify specific areas where the logic might fail or where the implementation does not meet the requirements. Provide a revised version addressing these issues.",
-            "Evaluate the current implementation for opportunities to enhance features, improve naming conventions, and increase documentation clarity. Assess readability and flexibility. Provide a revised version that incorporates these improvements.",
-            "Review the structure and flow of the documentation in Thinker.py. Suggest and implement changes to improve the organization, clarity, and ease of understanding of the documentation. Provide a revised version with these changes.",
-            "Present the final revised version of the code, incorporating all previous improvements we discussed. Additionally, provide a summary of the key changes made, explaining how each change enhances the code."
-        ]
-
-        prompt_messages = [initial_message] + analyser_messages
-        for iteration, message in enumerate(prompt_messages):
-            response = self.process_question(message)
-            logging.info("Iteration %d completed with response: %s", iteration, response)
 
 
 if __name__ == '__main__':

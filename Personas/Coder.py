@@ -19,32 +19,6 @@ class Coder(BasePersona):
         super().__init__(name)
         self.history: List[Tuple[str, str]] = []  # question-response pairs
 
-    def think(self, user_messages: List[str]) -> str:
-        """Process the input question and think through a response.
-
-        :param user_messages: List of existing user message
-        :return The generated response or error message
-        """
-        logging.info("Processing user messages: %s", user_messages)
-
-        selected_files = Organising.get_relevant_files(user_messages)
-        executor = AiOrchestrator(selected_files)
-
-        # ToDo: How the application accesses and gives history to the llm will need to be optimised
-        recent_history = [entry[1] for entry in self.history[-self.MAX_HISTORY:]]
-
-        try:
-            output = executor.execute(
-                [CoderSpecification.CODER_INSTRUCTIONS, CoderSpecification.load_configuration()],
-                user_messages,
-                assistant_messages=recent_history
-            )
-        except Exception as e:
-            logging.exception("An error occurred while thinking: %s", e)
-            return f"An error occurred while processing: {e}"
-
-        return output
-
     def query_user_for_input(self):
         """Continuously prompts the user for questions until they choose to exit. """
         while True:
@@ -67,12 +41,6 @@ class Coder(BasePersona):
         print("Interaction History:")
         for i, (question, response) in enumerate(self.history):
             print(f"{i + 1}: Q: {question}\n    A: {response}")
-
-    def process_question(self, question: str):
-        """Process and store the user's question."""
-        response = self.think([question])
-        self.history.append((question, response))
-        return response
 
     def run_workflow(self, initial_message: str):
         """Engage in a back-and-forth dialogue with itself."""
@@ -98,6 +66,38 @@ class Coder(BasePersona):
                     PersonaConstants.SAVE_TO: new_file,
                     PersonaConstants.INSTRUCTION: response
                 })
+
+    def process_question(self, question: str):
+        """Process and store the user's question."""
+        response = self.think([question])
+        self.history.append((question, response))
+        return response
+
+    def think(self, user_messages: List[str]) -> str:
+        """Process the input question and think through a response.
+
+        :param user_messages: List of existing user message
+        :return The generated response or error message
+        """
+        logging.info("Processing user messages: %s", user_messages)
+
+        selected_files = Organising.get_relevant_files(user_messages)
+        executor = AiOrchestrator(selected_files)
+
+        # ToDo: How the application accesses and gives history to the llm will need to be optimised
+        recent_history = [entry[1] for entry in self.history[-self.MAX_HISTORY:]]
+
+        try:
+            output = executor.execute(
+                [CoderSpecification.CODER_INSTRUCTIONS, CoderSpecification.load_configuration()],
+                user_messages,
+                assistant_messages=recent_history
+            )
+        except Exception as e:
+            logging.exception("An error occurred while thinking: %s", e)
+            return f"An error occurred while processing: {e}"
+
+        return output
 
 
 if __name__ == '__main__':
