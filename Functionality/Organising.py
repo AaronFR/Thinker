@@ -8,6 +8,7 @@ from Personas.PersonaSpecification import ThinkerSpecification, SummariserSpecif
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
 from Utilities.ExecutionLogs import ExecutionLogs
 from Utilities.FileManagement import FileManagement
+from Utilities.Utility import Utility
 
 
 class Organising:
@@ -93,33 +94,10 @@ class Organising:
                 Organising.create_summary_file(file_name)
 
     @staticmethod
-    def create_summary_file(file: str):
+    def create_summary_file(file_name: str):
         """Creates and saves a summary file for the given file.
 
-        :param file: The original file for which a summary will be created
-        """
-        summary = Organising.summarise_file(file)
-
-        summary_filename = Organising.create_summary_filename(file)
-        FileManagement.save_file(summary, summary_filename, overwrite=True)
-        ExecutionLogs.add_to_logs(f"Summariser: Summary for {file} written and saved as {summary_filename}")
-
-    @staticmethod
-    def create_summary_filename(original_filename: str) -> str:
-        """Creates a summary file name based on the original file name.
-
-        :param original_filename: The name of the original file
-        :return: A string representing the summary file name
-        """
-        base, _ = os.path.splitext(original_filename)
-        return f"{base}_summary.txt"
-
-    @staticmethod
-    def summarise_file(file_name: str) -> str:
-        """Generates a summary text for the given file.
-
-        :param file_name: The original file text that needs to be summarized
-        :return: A string containing the summary of the file
+        :param file_name: The original file for which a summary will be created
         """
         content = FileManagement.read_file(file_name)
         executor = AiOrchestrator()
@@ -128,5 +106,8 @@ class Organising:
             [SummariserSpecification.SUMMARISER_SYSTEM_INSTRUCTIONS],
             [f"Please summarize the content I previously gave you", content]
         )
+        summary_filename = f"{Utility.file_name_sans_extension(file_name)}_summary.txt"
 
-        return summary
+        FileManagement.save_file(summary, summary_filename, overwrite=True)
+        ExecutionLogs.add_to_logs(f"Summariser: Summary for {file_name} written and saved as {summary_filename}")
+

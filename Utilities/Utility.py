@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 from typing import List, Dict, Callable, Any
 
@@ -86,6 +87,16 @@ class Utility:
             return False
 
         return True
+
+    @staticmethod
+    def file_name_sans_extension(original_filename: str) -> str:
+        """Creates a summary file name based on the original file name.
+
+        :param original_filename: The name of the original file including extension e.g. '.txt'
+        :return: A string representing the file name without an extension
+        """
+        base, _ = os.path.splitext(original_filename)
+        return base
 
 if __name__ == '__main__':
     example = "replace_file_clues"
