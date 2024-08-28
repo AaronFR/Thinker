@@ -45,6 +45,66 @@ class Writing(enum.Enum):
             raise ValueError(f"Unknown Writing: {self}")
 
     @staticmethod
+    def write_to_file_task(task_parameters: Dict[str, object]):
+        """Repeatedly writes content to the specified number of pages. Where one page roughly corresponds to 500 words
+        (2000 tokens output)
+
+        :param task_parameters: Dict with SAVE_TO and 'pages_to_write'
+        """
+        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
+        pages_to_write = task_parameters.get("pages_to_write", 1)
+        output = ""
+
+        for i in range(1, pages_to_write + 1):
+            text = Writing._generate_text(executor, output, task_parameters, i)
+            output += text
+            logging.debug(f"Page {i} written: {text}")
+
+        FileManagement.save_file(output, task_parameters[PersonaConstants.SAVE_TO])
+        ExecutionLogs.add_to_logs(f"Saved to {task_parameters[PersonaConstants.SAVE_TO]}")
+
+    @staticmethod
+    def _generate_text(
+            executor_task: AiOrchestrator, output: str, task_parameters: Dict[str, object], page_number: int):
+        """Generates text for individual pages of a document based on specified directives and prior content.
+
+        :param executor_task: The instance of AiOrchestrator responsible for generating text
+        :param output: The previously generated text to build upon
+        :param task_parameters: A dictionary containing details of the task specifications
+        :param page_number: The current page number being generated
+        :return: The generated text for the specified page
+        """
+        instructions = [
+            f"So far you have written: \n\n{output}",
+            """Continue writing the document. Please bear in mind that you are being prompted repeatedly: 
+            you don't have to write a response for everything at once."""
+        ]
+
+        return executor_task.execute(
+            PersonaConstants.WRITER_SYSTEM_INSTRUCTIONS,
+            [
+                f"""Write the first page of {task_parameters['pages_to_write']}, 
+                    answering the following: {task_parameters[PersonaConstants.INSTRUCTION]}"""
+                if page_number == 1 else instructions
+            ]
+        )
+
+    @staticmethod
+    def append_to_file_task(task_parameters: Dict[str, object]):
+        """Appends generated content to a specified file_name.
+
+        :param task_parameters: Contains task-specific directives, including the instruction and file_name path
+         for saving
+        """
+        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
+        output = executor.execute(
+            Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
+            ["Primary Instructions: " + str(task_parameters[PersonaConstants.INSTRUCTION])]
+        )
+        FileManagement.save_file(output, task_parameters[PersonaConstants.SAVE_TO])
+        ExecutionLogs.add_to_logs(f"Appended content to {task_parameters[PersonaConstants.SAVE_TO]}")
+
+    @staticmethod
     def rewrite_file_lines(task_parameters: Dict[str, object]):
         """Rewrite the specified lines in a file based on provided instructions and save the updated content.
         NOTE: This is especially bad, at formatting code. ChatGpt wants to fill in ANY incomplete structural elements
@@ -150,90 +210,6 @@ class Writing(enum.Enum):
         ExecutionLogs.add_to_logs(f"Saved to {target_file_path}")
 
     @staticmethod
-    def write_to_file_task(task_parameters: Dict[str, object]):
-        """Repeatedly writes content to the specified number of pages. Where one page roughly corresponds to 500 words
-        (2000 tokens output)
-
-        :param task_parameters: Dict with SAVE_TO and 'pages_to_write'
-        """
-        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
-        pages_to_write = task_parameters.get("pages_to_write", 1)
-        output = ""
-
-        for i in range(1, pages_to_write + 1):
-            text = Writing._generate_text(executor, output, task_parameters, i)
-            output += text
-            logging.debug(f"Page {i} written: {text}")
-
-        FileManagement.save_file(output, task_parameters[PersonaConstants.SAVE_TO])
-        ExecutionLogs.add_to_logs(f"Saved to {task_parameters[PersonaConstants.SAVE_TO]}")
-
-    @staticmethod
-    def _generate_text(
-            executor_task: AiOrchestrator, output: str, task_parameters: Dict[str, object], page_number: int):
-        """Generates text for individual pages of a document based on specified directives and prior content.
-
-        :param executor_task: The instance of AiOrchestrator responsible for generating text
-        :param output: The previously generated text to build upon
-        :param task_parameters: A dictionary containing details of the task specifications
-        :param page_number: The current page number being generated
-        :return: The generated text for the specified page
-        """
-        instructions = [
-            f"So far you have written: \n\n{output}",
-            """Continue writing the document. Please bear in mind that you are being prompted repeatedly: 
-            you don't have to write a response for everything at once."""
-        ]
-
-        return executor_task.execute(
-            PersonaConstants.WRITER_SYSTEM_INSTRUCTIONS,
-            [
-                f"""Write the first page of {task_parameters['pages_to_write']}, 
-                answering the following: {task_parameters[PersonaConstants.INSTRUCTION]}"""
-                if page_number == 1 else instructions
-            ]
-        )
-
-    @staticmethod
-    def append_to_file_task(task_parameters: Dict[str, object]):
-        """Appends generated content to a specified file_name.
-
-        :param task_parameters: Contains task-specific directives, including the instruction and file_name path
-         for saving
-        """
-        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
-        output = executor.execute(
-            Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
-            ["Primary Instructions: " + str(task_parameters[PersonaConstants.INSTRUCTION])]
-        )
-        FileManagement.save_file(output, task_parameters[PersonaConstants.SAVE_TO])
-        ExecutionLogs.add_to_logs(f"Appended content to {task_parameters[PersonaConstants.SAVE_TO]}")
-
-    @staticmethod
-    def refactor_task(task_parameters: Dict[str, object]):
-        """Refactor files based on regex patterns provided in the task directives.
-        # ToDo: It would make sense to add a check of the output
-         to make sure a name isn't being changed which *shouldn't*
-
-        :param task_parameters: A dictionary containing key fields:
-            - INSTRUCTION: The regex pattern and modifications to be applied
-            - REWRITE_THIS: The target string or pattern that needs to be rewritten
-        """
-        evaluation_files = FileManagement.list_file_names()
-        for file in evaluation_files:
-            try:
-                FileManagement.regex_refactor(
-                    str(task_parameters[PersonaConstants.REWRITE_THIS]),
-                    str(task_parameters[PersonaConstants.INSTRUCTION]),
-                    file
-                )
-            except ValueError:
-                logging.exception(f"Failed to rewrite file {file}")
-
-        ExecutionLogs.add_to_logs(
-            f"Regex refactored {task_parameters[PersonaConstants.REWRITE_THIS]} -> {task_parameters[PersonaConstants.INSTRUCTION]}")
-
-    @staticmethod
     def rewrite_file_task(task_parameters: Dict[str, object],
                           approx_max_tokens=1000):
         """Split an input file into chunks based on the estimated max number of output tokens (2000 tokens) taking in
@@ -277,6 +253,30 @@ class Writing(enum.Enum):
 
         approx_max_chars = approx_max_tokens * char_per_token
         return split_into_chunks(text, approx_max_chars)
+
+    @staticmethod
+    def refactor_task(task_parameters: Dict[str, object]):
+        """Refactor files based on regex patterns provided in the task directives.
+        # ToDo: It would make sense to add a check of the output
+         to make sure a name isn't being changed which *shouldn't*
+
+        :param task_parameters: A dictionary containing key fields:
+            - INSTRUCTION: The regex pattern and modifications to be applied
+            - REWRITE_THIS: The target string or pattern that needs to be rewritten
+        """
+        evaluation_files = FileManagement.list_file_names()
+        for file in evaluation_files:
+            try:
+                FileManagement.regex_refactor(
+                    str(task_parameters[PersonaConstants.REWRITE_THIS]),
+                    str(task_parameters[PersonaConstants.INSTRUCTION]),
+                    file
+                )
+            except ValueError:
+                logging.exception(f"Failed to rewrite file {file}")
+
+        ExecutionLogs.add_to_logs(
+            f"Regex refactored {task_parameters[PersonaConstants.REWRITE_THIS]} -> {task_parameters[PersonaConstants.INSTRUCTION]}")
 
 
 if __name__ == '__main__':
