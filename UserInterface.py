@@ -8,6 +8,7 @@ from Utilities.ErrorHandler import ErrorHandler
 from Utilities.FileManagement import FileManagement
 from Personas.PersonaSpecification import PersonaConstants
 from Personas.PersonaSystem import PersonaSystem
+from Utilities.Utility import Utility
 
 
 class UserInterface:
@@ -40,7 +41,7 @@ class UserInterface:
         while allowing for early exit conditions if warranted.
 
         :param user_prompt: The prompt provided by the user for processing"""
-        if not self.is_prompt_valid(user_prompt):
+        if not Utility.is_prompt_valid(user_prompt):
             return  # Exit early on invalid input
 
         current_prompt_folder = os.path.join(FileManagement.thoughts_directory, f"{Globals.current_thought_id}")
@@ -68,6 +69,18 @@ class UserInterface:
         if not self.within_budget() or attempt_count >= self.MAX_TRIES:
             self._log_and_save_unsolved_problem()
 
+    @staticmethod
+    def within_budget(budget: float = BUDGET) -> bool:
+        """Evaluate whether the current request cost aligns with predefined budgetary constraints.
+
+        :param budget: The budget cap for assessment. Default is the class-level BUDGET
+        :returns: True if costs are within budget, False otherwise
+        """
+        logging.info(
+            f"""Current cost: ${round(Globals.current_request_cost, 5)}, 
+            {round((Globals.current_request_cost / budget) * 100, 5)}%""")
+        return Globals.current_request_cost <= budget
+
     def _process_task_iteration(self, current_user_prompt: str, attempt_count: int):
         """Execute a single iteration of task processing for the given user prompt
 
@@ -92,26 +105,6 @@ class UserInterface:
             ExecutionLogs.add_to_logs(f"Iteration {attempt_count} failed due to: {str(e)}.")
 
     @staticmethod
-    def is_prompt_valid(user_prompt: str) -> bool:
-        """Validate the user's input prompt against content and length restrictions.  # ToDo:eventually...
-
-        This method checks if the user prompt is appropriate for processing.
-
-        :param user_prompt: The prompt to be validated
-        :return: True if valid, False otherwise
-        """
-        if not isinstance(user_prompt, str):
-            logging.error("Invalid input: user_prompt must be a non-empty string.")
-            return False
-
-        return True
-
-    def _log_and_save_unsolved_problem(self):
-        """Log and save information about an unsolved problem"""
-        logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS")
-        ExecutionLogs.add_to_logs(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS\n")
-
-    @staticmethod
     def _log_request_completion(task_to_execute: str, attempt_count: int):
         """Log the termination of a request process
 
@@ -122,17 +115,10 @@ class UserInterface:
                         Completed in {attempt_count} iterations
                         Total cost incurred: ${round(Globals.current_request_cost, 4)}""")
 
-    @staticmethod
-    def within_budget(budget: float = BUDGET) -> bool:
-        """Evaluate whether the current request cost aligns with predefined budgetary constraints.
-
-        :param budget: The budget cap for assessment. Default is the class-level BUDGET
-        :returns: True if costs are within budget, False otherwise
-        """
-        logging.info(
-            f"""Current cost: ${round(Globals.current_request_cost, 5)}, 
-            {round((Globals.current_request_cost / budget) * 100, 5)}%""")
-        return Globals.current_request_cost <= budget
+    def _log_and_save_unsolved_problem(self):
+        """Log and save information about an unsolved problem"""
+        logging.error(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS")
+        ExecutionLogs.add_to_logs(f"PROBLEM REMAINS UNSOLVED AFTER {self.MAX_TRIES} ATTEMPTS\n")
 
 
 if __name__ == '__main__':
