@@ -14,7 +14,7 @@ class AiOrchestrator:
     generating appropriate responses.
     """
 
-    def __init__(self, input_files: List[str]):
+    def __init__(self, input_files: List[str]=[]):
         """Initializes a llm wrapper instance that can make call to a given model (currently only OpenAi models).
 
         :param input_files: A list of file names that users provide for analysis or reference in generating responses

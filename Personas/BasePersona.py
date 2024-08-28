@@ -55,16 +55,6 @@ class BasePersona:
             ExecutionLogs.add_to_logs(f"Task failed: {failed_task}\n")
 
     @staticmethod
-    def create_ai_wrapper(input_data: List[str]) -> AiOrchestrator:
-        """
-        Create a new wrapper instance for llm processing.
-
-        :param input_data: file_name references to be used as context
-        :return: An instance of the AI wrapper class
-        """
-        return AiOrchestrator(input_data)
-
-    @staticmethod
     def valid_function_output(
             executive_plan: Dict[str, object]) -> bool:
         """
@@ -114,7 +104,7 @@ class BasePersona:
         """
 
         existing_files = f"Existing files: [{', '.join(str(file) for file in evaluation_files)}]"
-        ai_wrapper = BasePersona.create_ai_wrapper(evaluation_files)
+        ai_wrapper = AiOrchestrator(evaluation_files)
 
         for attempt in range(max_retries + 1):
             executive_plan = ai_wrapper.execute_function(

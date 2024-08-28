@@ -3,6 +3,7 @@ import re
 from pprint import pformat
 from typing import List
 
+from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Utilities import Globals
 import Personas.PersonaSpecification.PersonaConstants
 from Utilities.ExecutionLogs import ExecutionLogs
@@ -28,7 +29,7 @@ class Analyst(BasePersona):
         self.evaluation_files = FileManagement.list_file_names()
 
         # evaluate current files
-        analyst = self.create_ai_wrapper(self.evaluation_files)
+        analyst = AiOrchestrator(self.evaluation_files)
         analysis_report = analyst.execute(
             [PersonaConstants.ANALYST_SYSTEM_INSTRUCTIONS],
             [f"""For the following user request: {task_to_execute} how do you evaluate the current available files as a solution?:
@@ -53,8 +54,7 @@ class Analyst(BasePersona):
                                   + pformat(Globals.workers, width=300))
 
     def recommend_workers(self, user_request) -> List[str]:
-        analyst = self.create_ai_wrapper([
-                                             Personas.PersonaSpecification.PersonaConstants.meta_analysis_filename])
+        analyst = AiOrchestrator([PersonaConstants.meta_analysis_filename])
         function_output = analyst.execute_function(
             [PersonaConstants.ANALYST_FUNCTION_INSTRUCTIONS],
             [f"Initial user request: {user_request}"],

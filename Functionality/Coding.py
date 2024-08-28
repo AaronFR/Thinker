@@ -1,7 +1,7 @@
 import enum
 from typing import Dict
 
-from Personas.BasePersona import BasePersona
+from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Utilities.ExecutionLogs import ExecutionLogs
 from Utilities.FileManagement import FileManagement
 from Personas.PersonaSpecification import PersonaConstants
@@ -23,7 +23,7 @@ class Coding(enum.Enum):
 
         :param task_parameters: Dict with SAVE_TO and INSTRUCTION
         """
-        executor = BasePersona.create_ai_wrapper(task_parameters.get(PersonaConstants.REFERENCE, []))
+        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
         output = executor.execute(
             ["Just write the code from the following input, strip out any code block designators, e.g. ```python...```"],
             [task_parameters[PersonaConstants.INSTRUCTION]]

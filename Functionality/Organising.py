@@ -2,6 +2,7 @@ import logging
 import os
 from typing import List, Tuple
 
+from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import ThinkerSpecification, SummariserSpecification
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
@@ -26,7 +27,7 @@ class Organising:
         Organising.summarise_files(evaluation_files)
         summaries = Organising.get_files_with_summary()
 
-        executor = BasePersona.create_ai_wrapper([])
+        executor = AiOrchestrator()
         try:
             output = executor.execute_function(
                 [ThinkerSpecification.build_file_query_prompt(summaries)],
@@ -121,7 +122,7 @@ class Organising:
         :return: A string containing the summary of the file
         """
         content = FileManagement.read_file(file_name)
-        executor = BasePersona.create_ai_wrapper([])
+        executor = AiOrchestrator()
 
         summary = executor.execute(
             [SummariserSpecification.SUMMARISER_SYSTEM_INSTRUCTIONS],

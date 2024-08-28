@@ -1,6 +1,7 @@
 import logging
 from typing import List, Tuple
 
+from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Functionality.Coding import Coding
 from Functionality.Organising import Organising
 from Personas.BasePersona import BasePersona
@@ -27,7 +28,7 @@ class Coder(BasePersona):
         logging.info("Processing user messages: %s", user_messages)
 
         selected_files = Organising.get_relevant_files(user_messages)
-        executor = BasePersona.create_ai_wrapper(selected_files)
+        executor = AiOrchestrator(selected_files)
 
         # ToDo: How the application accesses and gives history to the llm will need to be optimised
         recent_history = [entry[1] for entry in self.history[-self.MAX_HISTORY:]]
@@ -75,7 +76,7 @@ class Coder(BasePersona):
 
     def run_workflow(self, initial_message: str):
         """Engage in a back-and-forth dialogue with itself."""
-        executor = BasePersona.create_ai_wrapper([])
+        executor = AiOrchestrator()
         new_file = executor.execute(
             "Give just a filename (with extension) that should be worked on given the following prompt. No commentary",
             initial_message)

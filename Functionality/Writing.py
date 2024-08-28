@@ -2,7 +2,6 @@ import enum
 import logging
 from typing import Dict, List
 
-from Personas.BasePersona import BasePersona
 from Utilities import Constants
 from Personas.PersonaSpecification.EditorSpecification import REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS, \
     EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA, EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS, \
@@ -56,7 +55,7 @@ class Writing(enum.Enum):
             'SAVE_TO': str - The path to the file where updates should be saved
             'INSTRUCTION': str - Detailed instructions on how to process and rewrite the file lines
         """
-        executor = BasePersona.create_ai_wrapper(task_parameters.get(PersonaConstants.REFERENCE, []))
+        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
         file_path = str(task_parameters[PersonaConstants.SAVE_TO])
         file_lines = FileManagement.read_file_with_lines(file_path)
 
@@ -71,7 +70,7 @@ class Writing(enum.Enum):
         :param task_parameters: A dictionary containing directives for the task, including the file
          name to save to and the instructions for the replacements
         """
-        executor = BasePersona.create_ai_wrapper(task_parameters.get(PersonaConstants.REFERENCE, []))
+        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
         replacement_instructions = [
             ''.join(FileManagement.get_numbered_lines(file_lines)),
             f"""For the specified file: {task_parameters[PersonaConstants.SAVE_TO]}, 
@@ -157,7 +156,7 @@ class Writing(enum.Enum):
 
         :param task_parameters: Dict with SAVE_TO and 'pages_to_write'
         """
-        executor = BasePersona.create_ai_wrapper(task_parameters.get(PersonaConstants.REFERENCE, []))
+        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
         pages_to_write = task_parameters.get("pages_to_write", 1)
         output = ""
 
@@ -202,7 +201,7 @@ class Writing(enum.Enum):
         :param task_parameters: Contains task-specific directives, including the instruction and file_name path
          for saving
         """
-        executor = BasePersona.create_ai_wrapper(task_parameters.get(PersonaConstants.REFERENCE, []))
+        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
         output = executor.execute(
             Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
             ["Primary Instructions: " + str(task_parameters[PersonaConstants.INSTRUCTION])]
@@ -245,7 +244,7 @@ class Writing(enum.Enum):
             - 'INSTRUCTION': Detailed instructions on how to modify the text
         :param approx_max_tokens: token chunk size to split the document by
         """
-        executor = BasePersona.create_ai_wrapper(task_parameters.get(PersonaConstants.REFERENCE, []))
+        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
         file_contents = FileManagement.read_file(str(task_parameters[PersonaConstants.SAVE_TO]))
         text_chunks = Writing.chunk_text(file_contents, approx_max_tokens)
 
