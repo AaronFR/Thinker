@@ -1,9 +1,7 @@
 import logging
-import os
 from typing import List, Tuple
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import ThinkerSpecification, SummariserSpecification
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
 from Utilities.ExecutionLogs import ExecutionLogs

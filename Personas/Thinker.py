@@ -1,11 +1,9 @@
 import logging
-from typing import List, Tuple
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Functionality.Organising import Organising
+from Functionality.Coding import Coding
 from Personas.BasePersona import BasePersona
-from Utilities.Utility import Utility
-
+from Personas.PersonaSpecification import PersonaConstants, CoderSpecification
 
 class Thinker(BasePersona):
     """
@@ -15,40 +13,24 @@ class Thinker(BasePersona):
 
     def __init__(self, name):
         super().__init__(name)
-        self.history: List[Tuple[str, str]] = []  # question-response pairs
+        self.workflows = {
+            "write": "Write down your thoughts"
+        }
+        self.instructions = "Just think through the question, step by step, prioritizing the most recent user prompt."
+        self.configuration = CoderSpecification.load_configuration()  # ToDo: These should be added to their own config file
 
-    def query_user_for_input(self):
-        """ Continuously prompts the user for questions until they choose to exit. """
-        while True:
-            new_question = input("Please enter your question (or type 'exit' to quit): ")
-            if Utility.is_exit_command(new_question):
-                print("Exiting the question loop.")
-                break
-            elif new_question.lower() == 'history':
-                self.display_history()
-            elif Utility.is_valid_question(new_question):
-                self.run_workflow(new_question)
-            else:
-                print("Invalid input. Please ask a clear and valid question.")
+    def write_workflow(self, initial_message: str):
+        """Engage in a back-and-forth dialogue with itself"""
+        executor = AiOrchestrator()
+        file_name = executor.execute(
+            "Give just a filename (with extension) that should be worked on given the following prompt. No commentary",
+            initial_message)
 
-    def display_history(self):
-        """Display the conversation history to the user."""
-        if not self.history:
-            print("No interaction history available.")
-            return
-        print("Interaction History:")
-        for i, (question, response) in enumerate(self.history):
-            print(f"{i + 1}: Q: {question}\n    A: {response}")
-
-    def run_workflow(self, initial_message: str):
-        """Engage in a back-and-forth dialogue with itself
-        ToDo: should be selected from via AI call
-        """
         analyser_messages = [
-            "Examine the current implementation and your answer for any logical inconsistencies or flaws. Identify specific areas where the logic might fail or where the implementation does not meet the requirements. Provide a revised version addressing these issues.",
-            "Evaluate the current implementation for opportunities to enhance features, improve naming conventions, and increase documentation clarity. Assess readability and flexibility. Provide a revised version that incorporates these improvements.",
-            "Review the structure and flow of the documentation in Thinker.py. Suggest and implement changes to improve the organization, clarity, and ease of understanding of the documentation. Provide a revised version with these changes.",
-            "Present the final revised version of the code, incorporating all previous improvements we discussed. Additionally, provide a summary of the key changes made, explaining how each change enhances the code."
+            f"Consider the essence of the idea before you in {file_name}. Reflect on the underlying logic and coherence. Are there inconsistencies or contradictions in the thought process? Where might the reasoning falter, and how could it be more aligned with its true purpose? Contemplate these aspects deeply and propose a way forward that resolves these tensions.",
+            f"Engage with the idea in {file_name} as you would with a profound concept. Explore its structure and the connections between its elements. Are there opportunities to refine the expression of these thoughts? Could clarity, understanding, or flexibility be enhanced? Reflect on how the concept can be more fully realized and suggest improvements that bring its potential into sharper focus.",
+            f"Observe the flow and organization of the thoughts presented in {file_name}. Does the narrative guide the mind smoothly, or are there areas where understanding becomes clouded? Consider how the communication of these ideas could be made more transparent, more engaging, and easier to grasp. Suggest a revised structure that enhances the clarity and impact of the message.",
+            f"Now, synthesize your reflections into a coherent whole inside {file_name}. Present the refined version of the concept, incorporating all the insights gained from your observations and considerations."
         ]
 
         prompt_messages = [initial_message] + analyser_messages
@@ -56,37 +38,12 @@ class Thinker(BasePersona):
             response = self.process_question(message)
             logging.info("Iteration %d completed with response: %s", iteration, response)
 
-    def process_question(self, question: str):
-        """Process and store the user's question."""
-        response = self.think([question])
-        self.history.append((question, response))
-        return response
+            if iteration == 4:
+                Coding.write_to_file_task({
+                    PersonaConstants.SAVE_TO: file_name,
+                    PersonaConstants.INSTRUCTION: response
+                })
 
-    def think(self, user_messages: List[str]) -> str:
-        """Process the input question and think through a response.
-
-        :param user_messages: List of existing user message
-        :return: The generated response or error message
-        """
-        logging.info("Processing user messages: %s", user_messages)
-
-        selected_files = Organising.get_relevant_files(user_messages)
-        executor = AiOrchestrator(selected_files)
-
-        # ToDo: How the application accesses and gives history to the llm will need to be optimised
-        recent_history = [entry[1] for entry in self.history[-self.MAX_HISTORY:]]
-
-        try:
-            output = executor.execute(
-                ["Just think through the question, step by step, prioritizing the most recent user prompt."],
-                user_messages,
-                assistant_messages=recent_history
-            )
-        except Exception as e:
-            logging.exception("An error occurred while thinking: %s", e)
-            return f"An error occurred while processing: {e}"
-
-        return output
 
 
 if __name__ == '__main__':

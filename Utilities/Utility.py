@@ -98,6 +98,7 @@ class Utility:
         base, _ = os.path.splitext(original_filename)
         return base
 
+
 if __name__ == '__main__':
     example = "replace_file_clues"
     utility = Utility()

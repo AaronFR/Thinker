@@ -229,3 +229,20 @@ Adopting sustainable farming practices and improving irrigation techniques can m
 climate change on agriculture.
 ---
 """
+
+SELECT_WORKFLOW_INSTRUCTIONS = [{
+    "name": "executiveDirective",
+    "description": f"""Given what my next task which of the following workflows is the most appropriate?
+    Just select which workflow is most appropriate.""",
+    "parameters": {
+        TYPE: "object",
+        "properties": {
+            "selection": {
+                "type": "string",
+                "description": "The workflow that fits the input message the best",
+            }
+        },
+        "required": ["order_id"],
+        "additionalProperties": False
+    }
+}]

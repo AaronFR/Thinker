@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored: AiWrapper -> AiOrchestrator, Prompter -> ChatGptWrapper and to new AiOrchestration directory.
  To make their purpose in the project clearer
 - Docstrings: all refactored in the reStructuredText format
+- Personas are now only responsible for defining their own workflows and configuration, execution logic is stored in the interface BasePersona.py
 
 ### Removed
 
