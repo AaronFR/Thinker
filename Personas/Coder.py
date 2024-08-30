@@ -45,6 +45,8 @@ class Coder(BasePersona):
             f"Review the structure and flow of the documentation in {file_name}. "
             "Suggest and implement changes to improve the organization, clarity, and ease of understanding of the code "
             "and its documentation. Provide a new and improved version of the code with its improved documentation.",
+            f"Assess the code in {file_name} for adherence to coding standards and best practices. "
+            "Suggest changes to improve code quality.",
             f"Present the final revised version of the code in {file_name}, "
             "incorporating all previous improvements we discussed. "
             "Additionally, provide a summary of the key changes made, explaining how each change enhances the code."
