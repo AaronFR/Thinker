@@ -82,7 +82,7 @@ class Organising:
                 logging.warning("File without file extension")
                 name_parts = [name_parts, "txt"]
 
-            summary_file_name = f"{name_parts[0]}_summary.{name_parts[1]}"
+            summary_file_name = f"{name_parts[0]}_summary.txt"
 
             if summary_file_name in evaluation_files_set:
                 summary_files.add(file_name)
