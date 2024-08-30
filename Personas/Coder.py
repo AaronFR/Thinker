@@ -12,6 +12,11 @@ class Coder(BasePersona):
     """
 
     def __init__(self, name):
+        """
+        Initialize the Coder persona with a given name.
+
+        :param name: The name of the coding persona.
+        """
         super().__init__(name)
         self.workflows = {
             "write": "Workflow for creating or overwriting a code file"
@@ -20,29 +25,45 @@ class Coder(BasePersona):
         self.configuration = CoderSpecification.load_configuration()
 
     def write_workflow(self, initial_message: str):
-        """Engage in a back-and-forth dialogue with itself, with the aim of writing a document."""
+        """
+        Writes the improved code to a specified file.
+
+        :param initial_message: The user's initial guidance for writing the code.
+        """
         executor = AiOrchestrator()
         file_name = executor.execute(
             "Give just a filename (with extension) that should be worked on given the following prompt. No commentary",
             initial_message)
 
         analyser_messages = [
-            f"Examine the current implementation of {file_name} and your answer for any logical inconsistencies or flaws. Identify specific areas where the logic might fail or where the implementation does not meet the requirements. Provide a revised version addressing these issues.",
-            f"Evaluate the current implementation of {file_name} for opportunities to enhance features, improve naming conventions, and increase documentation clarity. Assess readability and flexibility. Provide a revised version that incorporates these improvements.",
-            f"Review the structure and flow of the documentation in {file_name}. Suggest and implement changes to improve the organization, clarity, and ease of understanding of the code and its documentation. Provide a new and improved version of the code with its improved documentation.",
-            f"Present the final revised version of the code in {file_name}, incorporating all previous improvements we discussed. Additionally, provide a summary of the key changes made, explaining how each change enhances the code."
+            f"Examine the current implementation of {file_name} and your answer for any logical inconsistencies or "
+            "flaws. Identify specific areas where the logic might fail or where the implementation does not meet "
+            "the requirements. Provide a revised version addressing these issues.",
+            f"Evaluate the current implementation of {file_name} for opportunities to enhance features, improve naming "
+            "conventions, and increase documentation clarity. Assess readability and flexibility. "
+            "Provide a revised version that incorporates these improvements.",
+            f"Review the structure and flow of the documentation in {file_name}. "
+            "Suggest and implement changes to improve the organization, clarity, and ease of understanding of the code "
+            "and its documentation. Provide a new and improved version of the code with its improved documentation.",
+            f"Present the final revised version of the code in {file_name}, "
+            "incorporating all previous improvements we discussed. "
+            "Additionally, provide a summary of the key changes made, explaining how each change enhances the code."
         ]
-
         prompt_messages = [initial_message] + analyser_messages
-        for iteration, message in enumerate(prompt_messages):
-            response = self.process_question(message)
-            logging.info("Iteration %d completed with response: %s", iteration, response)
 
-            if iteration == 4:
-                Coding.write_to_file_task({
-                    PersonaConstants.SAVE_TO: file_name,
-                    PersonaConstants.INSTRUCTION: response
-                })
+        try:
+            for iteration, message in enumerate(prompt_messages):
+                response = self.process_question(message)
+                logging.info("Iteration %d completed with response: %s", iteration, response)
+
+                if iteration == 5:
+                    Coding.write_to_file_task({
+                        PersonaConstants.SAVE_TO: file_name,
+                        PersonaConstants.INSTRUCTION: response
+                    })
+
+        except Exception as e:
+            logging.error("Error during writing workflow: %s", str(e))
 
 
 if __name__ == '__main__':
