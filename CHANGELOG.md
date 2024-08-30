@@ -9,9 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 
+
+### Changed
+
+- 
+
+### Removed
+
+- 
+
+## [0.6.0] - 2024-08-30 - Scalability
+
+### Added
+
 - ChatGptModel enum added for representing OpenAi models
 - Thinker persona: thinks through problems and interacts closely with the user. It illustrates the general path of solving a given problem in detail which will be followed by ""subconscious"" executors.
-- created 'self_converse' functionality: allowing a persona to be prompted with a given set of questions tailored to the prompt genre, for guiding it to improve its answer over time.
 - Coder persona: for creating new software files
 - Configuration: Persona's will load configuration dependent on their role that instructs how they operate, e.g. tone,
  style, length of replies, etc
@@ -19,16 +32,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Refactored: AiWrapper -> AiOrchestrator, Prompter -> ChatGptWrapper and to new AiOrchestration directory.
- To make their purpose in the project clearer
+- workflow system replacing the 'executive plan' system. Instead of giving the AI model free rein to devise how to approach a given problem, a matching workflow is selected and run.
+ This makes outputs more predictable and reliable while allowing us to tailor the workflow over the course of development.
+  - Personas are now only responsible for defining their own workflows and configuration, execution logic is stored in the interface BasePersona.py 
+- Refactored: AiWrapper -> AiOrchestrator, Prompter -> ChatGptWrapper, added to new AiOrchestration directory.
 - Docstrings: all refactored in the reStructuredText format
-- Personas are now only responsible for defining their own workflows and configuration, execution logic is stored in the interface BasePersona.py
 
-### Removed
-
-- 
-
-## 0.5.0 - 2024-08-15 - Quality
+## [0.5.0] - 2024-08-15 - Quality
 
 ### Added
 

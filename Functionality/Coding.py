@@ -13,7 +13,6 @@ class Coding(enum.Enum):
     Methods:
         - WRITING: write new code file
     """
-    WRITE = "WRITE"
 
     @staticmethod
     def write_to_file_task(task_parameters: Dict[str, object]):

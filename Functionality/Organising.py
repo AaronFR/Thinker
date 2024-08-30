@@ -2,7 +2,7 @@ import logging
 from typing import List, Tuple
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Personas.PersonaSpecification import ThinkerSpecification, SummariserSpecification
+from Personas.PersonaSpecification import ThinkerSpecification, PersonaConstants
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
 from Utilities.ExecutionLogs import ExecutionLogs
 from Utilities.FileManagement import FileManagement
@@ -101,7 +101,7 @@ class Organising:
         executor = AiOrchestrator()
 
         summary = executor.execute(
-            [SummariserSpecification.SUMMARISER_SYSTEM_INSTRUCTIONS],
+            [PersonaConstants.SUMMARISER_SYSTEM_INSTRUCTIONS],
             [f"Please summarize the content I previously gave you", content]
         )
         summary_filename = f"{Utility.file_name_sans_extension(file_name)}_summary.txt"

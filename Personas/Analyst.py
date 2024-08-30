@@ -8,7 +8,7 @@ from Utilities import Globals
 from Utilities.ExecutionLogs import ExecutionLogs
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.FileManagement import FileManagement
-from Personas.PersonaSpecification import PersonaConstants
+from Personas.PersonaSpecification import PersonaConstants, AnalystSpecification
 from Personas.BasePersona import BasePersona
 
 
@@ -30,7 +30,7 @@ class Analyst(BasePersona):
         # evaluate current files
         analyst = AiOrchestrator(self.evaluation_files)
         analysis_report = analyst.execute(
-            [PersonaConstants.ANALYST_SYSTEM_INSTRUCTIONS],
+            [AnalystSpecification.ANALYST_SYSTEM_INSTRUCTIONS],
             [f"""For the following user request: {task_to_execute} how do you evaluate the current available files as a solution?:
             Make as many notes and corrections as you possibly can"""]
         )
@@ -55,9 +55,9 @@ class Analyst(BasePersona):
     def recommend_workers(self, user_request) -> List[str]:
         analyst = AiOrchestrator([PersonaConstants.meta_analysis_filename])
         function_output = analyst.execute_function(
-            [PersonaConstants.ANALYST_FUNCTION_INSTRUCTIONS],
+            [AnalystSpecification.ANALYST_FUNCTION_INSTRUCTIONS],
             [f"Initial user request: {user_request}"],
-            PersonaConstants.ANALYST_FUNCTION_SCHEMA
+            AnalystSpecification.ANALYST_FUNCTION_SCHEMA
         )
 
         return function_output[PersonaConstants.WORKERS]

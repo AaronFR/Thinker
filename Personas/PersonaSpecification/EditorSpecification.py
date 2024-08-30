@@ -1,6 +1,7 @@
 from Personas.PersonaSpecification import PersonaConstants
 from Personas.PersonaSpecification.PersonaConstants import SAVE_TO, TYPE, TASKS, REFERENCE, INSTRUCTION, \
     meta_analysis_filename, execution_logs_filename, DEFAULT_REQUIRED_KEYS
+from Utilities.Configuration import Configuration
 
 
 EditorTasks = {
@@ -8,6 +9,19 @@ EditorTasks = {
     "REWRITE_FILE": "REWRITE_FILE",
     "REGEX_REFACTOR": "REGEX_REFACTOR"
 }
+
+
+def load_configuration():
+    config = Configuration.load_config()
+
+    return f"""Following the following guidelines when editing text.
+    general tone: {config['writing']['tone']}
+    write for the following audience: {config['audience']}
+    vocabulary focus: {config['preferred_vocabulary']}
+    """
+
+
+EDITOR_INSTRUCTIONS = "Just think through the question, step by step, prioritizing the most recent user prompt."
 
 
 EXECUTIVE_EDITOR_FUNCTION_INSTRUCTIONS = f"""

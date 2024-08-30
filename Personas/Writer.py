@@ -1,14 +1,11 @@
 import logging
-from pprint import pformat
-from typing import Dict, List
 
+from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Functionality.Writing import Writing
-from Utilities.ExecutionLogs import ExecutionLogs
 from Utilities.ErrorHandler import ErrorHandler
-from Utilities.FileManagement import FileManagement
-from Personas.PersonaSpecification import PersonaConstants
+from Personas.PersonaSpecification import PersonaConstants, WriterSpecification
 from Personas.BasePersona import BasePersona
-from Utilities.Utility import Utility
+from Utilities.FileManagement import FileManagement
 
 
 class Writer(BasePersona):
@@ -16,88 +13,55 @@ class Writer(BasePersona):
     Writer persona, representing a role that manages writing tasks and their outputs
 
     This persona handles tasks such as creating new documents or appending to existing files.
-
-    Supported writing tasks:
-        - WRITE: Create a new document.
-        - APPEND: Add content to an existing document.
     """
-
-    writing_tasks = [Writing.WRITE, Writing.APPEND]
 
     def __init__(self, name):
         super().__init__(name)
-        self.evaluation_files = []
+        self.workflows = {
+            "write": "Workflow for creating or overwriting a text document"
+        }
+        self.instructions = WriterSpecification.WRITER_INSTRUCTIONS
+        self.configuration = WriterSpecification.load_configuration()
 
         ErrorHandler.setup_logging()
 
-    def execute_task(self, task_to_execute: str):
-        """Executes the specified writing task.
+    def write_workflow(self, initial_message: str):
+        """Engage in a back-and-forth dialogue with itself, with the aim of writing a document."""
+        executor = AiOrchestrator()
+        file_name = executor.execute(
+            "Give just a filename (with extension) that should be worked on given the following prompt. No commentary",
+            initial_message)
 
-        This method is responsible for managing the execution of a writing task by first retrieving
-        the evaluation files, then generating an executive plan based on the given task, and
-        finally processing the individual tasks outlined in that plan.
+        evaluation_files = FileManagement.list_file_names()
+        if file_name in evaluation_files:
+            file_name = executor.execute(
+                "Given the context of the following prompt, should the writing be appended or should it overwrite the file? No commentary",
+                initial_message)
+        # Decide if new text should be appended to a document. (why and when??)
 
-        :param task_to_execute: The writing task that needs to be executed
-        """
-        self.evaluation_files = FileManagement.list_file_names()
-        executive_plan = self.generate_executive_plan(task_to_execute)
+        analyser_messages = [
+            f"Examine the current implementation of {file_name} and your answer for any logical inconsistencies or flaws. Identify specific areas where the logic might fail or where the implementation does not meet the requirements. Provide a revised version addressing these issues.",
+            f"Evaluate the current implementation of {file_name} for opportunities to enhance features, improve naming conventions, and increase documentation clarity. Assess readability and flexibility. Provide a revised version that incorporates these improvements.",
+            f"Review the structure and flow of the documentation in {file_name}. Suggest and implement changes to improve the organization, clarity, and ease of understanding of the code and its documentation. Provide a new and improved version of the code with its improved documentation.",
+            f"Present the final revised version of the code in {file_name}, incorporating all previous improvements we discussed. Additionally, provide a summary of the key changes made, explaining how each change enhances the code."
+        ]
 
-        ExecutionLogs.add_to_logs(f"Initiating task processing. Current task: {task_to_execute}")
-        logging.info(f"Generated tasks: {pformat(executive_plan[PersonaConstants.TASKS], width=580)}")
-        ExecutionLogs.add_to_logs(f"Generated tasks: {pformat(executive_plan[PersonaConstants.TASKS], width=580)}")
+        prompt_messages = [initial_message] + analyser_messages
+        for iteration, message in enumerate(prompt_messages):
+            response = self.process_question(message)
+            logging.info("Iteration %d completed with response: %s", iteration, response)
 
-        tasks = executive_plan.get(PersonaConstants.TASKS, [])
-        if not tasks:
-            logging.error("No tasks found in the executive plan.")
-            return
-
-        for task in tasks:
-            self._process_task(task)
-
-    @staticmethod
-    def execute_task_parameters(task_parameters: Dict[str, object]):
-        """Executes a writing task based on provided parameters.
-
-        This method retrieves the task type from the given parameters and attempts to execute
-        the corresponding writing task.
-
-        :param task_parameters: A dictionary containing the parameters for the writing task, including the task type
-         and other relevant details
-        :raises ValueError: If the task type specified in the parameters is invalid or not supported by this persona
-        """
-        ExecutionLogs.add_to_logs(f"Executing task: \n{pformat(task_parameters)}")
-
-        writing_task_type = task_parameters.get(PersonaConstants.TYPE, Writing.APPEND.value)
-        writing_task = Writing(writing_task_type)
-        if writing_task in Writer.writing_tasks:
-            writing_task.execute(task_parameters)
-        else:
-            raise ValueError(
-                f"Invalid task type '{writing_task_type}' used for this persona. Supported types: {Writer.writing_tasks}")
-
-    def generate_executive_plan(self, task: str, extra_user_inputs: List[str] = None) -> Dict[str, object]:
-        """
-        Process and obtain the new executive directive for the initial task.
-
-        :param task: The initial task from the user
-        :param extra_user_inputs: any additional information to add before the primary instruction
-        :return A dictionary parsed from the LLM's JSON format output
-        :raises JSONDecodeError: If the executive output cannot be parsed to a dictionary
-        """
-        extra_user_inputs = extra_user_inputs or []
-        if extra_user_inputs:
-            Utility.ensure_string_list(extra_user_inputs)
-
-        return self.generate_function(
-            self.evaluation_files,
-            extra_user_inputs,
-            task,
-            PersonaConstants.EXECUTIVE_WRITER_FUNCTION_INSTRUCTIONS,
-            PersonaConstants.WRITER_FUNCTION_SCHEMA
-        )
+            if iteration == 4:
+                Writing.write_to_file({
+                    PersonaConstants.SAVE_TO: file_name,
+                    PersonaConstants.INSTRUCTION: response
+                })
 
 
 if __name__ == '__main__':
-    writer = Writer("test")
-    writer.execute_task("""Write a detailed report about the future of tidal technology, what innovations and possible disruptions could occur
-    """)
+    """Suggestions: 
+    - Write a detailed report about the future of tidal technology, what innovations and possible disruptions could occur
+    """
+
+    writer = Writer("prototype")
+    writer.query_user_for_input()

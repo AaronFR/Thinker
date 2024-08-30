@@ -10,8 +10,7 @@ code_style:
 testing:
     framework: pytest
 writing:
-  tone:
-    default: neutral
+  tone: neutral
   audience:
     target_group: general
     specialized_groups:

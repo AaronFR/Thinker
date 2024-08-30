@@ -1,24 +1,20 @@
 import logging
-from typing import List
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Functionality.Coding import Coding
-from Functionality.Organising import Organising
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import PersonaConstants, CoderSpecification
-from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
 
 
 class Coder(BasePersona):
     """
-    Thinker persona to facilitate conversational interactions
+    Coding persona to write and edit coed files.
     """
-    MAX_HISTORY = 5
 
     def __init__(self, name):
         super().__init__(name)
         self.workflows = {
-            "write": "Workflow for creating or overwriting a file"
+            "write": "Workflow for creating or overwriting a code file"
         }
         self.instructions = CoderSpecification.CODER_INSTRUCTIONS
         self.configuration = CoderSpecification.load_configuration()
@@ -50,6 +46,11 @@ class Coder(BasePersona):
 
 
 if __name__ == '__main__':
-    coder = Coder("proto")
+    """Suggestions:
+    - generate a method for calculating the 'ruggedness' of a area of terrain, 
+     assume the terrain is entered as a 2d data plot
+    - How would you improve the Thinker.py class?
+    """
+
+    coder = Coder("prototype")
     coder.query_user_for_input()
-    # thinker.self_converse("How would you improve the Thinker.py class")

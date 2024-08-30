@@ -33,6 +33,7 @@ To refine the system's architecture and enhance its capabilities and efficiency,
 - **Build from Blueprint**: Executor classes should follow clearly outlined blueprints, which will guide the construction of documents, ensuring internal consistency and coherence.
 - **Coder**: Develop a defined persona for code files that emphasizes maintaining consistency while minimizing unnecessary commentary, fostering a cleaner code environment.- **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.
 - **Parallel Processing**: Introduce mechanisms for parallel processing to facilitate the simultaneous handling of multiple tasks, thereby enhancing overall performance and reducing time for task completion.
+- **n-shot prompting**: Give the AI models examples of how it should answer roughly similar tasks.
 - **DAG Structure for Task Management**: Introduce a Directed Acyclic Graph (DAG) framework to streamline decision-making efficiency, enabling better organization and oversight of tasks.
 - **API Integrations**: Integrate additional AI models for improved capability and accuracy, along with the ability to search resources like Wikipedia and the web.
 

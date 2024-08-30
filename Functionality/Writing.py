@@ -2,6 +2,7 @@ import enum
 import logging
 from typing import Dict, List
 
+import Personas.PersonaSpecification.WriterSpecification
 from Utilities import Constants
 from Personas.PersonaSpecification.EditorSpecification import REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS, \
     EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA, EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS, \
@@ -14,38 +15,10 @@ from Personas.PersonaSpecification import PersonaConstants
 
 
 class Writing(enum.Enum):
-    """Writing is an enumeration representing various task types used within the persona system."""
-    WRITE = "WRITE"
-    APPEND = "APPEND"
-    REWRITE = "REWRITE"
-    REWRITE_FILE = "REWRITE_FILE"
-    REGEX_REFACTOR = "REGEX_REFACTOR"
-
-    def execute(self, task_parameters: Dict[str, object]):
-        """Executes a specified type of task based on the parameters provided.
-
-        :param task_parameters: A dictionary containing directives and parameters needed
-         for the task
-        :raises ValueError: If an unknown task type is encountered
-        """
-        def get_action(task_type):
-            action_map = {
-                Writing.WRITE: self.write_to_file_task,
-                Writing.APPEND: self.append_to_file_task,
-                Writing.REWRITE: self.rewrite_file_lines,
-                Writing.REWRITE_FILE: self.rewrite_file_task,
-                Writing.REGEX_REFACTOR: self.refactor_task
-            }
-            return action_map[task_type]
-
-        action = get_action(self)
-        if action is not None:
-            action(task_parameters)
-        else:
-            raise ValueError(f"Unknown Writing: {self}")
+    """Writing represents various task types used within the persona system."""
 
     @staticmethod
-    def write_to_file_task(task_parameters: Dict[str, object]):
+    def write_to_file(task_parameters: Dict[str, object]):
         """Repeatedly writes content to the specified number of pages. Where one page roughly corresponds to 500 words
         (2000 tokens output)
 
@@ -65,7 +38,10 @@ class Writing(enum.Enum):
 
     @staticmethod
     def _generate_text(
-            executor_task: AiOrchestrator, output: str, task_parameters: Dict[str, object], page_number: int):
+            executor_task: AiOrchestrator,
+            output: str,
+            task_parameters: Dict[str, object],
+            page_number: int):
         """Generates text for individual pages of a document based on specified directives and prior content.
 
         :param executor_task: The instance of AiOrchestrator responsible for generating text
@@ -81,7 +57,7 @@ class Writing(enum.Enum):
         ]
 
         return executor_task.execute(
-            PersonaConstants.WRITER_SYSTEM_INSTRUCTIONS,
+            Personas.PersonaSpecification.WriterSpecification.WRITER_SYSTEM_INSTRUCTIONS,
             [
                 f"""Write the first page of {task_parameters['pages_to_write']}, 
                     answering the following: {task_parameters[PersonaConstants.INSTRUCTION]}"""
@@ -90,7 +66,7 @@ class Writing(enum.Enum):
         )
 
     @staticmethod
-    def append_to_file_task(task_parameters: Dict[str, object]):
+    def append_to_file(task_parameters: Dict[str, object]):
         """Appends generated content to a specified file_name.
 
         :param task_parameters: Contains task-specific directives, including the instruction and file_name path
@@ -210,8 +186,8 @@ class Writing(enum.Enum):
         ExecutionLogs.add_to_logs(f"Saved to {target_file_path}")
 
     @staticmethod
-    def rewrite_file_task(task_parameters: Dict[str, object],
-                          approx_max_tokens=1000):
+    def rewrite_file(task_parameters: Dict[str, object],
+                     approx_max_tokens=1000):
         """Split an input file into chunks based on the estimated max number of output tokens (2000 tokens) taking in
         half that number allowing the llm to either decrease word count or double it should it be required.
 
@@ -255,7 +231,7 @@ class Writing(enum.Enum):
         return split_into_chunks(text, approx_max_chars)
 
     @staticmethod
-    def refactor_task(task_parameters: Dict[str, object]):
+    def regex_refactor(task_parameters: Dict[str, object]):
         """Refactor files based on regex patterns provided in the task directives.
         # ToDo: It would make sense to add a check of the output
          to make sure a name isn't being changed which *shouldn't*
