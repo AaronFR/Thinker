@@ -19,7 +19,8 @@ class Coder(BasePersona):
         """
         super().__init__(name)
         self.workflows = {
-            "write": "Workflow for creating or overwriting a code file"
+            "write": "Workflow for creating or overwriting a code file",
+            "write_tests": "Workflow for creating or overwriting a coding test file"
         }
         self.instructions = CoderSpecification.CODER_INSTRUCTIONS
         self.configuration = CoderSpecification.load_configuration()
@@ -67,6 +68,41 @@ class Coder(BasePersona):
         except Exception as e:
             logging.error("Error during writing workflow: %s", str(e))
 
+    def write_tests_workflow(self, initial_message: str) -> None:
+        """
+        Generates a test file for a specified file
+
+        :param initial_message: The user's initial guidance for writing tests.
+        """
+        executor = AiOrchestrator()
+        file_name = executor.execute(
+            "Please provide the filename (including extension) of the code for which tests should be written. Please be concise.",
+            initial_message
+        )
+
+        test_prompt_messages = [
+            f"Create unit tests for the functionality provided in {file_name}. Ensure all major functions are tested.",
+            f"Assess edge cases and boundary conditions in {file_name}, generating appropriate tests.",
+            f"Generate tests that ensure robust error handling in the functions defined in {file_name}.",
+            f"Compile the unit tests generated into one cohesive test suite for {file_name}.",
+            f"Present the final test cases in {file_name} and comment on coverage and areas needing additional tests."
+        ]
+        prompt_messages = [initial_message] + test_prompt_messages
+
+        try:
+            for iteration, message in enumerate(prompt_messages):
+                response = self.process_question(message)
+                logging.info("Test Workflow Iteration %d completed with response: %s", iteration, response)
+
+                # Save the response after the last message
+                if iteration == len(prompt_messages) - 1:
+                    Coding.write_to_file_task({
+                        PersonaConstants.SAVE_TO: file_name,
+                        PersonaConstants.INSTRUCTION: response
+                    })
+
+        except Exception as e:
+            logging.error("Error during writing tests workflow: %s", str(e))
 
 if __name__ == '__main__':
     """Suggestions:
