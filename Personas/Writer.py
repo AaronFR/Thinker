@@ -25,6 +25,11 @@ class Writer(BasePersona):
 
         ErrorHandler.setup_logging()
 
+    def run_workflow(self, selection: str):
+        if selection in self.workflows.keys():
+            if selection == "write":
+                self.write_workflow(selection)
+
     def write_workflow(self, initial_message: str):
         """Engage in a back-and-forth dialogue with itself, with the aim of writing a document."""
         executor = AiOrchestrator()

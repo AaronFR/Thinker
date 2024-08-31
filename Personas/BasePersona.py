@@ -23,7 +23,7 @@ class BasePersona:
 
         ErrorHandler.setup_logging()
         self.history: List[Tuple[str, str]] = []  # question-response pairs
-        self.workflows = []
+        self.workflows = {}
         self.instructions = ""
         self.configuration = ""
 
@@ -61,22 +61,9 @@ class BasePersona:
         selection = output['selection']
 
         logging.info(f"Selection: {selection}")
-        #ToDo: Actually better if this was moved to a non-implemented file that the child class had to define
-        if selection in self.workflows.keys():
-            if selection == "write":
-                self.write_workflow(initial_message)
-            if selection == "write_tests":
-                self.write_tests_workflow(initial_message)
-            if selection == "re_write":
-                self.re_write_workflow(initial_message)
+        self.run_workflow(selection)
 
-    def write_workflow(self, initial_message: str):
-        raise NotImplementedError("This method should be overridden by subclasses")
-
-    def write_tests_workflow(self, initial_message: str):
-        raise NotImplementedError("This method should be overridden by subclasses")
-
-    def re_write_workflow(self, initial_message: str):
+    def run_workflow(self, selection: str):
         raise NotImplementedError("This method should be overridden by subclasses")
 
     def process_question(self, question: str):
