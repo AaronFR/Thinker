@@ -23,10 +23,10 @@ class Editor(BasePersona):
 
         ErrorHandler.setup_logging()
 
-    def run_workflow(self, selection: str):
+    def run_workflow(self, selection: str, initial_message: str):
         if selection in self.workflows.keys():
             if selection == "re_write":
-                self.re_write_workflow(selection)
+                self.re_write_workflow(initial_message)
 
     def re_write_workflow(self, initial_message: str):
         """Engage in a back-and-forth dialogue with itself, with the aim of re-writing a document."""

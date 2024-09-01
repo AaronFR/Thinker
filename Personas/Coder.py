@@ -25,12 +25,12 @@ class Coder(BasePersona):
         self.instructions = CoderSpecification.CODER_INSTRUCTIONS
         self.configuration = CoderSpecification.load_configuration()
 
-    def run_workflow(self, selection: str):
+    def run_workflow(self, selection: str, initial_message: str):
         if selection in self.workflows.keys():
             if selection == "write":
-                self.write_workflow(selection)
+                self.write_workflow(initial_message)
             if selection == "write_tests":
-                self.write_tests_workflow(selection)
+                self.write_tests_workflow(initial_message)
 
     def write_workflow(self, initial_message: str):
         """

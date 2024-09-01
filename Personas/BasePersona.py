@@ -61,9 +61,9 @@ class BasePersona:
         selection = output['selection']
 
         logging.info(f"Selection: {selection}")
-        self.run_workflow(selection)
+        self.run_workflow(selection, initial_message)
 
-    def run_workflow(self, selection: str):
+    def run_workflow(self, selection: str, initial_message: str):
         raise NotImplementedError("This method should be overridden by subclasses")
 
     def process_question(self, question: str):

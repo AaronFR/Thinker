@@ -19,10 +19,10 @@ class Thinker(BasePersona):
         self.instructions = "Just think through the question, step by step, prioritizing the most recent user prompt."
         self.configuration = CoderSpecification.load_configuration()  # ToDo: These should be added to their own config file
 
-    def run_workflow(self, selection: str):
+    def run_workflow(self, selection: str, initial_message: str):
         if selection in self.workflows.keys():
             if selection == "write":
-                self.write_workflow(selection)
+                self.write_workflow(initial_message)
 
     def write_workflow(self, initial_message: str):
         """Engage in a back-and-forth dialogue with itself"""
