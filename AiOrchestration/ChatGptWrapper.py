@@ -81,7 +81,6 @@ class ChatGptWrapper:
             )
             self.calculate_prompt_cost(chat_completion, model)
 
-            logging.info(f"Executive Plan: {chat_completion}")
             arguments = chat_completion.choices[0].message.function_call.arguments
             return json.loads(arguments) if arguments else {"error": "NO RESPONSE FROM OpenAI API"}
         except OpenAIError:
@@ -111,10 +110,10 @@ class ChatGptWrapper:
         Globals.current_request_cost += (input_token_price + output_token_price)
 
         logging.info(
-            f"""Input tokens: {chat_completion.usage.prompt_tokens}, price: ${round(input_token_price, 4)}
-            Output tokens: {chat_completion.usage.completion_tokens}, price: ${round(output_token_price, 4)}
-            Total cost: ¢{round((input_token_price + output_token_price) * 100, 4)}
-        """)
+            f"Input tokens: {chat_completion.usage.prompt_tokens}, price: ${round(input_token_price, 4)}, "
+            f"Output tokens: {chat_completion.usage.completion_tokens}, price: ${round(output_token_price, 4)}, "
+            f"Total cost: ¢{round((input_token_price + output_token_price) * 100, 4)}"
+        )
 
 
 if __name__ == '__main__':

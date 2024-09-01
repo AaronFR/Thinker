@@ -1,5 +1,5 @@
 import logging
-from typing import List, Dict, Tuple
+from typing import List, Tuple
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Functionality.Organising import Organising
@@ -11,38 +11,36 @@ from Utilities.Utility import Utility
 class BasePersona:
     """
     Base class for creating personas that execute tasks.
-
-    Subclasses must implement the following methods:
-    - execute_task(task): Define how the persona performs a specific task.
-    - execute_task_parameters(task_parameters): Execute specific instructions contained in the task directives.
     """
     MAX_HISTORY = 5
 
     def __init__(self, name):
         self.name = name
-
-        ErrorHandler.setup_logging()
         self.history: List[Tuple[str, str]] = []  # question-response pairs
         self.workflows = {}
         self.instructions = ""
         self.configuration = ""
 
+        ErrorHandler.setup_logging()
+
     def query_user_for_input(self):
         """Continuously prompts the user for questions until they choose to exit. """
         while True:
-            new_question = input("Please enter your task (or type 'exit' to quit): ")
-            if Utility.is_exit_command(new_question):
+            user_input = input("Please enter your task (or type 'exit' to quit): ")
+            if Utility.is_exit_command(user_input):
                 print("Exiting the question loop.")
                 break
-            elif new_question.lower() == 'history':
+            elif user_input.lower() == 'history':
                 self.display_history()
-            elif Utility.is_valid_question(new_question):
-                self.select_workflow(new_question)
+            elif Utility.is_valid_question(user_input):
+                self.select_workflow(user_input)
             else:
                 print("Invalid input. Please ask a clear and valid question.")
 
     def display_history(self):
-        """Display the conversation history to the user."""
+        """Display the conversation history to the user.
+        If there is no history available, a message is shown.
+        """
         if not self.history:
             print("No interaction history available.")
             return
@@ -51,19 +49,22 @@ class BasePersona:
             print(f"{i + 1}: Q: {question}\n    A: {response}")
 
     def select_workflow(self, initial_message: str):
+        """Determine and run the appropriate workflow based on the user's query"""
         executor = AiOrchestrator()
         output = executor.execute_function(
-            f"""Given what my next task which of the following workflows is the most appropriate?
-            Just select which workflow is most appropriate.
-            Workflows: {self.workflows}""",
-            initial_message,
-            SELECT_WORKFLOW_INSTRUCTIONS)
-        selection = output['selection']
+            [
+                f"Given what my next task is, which of the following workflows is the most appropriate? "
+                f"Just select which workflow is most appropriate.\nWorkflows: {self.workflows}"
+            ],
+            [initial_message],
+            SELECT_WORKFLOW_INSTRUCTIONS
+        )
+        selected_workflow = output['selection']
 
-        logging.info(f"Selection: {selection}")
-        self.run_workflow(selection, initial_message)
+        logging.info(f"Selection: {selected_workflow}")
+        self.run_workflow(selected_workflow, initial_message)
 
-    def run_workflow(self, selection: str, initial_message: str):
+    def run_workflow(self, selected_workflow: str, initial_message: str):
         raise NotImplementedError("This method should be overridden by subclasses")
 
     def process_question(self, question: str):
@@ -92,9 +93,7 @@ class BasePersona:
                 user_messages,
                 assistant_messages=recent_history
             )
+            return output
         except Exception as e:
             logging.exception("An error occurred while thinking: %s", e)
             return f"An error occurred while processing: {e}"
-
-        return output
-

@@ -25,9 +25,9 @@ class Writer(BasePersona):
 
         ErrorHandler.setup_logging()
 
-    def run_workflow(self, selection: str, initial_message: str):
-        if selection in self.workflows.keys():
-            if selection == "write":
+    def run_workflow(self, selected_workflow: str, initial_message: str):
+        if selected_workflow in self.workflows.keys():
+            if selected_workflow == "write":
                 self.write_workflow(initial_message)
 
     def write_workflow(self, initial_message: str):

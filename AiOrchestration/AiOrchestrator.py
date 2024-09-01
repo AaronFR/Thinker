@@ -92,7 +92,7 @@ class AiOrchestrator:
             logging.error("Failed to obtain a valid response from OpenAI API.")
             raise RuntimeError("OpenAI API returned no response.")
 
-        logging.info(f"Executive Task Finished")
+        logging.info(f"Function evaluated with response {response}")
         return response
 
     @staticmethod
