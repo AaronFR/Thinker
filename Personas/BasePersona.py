@@ -85,7 +85,7 @@ class BasePersona:
         executor = AiOrchestrator(selected_files)
 
         # ToDo: How the application accesses and gives history to the llm will need to be optimised
-        recent_history = [entry[1] for entry in self.history[-self.MAX_HISTORY:]]
+        recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
 
         try:
             output = executor.execute(
