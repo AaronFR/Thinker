@@ -1,4 +1,5 @@
 import os
+from typing import Mapping
 
 import yaml
 
@@ -6,6 +7,16 @@ import yaml
 class Configuration:
 
     persona_specification_path = os.path.join(os.path.dirname(__file__), '..', 'Personas', 'PersonaSpecification')
+
+    @staticmethod
+    def deep_merge(dict1, dict2):
+        """Deeply merges dict2 into dict1. dict2 takes precedence over dict1."""
+        for key, value in dict2.items():
+            if isinstance(value, Mapping) and key in dict1 and isinstance(dict1[key], Mapping):
+                Configuration.deep_merge(dict1[key], value)
+            else:
+                dict1[key] = value
+        return dict1
 
     @staticmethod
     def load_config(yaml_file="Config.yaml"):
@@ -17,7 +28,15 @@ class Configuration:
         config_path = os.path.join(Configuration.persona_specification_path, yaml_file)
         with open(config_path, 'r') as file:
             config = yaml.safe_load(file)
-        return config
+
+        user_config_path = os.path.join(Configuration.persona_specification_path, 'UserConfig.yaml')
+        with open(user_config_path, 'r') as file:
+            user_config = yaml.safe_load(file)
+
+        # Merge user_config into config
+        merged_config = Configuration.deep_merge(config, user_config)
+
+        return merged_config
 
 
 if __name__ == '__main__':

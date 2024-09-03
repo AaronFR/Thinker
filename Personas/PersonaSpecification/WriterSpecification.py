@@ -7,8 +7,8 @@ def load_configuration():
 
     return f"""Following the following guidelines when writing text.
     general tone: {config['writing']['tone']}
-    write for the following audience: {config['audience']}
-    vocabulary focus: {config['preferred_vocabulary']}
+    write for the following audience: {config['writing']['audience']}
+    vocabulary focus: {config['writing']['preferred_vocabulary']}
     """
 
 

@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Coder: Write tests workflow
+- UserConfig.yaml for configuration specific to the individual user
 
 ### Changed
 
