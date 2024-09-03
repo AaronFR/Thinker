@@ -11,6 +11,7 @@ from Utilities.ErrorHandler import ErrorHandler
 
 
 class ChatGptRole(enum.Enum):
+    """Defines roles in the chat completion interaction."""
     SYSTEM = "system"
     USER = "user"
     ASSISTANT = "assistant"
@@ -18,56 +19,60 @@ class ChatGptRole(enum.Enum):
 
 
 class ChatGptModel(enum.Enum):
+    """OpenAI API Models"""
     CHAT_GPT_4_OMNI_MINI = "gpt-4o-mini"
     CHAT_GPT_4_OMNI = "gpt-4o"
 
 
 class ChatGptWrapper:
 
-    cost_per_input_token_gpt4o_mini = 0.00000015  # $/t
-    cost_per_output_token_gpt4o_mini = 0.00000060  # $/t
-    cost_per_input_token_gpt4o = 0.000005  # $/t
-    cost_per_output_token_gpt4o = 0.000015  # $/t
+    COST_PER_INPUT_TOKEN_GPT4O_MINI = 0.00000015  # $/t
+    COST_PER_OUTPUT_TOKEN_GPT4O_MINI = 0.00000060  # $/t
+    COST_PER_INPUT_TOKEN_GPT4O = 0.000005  # $/t
+    COST_PER_OUTPUT_TOKEN_GPT4O = 0.000015  # $/t
 
     def __init__(self):
         ErrorHandler.setup_logging()
         self.open_ai_client = OpenAI()
 
     def get_open_ai_response(
-            self, messages: List[dict], model=ChatGptModel.CHAT_GPT_4_OMNI_MINI, n=1) -> str | List[str]:
+            self,
+            messages: List[Dict[str, str]],
+            model=ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+            rerun_count=1) -> str | List[str]:
         """Request a response from the OpenAI API.
 
         :param messages: The system and user messages to send to the ChatGpt client
         :param model: the actual llm being called
-        :param n: number of times to rerun the prompt
+        :param rerun_count: number of times to rerun the prompt
         :return: The content of the response from OpenAI or an error message to inform the next Executor
         """
         try:
             logging.debug(f"Calling OpenAI API with messages: {messages}")
 
             chat_completion = self.open_ai_client.chat.completions.create(
-                model=model.value, messages=messages, n=n
+                model=model.value, messages=messages, n=rerun_count
             )
             self.calculate_prompt_cost(chat_completion, model)
 
             responses = [choice.message.content for choice in chat_completion.choices]
-            return responses[0] if n == 1 else responses or "[ERROR: NO RESPONSE FROM OpenAI API]"
+            return responses[0] if rerun_count == 1 else responses or "[ERROR: NO RESPONSE FROM OpenAI API]"
         except OpenAIError as e:
-            logging.error(f"OpenAI API error: {e}")
+            logging.exception(f"OpenAI API error", e)
             raise
         except Exception as e:
-            logging.error(f"Unexpected error: {e}")
+            logging.exception(f"Unexpected error", e)
             raise
 
     def get_open_ai_function_response(self,
-                                      messages: List[dict],
+                                      messages: List[Dict[str, str]],
                                       function_schema,
                                       model=ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> Dict[str, object]:
         """Requests a structured response from the OpenAI API for function calling.
 
-        :param messages: The system and user messages to send to the ChatGpt client
-        :param function_schema:  The schema to apply to the output json
-        :param model: the actual llm to call
+        :param messages: Messages sent to the ChatGPT client
+        :param function_schema: Expected schema for the function output
+        :param model: The specific language model to use.
         :return: The content of the response from OpenAI or an error message to inform the next executor task
         """
         try:
@@ -97,22 +102,24 @@ class ChatGptWrapper:
         :param model: the specific OpenAI model being used, the non Mini version is *very* expensive,
         and should be used rarely
         """
-        input_token_price, output_token_price = 0, 0
+        input_tokens = chat_completion.usage.prompt_tokens
+        output_tokens = chat_completion.usage.completion_tokens
 
         if model == ChatGptModel.CHAT_GPT_4_OMNI_MINI:
-            input_token_price = chat_completion.usage.prompt_tokens * self.cost_per_input_token_gpt4o_mini
-            output_token_price = chat_completion.usage.completion_tokens * self.cost_per_output_token_gpt4o_mini
+            cost_input = input_tokens * self.COST_PER_INPUT_TOKEN_GPT4O_MINI
+            cost_output = output_tokens * self.COST_PER_OUTPUT_TOKEN_GPT4O_MINI
         if model == ChatGptModel.CHAT_GPT_4_OMNI:
-            logging.warning("EXPENSIVE MODEL USED!")
-            input_token_price = chat_completion.usage.prompt_tokens * self.cost_per_input_token_gpt4o_mini
-            output_token_price = chat_completion.usage.completion_tokens * self.cost_per_output_token_gpt4o_mini
+            logging.warning("Using the EXPENSIVE model: CHAT_GPT_4_OMNI")
+            cost_input = input_tokens * self.COST_PER_INPUT_TOKEN_GPT4O
+            cost_output = output_tokens * self.COST_PER_OUTPUT_TOKEN_GPT4O
 
-        Globals.current_request_cost += (input_token_price + output_token_price)
+        total_cost = cost_input + cost_output
+        Globals.current_request_cost += total_cost
 
         logging.info(
-            f"Input tokens: {chat_completion.usage.prompt_tokens}, price: ${round(input_token_price, 4)}, "
-            f"Output tokens: {chat_completion.usage.completion_tokens}, price: ${round(output_token_price, 4)}, "
-            f"Total cost: ¢{round((input_token_price + output_token_price) * 100, 4)}"
+            f"Input tokens: {input_tokens}, Input cost: ${cost_input:.4f}, "
+            f"Output tokens: {output_tokens}, Output cost: ${cost_output:.4f}, "
+            f"Total cost: ${total_cost:.4f}"
         )
 
 

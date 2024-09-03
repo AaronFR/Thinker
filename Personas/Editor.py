@@ -9,8 +9,10 @@ from Personas.BasePersona import BasePersona
 
 class Editor(BasePersona):
     """
-    Editor persona is responsible for editorialising: reviewing an existing document and making substitutions and
-    amendments.
+    Represents an editor persona responsible for reviewing and amending existing documents.
+
+    This editor persona focuses on improving text clarity, addressing logical inconsistencies,
+    and enhancing documentation quality through systematic rewriting processes.
     """
 
     def __init__(self, name):
@@ -33,7 +35,8 @@ class Editor(BasePersona):
         executor = AiOrchestrator()
         file_name = executor.execute(
             "Give just a filename (with extension) that should be worked on given the following prompt. No commentary",
-            initial_message)
+            initial_message
+        )
 
         # Should decide whether to rewrite individual lines or rewrite the entire document
 
