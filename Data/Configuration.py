@@ -6,7 +6,7 @@ import yaml
 
 class Configuration:
 
-    persona_specification_path = os.path.join(os.path.dirname(__file__), '..', 'Personas', 'PersonaSpecification')
+    data_path = os.path.join(os.path.dirname(__file__))
 
     @staticmethod
     def deep_merge(dict1, dict2):
@@ -25,11 +25,11 @@ class Configuration:
         :param yaml_file: The path to the YAML file
         :returns dict: A dictionary containing the extracted configuration values
         """
-        config_path = os.path.join(Configuration.persona_specification_path, yaml_file)
+        config_path = os.path.join(Configuration.data_path, yaml_file)
         with open(config_path, 'r') as file:
             config = yaml.safe_load(file)
 
-        user_config_path = os.path.join(Configuration.persona_specification_path, 'UserConfig.yaml')
+        user_config_path = os.path.join(Configuration.data_path, 'UserConfig.yaml')
         with open(user_config_path, 'r') as file:
             user_config = yaml.safe_load(file)
 

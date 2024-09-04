@@ -5,7 +5,7 @@ from Functionality.Writing import Writing
 from Utilities.ErrorHandler import ErrorHandler
 from Personas.PersonaSpecification import PersonaConstants, WriterSpecification
 from Personas.BasePersona import BasePersona
-from Utilities.FileManagement import FileManagement
+from Data.FileManagement import FileManagement
 
 
 class Writer(BasePersona):

@@ -5,7 +5,7 @@ from typing import List, Dict
 from AiOrchestration.ChatGptWrapper import ChatGptModel, ChatGptWrapper, ChatGptRole
 from Utilities import Constants
 from Utilities.ErrorHandler import ErrorHandler
-from Utilities.FileManagement import FileManagement
+from Data.FileManagement import FileManagement
 from Utilities.Utility import Utility
 
 

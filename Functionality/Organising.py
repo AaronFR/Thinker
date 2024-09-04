@@ -5,7 +5,7 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Personas.PersonaSpecification import ThinkerSpecification, PersonaConstants
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
 from Utilities.ExecutionLogs import ExecutionLogs
-from Utilities.FileManagement import FileManagement
+from Data.FileManagement import FileManagement
 from Utilities.Utility import Utility
 
 

@@ -1,4 +1,4 @@
-from Utilities.Configuration import Configuration
+from Data.Configuration import Configuration
 
 
 def load_configuration():

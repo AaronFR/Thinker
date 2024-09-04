@@ -1,7 +1,7 @@
 from Personas.PersonaSpecification import PersonaConstants
 from Personas.PersonaSpecification.PersonaConstants import SAVE_TO, TYPE, TASKS, REFERENCE, INSTRUCTION, \
     meta_analysis_filename, execution_logs_filename, DEFAULT_REQUIRED_KEYS
-from Utilities.Configuration import Configuration
+from Data.Configuration import Configuration
 
 
 EditorTasks = {

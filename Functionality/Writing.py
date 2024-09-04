@@ -10,7 +10,7 @@ from Personas.PersonaSpecification.EditorSpecification import REWRITE_EXECUTOR_S
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptWrapper import ChatGptModel
 from Utilities.ExecutionLogs import ExecutionLogs
-from Utilities.FileManagement import FileManagement
+from Data.FileManagement import FileManagement
 from Personas.PersonaSpecification import PersonaConstants
 
 

@@ -272,8 +272,5 @@ class FileManagement:
 
 
 if __name__ == '__main__':
-    # FileManagement.re_write_section("""Generate a response based on system and user prompts.
-    #                                 """, "womp", "thought.py", "1")
-
-    numbered_lines = FileManagement.read_file("../Functionality/Writing.py", return_numbered_lines=True)
+    numbered_lines = FileManagement.read_file("Writing.py", return_numbered_lines=True)
     print(numbered_lines)
