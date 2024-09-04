@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Coder: Write tests workflow
 - UserConfig.yaml for configuration specific to the individual user
+- Knowing.py with search_encyclopedia functionality, Persona's can now evaluate prompts and ask for reference material
+ in advance of evaluating a given prompt
 
 ### Changed
 

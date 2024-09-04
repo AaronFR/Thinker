@@ -44,3 +44,32 @@ SUMMARISER_SYSTEM_INSTRUCTIONS = """Take the file input and summarise it in a fe
 Note what the file is, what its category is, notable features.
 
 Finally add a index of the files various parts chapters/functions etc, structurally summarising the document"""
+
+SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA = [{
+        "name": "executiveDirective",
+        "description": """Array of terms you want to know more about""",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "terms": {
+                    "type": "array",
+                    "description": """An array of objects that you want to look up/cross reference against the
+                     encyclopedia definition, including what *specifically* you want to know about that concept""",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "term": {
+                                "type": "string",
+                                "description": """A term you want to look up in the encyclopedia"""
+                            },
+                            "specifics": {
+                                "type": "string",
+                                "description": """The specific property of this term your interested in"""
+                            }
+                        },
+                        "required": ["start", "end", "instruction"]
+                    }
+                }
+            }
+        }
+    }]

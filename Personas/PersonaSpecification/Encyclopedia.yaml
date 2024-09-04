@@ -1,0 +1,18 @@
+apple:
+  definition: A round fruit with red or green skin.
+  synonyms:
+    - pome
+  related_terms:
+    - fruit
+    - orchard
+  genres:
+    - food
+
+Xiblic:
+  definition: A random made-up word I made to be a synonym of existentialism
+  synonyms:
+    - existentialism
+  related_terms:
+    - existentialism
+  genres:
+    - philosophy
