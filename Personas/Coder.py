@@ -8,7 +8,7 @@ from Personas.PersonaSpecification import PersonaConstants, CoderSpecification
 
 class Coder(BasePersona):
     """
-    Coding persona to write and edit coed files.
+    Coding persona to write and edit code files.
     """
 
     def __init__(self, name):
@@ -83,7 +83,8 @@ class Coder(BasePersona):
         """
         executor = AiOrchestrator()
         file_name = executor.execute(
-            "Please provide the filename (including extension) of the code for which tests should be written. Please be concise.",
+            "Please provide the filename (including extension) of the code for which tests should be written. "
+            "Please be concise.",
             initial_message
         )
 

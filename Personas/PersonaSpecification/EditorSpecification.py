@@ -54,7 +54,8 @@ EDITOR_EXECUTIVE_FUNCTION_SCHEMA = [{
             },
             "areas_of_improvement": {
                 TYPE: "string",
-                "description": "Detailed explanation of how the current input files do not meet the criteria or how they do satisfy the conditions."
+                "description": "Detailed explanation of how the current input files do not meet the criteria or how "
+                               "they do satisfy the conditions."
             },
             TASKS: {
                 TYPE: "array",
@@ -64,13 +65,13 @@ EDITOR_EXECUTIVE_FUNCTION_SCHEMA = [{
                     "properties": {
                         TYPE: {
                             TYPE: "string",
-                            "description": f"""Task type. Examples: 
-                                - '{EditorTasks["REWRITE"]}' for replacing individual blocks of text by line-number.
-                            Just tell the following program which file to operate on '{SAVE_TO}' and how you want the file changed
-                            go into great detail and be as helpful and extensive as possible on that front
-                                - '{EditorTasks["REWRITE_FILE"]}' for complete and total rewrites of the a given file.
-                                -'{EditorTasks["REGEX_REFACTOR"]}' for regex replacing a single word or words with '{PersonaConstants.INSTRUCTION}' *everywhere*.
-                            Exercise Caution""",
+                            "description": "Task type. Examples:\n"
+                                f"- '{EditorTasks['REWRITE']}' for replacing individual blocks of text by line-number."
+                                    f"Just tell the following program which file to operate on '{SAVE_TO}' and how you want"
+                                    " the file changed go into great detail and be as helpful and extensive as possible"
+                                f"- '{EditorTasks['REWRITE_FILE']}' for complete and total rewrites of the a given file."
+                                f"- '{EditorTasks['REGEX_REFACTOR']}' for regex replacing a single word or words with "
+                                   f"'{PersonaConstants.INSTRUCTION}' *everywhere*.\nExercise Caution",
                             "enum": [EditorTasks["REWRITE"], EditorTasks["REGEX_REFACTOR"]]  # EditorTasks["REWRITE_FILE"]
                         },
                         REFERENCE: {
@@ -193,12 +194,15 @@ Avoid using code block delimiters or language identifiers.
 
 **Task Requirements:**
 
-- **Blend Content**: Ensure each section fits seamlessly into the existing document without concluding any parts, as your work contributes to a larger whole.
+- **Blend Content**: Ensure each section fits seamlessly into the existing document without concluding any parts, 
+ as your work contributes to a larger whole.
 - **Maintain Consistency**: Ensure uniformity throughout your writing, avoiding unnecessary repetition unless summarizing explicitly.
 - **Prevent Redundancy**: Avoid writing conclusions or repeating headings; ensure that content remains unique.
 - **Be Specific and Detailed**: Provide clear and precise prompts.
-- **Role Assignment**: Assume a specific role where necessary to guide the writing style and perspective (e.g., an environmental scientist or an economic analyst).
-- **Structured Approach**: Break down complex tasks into clear, sequential steps. Provide context and ensure understanding of the broader topic.
+- **Role Assignment**: Assume a specific role where necessary to guide the writing style and perspective.
+ (e.g., an environmental scientist or an economic analyst).
+- **Structured Approach**: Break down complex tasks into clear, sequential steps. Provide context and ensure 
+ understanding of the broader topic.
 - **Focus**: Concentrate on one task per prompt to maintain clarity and precision.
 - **Use of Examples**: Include examples or templates to guide the response.
 - **Continuous Refinement**: Continuously refine and iterate your prompts based on the outputs received.

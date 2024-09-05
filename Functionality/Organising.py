@@ -108,4 +108,3 @@ class Organising:
 
         FileManagement.save_file(summary, summary_filename, overwrite=True)
         ExecutionLogs.add_to_logs(f"Summariser: Summary for {file_name} written and saved as {summary_filename}")
-

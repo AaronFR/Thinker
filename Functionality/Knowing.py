@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import List, Dict
+from typing import List
 
 import pandas as pd
 import yaml
@@ -86,4 +86,4 @@ if __name__ == '__main__':
 
     knowing = Knowing()
     print(knowing.search_encyclopedia(["Define Xiblic?"]))
-    #print(knowing.search_user_encyclopedia(["Do you know what my name is?"]))
+    # print(knowing.search_user_encyclopedia(["Do you know what my name is?"]))

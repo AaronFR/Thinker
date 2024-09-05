@@ -108,7 +108,7 @@ class ChatGptWrapper:
         if model == ChatGptModel.CHAT_GPT_4_OMNI_MINI:
             cost_input = input_tokens * self.COST_PER_INPUT_TOKEN_GPT4O_MINI
             cost_output = output_tokens * self.COST_PER_OUTPUT_TOKEN_GPT4O_MINI
-        if model == ChatGptModel.CHAT_GPT_4_OMNI:
+        elif model == ChatGptModel.CHAT_GPT_4_OMNI:
             logging.warning("Using the EXPENSIVE model: CHAT_GPT_4_OMNI")
             cost_input = input_tokens * self.COST_PER_INPUT_TOKEN_GPT4O
             cost_output = output_tokens * self.COST_PER_OUTPUT_TOKEN_GPT4O
