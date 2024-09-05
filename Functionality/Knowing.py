@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import List
+from typing import List, Dict
 
 import pandas as pd
 import yaml
@@ -32,17 +32,7 @@ class Knowing:
         terms = output['terms']
         logging.info(f"terms to search for in encyclopedia: {terms}")
 
-        additional_context = ()
-        encyclopedia_path = os.path.join(Knowing.data_path, "Encyclopedia.yaml")
-        with open(encyclopedia_path, 'r') as file:
-            encyclopedia = yaml.safe_load(file)
-            for term in terms:
-                try:
-                    additional_context += (term, encyclopedia[term['term']])
-                except Exception:
-                    logging.warning(f"Term not found in encyclopedia: {term['term']}")
-
-        return str(additional_context)
+        return Knowing.extract_terms_from_encyclopedia(terms, "Encyclopedia")
 
     @staticmethod
     def search_user_encyclopedia(user_messages: List[str]):
@@ -60,6 +50,18 @@ class Knowing:
         with open(encyclopedia_path, 'r') as file:
             encyclopedia = yaml.safe_load(file)
 
+        redirects_df = pd.read_csv(redirect_encyclopedia_path, header=None, names=['term', 'redirect'])
+        redirects = pd.Series(redirects_df.redirect.values, index=redirects_df.term).to_dict()
+
+        return Knowing.extract_terms_from_encyclopedia(terms, "UserEncyclopedia")
+
+    @staticmethod
+    def extract_terms_from_encyclopedia(terms, encyclopedia: str) -> str:
+        encyclopedia_path = os.path.join(Knowing.data_path, encyclopedia + ".yaml")
+        redirect_encyclopedia_path = os.path.join(Knowing.data_path, encyclopedia + "Redirects.csv")
+
+        with open(encyclopedia_path, 'r') as file:
+            encyclopedia = yaml.safe_load(file)
         redirects_df = pd.read_csv(redirect_encyclopedia_path, header=None, names=['term', 'redirect'])
         redirects = pd.Series(redirects_df.redirect.values, index=redirects_df.term).to_dict()
 
@@ -83,5 +85,5 @@ if __name__ == '__main__':
     """
 
     knowing = Knowing()
-    #print(knowing.search_encyclopedia(["Whats the radius of the moon?"]))
-    print(knowing.search_user_encyclopedia(["Do you know what my name is?"]))
+    print(knowing.search_encyclopedia(["Define Xiblic?"]))
+    #print(knowing.search_user_encyclopedia(["Do you know what my name is?"]))
