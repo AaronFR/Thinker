@@ -1,0 +1,7 @@
+user:
+  name: Joe
+  genres:
+    - personal
+
+job:
+  Profession: Backend Software Developer

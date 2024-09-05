@@ -54,7 +54,8 @@ SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA = [{
                 "terms": {
                     "type": "array",
                     "description": """An array of objects that you want to look up/cross reference against the
-                     encyclopedia definition, including what *specifically* you want to know about that concept""",
+                     encyclopedia definition, including what *specifically* you want to know about that concept.
+                     Can be 0 or more entries depending on context. None can be completely valid.""",
                     "items": {
                         "type": "object",
                         "properties": {
