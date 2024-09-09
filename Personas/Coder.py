@@ -40,8 +40,8 @@ class Coder(BasePersona):
         """
         executor = AiOrchestrator()
         file_name = executor.execute(
-            "Give just a filename (with extension) that should be worked on given the following prompt. No commentary",
-            initial_message)
+            ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary"],
+            [initial_message])
 
         analyser_messages = [
             f"Examine the current implementation of {file_name} and your answer for any logical inconsistencies or "
@@ -83,9 +83,9 @@ class Coder(BasePersona):
         """
         executor = AiOrchestrator()
         file_name = executor.execute(
-            "Please provide the filename (including extension) of the code for which tests should be written. "
-            "Please be concise.",
-            initial_message
+            ["Please provide the filename (including extension) of the code for which tests should be written. "
+            "Please be concise."],
+            [initial_message]
         )
 
         test_prompt_messages = [

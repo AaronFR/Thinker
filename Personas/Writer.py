@@ -34,15 +34,15 @@ class Writer(BasePersona):
         """Engage in a back-and-forth dialogue with itself, with the aim of writing a document."""
         executor = AiOrchestrator()
         file_name = executor.execute(
-            "Give just a filename (with extension) that should be worked on given the following prompt. No commentary",
-            initial_message)
+            ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary"],
+            [initial_message])
 
         evaluation_files = FileManagement.list_file_names()
         if file_name in evaluation_files:
             file_name = executor.execute(
-                "Given the context of the following prompt, should the writing be appended or should it overwrite "
-                "the file? No commentary",
-                initial_message)
+                ["Given the context of the following prompt, should the writing be appended or should it overwrite "
+                "the file? No commentary"],
+                [initial_message])
         # Decide if new text should be appended to a document. (why and when??)
 
         analyser_messages = [

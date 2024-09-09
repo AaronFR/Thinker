@@ -37,8 +37,8 @@ class Philosopher(BasePersona):
         """
         executor = AiOrchestrator()
         file_name = executor.execute(
-            "Give just a filename (with extension) that should be worked on given the following prompt. No commentary",
-            initial_message)
+            ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary"],
+            [initial_message])
 
         # ToDo: Would be a strong contender for 'prompt optimisation'
         analyser_messages = [

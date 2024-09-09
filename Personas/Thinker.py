@@ -28,8 +28,8 @@ class Thinker(BasePersona):
         """Engage in a back-and-forth dialogue with itself"""
         executor = AiOrchestrator()
         file_name = executor.execute(
-            "Give just a filename (with extension) that should be worked on given the following prompt. No commentary",
-            initial_message)
+            ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary"],
+            [initial_message])
 
         analyser_messages = [
             f"Consider the essence of the idea before you in {file_name}. Reflect on the underlying logic and coherence. Are there inconsistencies or contradictions in the thought process? Where might the reasoning falter, and how could it be more aligned with its true purpose? Contemplate these aspects deeply and propose a way forward that resolves these tensions.",

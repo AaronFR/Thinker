@@ -34,8 +34,8 @@ class Editor(BasePersona):
         """Engage in a back-and-forth dialogue with itself, with the aim of re-writing a document."""
         executor = AiOrchestrator()
         file_name = executor.execute(
-            "Give just a filename (with extension) that should be worked on given the following prompt. No commentary",
-            initial_message
+            ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary"],
+            [initial_message]
         )
 
         # Should decide whether to rewrite individual lines or rewrite the entire document
