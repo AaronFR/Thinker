@@ -1,3 +1,4 @@
+import csv
 import os
 import logging
 from typing import List
@@ -270,7 +271,30 @@ class FileManagement:
         """
         return os.path.join(FileManagement.thoughts_directory, str(Globals.current_thought_id))
 
+    @staticmethod
+    def write_to_csv(file_name, dictionaries, fieldnames):
+        """
+        Writes a list of dictionaries to a brand new CSV file.
+        """
+
+        logging.info("Data being written to CSV:", dictionaries)
+        file_path = os.path.join(os.path.dirname(__file__), 'DataStores', file_name)
+
+        file_exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
+        mode = 'a' if file_exists else 'w'
+        with open(file_path, mode=mode, newline='', encoding='utf-8') as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+
+            if isinstance(dictionaries, list) and all(isinstance(item, dict) for item in dictionaries):
+                writer.writerows(dictionaries)
+            else:
+                print("Error: Data is not a list of dictionaries!")
+
 
 if __name__ == '__main__':
     numbered_lines = FileManagement.read_file("Writing.py", return_numbered_lines=True)
     print(numbered_lines)
+
+
+
