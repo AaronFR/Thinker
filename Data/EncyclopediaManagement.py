@@ -7,6 +7,7 @@ import yaml
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Personas.PersonaSpecification.PersonaConstants import SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
+from Utilities.Constants import DEFAULT_ENCODING
 
 
 class EncyclopediaManagement:
@@ -48,7 +49,7 @@ class EncyclopediaManagement:
         encyclopedia_path = os.path.join(EncyclopediaManagement.data_path, "UserEncyclopedia.yaml")
         redirect_encyclopedia_path = os.path.join(EncyclopediaManagement.data_path,
                                                   "UserEncyclopediaRedirects.csv")
-        with open(encyclopedia_path, 'r') as file:
+        with open(encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
             encyclopedia = yaml.safe_load(file)
 
         redirects_df = pd.read_csv(redirect_encyclopedia_path, header=None, names=['term', 'redirect'])
@@ -61,7 +62,7 @@ class EncyclopediaManagement:
         encyclopedia_path = os.path.join(EncyclopediaManagement.data_path, encyclopedia + ".yaml")
         redirect_encyclopedia_path = os.path.join(EncyclopediaManagement.data_path, encyclopedia + "Redirects.csv")
 
-        with open(encyclopedia_path, 'r') as file:
+        with open(encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
             encyclopedia = yaml.safe_load(file)
         redirects_df = pd.read_csv(redirect_encyclopedia_path, header=None, names=['term', 'redirect'])
         redirects = pd.Series(redirects_df.redirect.values, index=redirects_df.term).to_dict()

@@ -8,6 +8,7 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
 from Utilities import Globals, Constants
+from Utilities.Constants import DEFAULT_ENCODING
 from Utilities.ErrorHandler import ErrorHandler
 
 
@@ -122,7 +123,7 @@ class FileManagement:
         file_path = FileManagement._get_file_path(file_name)
         mode = "w" if overwrite or not os.path.exists(file_path) else "a"
         try:
-            with open(file_path, mode, encoding="utf-8") as file:
+            with open(file_path, mode, encoding=DEFAULT_ENCODING) as file:
                 file.write(content)
                 logging.info(f"File {'overwritten' if overwrite else 'saved'}: {file_path}")
         except Exception:
@@ -282,7 +283,7 @@ class FileManagement:
 
         file_exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
         mode = 'a' if file_exists else 'w'
-        with open(file_path, mode=mode, newline='', encoding='utf-8') as file:
+        with open(file_path, mode=mode, newline='', encoding=DEFAULT_ENCODING) as file:
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
 
