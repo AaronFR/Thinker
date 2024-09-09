@@ -2,7 +2,8 @@ import logging
 from typing import List, Tuple
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Functionality.Knowing import Knowing
+
+from Data.EncyclopediaManagement import EncyclopediaManagement
 from Functionality.Organising import Organising
 from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
 from Utilities.ErrorHandler import ErrorHandler
@@ -87,8 +88,8 @@ class BasePersona:
 
         # ToDo: this will be called multiple times redundantly in a workflow, user_messages are small however and the
         #  context can change from step to step so its not a priority
-        additional_context = Knowing.search_encyclopedia(user_messages)
-        user_context = Knowing.search_user_encyclopedia(user_messages)
+        additional_context = EncyclopediaManagement.search_encyclopedia(user_messages)
+        user_context = EncyclopediaManagement.search_user_encyclopedia(user_messages)
         # ToDo: How the application accesses and gives history to the llm will need to be optimised
         recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
 

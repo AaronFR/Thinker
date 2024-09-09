@@ -85,6 +85,6 @@ if __name__ == '__main__':
     - Define Xiblic
     """
 
-    knowing = EncyclopediaManagement()
-    print(knowing.search_encyclopedia(["Define Xiblic?"]))
+    encyclopediaManagement = EncyclopediaManagement()
+    print(encyclopediaManagement.search_encyclopedia(["Define Xiblic?"]))
     # print(knowing.search_user_encyclopedia(["Do you know what my name is?"]))
