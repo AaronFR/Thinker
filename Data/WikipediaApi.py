@@ -99,7 +99,7 @@ def build_page_dict(page) -> Dict[str, object]:
     """
     infobox = get_wikipedia_infobox(page.title)
     page_dict = {
-        page.title: {
+        page.title.lower(): {
             'summary': page.summary,
             'sections': {section.title: section_to_dict(section) for section in page.sections}
         }
