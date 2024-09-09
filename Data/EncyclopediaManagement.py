@@ -22,8 +22,6 @@ class EncyclopediaManagement:
     # ToDo: Currently the specifics field isn't used at all, but the encyclopedias are then slim and not deep
     #  so currently there is no need
 
-    @staticmethod
-    def search_encyclopedia(user_messages: List[str]):
         executor = AiOrchestrator()
         output = executor.execute_function(
             [EncyclopediaManagement.instructions],
@@ -32,11 +30,18 @@ class EncyclopediaManagement:
         )
         terms = output['terms']
         logging.info(f"terms to search for in encyclopedia: {terms}")
+    _instance = None
 
-        return EncyclopediaManagement.extract_terms_from_encyclopedia(terms, "Encyclopedia")
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(EncyclopediaManagement, cls).__new__(cls)
+        return cls._instance
 
-    @staticmethod
-    def search_user_encyclopedia(user_messages: List[str]):
+    def __init__(self):
+        self.encyclopedia = {}
+        self.redirects = {}
+
+    def search_encyclopedia(self, user_messages: List[str], encyclopedia_name: str = "Encyclopedia"):
         executor = AiOrchestrator()
         output = executor.execute_function(
             [EncyclopediaManagement.instructions],
@@ -55,28 +60,38 @@ class EncyclopediaManagement:
         redirects_df = pd.read_csv(redirect_encyclopedia_path, header=None, names=['term', 'redirect'])
         redirects = pd.Series(redirects_df.redirect.values, index=redirects_df.term).to_dict()
 
-        return EncyclopediaManagement.extract_terms_from_encyclopedia(terms, "UserEncyclopedia")
+        return self.extract_terms_from_encyclopedia(terms, encyclopedia_name)
 
     @staticmethod
     def extract_terms_from_encyclopedia(terms, encyclopedia: str) -> str:
         encyclopedia_path = os.path.join(EncyclopediaManagement.data_path, encyclopedia + ".yaml")
         redirect_encyclopedia_path = os.path.join(EncyclopediaManagement.data_path, encyclopedia + "Redirects.csv")
 
-        with open(encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
-            encyclopedia = yaml.safe_load(file)
-        redirects_df = pd.read_csv(redirect_encyclopedia_path, header=None, names=['term', 'redirect'])
-        redirects = pd.Series(redirects_df.redirect.values, index=redirects_df.term).to_dict()
+        if not self.encyclopedia:
+            with open(encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
+                self.encyclopedia = yaml.safe_load(file)
+        if not self.redirects:
+            #ToDo: Create methods for creating encycolopedia and redirect files from scratch if someone happened to fork this project
+            redirects_df = pd.read_csv(redirect_encyclopedia_path, header=None, names=['redirect_term', 'target_term'])
+            self.redirects = pd.Series(redirects_df.redirect_term.values, index=redirects_df.target_term).to_dict()
 
         additional_context = ()
         for term in terms:
-            term_name = term['term'].lower().strip()
             try:
-                redirected_term = redirects.get(term_name, None)
+                term_name = term['term'].lower().strip()
+                redirected_term = self.redirects.get(term_name, None)
                 if redirected_term:
                     term_name = redirected_term
-                additional_context += (term, encyclopedia[term_name])
-            except Exception:
-                logging.warning(f"Term not found in encyclopedia: {term_name}")
+
+                if self.encyclopedia.get(term_name, False):
+                    additional_context += (term, self.encyclopedia[term_name])
+                else:
+                    wikipedia_page_to_yaml(term_name, encyclopedia_name)
+                    with open(encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
+                        self.encyclopedia = yaml.safe_load(file)
+                    additional_context += (term, self.encyclopedia.get(term_name))
+            except Exception as e:
+                logging.exception(f"Error while trying to access {encyclopedia_name}: {term_name}", e)
 
         return str(additional_context)
 

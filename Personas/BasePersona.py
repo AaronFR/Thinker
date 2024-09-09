@@ -85,11 +85,13 @@ class BasePersona:
 
         selected_files = Organising.get_relevant_files(user_messages)
         executor = AiOrchestrator(selected_files)
+        encyclopedia_manager = EncyclopediaManagement()
 
         # ToDo: this will be called multiple times redundantly in a workflow, user_messages are small however and the
         #  context can change from step to step so its not a priority
-        additional_context = EncyclopediaManagement.search_encyclopedia(user_messages)
-        user_context = EncyclopediaManagement.search_user_encyclopedia(user_messages)
+        additional_context = encyclopedia_manager.search_encyclopedia(user_messages)
+        #user_context = encyclopedia_manager.search_encyclopedia(user_messages, "UserEncyclopedia")
+        user_context = ""
         # ToDo: How the application accesses and gives history to the llm will need to be optimised
         recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
 
