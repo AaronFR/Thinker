@@ -65,10 +65,11 @@ SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA = [{
                             },
                             "specifics": {
                                 "type": "string",
-                                "description": """The specific property of this term your interested in"""
+                                "description": "The specific property of this term your interested in."
+                                               "Optional, if interested solely in summary"
                             }
                         },
-                        "required": ["start", "end", "instruction"]
+                        "required": ["term"]
                     }
                 }
             }
