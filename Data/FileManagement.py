@@ -278,7 +278,7 @@ class FileManagement:
         Writes a list of dictionaries to a brand new CSV file.
         """
 
-        logging.info("Data being written to CSV:", dictionaries)
+        logging.info(f"Data being written to CSV: {dictionaries}")
         file_path = os.path.join(os.path.dirname(__file__), 'DataStores', file_name)
 
         file_exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
