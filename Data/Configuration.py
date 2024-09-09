@@ -6,7 +6,7 @@ import yaml
 
 class Configuration:
 
-    data_path = os.path.join(os.path.dirname(__file__))
+    data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
 
     @staticmethod
     def deep_merge(dict1, dict2):

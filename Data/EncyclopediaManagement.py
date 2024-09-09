@@ -11,7 +11,7 @@ from Personas.PersonaSpecification.PersonaConstants import SEARCH_ENCYCLOPEDIA_F
 
 class EncyclopediaManagement:
 
-    data_path = os.path.join(os.path.dirname(__file__), '..', 'Data')
+    data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
     instructions = "For the given prompt return an array of concepts to be searched for in an encyclopedia, the term"
     "should be as simple as possible, e.g. the actual word of the concept. You can use the 'specifics' field if there"
     "is a specific aspect of this concept you would prefer to know more about in particular"
@@ -46,7 +46,8 @@ class EncyclopediaManagement:
         logging.info(f"terms to search for in user encyclopedia: {terms}")
 
         encyclopedia_path = os.path.join(EncyclopediaManagement.data_path, "UserEncyclopedia.yaml")
-        redirect_encyclopedia_path = os.path.join(EncyclopediaManagement.data_path, "UserEncyclopediaRedirects.csv")
+        redirect_encyclopedia_path = os.path.join(EncyclopediaManagement.data_path,
+                                                  "UserEncyclopediaRedirects.csv")
         with open(encyclopedia_path, 'r') as file:
             encyclopedia = yaml.safe_load(file)
 
