@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - UserConfig.yaml for configuration specific to the individual user
 - EncyclopediaManagement.py with search_encyclopedia functionality, Persona's can now evaluate prompts and ask for reference material
  in advance of evaluating a given prompt
-  - search_user_encyclopedia facts about the user are stored in their own encyclopedia, for reference as required
+  - UserEncyclopedia.yaml: Facts about the user are stored in their own encyclopedia, for reference as required
 - WikipediaApi For accessing content if required by a request and caching it in a Encyclopedia.yaml for future reference
 
 ### Changed

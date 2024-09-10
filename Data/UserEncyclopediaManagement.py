@@ -1,22 +1,26 @@
 import logging
 import os
+from typing import List, Dict
 
 import pandas as pd
 import yaml
 
+from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
 from Data.WikipediaApi import wikipedia_page_to_yaml
+from Personas.PersonaSpecification.PersonaConstants import SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
 from Utilities.Constants import DEFAULT_ENCODING
 
 
 class EncyclopediaManagement(EncyclopediaManagementInterface):
 
-    DEFAULT_ENCYCLOPEDIA_NAME = "Encyclopedia"
+    ENCYCLOPEDIA_NAME = "UserEncyclopedia"
 
     instructions = (
-        "For the given prompt return an array of concepts to be searched for in an encyclopedia, "
-        "the term should be as simple as possible, e.g., the actual word of the concept. You can use "
-        "the 'specifics' field if there is a specific aspect of this concept you would prefer to know more about."
+        "For the given prompt return an array of things you want to know about the user, "
+        "the term should be as simple as possible, e.g., the actual word of that concept. "
+        "You can use the 'specifics' field if there is a specific aspect of this concept "
+        "you would prefer to know more about."
     )
     # ToDo: Currently the specifics field isn't used at all, but the encyclopedias are then slim and not deep
     #  so currently there is no need
@@ -40,8 +44,6 @@ class EncyclopediaManagement(EncyclopediaManagementInterface):
         try:
             encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + ".yaml")
 
-            wikipedia_page_to_yaml(term_name, self.ENCYCLOPEDIA_NAME)
-
             with open(encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
                 self.encyclopedia = yaml.safe_load(file)
 
@@ -57,5 +59,5 @@ class EncyclopediaManagement(EncyclopediaManagementInterface):
 
 if __name__ == '__main__':
     encyclopediaManagement = EncyclopediaManagement()
-    print(encyclopediaManagement.search_encyclopedia(["Can you talk about 'code reuse'?"]))
+    print(encyclopediaManagement.search_encyclopedia(["Whats my name?"]))
     # print(knowing.search_user_encyclopedia(["Do you know what my name is?"]))
