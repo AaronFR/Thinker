@@ -37,7 +37,7 @@ def section_to_dict(section) -> Dict[str, object]:
     return section_dict
 
 
-def wikipedia_page_to_yaml(term, file_name="Encyclopedia"):
+def wikipedia_page_to_yaml(term: str, file_name="Encyclopedia"):
     """
     Fetches a Wikipedia page for the given term and stores the content in a YAML file.
 
@@ -58,13 +58,13 @@ def wikipedia_page_to_yaml(term, file_name="Encyclopedia"):
     page = wiki_wiki.page(term)
 
     if page.exists():
-        print(f"Processing page: {page.title}")
+        logging.info(f"Processing page: {page.title}")
         page_dict = build_page_dict(page)
 
         existing_data.update(page_dict)
         write_to_yaml(existing_data, yaml_path)
         append_redirects_to_yaml(page.title, f"{file_name}Redirects.csv")
-        print(f"Page content written to {yaml_filename}")
+        logging.info(f"Page content written to {yaml_filename}")
     else:
         logging.warning(f"No page found for '{term}'.")
 
@@ -153,7 +153,10 @@ def get_wikipedia_infobox(term: str) -> Optional[str]:
         if 'revisions' in page:
             content = page['revisions'][0]['slots']['main']['content']
             infobox = get_infobox(content)
-            return clean_infobox(infobox)
+            if infobox:
+                return clean_infobox(infobox)
+            else:
+                return None
         else:
             logging.info(f"Page '{term}' does not contain an infobox.")
             return None
@@ -162,7 +165,7 @@ def get_wikipedia_infobox(term: str) -> Optional[str]:
         return None
 
 
-def get_infobox(content: str) -> str:
+def get_infobox(content: str) -> str | None:
     """
     Extracts an infobox from the content of a Wikipedia page. Balanced in that any braces starting braces pair with
     ending braces so only the matching brace for the infobox section is used to extract the infobox
@@ -172,7 +175,8 @@ def get_infobox(content: str) -> str:
     """
     infobox_start = content.find("{{Infobox")
     if infobox_start == -1:
-        return "No infobox found."
+        logging.info(f"No infobox found")
+        return None
 
     brace_count = 0
     index = infobox_start
@@ -282,7 +286,7 @@ def append_redirects_to_yaml(term: str, redirect_file: str) -> None:
         fieldnames = ['redirect_term', 'target_term']
         FileManagement.write_to_csv(redirect_file, redirect_dicts, fieldnames)
     else:
-        print(f"No redirects found for {term}.")
+        logging.info(f"No redirects found for {term}.")
 
 
 def get_redirects(term: str) -> List[str]:
