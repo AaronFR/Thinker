@@ -1,8 +1,10 @@
 import csv
 import os
 import logging
-from typing import List
+from typing import List, Dict
 from datetime import datetime
+
+import yaml
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
@@ -10,6 +12,16 @@ from pygments.lexers import PythonLexer
 from Utilities import Globals, Constants
 from Utilities.Constants import DEFAULT_ENCODING
 from Utilities.ErrorHandler import ErrorHandler
+
+
+class MyDumper(yaml.Dumper):
+    """
+    Custom YAML dumper that formats multi-line strings using block style.
+    """
+    def represent_scalar(self, tag, value: str, style=None) -> yaml.nodes.ScalarNode:
+        if '\n' in value or isinstance(value, str):
+            return super().represent_scalar(tag, value, style='|')
+        return super().represent_scalar(tag, value, style)
 
 
 class FileManagement:
@@ -291,6 +303,41 @@ class FileManagement:
                 writer.writerows(dictionaries)
             else:
                 logging.error("Error: Data is not a list of dictionaries!")
+
+    @staticmethod
+    def load_existing_yaml(yaml_path: str) -> Dict[str, object]:
+        """
+        Loads existing data from a YAML file if available.
+
+        :param yaml_path: The path to the YAML file.
+        :return: A dictionary containing the loaded data or an empty dictionary.
+        """
+        existing_data = {}
+
+        if os.path.isfile(yaml_path) and os.path.getsize(yaml_path) > 0:
+            try:
+                with open(yaml_path, 'r', encoding=DEFAULT_ENCODING) as yaml_file:
+                    existing_data = yaml.safe_load(yaml_file) or {}
+            except (FileNotFoundError, yaml.YAMLError) as e:
+                logging.error(f"Error reading YAML file: {e}")
+        else:
+            logging.info(f"No existing data file found at {yaml_path}.")
+
+        return existing_data
+
+    @staticmethod
+    def write_to_yaml(data: Dict[str, object], yaml_path: str) -> None:
+        """
+        Writes the combined page data to a YAML file.
+
+        :param data: The data to write to the YAML file.
+        :param yaml_path: The path where the YAML file will be saved.
+        """
+        try:
+            with open(yaml_path, 'a', encoding=DEFAULT_ENCODING) as yaml_file:
+                yaml.dump(data, yaml_file, default_flow_style=False, Dumper=MyDumper, allow_unicode=True)
+        except Exception as e:
+            logging.error(f"Failed to write to YAML file: {e}")
 
 
 if __name__ == '__main__':

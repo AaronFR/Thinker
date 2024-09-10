@@ -5,26 +5,13 @@ from typing import Dict, Optional, List
 import requests
 import regex as re
 import wikipediaapi
-import yaml
 
 from Data.FileManagement import FileManagement
-from Utilities.Constants import DEFAULT_ENCODING
-
-
-class MyDumper(yaml.Dumper):
-    """
-    Custom YAML dumper that formats multi-line strings using block style.
-    """
-    def represent_scalar(self, tag, value: str, style=None) -> yaml.nodes.ScalarNode:
-        if '\n' in value or isinstance(value, str):
-            return super().represent_scalar(tag, value, style='|')
-        return super().represent_scalar(tag, value, style)
-
 
 data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
 
 
-def section_to_dict(section) -> Dict[str, object]:
+def _section_to_dict(section) -> Dict[str, object]:
     """
     Recursively convert section and its subsections to a dictionary.
     """
@@ -32,7 +19,7 @@ def section_to_dict(section) -> Dict[str, object]:
 
     if section.sections:
         section_dict['subsections'] = {
-            subsection.title: section_to_dict(subsection) for subsection in section.sections
+            subsection.title: _section_to_dict(subsection) for subsection in section.sections
         }
     return section_dict
 
@@ -49,7 +36,7 @@ def wikipedia_page_to_yaml(term: str, file_name="Encyclopedia"):
     yaml_filename = f"{file_name}.yaml"
     yaml_path = os.path.join(data_path, yaml_filename)
 
-    existing_data = load_existing_yaml(yaml_path)
+    existing_data = FileManagement.load_existing_yaml(yaml_path)
     if term in existing_data:
         logging.info(f"Data for '{term}' is already present in {yaml_filename}. Skipping fetch.")
         return
@@ -59,73 +46,38 @@ def wikipedia_page_to_yaml(term: str, file_name="Encyclopedia"):
 
     if page.exists():
         logging.info(f"Processing page: {page.title}")
-        page_dict = build_page_dict(page)
+        page_dict = _build_page_dict(page)
 
         existing_data.update(page_dict)
-        write_to_yaml(existing_data, yaml_path)
-        append_redirects_to_yaml(page.title, f"{file_name}Redirects.csv")
+        FileManagement.write_to_yaml(existing_data, yaml_path)
+        _append_redirects_to_yaml(page.title, f"{file_name}Redirects.csv")
         logging.info(f"Page content written to {yaml_filename}")
     else:
         logging.warning(f"No page found for '{term}'.")
 
 
-def load_existing_yaml(yaml_path: str) -> Dict[str, object]:
-    """
-    Loads existing data from a YAML file if available.
-
-    :param yaml_path: The path to the YAML file.
-    :return: A dictionary containing the loaded data or an empty dictionary.
-    """
-    existing_data = {}
-
-    if os.path.isfile(yaml_path) and os.path.getsize(yaml_path) > 0:
-        try:
-            with open(yaml_path, 'r', encoding=DEFAULT_ENCODING) as yaml_file:
-                existing_data = yaml.safe_load(yaml_file) or {}
-        except (FileNotFoundError, yaml.YAMLError) as e:
-            logging.error(f"Error reading YAML file: {e}")
-    else:
-        logging.info(f"No existing data file found at {yaml_path}.")
-
-    return existing_data
-
-
-def build_page_dict(page) -> Dict[str, object]:
+def _build_page_dict(page) -> Dict[str, object]:
     """
     Constructs a dictionary representation of the Wikipedia page content.
 
     :param page: A Wikipedia page object.
     :return: A dictionary representing the summary and sections of the page.
     """
-    infobox = get_wikipedia_infobox(page.title)
+    infobox = _get_wikipedia_infobox(page.title)
     page_dict = {
         page.title.lower(): {
             'summary': page.summary,
-            'sections': {section.title: section_to_dict(section) for section in page.sections}
+            'sections': {section.title: _section_to_dict(section) for section in page.sections}
         }
     }
 
     if infobox:
-        page_dict[page.title]['infobox'] = infobox_to_dict(infobox)
+        page_dict[page.title]['infobox'] = _infobox_to_dict(infobox)
 
     return page_dict
 
 
-def write_to_yaml(data: Dict[str, object], yaml_path: str) -> None:
-    """
-    Writes the combined page data to a YAML file.
-
-    :param data: The data to write to the YAML file.
-    :param yaml_path: The path where the YAML file will be saved.
-    """
-    try:
-        with open(yaml_path, 'w', encoding=DEFAULT_ENCODING) as yaml_file:
-            yaml.dump(data, yaml_file, default_flow_style=False, Dumper=MyDumper, allow_unicode=True)
-    except Exception as e:
-        logging.error(f"Failed to write to YAML file: {e}")
-
-
-def get_wikipedia_infobox(term: str) -> Optional[str]:
+def _get_wikipedia_infobox(term: str) -> Optional[str]:
     """
     Fetches the infobox for the specified Wikipedia term.
 
@@ -152,9 +104,9 @@ def get_wikipedia_infobox(term: str) -> Optional[str]:
         page = data['query']['pages'][0]
         if 'revisions' in page:
             content = page['revisions'][0]['slots']['main']['content']
-            infobox = get_infobox(content)
+            infobox = _get_infobox(content)
             if infobox:
-                return clean_infobox(infobox)
+                return _clean_infobox(infobox)
             else:
                 return None
         else:
@@ -165,7 +117,7 @@ def get_wikipedia_infobox(term: str) -> Optional[str]:
         return None
 
 
-def get_infobox(content: str) -> str | None:
+def _get_infobox(content: str) -> str | None:
     """
     Extracts an infobox from the content of a Wikipedia page. Balanced in that any braces starting braces pair with
     ending braces so only the matching brace for the infobox section is used to extract the infobox
@@ -195,7 +147,7 @@ def get_infobox(content: str) -> str | None:
     return "Infobox extraction failed."
 
 
-def clean_infobox(infobox: str) -> str:
+def _clean_infobox(infobox: str) -> str:
     """
     Cleans and formats the infobox for readability and minimising tokens for llm processing
 
@@ -226,7 +178,7 @@ def clean_infobox(infobox: str) -> str:
     return infobox
 
 
-def infobox_to_dict(text: str) -> Dict[str, object]:
+def _infobox_to_dict(text: str) -> Dict[str, object]:
     """
     Converts the infobox text into dictionary format for structured representation.
 
@@ -270,14 +222,14 @@ def infobox_to_dict(text: str) -> Dict[str, object]:
     return result
 
 
-def append_redirects_to_yaml(term: str, redirect_file: str) -> None:
+def _append_redirects_to_yaml(term: str, redirect_file: str) -> None:
     """
     Fetches the redirects for a given page and appends them to a specified CSV file.
 
     :param term: The title of the Wikipedia page to fetch redirects for.
     :param redirect_file: The path to the CSV file where redirects will be saved.
     """
-    redirects = get_redirects(term)
+    redirects = _get_redirects(term)
     logging.info(f"Redirects found: {redirects}")
 
     redirect_dicts = [{'redirect_term': redirect, 'target_term': term} for redirect in redirects]
@@ -289,7 +241,7 @@ def append_redirects_to_yaml(term: str, redirect_file: str) -> None:
         logging.info(f"No redirects found for {term}.")
 
 
-def get_redirects(term: str) -> List[str]:
+def _get_redirects(term: str) -> List[str]:
     """
     Uses the MediaWiki API to fetch the redirect history for the specified Wikipedia page.
 

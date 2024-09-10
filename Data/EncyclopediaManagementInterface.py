@@ -6,7 +6,6 @@ import pandas as pd
 import yaml
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Data.WikipediaApi import wikipedia_page_to_yaml
 from Personas.PersonaSpecification.PersonaConstants import SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
 from Utilities.Constants import DEFAULT_ENCODING
 
@@ -17,7 +16,7 @@ class EncyclopediaManagementInterface:
     REDIRECTS_EXT = "Redirects.csv"
     ENCYCLOPEDIA_NAME = "ToDefine"
 
-    instructions = ("To Define")
+    instructions = "To Define"
     # ToDo: Currently the specifics field isn't used at all, but the encyclopedias are then slim and not deep
     #  so currently there is no need
 
@@ -32,6 +31,23 @@ class EncyclopediaManagementInterface:
         self.encyclopedia: Dict[str, str] = {}
         self.redirects: Dict[str, str] = {}
         self.data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
+        self.load_encyclopedia()
+
+    def load_encyclopedia(self) -> None:
+        """Loads the encyclopedia and redirects if not already loaded.
+        ToDo: Create methods for creating encyclopedia and redirect files from scratch if someone happened to fork this project
+        """
+        if not self.encyclopedia:
+            encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + self.ENCYCLOPEDIA_EXT)
+            if os.path.exists(encyclopedia_path):
+                with open(encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
+                    self.encyclopedia = yaml.safe_load(file) or {}
+
+        if not self.redirects:
+            redirect_encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + self.REDIRECTS_EXT)
+            if os.path.exists(redirect_encyclopedia_path):
+                redirects_df = pd.read_csv(redirect_encyclopedia_path, header=None, names=['redirect_term', 'target_term'])
+                self.redirects = redirects_df.set_index('redirect_term')['target_term'].to_dict()
 
     def search_encyclopedia(self, user_messages: List[str]) -> str:
         """Searches the encyclopedia for terms derived from user messages.
@@ -57,7 +73,6 @@ class EncyclopediaManagementInterface:
         :param terms: The terms to check in the encyclopedia.
         :return: A string representation of additional context extracted.
         """
-        self.load_encyclopedia()
 
         additional_context = []
         for term in terms:
@@ -107,22 +122,6 @@ class EncyclopediaManagementInterface:
         )
 
         return output
-
-    def load_encyclopedia(self) -> None:
-        """Loads the encyclopedia and redirects if not already loaded.
-        ToDo: Create methods for creating encyclopedia and redirect files from scratch if someone happened to fork this project
-        """
-        if not self.encyclopedia:
-            encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + self.ENCYCLOPEDIA_EXT)
-            if os.path.exists(encyclopedia_path):
-                with open(encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
-                    self.encyclopedia = yaml.safe_load(file) or {}
-
-        if not self.redirects:
-            redirect_encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + self.REDIRECTS_EXT)
-            if os.path.exists(redirect_encyclopedia_path):
-                redirects_df = pd.read_csv(redirect_encyclopedia_path, header=None, names=['redirect_term', 'target_term'])
-                self.redirects = redirects_df.set_index('redirect_term')['target_term'].to_dict()
 
     def fetch_term_and_update(self, term_name: str) -> bool:
         """Fetches the term from Wikipedia and updates the encyclopedia.
