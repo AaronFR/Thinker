@@ -290,7 +290,7 @@ class FileManagement:
             if isinstance(dictionaries, list) and all(isinstance(item, dict) for item in dictionaries):
                 writer.writerows(dictionaries)
             else:
-                print("Error: Data is not a list of dictionaries!")
+                logging.error("Error: Data is not a list of dictionaries!")
 
 
 if __name__ == '__main__':

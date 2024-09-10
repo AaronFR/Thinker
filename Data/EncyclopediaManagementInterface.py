@@ -42,12 +42,11 @@ class EncyclopediaManagementInterface:
         executor = AiOrchestrator()
         instructions = self.instructions
 
-        output = executor.execute_function(
+        terms = executor.execute_function(
             [instructions],
             user_messages,
             SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
-        )
-        terms = output['terms']
+        )['terms']
         logging.info(f"terms to search for in {self.ENCYCLOPEDIA_NAME}: {terms}")
 
         return self.extract_terms_from_encyclopedia(terms)
@@ -70,10 +69,11 @@ class EncyclopediaManagementInterface:
 
                 entry = self.encyclopedia.get(term_name)
                 if entry:
+                    entry = self.selectively_process_entry(term_name, term.get('specifics', "Nothing specific"))
                     additional_context.append((term, entry))
                 else:
                     if self.fetch_term_and_update(term_name):
-                        entry = self.encyclopedia.get(term_name)
+                        entry = self.selectively_process_entry(term_name, term.get('specifics', "Nothing specific"))
                         if entry:
                             additional_context.append((term, entry))
                     else:
@@ -82,6 +82,31 @@ class EncyclopediaManagementInterface:
                 logging.exception(f"Error while trying to access {self.ENCYCLOPEDIA_NAME}: {term_name}", e)
 
         return str(additional_context)
+
+    def selectively_process_entry(self, term_name: str, specifics: str):
+        """
+        Must be run after data files have been loaded.
+
+        ToDo: processing an entire wikipedia page (multiple) per prompt is not efficient
+        :param term_name: term to search for in encyclopedia data files
+        :param specifics: the reason you are searching for this term, what the llm hopes to find more info on
+        :return: A shorter processed version of the encyclopedia file
+        """
+        entry_dict = self.encyclopedia.get(term_name)
+        executor = AiOrchestrator()
+        output = executor.execute(
+            [
+                "First I'm going to give you the file for a given term, can you take the extra definition I give you "
+                "and reprocess the entry in as few words while retaining as much deep, technical, enriching "
+                "information as possible"
+            ],
+            [
+                term_name + ": " + specifics,
+                str(entry_dict)
+            ]
+        )
+
+        return output
 
     def load_encyclopedia(self) -> None:
         """Loads the encyclopedia and redirects if not already loaded.

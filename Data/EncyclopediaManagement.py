@@ -58,4 +58,3 @@ class EncyclopediaManagement(EncyclopediaManagementInterface):
 if __name__ == '__main__':
     encyclopediaManagement = EncyclopediaManagement()
     print(encyclopediaManagement.search_encyclopedia(["Can you talk about 'code reuse'?"]))
-    # print(knowing.search_user_encyclopedia(["Do you know what my name is?"]))
