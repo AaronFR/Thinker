@@ -24,9 +24,9 @@ def _section_to_dict(section) -> Dict[str, object]:
     return section_dict
 
 
-def wikipedia_page_to_yaml(term: str, file_name="Encyclopedia"):
+def search_wikipedia_api(term: str, file_name="Encyclopedia"):
     """
-    Fetches a Wikipedia page for the given term and stores the content in a YAML file.
+    Fetches a Wikipedia page for the given term and caches the content in a local Encyclopedia cache.
 
     If the page content already exists, it skips the fetch and logs a message.
 
@@ -50,7 +50,7 @@ def wikipedia_page_to_yaml(term: str, file_name="Encyclopedia"):
 
         existing_data.update(page_dict)
         FileManagement.write_to_yaml(existing_data, yaml_path)
-        _append_redirects_to_yaml(page.title, f"{file_name}Redirects.csv")
+        _add_new_redirects(page.title, f"{file_name}Redirects.csv")
         logging.info(f"Page content written to {yaml_filename}")
     else:
         logging.warning(f"No page found for '{term}'.")
@@ -222,7 +222,7 @@ def _infobox_to_dict(text: str) -> Dict[str, object]:
     return result
 
 
-def _append_redirects_to_yaml(term: str, redirect_file: str) -> None:
+def _add_new_redirects(term: str, redirect_file: str) -> None:
     """
     Fetches the redirects for a given page and appends them to a specified CSV file.
 
@@ -274,5 +274,5 @@ def _get_redirects(term: str) -> List[str]:
 
 if __name__ == "__main__":
     term = input("Enter a search term: ")
-    wikipedia_page_to_yaml(term)
+    search_wikipedia_api(term)
 

@@ -5,7 +5,7 @@ import pandas as pd
 import yaml
 
 from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
-from Data.WikipediaApi import wikipedia_page_to_yaml
+from Data.WikipediaApi import search_wikipedia_api
 from Utilities.Constants import DEFAULT_ENCODING
 
 
@@ -40,7 +40,7 @@ class EncyclopediaManagement(EncyclopediaManagementInterface):
         :return: A status indicating whether the fetching and updating were successful.
         """
         try:
-            wikipedia_page_to_yaml(term_name, self.ENCYCLOPEDIA_NAME)
+            search_wikipedia_api(term_name, self.ENCYCLOPEDIA_NAME)
 
             with open(self.encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
                 self.encyclopedia = yaml.safe_load(file)
