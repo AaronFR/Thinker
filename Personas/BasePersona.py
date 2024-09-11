@@ -4,6 +4,7 @@ from typing import List, Tuple
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 
 from Data.EncyclopediaManagement import EncyclopediaManagement
+from Data.UserEncyclopediaManagement import UserEncyclopediaManagement
 from Functionality.Organising import Organising
 from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
 from Utilities.ErrorHandler import ErrorHandler
@@ -77,6 +78,10 @@ class BasePersona:
 
     def think(self, user_messages: List[str]) -> str:
         """Process the input question and think through a response.
+        ToDo: this will be called multiple times redundantly in a workflow, user_messages are small however and the
+         context can change from step to step so its not a priority
+        ToDo: split additonal_context lists up before sending on
+        ToDo: How the application accesses and gives history to the llm will need to be optimised
 
         :param user_messages: List of existing user message
         :return The generated response or error message
@@ -85,15 +90,13 @@ class BasePersona:
 
         selected_files = Organising.get_relevant_files(user_messages)
         executor = AiOrchestrator(selected_files)
-        encyclopedia_manager = EncyclopediaManagement()
 
-        # ToDo: this will be called multiple times redundantly in a workflow, user_messages are small however and the
-        #  context can change from step to step so its not a priority
-        # ToDo: split additonal_context list up before sending on
+        encyclopedia_manager = EncyclopediaManagement()
         additional_context = encyclopedia_manager.search_encyclopedia(user_messages)
-        user_context = encyclopedia_manager.search_encyclopedia(user_messages)
-        user_context = ""
-        # ToDo: How the application accesses and gives history to the llm will need to be optimised
+
+        user_encyclopedia_manager = UserEncyclopediaManagement()
+        user_context = user_encyclopedia_manager.search_encyclopedia(user_messages)
+
         recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
 
         try:

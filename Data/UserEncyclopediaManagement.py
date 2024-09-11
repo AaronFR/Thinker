@@ -8,7 +8,7 @@ from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
 from Utilities.Constants import DEFAULT_ENCODING
 
 
-class EncyclopediaManagement(EncyclopediaManagementInterface):
+class UserEncyclopediaManagement(EncyclopediaManagementInterface):
 
     ENCYCLOPEDIA_NAME = "UserEncyclopedia"
 
