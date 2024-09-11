@@ -25,11 +25,13 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
 
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(EncyclopediaManagement, cls).__new__(cls)
+            cls._instance = super(UserEncyclopediaManagement, cls).__new__(cls)
         return cls._instance
 
     def __init__(self):
         super().__init__()
+        self.encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + ".yaml")
+        self.redirect_encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + "Redirects.csv")
 
     def fetch_term_and_update(self, term_name: str) -> bool:
         """Fetches the term from Wikipedia and updates the encyclopedia.
@@ -38,13 +40,14 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
         :return: A status indicating whether the fetching and updating were successful.
         """
         try:
-            encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + ".yaml")
-
-            with open(encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
+            with open(self.encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
                 self.encyclopedia = yaml.safe_load(file)
 
-            redirect_encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + "Redirects.csv")
-            redirects_df = pd.read_csv(redirect_encyclopedia_path, header=None, names=['redirect_term', 'target_term'])
+            redirects_df = pd.read_csv(
+                self.redirect_encyclopedia_path,
+                header=None,
+                names=['redirect_term', 'target_term']
+            )
             self.redirects = redirects_df.set_index('redirect_term')['target_term'].to_dict()
 
             return True
@@ -54,6 +57,6 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
 
 
 if __name__ == '__main__':
-    encyclopediaManagement = EncyclopediaManagement()
+    encyclopediaManagement = UserEncyclopediaManagement()
     print(encyclopediaManagement.search_encyclopedia(["Whats my name?"]))
     # print(knowing.search_user_encyclopedia(["Do you know what my name is?"]))
