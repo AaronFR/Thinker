@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  in advance of evaluating a given prompt
   - UserEncyclopedia.yaml: Facts about the user are stored in their own encyclopedia, for reference as required
 - WikipediaApi For accessing content if required by a request and caching it in a Encyclopedia.yaml for future reference
+- chat_workflow: for conversing with the user without saving files
 
 ### Changed
 
