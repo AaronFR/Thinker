@@ -87,3 +87,63 @@ Hmm interesting, so 1, I'd be interested to see what you mean? Lets look just at
 This prompt, took ***Eighteen minutes*** to run, due to the new encyclopedia entries being searched for, created and 
 condensed.
 Though it *did* only cost ¢1, so perhaps the majority of the time is actually spent on wikipedia calls.
+
+### Conversing with Coder first before asking it to write (sans encyclopedia searching)
+
+```commandline
+2024-09-12 21:35:57,216 [INFO] (Coder.py:52) Iteration 0 completed with response: 
+Let's review the provided `EncyclopediaManagementInterface.py` and `UserEncyclopediaManagement.py` classes. We will examine the strengths, weaknesses, and possible improvements accordingly.
+
+### Strengths
+
+1. **Singleton Pattern**: Both `EncyclopediaManagementInterface` and `UserEncyclopediaManagement` implement the singleton pattern. This ensures that there is only one instance of these classes, which can be beneficial for managing shared state or resources.
+
+2. **Use of YAML and CSV**: The code utilizes YAML for structured data and CSV for redirects effectively, making it readable and easy to edit. YAML's hierarchy can hold rich structures, and using CSV for redirects is a fitting choice due to its simplicity.
+
+3. **Logging**: The use of logging throughout the classes is commendable. It provides meaningful insights during execution, making debugging easier if any issues arise.
+
+4. **Error Handling**: The implementation includes try-except blocks to catch and log exceptions, enhancing the robustness of the code. This helps identify what went wrong and avoids complete failure of the program.
+
+5. **Separation of Concerns**: The tasks of loading, searching, and processing encyclopedia data are split into different methods which makes the code modular and easier to maintain.
+
+6. **Dynamic Data Path Handling**: The data path is constructed using `os.path.join`, which enhances cross-platform compatibility.
+
+### Weaknesses and Areas for Improvement
+
+1. **Hardcoded Names**: The `ENCYCLOPEDIA_NAME` being hardcoded in both classes can lead to issues if you need to support multiple encyclopedias. A more flexible approach would be to pass the desired name as an argument or configuration.
+
+2. **Efficient Fetching**: The `fetch_term_and_update` method in `UserEncyclopediaManagement` currently reads the entire YAML file every time a term is fetched. This can lead to performance bottlenecks for large encyclopedias. Consider implementing a caching mechanism or bulk loading updates.
+
+3. **Method Complexity**: The `add_to_encyclopedia` method handles a lot of tasks. It's responsible for both parsing user input and managing file input/output. Breaking it down further into smaller helper methods could increase readability and maintainability.
+
+4. **Lack of Tests**: There's no mention of testing or test cases. Employing unit tests can significantly enhance confidence in the code's reliability, especially when making changes.
+
+5. **Unimplemented Functionality**: The `fetch_term_and_update` method raises a `NotImplementedError`. While this can be a placeholder for future expansion, it needs a clear plan for implementation to avoid confusion during integration.
+
+6. **Inconsistent Documentation**: The docstring formatting is inconsistent; some methods document parameters and return types while others do not. Adopting a standardized format for all functions helps maintain clarity.
+
+7. **Direct YAML File Writing**: Writing directly to a YAML file without any validations might introduce data integrity issues. Implement checks to ensure that if a key exists, the action being taken is indeed what you want (e.g., confirm with the user before overriding).
+
+8. **Specifics Field Usage**: The note in both classes about the "specifics" field not being used suggests that there may be unmet potential in this feature. Further exploration could enhance the depth of the encyclopedia entries.
+
+### Conclusion
+
+Overall, the `EncyclopediaManagementInterface` and `UserEncyclopediaManagement` classes provide a solid foundation for encyclopedia management. They effectively utilize data structures and logging but could improve in areas of efficiency, best practices, and modularity. Addressing the weaknesses and taking advantage of identified opportunities for improvement would lead to a more robust and maintainable codebase.
+Please enter your task (or type 'exit' to quit): 
+```
+
+User Prompt:
+Okay thanks, how about you write up your suggested changes then, specifically rewrite UserEncyclopediaManagement.py, lets address your concerns 1. Maybe I didn't mention it specifically but EncyclopediaManagementInterface is obviously the parent class to UserEncyclopediaManagement that said if you have an improvement in mind go for it 2. Likewise this is the caching, if you can improve it I'm very interested. 3. Okay split add_to_encyclopedia. 4. This isn't a test class, don't add test. 5. Again its an interface this is desired behaviour. 6. Please rewrite all docstrings to be consistent with one another. 7. Write some useful validatiosn then. 8. it actually is used you can remove that warning if its present. Okay great again re-write UserEncyclopediaManagement.py
+
+Output:
+~3 minutes to run
+Still aprox ¢1
+Between the two classes the only shared method if fetch_term_and_update, the coder with encyclopedia search enabled
+understood the purpose of the admittedly obtuse and difficult to understand method. That is that we already search the
+existing encyclopedia for the given term in the parent class, it also fails to spot that you can reuse the 
+load_encyclopedia_data method (as did I the first time).
+I also generally prefer what it wrote for the docstrings. Though other docstrings there's no obvious advantage it should
+have other the coder without encyclopedia references, more testing is needed.
+
+Outside of that the code written for splitting the add_to_encyclopedia method was perfectly acceptable, but has no
+comparison in EncyclopediaManagement.py

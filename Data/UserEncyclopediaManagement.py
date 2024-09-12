@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import List
+from typing import List, Dict, Any
 
 import pandas as pd
 import yaml
@@ -13,6 +13,7 @@ from Utilities.Constants import DEFAULT_ENCODING
 
 
 class UserEncyclopediaManagement(EncyclopediaManagementInterface):
+    """A class to manage user-specific encyclopedia functionalities."""
 
     ENCYCLOPEDIA_NAME = "UserEncyclopedia"
 
@@ -22,17 +23,17 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
         "You can use the 'specifics' field if there is a specific aspect of this concept "
         "you would prefer to know more about."
     )
-    # ToDo: Currently the specifics field isn't used at all, but the encyclopedias are then slim and not deep
-    #  so currently there is no need
 
     _instance = None
 
     def __new__(cls):
+        """Ensures a single instance of UserEncyclopediaManagement."""
         if cls._instance is None:
             cls._instance = super(UserEncyclopediaManagement, cls).__new__(cls)
         return cls._instance
 
     def __init__(self):
+        """Initializes the UserEncyclopediaManagement instance."""
         super().__init__()
         self.encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + ".yaml")
         self.redirect_encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + "Redirects.csv")
@@ -43,6 +44,10 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
         :param term_name: The name of the term to fetch from Wikipedia.
         :return: A status indicating whether the fetching and updating were successful.
         """
+        if term_name in self.encyclopedia:
+            logging.info(f"Term '{term_name}' fetched from cache.")
+            return True
+
         try:
             with open(self.encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
                 self.encyclopedia = yaml.safe_load(file)
@@ -55,8 +60,11 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
             self.redirects = redirects_df.set_index('redirect_term')['target_term'].to_dict()
 
             return True
+        except (FileNotFoundError, yaml.YAMLError) as e:
+            logging.error(f"Failed to load data for '{term_name}': {e}")
+            return False
         except Exception as e:
-            logging.exception(f"Error while trying to access '{self.ENCYCLOPEDIA_NAME}': '{term_name}'", exc_info=e)
+            logging.exception(f"Unexpected error while trying to fetch '{term_name}': {e}")
             return False
 
     def add_to_encyclopedia(self, user_input: List[str]):
@@ -65,38 +73,73 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
         :param user_input: The user input to analyse
         :return: A string representation of the additional context found.
         """
-        executor = AiOrchestrator()
-        instructions = self.instructions
+        terms = self.extract_terms_from_input(user_input)
+        logging.info(f"Extracted terms for {self.ENCYCLOPEDIA_NAME}: {terms}")
 
-        terms = executor.execute_function(
-            [instructions],
+        existing_data = FileManagement.load_existing_yaml(self.encyclopedia_path)
+        new_entries = self.process_terms(terms, existing_data)
+
+        if new_entries:
+            FileManagement.write_to_yaml(new_entries, self.encyclopedia_path)
+
+    def extract_terms_from_input(self, user_input: List[str]) -> List[Dict[str, Any]]:
+        """Extracts terms from user input using AiOrchestrator.
+
+        :param user_input: The input text provided by the user.
+        :return: A list of dictionaries containing terms and their respective content.
+        """
+        executor = AiOrchestrator()
+        response = executor.execute_function(
+            [self.instructions],
             user_input,
             ADD_TO_ENCYCLOPEDIA_FUNCTION_SCHEMA
-        )['terms']
-        logging.info(f"terms to search for in {self.ENCYCLOPEDIA_NAME}: {terms}")
+        )
+        return response.get('terms', [])
 
-        data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
-        yaml_filename = self.ENCYCLOPEDIA_NAME + ".yaml"
-        yaml_path = os.path.join(data_path, yaml_filename)
+    def process_terms(self, terms: List[Dict[str, Any]], existing_data: Dict[str, Any]) -> Dict[str, str]:
+        """Processes new terms and prepares them for addition to the encyclopedia.
 
-        existing_data = FileManagement.load_existing_yaml(yaml_path)
-        new_values = {}
+        :param terms: The new terms extracted from user input.
+        :param existing_data: The existing encyclopedia data to avoid duplicates.
+        :return: A dictionary of key-value pairs for the new terms to be added.
+        """
+        new_entries = {}
 
-        for new_dict in terms:
+        for term_info in terms:
             try:
-                key = new_dict['term'].strip().lower()  # to avoid duplicates, seperated by case
-                value = new_dict['content']
-                if key in existing_data:
-                    logging.info(f"Key: [{key}] already present in {self.ENCYCLOPEDIA_NAME}.\n"
-                                 f"Original: {existing_data.get(key)},\nReplacement: {value}")
-                    continue  # Skip if the key exists
-                logging.info(f"Adding to {self.ENCYCLOPEDIA_NAME} - {key}: {value}")
-                new_values.update({key: value})
-            except Exception as e:
-                logging.exception(f"Failure to add to {self.ENCYCLOPEDIA_NAME}, for {new_dict}", exc_info=e)
+                key = term_info['term'].strip().lower()  # Ensure the key is case-insensitive
+                value = term_info['content']
 
-        if new_values:
-            FileManagement.write_to_yaml(new_values, yaml_path)
+                if key in existing_data:
+                    logging.info(f"Key: [{key}] already present in {self.ENCYCLOPEDIA_NAME}. " +
+                                 f"Original: {existing_data.get(key)}, " +
+                                 f"Replacement: {value}")
+                    continue  # Skip if the key already exists
+
+                self.validate_term(key, value)  # Validate the new term
+                logging.info(f"Adding to {self.ENCYCLOPEDIA_NAME} - {key}: {value}")
+                new_entries[key] = value  # Add the new key-value pair
+            except ValueError as e:
+                logging.warning(f"Validation error for term {term_info}: {e}")
+            except Exception as e:
+                logging.exception(f"Failure to add to {self.ENCYCLOPEDIA_NAME}, for {term_info}: {e}")
+
+        return new_entries
+
+    @staticmethod
+    def validate_term(key: str, value: str) -> None:
+        """Validates the term before adding it to the encyclopedia.
+
+        :param key: The key of the term to validate.
+        :param value: The content associated with the term.
+        :raises ValueError: If the key or value is deemed invalid.
+        """
+        if not key or not value:
+            raise ValueError("Term key and value cannot be empty.")
+        if len(key) > 100:  # Arbitrary length restriction
+            raise ValueError("Term key is too long.")
+        if len(value) > 50000:  # Arbitrary content restriction
+            raise ValueError("Term content is too long.")
 
 
 if __name__ == '__main__':
