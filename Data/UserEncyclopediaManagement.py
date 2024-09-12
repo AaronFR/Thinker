@@ -13,7 +13,13 @@ from Utilities.Constants import DEFAULT_ENCODING
 
 
 class UserEncyclopediaManagement(EncyclopediaManagementInterface):
-    """A class to manage user-specific encyclopedia functionalities."""
+    """
+    **UserEncyclopediaManagement**: A class for managing encyclopedia entries, enabling retrieval,
+    updating, and organization of user information.
+
+    This class implements a singleton pattern to ensure a single instance to ensure only a single cache is held in
+    memory.
+    """
 
     ENCYCLOPEDIA_NAME = "UserEncyclopedia"
 
@@ -37,27 +43,17 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
         super().__init__()
         self.encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + ".yaml")
         self.redirect_encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + "Redirects.csv")
+        self.load_encyclopedia_data()
 
     def fetch_term_and_update(self, term_name: str) -> bool:
-        """Fetches the term from Wikipedia and updates the encyclopedia.
+        """Loads the current state of the user encyclopedia.
+        User encyclopedia is updated more selectively than the encyclopedia, typically only based on user input
 
         :param term_name: The name of the term to fetch from Wikipedia.
         :return: A status indicating whether the fetching and updating were successful.
         """
-        if term_name in self.encyclopedia:
-            logging.info(f"Term '{term_name}' fetched from cache.")
-            return True
-
         try:
-            with open(self.encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
-                self.encyclopedia = yaml.safe_load(file)
-
-            redirects_df = pd.read_csv(
-                self.redirect_encyclopedia_path,
-                header=None,
-                names=['redirect_term', 'target_term']
-            )
-            self.redirects = redirects_df.set_index('redirect_term')['target_term'].to_dict()
+            self.load_encyclopedia_data()
 
             return True
         except (FileNotFoundError, yaml.YAMLError) as e:
