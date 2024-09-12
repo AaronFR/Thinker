@@ -326,15 +326,17 @@ class FileManagement:
         return existing_data
 
     @staticmethod
-    def write_to_yaml(data: Dict[str, object], yaml_path: str) -> None:
+    def write_to_yaml(data: Dict[str, object], yaml_path: str, overwrite=False) -> None:
         """
         Writes the combined page data to a YAML file.
 
         :param data: The data to write to the YAML file.
         :param yaml_path: The path where the YAML file will be saved.
+        :param overwrite: Determines if the yaml should be replaced or meerly appended to
         """
         try:
-            with open(yaml_path, 'a', encoding=DEFAULT_ENCODING) as yaml_file:
+            mode = "w" if overwrite or not os.path.exists(yaml_path) else "a"
+            with open(yaml_path, mode, encoding=DEFAULT_ENCODING) as yaml_file:
                 yaml.dump(data, yaml_file, default_flow_style=False, Dumper=MyDumper, allow_unicode=True)
         except Exception as e:
             logging.error(f"Failed to write to YAML file: {e}")

@@ -1,10 +1,14 @@
 import logging
 import os
+from typing import List
 
 import pandas as pd
 import yaml
 
+from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
+from Data.FileManagement import FileManagement
+from Personas.PersonaSpecification.PersonaConstants import ADD_TO_ENCYCLOPEDIA_FUNCTION_SCHEMA
 from Utilities.Constants import DEFAULT_ENCODING
 
 
@@ -55,8 +59,52 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
             logging.exception(f"Error while trying to access '{self.ENCYCLOPEDIA_NAME}': '{term_name}'", exc_info=e)
             return False
 
+    def add_to_encyclopedia(self, user_input: List[str]):
+        """Review the input user_messages and determine if anything meaningful can be added to the user encyclopedia
+
+        :param user_input: The user input to analyse
+        :return: A string representation of the additional context found.
+        """
+        executor = AiOrchestrator()
+        instructions = self.instructions
+
+        terms = executor.execute_function(
+            [instructions],
+            user_input,
+            ADD_TO_ENCYCLOPEDIA_FUNCTION_SCHEMA
+        )['terms']
+        logging.info(f"terms to search for in {self.ENCYCLOPEDIA_NAME}: {terms}")
+
+        data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
+        yaml_filename = self.ENCYCLOPEDIA_NAME + ".yaml"
+        yaml_path = os.path.join(data_path, yaml_filename)
+
+        existing_data = FileManagement.load_existing_yaml(yaml_path)
+        new_values = {}
+
+        for new_dict in terms:
+            try:
+                key = new_dict['term']
+                value = new_dict['content']
+                if key in existing_data:
+                    logging.info(f"Key: [{key}] already present in {self.ENCYCLOPEDIA_NAME}.\n"
+                                 f"Original: {existing_data.get(key)},\nReplacement: {value}")
+                    continue  # Skip if the key exists
+                logging.info(f"Adding to {self.ENCYCLOPEDIA_NAME} - {key}: {value}")
+                new_values.update({key: value})
+            except Exception as e:
+                logging.exception(f"Failure to add to {self.ENCYCLOPEDIA_NAME}, for {new_dict}", exc_info=e)
+
+        if new_values:
+            FileManagement.write_to_yaml(new_values, yaml_path)
+
 
 if __name__ == '__main__':
     encyclopediaManagement = UserEncyclopediaManagement()
-    print(encyclopediaManagement.search_encyclopedia(["Whats my name?"]))
-    # print(knowing.search_user_encyclopedia(["Do you know what my name is?"]))
+    # print(encyclopediaManagement.search_encyclopedia(["Do you know what my name is?"]))
+    encyclopediaManagement.add_to_encyclopedia(
+        [
+            "Hey my name is Joe, I work as a Backend Software Developer and I'm coding up a ChatGpt Wrapper hobby "
+            "project called 'The Thinker'"
+        ]
+    )

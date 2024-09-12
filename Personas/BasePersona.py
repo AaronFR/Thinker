@@ -36,6 +36,8 @@ class BasePersona:
             elif user_input.lower() == 'history':
                 self.display_history()
             elif Utility.is_valid_question(user_input):
+                user_encyclopedia_manager = UserEncyclopediaManagement()
+                user_encyclopedia_manager.add_to_encyclopedia(user_input)
                 self.select_workflow(user_input)
             else:
                 print("Invalid input. Please ask a clear and valid question.")
@@ -80,7 +82,7 @@ class BasePersona:
         """Process the input question and think through a response.
         ToDo: this will be called multiple times redundantly in a workflow, user_messages are small however and the
          context can change from step to step so its not a priority
-        ToDo: split additonal_context lists up before sending on
+        ToDo: split additional_context lists up before sending on
         ToDo: How the application accesses and gives history to the llm will need to be optimised
 
         :param user_messages: List of existing user message
