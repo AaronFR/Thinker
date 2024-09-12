@@ -25,6 +25,7 @@ class ChatGptModel(enum.Enum):
 
 
 class ChatGptWrapper:
+    # ToDo: This class can be a singleton it doesn't need to recreate the api for each call
 
     COST_PER_INPUT_TOKEN_GPT4O_MINI = 0.00000015  # $/t
     COST_PER_OUTPUT_TOKEN_GPT4O_MINI = 0.00000060  # $/t

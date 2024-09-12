@@ -2,6 +2,7 @@ import logging
 from typing import List, Tuple
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Data.Configuration import Configuration
 
 from Data.EncyclopediaManagement import EncyclopediaManagement
 from Data.UserEncyclopediaManagement import UserEncyclopediaManagement
@@ -92,18 +93,25 @@ class BasePersona:
 
         selected_files = Organising.get_relevant_files(user_messages)
         executor = AiOrchestrator(selected_files)
+        config = Configuration.load_config()
 
-        encyclopedia_manager = EncyclopediaManagement()
-        additional_context = encyclopedia_manager.search_encyclopedia(user_messages)
+        system_messages = [self.instructions, self.configuration]
 
-        user_encyclopedia_manager = UserEncyclopediaManagement()
-        user_context = user_encyclopedia_manager.search_encyclopedia(user_messages)
+        if config['encyclopedias']['encyclopedia_enabled']:
+            encyclopedia_manager = EncyclopediaManagement()
+            additional_context = encyclopedia_manager.search_encyclopedia(user_messages)
+            system_messages.extend(additional_context)
+
+        if config['encyclopedias']['user_encyclopedia_enabled']:
+            user_encyclopedia_manager = UserEncyclopediaManagement()
+            user_context = user_encyclopedia_manager.search_encyclopedia(user_messages)
+            system_messages.extend(user_context)
 
         recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
 
         try:
             output = executor.execute(
-                [self.instructions, self.configuration, additional_context, user_context],
+                system_messages,
                 user_messages,
                 assistant_messages=recent_history
             )

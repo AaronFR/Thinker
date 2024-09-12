@@ -57,6 +57,7 @@ class Coder(BasePersona):
     def write_workflow(self, initial_message: str):
         """
         Writes the improved code to a specified file.
+        #ToDo: Blueprinter: should be able to work on multiple files serially
 
         :param initial_message: The user's initial guidance for writing the code.
         """

@@ -1,3 +1,6 @@
+encyclopedias:
+  encyclopedia_enabled: False
+  user_encyclopedia_enabled: False
 documentation:
   style: reStructuredText  # Documentation style, examples include Markdown, reStructuredText
 code_style:
