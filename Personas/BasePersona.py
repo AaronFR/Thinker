@@ -100,12 +100,12 @@ class BasePersona:
         if config['encyclopedias']['encyclopedia_enabled']:
             encyclopedia_manager = EncyclopediaManagement()
             additional_context = encyclopedia_manager.search_encyclopedia(user_messages)
-            system_messages.extend(additional_context)
+            system_messages.append(additional_context)
 
         if config['encyclopedias']['user_encyclopedia_enabled']:
             user_encyclopedia_manager = UserEncyclopediaManagement()
             user_context = user_encyclopedia_manager.search_encyclopedia(user_messages)
-            system_messages.extend(user_context)
+            system_messages.append(user_context)
 
         recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
 
