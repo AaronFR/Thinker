@@ -19,6 +19,7 @@ class Coder(BasePersona):
         """
         super().__init__(name)
         self.workflows = {
+            "chat": "Discuss code/coding with the user",
             "write": "Workflow for creating or overwriting a code file",
             "write_tests": "Workflow for creating or overwriting a coding test file"
         }
@@ -27,10 +28,31 @@ class Coder(BasePersona):
 
     def run_workflow(self, selected_workflow: str, initial_message: str):
         if selected_workflow in self.workflows.keys():
+            if selected_workflow == "chat":
+                self.chat_workflow(initial_message)
             if selected_workflow == "write":
                 self.write_workflow(initial_message)
             if selected_workflow == "write_tests":
                 self.write_tests_workflow(initial_message)
+
+    def chat_workflow(self, initial_message: str):
+        """
+        Converses with the user
+
+        :param initial_message: The user's initial prompt.
+        """
+        analyser_messages = [
+            initial_message
+        ]
+        prompt_messages = analyser_messages
+
+        try:
+            for iteration, message in enumerate(prompt_messages):
+                response = self.process_question(message)
+                logging.info("Iteration %d completed with response: %s", iteration, response)
+
+        except Exception as e:
+            logging.exception("Error during writing workflow: %s", str(e), exc_info=e)
 
     def write_workflow(self, initial_message: str):
         """

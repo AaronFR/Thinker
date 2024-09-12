@@ -66,7 +66,7 @@ class BasePersona:
         )
         selected_workflow = output['selection']
 
-        logging.info(f"Selection: {selected_workflow}")
+        logging.info(f"Selected workflow: {selected_workflow}")
         self.run_workflow(selected_workflow, initial_message)
 
     def run_workflow(self, selected_workflow: str, initial_message: str):

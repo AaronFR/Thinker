@@ -38,7 +38,7 @@ class PersonalAssistant(BasePersona):
         """
         Converses with the user
 
-        :param initial_message: The user's initial guidance for writing the response.
+        :param initial_message: The user's initial prompt.
         """
         analyser_messages = [
             initial_message
