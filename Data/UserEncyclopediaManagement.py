@@ -84,7 +84,7 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
 
         for new_dict in terms:
             try:
-                key = new_dict['term']
+                key = new_dict['term'].strip().lower()  # to avoid duplicates, seperated by case
                 value = new_dict['content']
                 if key in existing_data:
                     logging.info(f"Key: [{key}] already present in {self.ENCYCLOPEDIA_NAME}.\n"
