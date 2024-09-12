@@ -14,11 +14,8 @@ class EncyclopediaManagementInterface:
 
     ENCYCLOPEDIA_EXT = ".yaml"
     REDIRECTS_EXT = "Redirects.csv"
-    ENCYCLOPEDIA_NAME = "ToDefine"
-
+    ENCYCLOPEDIA_NAME = "To Define"
     instructions = "To Define"
-    # ToDo: Currently the specifics field isn't used at all, but the encyclopedias are then slim and not deep
-    #  so currently there is no need
 
     _instance = None
 
@@ -30,24 +27,35 @@ class EncyclopediaManagementInterface:
     def __init__(self):
         self.encyclopedia: Dict[str, str] = {}
         self.redirects: Dict[str, str] = {}
+
+        self.encyclopedia_path = "To Define"
+        self.redirect_encyclopedia_path = "To Define"
+
         self.data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
-        self.load_encyclopedia()
 
-    def load_encyclopedia(self) -> None:
-        """Loads the encyclopedia and redirects if not already loaded.
-        ToDo: Create methods for creating encyclopedia and redirect files from scratch if someone happened to fork this project
+    def load_encyclopedia_data(self) -> None:
         """
-        if not self.encyclopedia:
-            encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + self.ENCYCLOPEDIA_EXT)
-            if os.path.exists(encyclopedia_path):
-                with open(encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
-                    self.encyclopedia = yaml.safe_load(file) or {}
+        Load encyclopedia and redirect data from the specified files.
+        """
+        try:
+            with open(self.encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
+                self.encyclopedia = yaml.safe_load(file) or {}
 
-        if not self.redirects:
-            redirect_encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + self.REDIRECTS_EXT)
-            if os.path.exists(redirect_encyclopedia_path):
-                redirects_df = pd.read_csv(redirect_encyclopedia_path, header=None, names=['redirect_term', 'target_term'])
-                self.redirects = redirects_df.set_index('redirect_term')['target_term'].to_dict()
+            redirects_df = pd.read_csv(self.redirect_encyclopedia_path, header=None,
+                                       names=['redirect_term', 'target_term'])
+            self.redirects = redirects_df.set_index('redirect_term')['target_term'].to_dict()
+        except FileNotFoundError:
+            logging.error("File not found: %s", self.encyclopedia_path)
+            print("Could not load encyclopedia data. Ensure the files exist in the specified path.")
+        except yaml.YAMLError as yml_err:
+            logging.error("YAML error while loading encyclopedia data: %s", yml_err)
+            print("Error loading encyclopedia data format. Please check the file's syntax.")
+        except pd.errors.EmptyDataError:
+            logging.error("CSV file is empty: %s", self.redirect_encyclopedia_path)
+            print("The redirects file is empty, please check the content.")
+        except Exception as e:
+            logging.exception("Error loading encyclopedia data: %s", exc_info=e)
+            print("An unknown error occurred while loading encyclopedia data. Check logs for more details.")
 
     def search_encyclopedia(self, user_messages: List[str]) -> str:
         """Searches the encyclopedia for terms derived from user messages.
@@ -56,10 +64,9 @@ class EncyclopediaManagementInterface:
         :return: A string representation of the additional context found.
         """
         executor = AiOrchestrator()
-        instructions = self.instructions
 
         terms = executor.execute_function(
-            [instructions],
+            [self.instructions],
             user_messages,
             SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
         )['terms']
@@ -102,7 +109,6 @@ class EncyclopediaManagementInterface:
         """
         Must be run after data files have been loaded.
 
-        ToDo: processing an entire wikipedia page (multiple) per prompt is not efficient
         :param term_name: term to search for in encyclopedia data files
         :param specifics: the reason you are searching for this term, what the llm hopes to find more info on
         :return: A shorter processed version of the encyclopedia file

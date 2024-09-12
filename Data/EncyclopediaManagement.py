@@ -1,37 +1,43 @@
 import logging
 import os
 
-import pandas as pd
-import yaml
-
 from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
 from Data.WikipediaApi import search_wikipedia_api
-from Utilities.Constants import DEFAULT_ENCODING
 
 
 class EncyclopediaManagement(EncyclopediaManagementInterface):
+    """
+    **EncyclopediaManagement**: A class for managing encyclopedia entries, enabling retrieval,
+    updating, and organization of knowledge.
+
+    This class implements a singleton pattern to ensure a single instance to ensure only a single cache is held in
+    memory.
+    """
 
     DEFAULT_ENCYCLOPEDIA_NAME = "Encyclopedia"
 
     instructions = (
-        "For the given prompt return an array of concepts to be searched for in an encyclopedia, "
-        "the term should be as simple as possible, e.g., the actual word of the concept. You can use "
-        "the 'specifics' field if there is a specific aspect of this concept you would prefer to know more about."
+        "For the given prompt, return an array of concepts to be searched for in an encyclopedia. "
+        "The term should be simple, e.g., the actual word of the concept. You can use "
+        "the 'specifics' field if there is a particular aspect you would prefer to explore."
     )
-    # ToDo: Currently the specifics field isn't used at all, but the encyclopedias are then slim and not deep
-    #  so currently there is no need
 
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls) -> "EncyclopediaManagement":
+        """Create a singleton instance of EncyclopediaManagement."""
         if cls._instance is None:
             cls._instance = super(EncyclopediaManagement, cls).__new__(cls)
         return cls._instance
 
     def __init__(self):
+        """
+        Initializes the EncyclopediaManagement instance and loads the data files.
+        """
         super().__init__()
         self.encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + ".yaml")
         self.redirect_encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + "Redirects.csv")
+        self.load_encyclopedia_data()
 
     def fetch_term_and_update(self, term_name: str) -> bool:
         """Fetches the term from Wikipedia and updates the encyclopedia.
@@ -41,16 +47,11 @@ class EncyclopediaManagement(EncyclopediaManagementInterface):
         """
         try:
             search_wikipedia_api(term_name, self.ENCYCLOPEDIA_NAME)
-
-            with open(self.encyclopedia_path, 'r', encoding=DEFAULT_ENCODING) as file:
-                self.encyclopedia = yaml.safe_load(file)
-
-            redirects_df = pd.read_csv(self.redirect_encyclopedia_path, header=None, names=['redirect_term', 'target_term'])
-            self.redirects = redirects_df.set_index('redirect_term')['target_term'].to_dict()
+            self.load_encyclopedia_data()
 
             return True
         except Exception as e:
-            logging.exception(f"Error while trying to access '{self.ENCYCLOPEDIA_NAME}': '{term_name}'", exc_info=e)
+            logging.exception(f"Error while accessing '{self.ENCYCLOPEDIA_NAME}' for term  '{term_name}'", exc_info=e)
             return False
 
 

@@ -78,3 +78,12 @@ Analyzing your `EncyclopediaManagement` and `EncyclopediaManagementInterface` cl
 By focusing on these areas, you can enhance the clarity, usability, and performance of your `EncyclopediaManagement` classes while maintaining their strengths.
 
 ```
+
+User prompt:
+Hmm interesting, so 1, I'd be interested to see what you mean? Lets look just at the EncyclopediaManagement.py class, how can we change the base interface so we don't need this code in the child class? 2: It actually is cached so I'll remove that comment. 3: Alright try and use the specifics field better then. 4. That's fine, we're prototyping eventually the encycloedia files will be proper databases, 5. Okay ignore that one, its a valid point but the change is not in the 3 classes I've given to you. 6. Refer to my comment about caching already being implemented. 7. Oh great, please add to the documentation then, I'll pick and choose so add a lot. Okay great like I said please write that to the EncyclopediaMangement.py class specifically
+
+
+#### Output:
+This prompt, took ***Eighteen minutes*** to run, due to the new encyclopedia entries being searched for, created and 
+condensed.
+Though it *did* only cost ¢1, so perhaps the majority of the time is actually spent on wikipedia calls.
