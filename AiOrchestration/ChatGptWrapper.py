@@ -1,6 +1,7 @@
 import enum
 import json
 import logging
+import os
 from typing import List, Dict
 
 from openai import OpenAI, OpenAIError
@@ -24,22 +25,37 @@ class ChatGptModel(enum.Enum):
     CHAT_GPT_4_OMNI = "gpt-4o"
 
 
-class ChatGptWrapper:
-    # ToDo: This class can be a singleton it doesn't need to recreate the api for each call
-
-    COST_PER_INPUT_TOKEN_GPT4O_MINI = 0.00000015  # $/t
-    COST_PER_OUTPUT_TOKEN_GPT4O_MINI = 0.00000060  # $/t
-    COST_PER_INPUT_TOKEN_GPT4O = 0.000005  # $/t
-    COST_PER_OUTPUT_TOKEN_GPT4O = 0.000015  # $/t
+class CostConfiguration:
+    """Handles cost configuration for API calls."""
 
     def __init__(self):
-        ErrorHandler.setup_logging()
-        self.open_ai_client = OpenAI()
+        """Initialize cost settings from environment variables or defaults."""
+        self.input_token_costs = {model: float(os.environ.get(f'INPUT_COST_{model.name}', default)) for model, default in {
+            ChatGptModel.CHAT_GPT_4_OMNI_MINI: 0.00000015,  # $/t
+            ChatGptModel.CHAT_GPT_4_OMNI: 0.000005,  # $/t
+        }.items()}
+
+        self.output_token_costs = {model: float(os.environ.get(f'OUTPUT_COST_{model.name}', default)) for model, default in {
+            ChatGptModel.CHAT_GPT_4_OMNI_MINI: 0.00000060,  # $/t
+            ChatGptModel.CHAT_GPT_4_OMNI: 0.000015,  # $/t
+        }.items()}
+
+class ChatGptWrapper:
+
+    _instance = None
+
+    def __new__(cls):
+        """Create a new instance or return the existing one."""
+        if cls._instance is None:
+            cls._instance = super(ChatGptWrapper, cls).__new__(cls)
+            cls._instance.open_ai_client = OpenAI()  # Initialize the OpenAI client
+            cls._instance.cost_config = CostConfiguration()  # Load cost configurations
+        return cls._instance
 
     def get_open_ai_response(
             self,
             messages: List[Dict[str, str]],
-            model=ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+            model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
             rerun_count=1) -> str | List[str]:
         """Request a response from the OpenAI API.
 
@@ -57,12 +73,12 @@ class ChatGptWrapper:
             self.calculate_prompt_cost(chat_completion, model)
 
             responses = [choice.message.content for choice in chat_completion.choices]
-            return responses[0] if rerun_count == 1 else responses or "[ERROR: NO RESPONSE FROM OpenAI API]"
+            return responses[0] if rerun_count == 1 else responses or None
         except OpenAIError as e:
-            logging.exception(f"OpenAI API error", e)
+            logging.exception(f"OpenAI API error", exc_info=e)
             raise
         except Exception as e:
-            logging.exception(f"Unexpected error", e)
+            logging.exception(f"Unexpected error", exc_info=e)
             raise
 
     def get_open_ai_function_response(self,
@@ -106,20 +122,14 @@ class ChatGptWrapper:
         input_tokens = chat_completion.usage.prompt_tokens
         output_tokens = chat_completion.usage.completion_tokens
 
-        if model == ChatGptModel.CHAT_GPT_4_OMNI_MINI:
-            cost_input = input_tokens * self.COST_PER_INPUT_TOKEN_GPT4O_MINI
-            cost_output = output_tokens * self.COST_PER_OUTPUT_TOKEN_GPT4O_MINI
-        elif model == ChatGptModel.CHAT_GPT_4_OMNI:
-            logging.warning("Using the EXPENSIVE model: CHAT_GPT_4_OMNI")
-            cost_input = input_tokens * self.COST_PER_INPUT_TOKEN_GPT4O
-            cost_output = output_tokens * self.COST_PER_OUTPUT_TOKEN_GPT4O
-
-        total_cost = cost_input + cost_output
+        total_cost = (
+            (input_tokens * self.cost_config.input_token_costs[model]) +
+            (output_tokens * self.cost_config.output_token_costs[model])
+        )
         Globals.current_request_cost += total_cost
 
         logging.info(
-            f"Input tokens: {input_tokens}, Input cost: ${cost_input:.4f}, "
-            f"Output tokens: {output_tokens}, Output cost: ${cost_output:.4f}, "
+            f"Request cost - Input tokens: {input_tokens}, Output tokens: {output_tokens}, "
             f"Total cost: ${total_cost:.4f}"
         )
 
