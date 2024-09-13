@@ -14,7 +14,7 @@ class EncyclopediaManagement(EncyclopediaManagementInterface):
     memory.
     """
 
-    DEFAULT_ENCYCLOPEDIA_NAME = "Encyclopedia"
+    ENCYCLOPEDIA_NAME = "Encyclopedia"
 
     instructions = (
         "For the given prompt, return an array of concepts to be searched for in an encyclopedia. "
