@@ -150,6 +150,7 @@ comparison in EncyclopediaManagement.py
 
 #### Note: Application is being *too* selective when choosing files to feed into the Ai Orchestrator
 More files need to be sent at once or context is lost. I.e. the errors made in this run in regard to the class order.
+Can't find an example of this issue, will need to keep an eye on it.
 
 ### Conversing with Coder first before asking it to write (2nd time)
 

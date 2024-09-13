@@ -108,3 +108,11 @@ class Organising:
 
         FileManagement.save_file(summary, summary_filename, overwrite=True)
         ExecutionLogs.add_to_logs(f"Summariser: Summary for {file_name} written and saved as {summary_filename}")
+
+
+if __name__ == '__main__':
+    parent_class_name = "EncyclopediaManagementInterface.py"
+    child_class_name = "UserEncyclopediaMangement.py"
+    Organising.get_relevant_files(
+        [f"Hey can you compare {parent_class_name} and the child class {child_class_name}?"]
+    )
