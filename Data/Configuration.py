@@ -5,6 +5,9 @@ import yaml
 
 
 class Configuration:
+    """
+    ToDo: A method will need to be created for configuring new config files for new users
+    """
 
     data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
 
