@@ -11,6 +11,11 @@ from Utilities.Constants import DEFAULT_ENCODING
 
 
 class EncyclopediaManagementInterface:
+    """Manages encyclopedia data files and provides search and retrieval capabilities.
+
+        This class facilitates loading encyclopedia entries and redirects, searching for terms,
+        and summarizing information relevant to user queries.
+        """
 
     ENCYCLOPEDIA_EXT = ".yaml"
     REDIRECTS_EXT = "Redirects.csv"
@@ -20,11 +25,17 @@ class EncyclopediaManagementInterface:
     _instance = None
 
     def __new__(cls):
+        """Implements the singleton pattern to ensure only one instance exists."""
         if cls._instance is None:
             cls._instance = super(EncyclopediaManagementInterface, cls).__new__(cls)
         return cls._instance
 
     def __init__(self):
+        """Initializes the EncyclopediaManagementInterface.
+
+        :param executor: An instance of AiOrchestrator for executing external functions.
+                         If none is provided, a new instance will be created.
+        """
         self.encyclopedia: Dict[str, str] = {}
         self.redirects: Dict[str, str] = {}
 
@@ -44,6 +55,8 @@ class EncyclopediaManagementInterface:
             redirects_df = pd.read_csv(self.redirect_encyclopedia_path, header=None,
                                        names=['redirect_term', 'target_term'])
             self.redirects = redirects_df.set_index('redirect_term')['target_term'].to_dict()
+
+            logging.info("Encyclopedia and redirects loaded successfully")
         except FileNotFoundError:
             logging.error("File not found: %s", self.encyclopedia_path)
             print("Could not load encyclopedia data. Ensure the files exist in the specified path.")
@@ -90,12 +103,13 @@ class EncyclopediaManagementInterface:
                     term_name = redirected_term
 
                 entry = self.encyclopedia.get(term_name)
+                specifics = term.get('specifics', "Nothing specific")
                 if entry:
-                    entry = self.selectively_process_entry(term_name, term.get('specifics', "Nothing specific"))
+                    entry = self.selectively_process_entry(term_name, specifics)
                     additional_context.append((term, entry))
                 else:
                     if self.fetch_term_and_update(term_name):
-                        entry = self.selectively_process_entry(term_name, term.get('specifics', "Nothing specific"))
+                        entry = self.selectively_process_entry(term_name, specifics)
                         if entry:
                             additional_context.append((term, entry))
                     else:
@@ -117,9 +131,7 @@ class EncyclopediaManagementInterface:
         executor = AiOrchestrator()
         output = executor.execute(
             [
-                "First I'm going to give you the file for a given term, can you take the extra definition I give you "
-                "and reprocess the entry in as few words while retaining as much deep, technical, enriching "
-                "information as possible"
+                "Summarize the following information while retaining essential details."
             ],
             [
                 term_name + ": " + specifics,

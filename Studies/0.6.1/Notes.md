@@ -147,3 +147,85 @@ have other the coder without encyclopedia references, more testing is needed.
 
 Outside of that the code written for splitting the add_to_encyclopedia method was perfectly acceptable, but has no
 comparison in EncyclopediaManagement.py
+
+#### Note: Application is being *too* selective when choosing files to feed into the Ai Orchestrator
+More files need to be sent at once or context is lost. I.e. the errors made in this run in regard to the class order.
+
+### Conversing with Coder first before asking it to write (2nd time)
+
+Conversational User Prompt:
+I would like to discuss my class EncyclopediaManagementInterface.py it is the interface for a series of classes that read specific encyclopedia data files, UserEncyclopediaManagement.py added for reference, first if you would say there are any: evaluate the strengths of the class as it is currently written. Conversely then talk about the weaknesses and areas of improvement you find within EncyclopediaManagementInterface.py
+
+```commandline
+2024-09-12 23:00:56,374 [INFO] (Coder.py:52) Iteration 0 completed with response: When evaluating the strengths and weaknesses of the `EncyclopediaManagementInterface` class, we can analyze several key aspects, including its design, functionality, and potential areas for improvement.
+
+### Strengths
+
+1. **Singleton Pattern Implementation**:
+   - The class uses the singleton pattern to ensure that only one instance of `EncyclopediaManagementInterface` exists. This is useful for managing shared resources like the encyclopedia data.
+
+2. **Data Loading Logic**:
+   - The `load_encyclopedia` method efficiently loads encyclopedia and redirects data from files, ensuring that the data is only loaded once, which can enhance performance.
+
+3. **Use of External Libraries**:
+   - The class leverages external libraries like `yaml` for reading YAML files and `pandas` for handling CSV data, which increases code readability and reduces development time.
+
+4. **Error Handling**:
+   - The `search_encyclopedia` method includes logging exceptions, which is crucial for debugging and monitoring, especially when dealing with external data sources like Wikipedia.
+
+5. **Separation of Responsibilities**:
+   - Important functionality such as searching and fetching terms is encapsulated in separate methods, following the single responsibility principle.
+
+### Weaknesses and Areas for Improvement
+
+1. **Undefined Method**:
+   - The `fetch_term_and_update` method is defined but raises a `NotImplementedError`. This could limit usability unless subclasses implement this method, which may not be immediately clear to the user.
+
+2. **Hardcoded Values**:
+   - The `ENCYCLOPEDIA_NAME`, `instructions`, and specific file extensions are hardcoded. Making these configurable would increase the flexibility of the class.
+
+3. **Lack of Parameter Validations**:
+   - There is little validation for inputs such as `user_messages` or `terms`. Adding basic validation could enhance robustness and prevent runtime errors.
+
+4. **Inconsistent Return Types**:
+   - The return type of `extract_terms_from_encyclopedia` is inconsistent with expected outcomes. The return type should be more systematically defined (e.g., always returning a structured object instead of a string representation).
+
+5. **Overly Verbose Functionality**:
+   - Functions like `selectively_process_entry` contain potentially complicated logic that might be broken down further into smaller, more manageable methods to improve readability and maintainability.
+
+6. **Redundant Comments and TODOs**:
+   - There are comments and TODOs that suggest incomplete functionality (e.g., creating files from scratch). Cleaning up or addressing these items would enhance the clarity of the code.
+
+7. **Potential Performance Issues**: 
+   - The handling of large encyclopedia files and the multiple interactions with external services (like Wikipedia) may result in performance bottlenecks. Consider optimizing data access patterns or employing caching strategies where feasible.
+
+8. **Inflexibility in Logic**:
+   - The `selectively_process_entry` function hardcodes certain interaction patterns with the `AiOrchestrator`, limiting flexibility. Providing a more extensible approach could enhance usability.
+
+9. **Dependency on `AiOrchestrator`**:
+   - The class heavily relies on `AiOrchestrator` for execution, which could create tight coupling. If possible, consider using dependency injection to decouple these components.
+
+In summary, while the `EncyclopediaManagementInterface` class does exhibit a solid foundational structure and several strengths, addressing its weaknesses would greatly enhance its functionality, maintainability, and overall utility as a base class for managing encyclopedia operations.
+```
+
+User Prompt:
+Okay thanks, how about you write up your suggested changes then, specifically rewrite EncyclopediaManagementInterface.py, lets address your concerns 
+1. Maybe I didn't mention it specifically but EncyclopediaManagementInterface is obviously the parent class to UserEncyclopediaManagement
+2. Sure, write up an alternative configuratibel approach
+3. Add validations for user_messages or terms to the class
+4. Correct the return types
+5. Split methods you think are too verbose up 
+6. If you can either remove the comment or implement the described functionality
+7. If you can try and improve the caching and performance issues go for it.
+8. Write them up as class constants and I can export them to a more appropriate file
+9. Rewrite the class using dependency injection for AiOrchestrator instead
+
+
+#### Has caching made a difference?
+2024-09-12 23:09:20,746
+2024-09-12 23:13:34,826
+Time = 4 minutes. Caching made a *significant* difference, that also means most of the time was actually waiting for the wikipedia api as it rather reasonably might have concluded it was being abused
+
+As for the output itself, relatively poor with little to add and misunderstandings of the structure of the classes, but there had been changes to the base class with the other tests so perhaps this isn't exactly fair.
+
+
