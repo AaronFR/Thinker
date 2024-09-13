@@ -188,3 +188,7 @@ Okay lets rewrite ChatGpt as a singleton then, for the other options I'm afraid 
 35 seconds.
 
 Instantiating the ChatGptApi wasn't the issue.
+
+2024-09-13 12:55:30,539
+2024-09-13 12:55:39,640
+9 seconds with Encyclopedia system disabled

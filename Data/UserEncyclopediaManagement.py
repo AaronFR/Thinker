@@ -24,7 +24,7 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
     ENCYCLOPEDIA_NAME = "UserEncyclopedia"
 
     instructions = (
-        "For the given prompt return an array of things you want to know about the user, "
+        "For the given prompt return an array of things you want to know about the user and things they know, "
         "the term should be as simple as possible, e.g., the actual word of that concept. "
         "You can use the 'specifics' field if there is a specific aspect of this concept "
         "you would prefer to know more about."
@@ -32,7 +32,7 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
 
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls) -> "UserEncyclopediaManagement":
         """Ensures a single instance of UserEncyclopediaManagement."""
         if cls._instance is None:
             cls._instance = super(UserEncyclopediaManagement, cls).__new__(cls)

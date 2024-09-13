@@ -17,7 +17,7 @@ class EncyclopediaManagement(EncyclopediaManagementInterface):
     ENCYCLOPEDIA_NAME = "Encyclopedia"
 
     instructions = (
-        "For the given prompt, return an array of concepts to be searched for in an encyclopedia. "
+        "For the given prompt, return an array of concepts that would help answer this prompt. "
         "The term should be simple, e.g., the actual word of the concept. You can use "
         "the 'specifics' field if there is a particular aspect you would prefer to explore."
     )
