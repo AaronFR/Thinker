@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Coder: Write tests workflow
+- Coder
+  - Write tests workflow
+  - Can write to multiple files at once
 - UserConfig.yaml for configuration specific to the individual user
 - EncyclopediaManagement.py with search_encyclopedia functionality, Persona's can now evaluate prompts and ask for reference material
  in advance of evaluating a given prompt

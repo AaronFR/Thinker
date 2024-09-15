@@ -1,9 +1,12 @@
 import logging
+from typing import Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Functionality.Coding import Coding
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import PersonaConstants, CoderSpecification
+from Personas.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
+from Utilities.Utility import Utility
 
 
 class Coder(BasePersona):
@@ -62,41 +65,54 @@ class Coder(BasePersona):
         :param initial_message: The user's initial guidance for writing the code.
         """
         executor = AiOrchestrator()
-        file_name = executor.execute(
-            ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary"],
-            [initial_message])
+        files = executor.execute_function(
+            ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary."
+             "If appropriate write multiple files."],
+            [initial_message],
+            GENERATE_FILE_NAMES_FUNCTION_SCHEMA
+        )['files']
+        logging.info(f"Referencing/Creating the following files: {files}")
 
-        analyser_messages = [
-            f"Examine the current implementation of {file_name} and your answer for any logical inconsistencies or "
-            "flaws. Identify specific areas where the logic might fail or where the implementation does not meet "
-            "the requirements. Provide a revised version addressing these issues.",
-            f"Evaluate the current implementation of {file_name} for opportunities to enhance features, improve naming "
-            "conventions, and increase documentation clarity. Assess readability and flexibility. "
-            "Provide a revised version that incorporates these improvements.",
-            f"Review the structure and flow of the documentation in {file_name}. "
-            "Suggest and implement changes to improve the organization, clarity, and ease of understanding of the code "
-            "and its documentation. Provide a new and improved version of the code with its improved documentation.",
-            f"Assess the code in {file_name} for adherence to coding standards and best practices. "
-            "Suggest changes to improve code quality.",
-            f"Present the final revised version of the code in {file_name}, "
-            "incorporating all previous improvements we discussed. "
-            "Additionally, provide a summary of the key changes made, explaining how each change enhances the code."
-        ]
-        prompt_messages = [initial_message] + analyser_messages
+        # Write frontend and backend files in python for letting the user in the front end interact with the user terminal
 
-        try:
-            for iteration, message in enumerate(prompt_messages):
-                response = self.process_question(message)
-                logging.info("Iteration %d completed with response: %s", iteration, response)
+        for file in files:
+            file_name = file['file_name']
+            purpose = file['purpose']
+            logging.info(f"Writing code to {file_name}")
 
-                if iteration == 5:
-                    Coding.write_to_file_task({
-                        PersonaConstants.SAVE_TO: file_name,
-                        PersonaConstants.INSTRUCTION: response
-                    })
+            analyser_messages = [
+                f"As part of <user prompt>{initial_message}</user prompt> "
+                f"Examine the current implementation of {file_name} and your answer for any logical inconsistencies or "
+                "flaws. Identify specific areas where the logic might fail or where the implementation does not meet "
+                "the requirements. Provide a revised version addressing these issues with respect to the following: "
+                f"{purpose}",
+                f"Evaluate the current implementation of {file_name} for opportunities to enhance features, improve naming "
+                "conventions, and increase documentation clarity. Assess readability and flexibility. "
+                "Provide a revised version that incorporates these improvements.",
+                f"Review the structure and flow of the documentation in {file_name}. "
+                "Suggest and implement changes to improve the organization, clarity, and ease of understanding of the code "
+                "and its documentation. Provide a new and improved version of the code with its improved documentation.",
+                f"Assess the code in {file_name} for adherence to coding standards and best practices. "
+                "Suggest changes to improve code quality.",
+                f"Present the final revised version of the code in {file_name}, "
+                "incorporating all previous improvements we discussed. "
+                "Additionally, provide a summary of the key changes made, explaining how each change enhances the code."
+            ]
+            prompt_messages = [initial_message] + analyser_messages
 
-        except Exception as e:
-            logging.error("Error during writing workflow: %s", str(e))
+            try:
+                for iteration, message in enumerate(prompt_messages):
+                    response = self.process_question(message)
+                    logging.info("Iteration %d completed with response: %s", iteration, response)
+
+                    if iteration == 5:
+                        Coding.write_to_file_task({
+                            PersonaConstants.SAVE_TO: file_name,
+                            PersonaConstants.INSTRUCTION: response
+                        })
+
+            except Exception as e:
+                logging.error("Error during writing workflow: %s", str(e))
 
     def write_tests_workflow(self, initial_message: str) -> None:
         """

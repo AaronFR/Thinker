@@ -13,3 +13,33 @@ def load_configuration():
 
 
 CODER_INSTRUCTIONS = "Just think through the question, step by step, prioritizing the most recent user prompt."
+
+GENERATE_FILE_NAMES_FUNCTION_SCHEMA = [{
+    "name": "executiveDirective",
+    "description": "Array of filenames that should be worked on",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "files": {
+                "type": "array",
+                "description": "An array of objects representing files (AT LEAST one) that you want to reference or "
+                               "create in order to solve the given user prompt, prioritise the order sensibly, "
+                               "the file that should be altered or created first should be first on the list and so on",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "file_name": {
+                            "type": "string",
+                            "description": "The file (including extension) that you want to reference or create"
+                        },
+                        "purpose": {
+                            "type": "string",
+                            "description": "Why you want to reference this file or create it"
+                        }
+                    },
+                    "required": ["file_name", "purpose"]
+                }
+            }
+        }
+    }
+}]
