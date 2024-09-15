@@ -36,7 +36,7 @@ class BasePersona:
                 break
             elif user_input.lower() == 'history':
                 self.display_history()
-            elif Utility.is_valid_question(user_input):
+            elif Utility.is_valid_prompt(user_input):
                 user_encyclopedia_manager = UserEncyclopediaManagement()
                 user_encyclopedia_manager.add_to_encyclopedia(user_input)
                 self.select_workflow(user_input)

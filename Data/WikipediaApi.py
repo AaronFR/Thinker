@@ -36,7 +36,7 @@ def search_wikipedia_api(term: str, file_name="Encyclopedia"):
     yaml_filename = f"{file_name}.yaml"
     yaml_path = os.path.join(data_path, yaml_filename)
 
-    existing_data = FileManagement.load_existing_yaml(yaml_path)
+    existing_data = FileManagement.load_yaml(yaml_path)
     if term in existing_data:
         logging.info(f"Data for '{term}' is already present in {yaml_filename}. Skipping fetch.")
         return

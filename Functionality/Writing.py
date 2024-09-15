@@ -93,7 +93,7 @@ class Writing(enum.Enum):
         """
         executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
         file_path = str(task_parameters[PersonaConstants.SAVE_TO])
-        file_lines = FileManagement.read_file_with_lines(file_path)
+        file_lines = FileManagement.read_file_lines(file_path)
 
         replacements = Writing.process_replacements(file_lines, task_parameters)
         Writing.apply_replacements(executor, file_lines, replacements, file_path)
@@ -108,7 +108,7 @@ class Writing(enum.Enum):
         """
         executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
         replacement_instructions = [
-            ''.join(FileManagement.get_numbered_lines(file_lines)),
+            ''.join(FileManagement.get_numbered_string(file_lines)),
             f"""For the specified file: {task_parameters[PersonaConstants.SAVE_TO]}, 
             perform replacements based on the following instructions: 
             {task_parameters[PersonaConstants.INSTRUCTION]}
@@ -256,5 +256,4 @@ class Writing(enum.Enum):
 
 
 if __name__ == '__main__':
-    numbered_lines = FileManagement.read_file("Writing.py", return_numbered_lines=True)
-    print(numbered_lines)
+    pass

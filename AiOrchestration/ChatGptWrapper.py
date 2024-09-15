@@ -11,18 +11,18 @@ from Utilities import Globals
 from Utilities.ErrorHandler import ErrorHandler
 
 
+class ChatGptModel(enum.Enum):
+    """OpenAI API Models"""
+    CHAT_GPT_4_OMNI_MINI = "gpt-4o-mini"
+    CHAT_GPT_4_OMNI = "gpt-4o"
+
+
 class ChatGptRole(enum.Enum):
     """Defines roles in the chat completion interaction."""
     SYSTEM = "system"
     USER = "user"
     ASSISTANT = "assistant"
     TOOL = "tool"
-
-
-class ChatGptModel(enum.Enum):
-    """OpenAI API Models"""
-    CHAT_GPT_4_OMNI_MINI = "gpt-4o-mini"
-    CHAT_GPT_4_OMNI = "gpt-4o"
 
 
 class CostConfiguration:

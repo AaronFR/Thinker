@@ -67,23 +67,10 @@ class Utility:
         return user_input.lower() == 'exit'
 
     @staticmethod
-    def is_valid_question(user_input: str) -> bool:
+    def is_valid_prompt(user_input: str) -> bool:
         """Validate if the user input is a non-empty question."""
         if not user_input.strip():
-            print("Please enter a valid question.")
-            return False
-
-        return True
-
-    @staticmethod
-    def is_prompt_valid(user_input: str) -> bool:
-        """Validate the user's input prompt against content and length restrictions.  # ToDo:eventually...
-
-        :param user_input: The prompt to be validated
-        :return: True if valid, False otherwise
-        """
-        if not isinstance(user_input, str):
-            logging.error("Invalid input: user_prompt must be a non-empty string.")
+            print("Please enter a valid prompt.")
             return False
 
         return True

@@ -72,8 +72,8 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
         terms = self.extract_terms_from_input(user_input)
         logging.info(f"Extracted terms for {self.ENCYCLOPEDIA_NAME}: {terms}")
 
-        existing_data = FileManagement.load_existing_yaml(self.encyclopedia_path)
-        new_entries = self.process_terms(terms, existing_data)
+
+        new_entries = self.process_terms(terms)
 
         if new_entries:
             FileManagement.write_to_yaml(new_entries, self.encyclopedia_path)
@@ -92,13 +92,13 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
         )
         return response.get('terms', [])
 
-    def process_terms(self, terms: List[Dict[str, Any]], existing_data: Dict[str, Any]) -> Dict[str, str]:
+    def process_terms(self, terms: List[Dict[str, Any]]) -> Dict[str, str]:
         """Processes new terms and prepares them for addition to the encyclopedia.
 
         :param terms: The new terms extracted from user input.
-        :param existing_data: The existing encyclopedia data to avoid duplicates.
         :return: A dictionary of key-value pairs for the new terms to be added.
         """
+        existing_data = FileManagement.load_yaml(self.encyclopedia_path)
         new_entries = {}
 
         for term_info in terms:

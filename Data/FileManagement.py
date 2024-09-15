@@ -69,15 +69,34 @@ class FileManagement:
             return []
 
     @staticmethod
-    def get_numbered_lines(lines):
+    def get_current_thought_id() -> int:
+        """Get the next available thought ID based on existing directories.
+
+        :return: Next available thought ID as an integer
+        """
+        os.makedirs(FileManagement.thoughts_directory, exist_ok=True)
+        return len([name for name in os.listdir(FileManagement.thoughts_directory) if
+                    os.path.isdir(os.path.join(FileManagement.thoughts_directory, name))]) + 1
+
+    @staticmethod
+    def _get_thought_folder() -> str:
+        """Get the folder path for a given thought ID.
+
+        :return: The folder path for the given thought ID
+        """
+        return os.path.join(FileManagement.thoughts_directory, str(Globals.current_thought_id))
+
+    @staticmethod
+    def get_numbered_string(lines) -> str:
+        """Returns a str where each line is prepended with its line-number"""
         return ''.join([f"{i + 1}: {line}" for i, line in enumerate(lines)])
 
     @staticmethod
-    def read_file(file_path: str, return_numbered_lines: bool = False) -> str:
+    def read_file(file_path: str, number_lines: bool = False) -> str:
         """Read the content of a specified file.
 
         :param file_path: The path of the file_name to read
-        :param return_numbered_lines: Flag to determine if the content should be returned as numbered lines
+        :param number_lines: Flag to determine if the content should be returned as numbered lines
         :return: The content of the file or an error message to inform the next LLM what happened
         """
         full_path = os.path.join(FileManagement.thoughts_directory, str(Globals.current_thought_id), file_path)
@@ -85,8 +104,8 @@ class FileManagement:
 
         try:
             with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
-                if return_numbered_lines:
-                    return FileManagement.get_numbered_lines(file.readlines())
+                if number_lines:
+                    return FileManagement.get_numbered_string(file.readlines())
                 else:
                     return file.read()
         except FileNotFoundError:
@@ -97,7 +116,7 @@ class FileManagement:
             return f"[FAILED TO LOAD {file_path}]"
 
     @staticmethod
-    def read_file_with_lines(file_path: str) -> List[str]:
+    def read_file_lines(file_path: str) -> List[str]:
         """Read the content of a file, with line numbers prepended to each line.
 
         :param file_path: The path of the file to read
@@ -142,132 +161,6 @@ class FileManagement:
             logging.exception(f"ERROR: could not save file_name: {file_path}")
 
     @staticmethod
-    def regex_refactor(target_string: str, replacement: str, file_name):
-        """Replaces every instance of the target with the replacement str
-
-        :param target_string: The text to be replaced
-        :param replacement: The text to replace the target string
-        :param file_name: The base name for the file_name
-        :raises ValueError: if the rewrite operation fails
-        """
-        file_content = FileManagement.read_file(file_name)
-        modified_text = FileManagement._replace_text(file_content, target_string, replacement)
-
-        if file_content == modified_text:
-            # You could try and recover but really the lesson is: don't use regex just *extract* lines from the document
-            # and have the AI operate on those lines directly.
-            logging.error(f"No matches found for the target string: {target_string}")
-            raise ValueError(f"No matches found for the target string: {target_string}")
-
-        FileManagement._write_to_file(modified_text, file_name)
-
-    @staticmethod
-    def _replace_text(content: str, target: str, replacement: str) -> str:
-        """Replaces every instance of the target with the replacement using simple string methods.
-
-        :param content: The original content in which to replace text
-        :param target: The text to be replaced
-        :param replacement: The text to replace the target string
-        :return: The modified content
-        """
-        return content.replace(target, replacement)
-
-    @staticmethod
-    def _write_to_file(content: str, file_name: str):
-        """Write the content to a file_name.
-
-        :param content: The content to be written
-        :param file_name: The name of the file_name
-        """
-        file_path = FileManagement._get_file_path(file_name)
-        try:
-            with open(file_path, "w", encoding="utf-8") as file:
-                file.write(content)
-                logging.info(f"File overwritten: {file_path}")
-        except Exception:
-            logging.exception(f"ERROR: could not save file_name: {file_path}")
-
-    @staticmethod
-    def save_content_as_html(content: str, file_name: str, prompt_id: str):
-        """Saves the response content in HTML format to a given file.
-
-        :param content: The content to be formatted and saved
-        :param file_name: The base name for the output HTML file_name
-        :param prompt_id: An identifier to make the file_name name unique
-        """
-        dir_path = os.path.join(FileManagement.thoughts_directory, str(prompt_id))
-        os.makedirs(dir_path, exist_ok=True)
-
-        html_text = FileManagement._format_to_html(content)
-        file_path = dir_path + f"/{file_name}_{prompt_id}.html"
-
-        try:
-            with open(file_path, "w", encoding="utf-8") as file:
-                file.write(html_text)
-                logging.info(f"HTML file_name saved: {file_path}")
-        except Exception:
-            logging.exception(f"Could not save HTML file_name: {file_path}")
-
-    @staticmethod
-    def _format_to_html(text: str) -> str:
-        """Formats the provided text as HTML.
-
-        :param text: Initial text with format characters e.g. \n
-        :return: HTML formatted string of the input text
-        """
-        html_formatter = HtmlFormatter(full=True)
-        highlighted_code = highlight(text, PythonLexer(), html_formatter)
-        return highlighted_code
-
-    @staticmethod
-    def aggregate_files(file_base_name, start, end):
-        """Aggregate file content from multiple files into a single file.
-
-        :param file_base_name: The base name for the files to aggregate
-        :param start: The starting index for the range of files to aggregate
-        :param end: The ending index for the range of files to aggregate
-        """
-        files_content = FileManagement._read_files_in_range(file_base_name, start, end)
-
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        FileManagement.save_content_as_html(files_content, "solution", timestamp)
-        FileManagement.save_file(files_content, "solution", overwrite=True)
-
-    @staticmethod
-    def _read_files_in_range(file_base_name: str, start: int, end: int) -> str:
-        """Read content from files in the specified range.
-
-        :param file_base_name: The base name for the files
-        :param start: The starting index for the files
-        :param end: The ending index for the files
-        :return: The aggregated content from the files
-        """
-        files_content = ""
-        for i in range(start, end + 1):
-            file_path = f"{file_base_name}_{i}.txt"
-            try:
-                with open(file_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
-                    files_content += file.read()
-                logging.info(f"CONTENT [{i}]: {files_content}")
-            except FileNotFoundError:
-                logging.exception(f"File not found: {file_path}")
-            except UnicodeDecodeError:
-                logging.exception(f"Error decoding file_name {file_path}")
-            except Exception:
-                logging.exception(f"Could not read file_name {file_path}")
-        return files_content
-
-    @staticmethod
-    def get_current_thought_id() -> int:
-        """Get the next available thought ID based on existing directories.
-
-        :return: Next available thought ID as an integer
-        """
-        os.makedirs(FileManagement.thoughts_directory, exist_ok=True)
-        return len([name for name in os.listdir(FileManagement.thoughts_directory) if
-                    os.path.isdir(os.path.join(FileManagement.thoughts_directory, name))]) + 1
-
-    @staticmethod
     def _get_file_path(file_name: str) -> str:
         """Get the full path for a file_name in the given thought and file_name name.
 
@@ -275,14 +168,6 @@ class FileManagement:
         :return: The full path of the file_name
         """
         return os.path.join(FileManagement.thoughts_directory, str(Globals.current_thought_id), file_name)
-
-    @staticmethod
-    def _get_thought_folder() -> str:
-        """Get the folder path for a given thought ID.
-
-        :return: The folder path for the given thought ID
-        """
-        return os.path.join(FileManagement.thoughts_directory, str(Globals.current_thought_id))
 
     @staticmethod
     def write_to_csv(file_name, dictionaries, fieldnames):
@@ -305,7 +190,23 @@ class FileManagement:
                 logging.error("Error: Data is not a list of dictionaries!")
 
     @staticmethod
-    def load_existing_yaml(yaml_path: str) -> Dict[str, object]:
+    def write_to_yaml(data: Dict[str, object], yaml_path: str, overwrite=False) -> None:
+        """
+        Writes the combined page data to a YAML file.
+
+        :param data: The data to write to the YAML file.
+        :param yaml_path: The path where the YAML file will be saved.
+        :param overwrite: Determines if the yaml should be replaced or meerly appended to
+        """
+        try:
+            mode = "w" if overwrite or not os.path.exists(yaml_path) else "a"
+            with open(yaml_path, mode, encoding=DEFAULT_ENCODING) as yaml_file:
+                yaml.dump(data, yaml_file, default_flow_style=False, Dumper=MyDumper, allow_unicode=True)
+        except Exception as e:
+            logging.error(f"Failed to write to YAML file: {e}")
+
+    @staticmethod
+    def load_yaml(yaml_path: str) -> Dict[str, object]:
         """
         Loads existing data from a YAML file if available.
 
@@ -325,25 +226,30 @@ class FileManagement:
 
         return existing_data
 
-    @staticmethod
-    def write_to_yaml(data: Dict[str, object], yaml_path: str, overwrite=False) -> None:
-        """
-        Writes the combined page data to a YAML file.
 
-        :param data: The data to write to the YAML file.
-        :param yaml_path: The path where the YAML file will be saved.
-        :param overwrite: Determines if the yaml should be replaced or meerly appended to
+    @staticmethod
+    def regex_refactor(target_string: str, replacement: str, file_name):
+        """Replaces every instance of the target with the replacement str
+
+        :param target_string: The text to be replaced
+        :param replacement: The text to replace the target string
+        :param file_name: The base name for the file_name
+        :raises ValueError: if the rewrite operation fails
         """
-        try:
-            mode = "w" if overwrite or not os.path.exists(yaml_path) else "a"
-            with open(yaml_path, mode, encoding=DEFAULT_ENCODING) as yaml_file:
-                yaml.dump(data, yaml_file, default_flow_style=False, Dumper=MyDumper, allow_unicode=True)
-        except Exception as e:
-            logging.error(f"Failed to write to YAML file: {e}")
+        file_content = FileManagement.read_file(file_name)
+        modified_text = file_content.replace(target_string, replacement)
+
+        if file_content == modified_text:
+            # You could try and recover but really the lesson is: don't use regex just *extract* lines from the document
+            # and have the AI operate on those lines directly.
+            logging.error(f"No matches found for the target string: {target_string}")
+            raise ValueError(f"No matches found for the target string: {target_string}")
+
+        FileManagement.save_file(modified_text, file_name)
 
 
 if __name__ == '__main__':
-    numbered_lines = FileManagement.read_file("Writing.py", return_numbered_lines=True)
+    numbered_lines = FileManagement.read_file("Writing.py", number_lines=True)
     print(numbered_lines)
 
 

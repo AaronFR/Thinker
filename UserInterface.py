@@ -41,7 +41,7 @@ class UserInterface:
         while allowing for early exit conditions if warranted.
 
         :param user_prompt: The prompt provided by the user for processing"""
-        if not Utility.is_prompt_valid(user_prompt):
+        if not Utility.is_valid_prompt(user_prompt):
             return  # Exit early on invalid input
 
         current_prompt_folder = os.path.join(FileManagement.thoughts_directory, f"{Globals.current_thought_id}")
