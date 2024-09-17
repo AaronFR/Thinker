@@ -60,52 +60,47 @@ class Coder(BasePersona):
     def write_workflow(self, initial_message: str):
         """
         Writes the improved code to a specified file.
-        #ToDo: Blueprinter: should be able to work on multiple files serially
 
         :param initial_message: The user's initial guidance for writing the code.
         """
         executor = AiOrchestrator()
         files = executor.execute_function(
             ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary."
-             "If appropriate write multiple files."],
+             "If appropriate write multiple files, the ones at the top of the class hierarchy first/ on the top"],
             [initial_message],
             GENERATE_FILE_NAMES_FUNCTION_SCHEMA
         )['files']
         logging.info(f"Referencing/Creating the following files: {files}")
-
-        # Write frontend and backend files in python for letting the user in the front end interact with the user terminal
 
         for file in files:
             file_name = file['file_name']
             purpose = file['purpose']
             logging.info(f"Writing code to {file_name}")
 
+            if Coding.is_coding_file(file_name):
+                step_two = f"Write/Rewrite {file_name} based on your comments, focusing on addressing " \
+                           f"[{purpose}] as well as possible."
+            else:
+                step_two = f"Write/Rewrite {file_name} based on your comments, focusing on addressing " \
+                           f"[{purpose}] as well as possible. Making sure that the file imports as necessary, " \
+                           "referencing the appropriate classes"
+
             analyser_messages = [
-                f"As part of <user prompt>{initial_message}</user prompt> "
-                f"Examine the current implementation of {file_name} and your answer for any logical inconsistencies or "
-                "flaws. Identify specific areas where the logic might fail or where the implementation does not meet "
-                "the requirements. Provide a revised version addressing these issues with respect to the following: "
-                f"{purpose}",
-                f"Evaluate the current implementation of {file_name} for opportunities to enhance features, improve naming "
-                "conventions, and increase documentation clarity. Assess readability and flexibility. "
-                "Provide a revised version that incorporates these improvements.",
-                f"Review the structure and flow of the documentation in {file_name}. "
-                "Suggest and implement changes to improve the organization, clarity, and ease of understanding of the code "
-                "and its documentation. Provide a new and improved version of the code with its improved documentation.",
-                f"Assess the code in {file_name} for adherence to coding standards and best practices. "
-                "Suggest changes to improve code quality.",
-                f"Present the final revised version of the code in {file_name}, "
-                "incorporating all previous improvements we discussed. "
-                "Additionally, provide a summary of the key changes made, explaining how each change enhances the code."
+                f"{initial_message}: We will focus on {file_name} so as to {purpose}, to start with think through the"
+                "proposed problem step by step, discuss what we now, what we want to accomplish, the goals and subgoals"
+                " we should optimise for, and any existing flaws to address in the file if it exists yet."
+                "Add a authros note Re the thinker",
+
+                step_two
             ]
-            prompt_messages = [initial_message] + analyser_messages
+            prompt_messages = analyser_messages
 
             try:
-                for iteration, message in enumerate(prompt_messages):
+                for iteration, message in enumerate(prompt_messages, start=1):
                     response = self.process_question(message)
                     logging.info("Iteration %d completed with response: %s", iteration, response)
 
-                    if iteration == 5:
+                    if iteration == len(prompt_messages):
                         Coding.write_to_file_task({
                             PersonaConstants.SAVE_TO: file_name,
                             PersonaConstants.INSTRUCTION: response

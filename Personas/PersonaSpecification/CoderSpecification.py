@@ -24,7 +24,8 @@ GENERATE_FILE_NAMES_FUNCTION_SCHEMA = [{
                 "type": "array",
                 "description": "An array of objects representing files (AT LEAST one) that you want to reference or "
                                "create in order to solve the given user prompt, prioritise the order sensibly, "
-                               "the file that should be altered or created first should be first on the list and so on",
+                               "First create classes that will BE imported from first and files that will import these "
+                               "classes last",
                 "items": {
                     "type": "object",
                     "properties": {
