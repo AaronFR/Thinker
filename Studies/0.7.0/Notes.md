@@ -229,4 +229,8 @@ Time = 4 minutes. Caching made a *significant* difference, that also means most 
 
 As for the output itself, relatively poor with little to add and misunderstandings of the structure of the classes, but there had been changes to the base class with the other tests so perhaps this isn't exactly fair.
 
-
+## After Coder Streamlining
+2024-09-17 18:41:43,852 
+2024-09-17 18:43:59,828
+Halved to 2 Minutes 16 seconds
+Though now the program is working on 3 different files

@@ -93,8 +93,8 @@ class EncyclopediaManagementInterface:
         :param terms: The terms to check in the encyclopedia.
         :return: A string representation of additional context extracted.
         """
-
         additional_context = []
+
         for term in terms:
             try:
                 term_name = term['term'].lower().strip()

@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 
+
+### Changed
+
+- 
+
+### Removed
+
+- 
+
+## [0.7.0] - 2024-09-17 - Knowledge
+
+
+### Added
+
 - Coder
   - Write tests workflow
   - Can write to multiple files at once
@@ -18,14 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - UserEncyclopedia.yaml: Facts about the user are stored in their own encyclopedia, for reference as required
 - WikipediaApi For accessing content if required by a request and caching it in a Encyclopedia.yaml for future reference
 - chat_workflow: for conversing with the user without saving files
-
-### Changed
-
-- 
-
-### Removed
-
-- 
 
 ## [0.6.0] - 2024-08-30 - Scalability
 

@@ -1,5 +1,22 @@
 # The Thinker
 
+### Table of Contents
+
+1. [Objectives](#objectives)
+2. [Current Limitations](#current-limitations)
+3. [Features](#features)
+4. [Architecture](#architecture)
+5. [Planned](#planned)
+
+## About
+
+'The Thinker' is designed to be a llm wrapper application that is more than the sum of its parts, where most wrapper
+applications are focused on single prompt to a few llm calls, The Thinker is intended to be automated as much as possible
+and capable of initiating and completing lengthy tasks longer than a single response.
+
+Another part of the applications design is to streamline using a llm as much as possible, with pre-prompt processing, 
+defined workflows to be used automatically based on use case and automatic file management and user preference configuration.
+
 ## Objectives
 The primary objective of this project is to create an intelligent system that's more than the sum of its parts, 
 utilising multiple LLM calls to be able to iterate and evaluate prompts with quality and if requested quantity.
@@ -10,8 +27,7 @@ utilising multiple LLM calls to be able to iterate and evaluate prompts with qua
 
 ## Current Limitations
 
-- **Quality**: The ideal goal for this project would be for a ChatGpt4o-mini driven workflow to consistently deliver 
-  better quality answers than a single chatGpt prompt on ChatGpt4o, this is not a standard it actually meets.
+- **Inconsistency**: The program can produce decent work and take in configuration, but it still occasionally mangles output
 - **Limited workflows**: Currently the Thinker can create code classes, test classes and write general reports for a given topic.
 
 ## Features
@@ -30,8 +46,22 @@ The project's architecture is designed with modularity in mind, allowing for the
 - **Functionality**: While Personas' have workflows, many workflows and many workers can share the same code, do the same thing
 - **Data**: Handles the processing, creation and editing of data, including written files and accessed configuration files
 
-## Features to implement
+## Planned
 To refine the system's architecture and enhance its capabilities and efficiency, several key features are intended for implementation:
+- **Streamlining the Writer and Editor personas**: Streamlining persona workflows and increasing capability, re-adding the ability to write an arbitary number of pages based on
+ the user's request.
+- **Staging user prompts**: User prompts and uploaded files will be staged to an appropriate folder based on content type
+ (e.g., note-taking, scheduling). This allows files to be referenced down the line with minimal user involvement.
+- **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can 
+ actually write its own tests automatically to full standard.
+- **Internet access**: Adding internet access for workflows based on context, including the ability to expand the 
+ encyclopedia with web-sourced data.
+- **Improved persona configurations**: Personas currently don't fully "understand" their roles or the tools available to them.
+ Improving this configuration will enable personas to better leverage their resources.
+- **Encyclopedia overhaul**: A complete rewrite of the encyclopedia system is planned, transitioning from a YAML file 
+ format to a structured database. This will allow for better organization, including metadata such as source and date of
+ creation.
+- **Programmes**: schedules and programs written on the fly for use by the user, customisable code base.
 - **Expand Workflows**: More workflows for more use-cases, improving on the quality of existing workflows.
   - **Modular Workflows**: In write_workflow for coder there's always a step for improving code quality/
     writing documentation this should actually be a switch depending on the context.
@@ -41,10 +71,6 @@ To refine the system's architecture and enhance its capabilities and efficiency,
    and this is the best it can do, this is a huge improvement in value.
   - **Blueprint**: Certain workflows should follow outlined blueprints created on the spot, guiding the construction of 
    documents, ensuring internal consistency and coherence.
-- **Expand data stores**: Encyclopedias need to be filled out with relevant information (Currently in prototyping stage)
 - **n-shot prompting**: Give the AI models examples of how it should answer roughly similar tasks.
 - **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.
-- **DAG Structure for Task Management**: Introduce a Directed Acyclic Graph (DAG) framework to streamline decision-making efficiency, enabling better organization and oversight of tasks.
 - **API Integrations**: Integrate additional AI models for improved capability and accuracy, along with the ability to search resources like Wikipedia and the web.
-
-
