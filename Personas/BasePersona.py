@@ -2,6 +2,7 @@ import logging
 from typing import List, Tuple
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Data.CategoryManagement import CategoryManagement
 from Data.Configuration import Configuration
 
 from Data.EncyclopediaManagement import EncyclopediaManagement
@@ -37,8 +38,13 @@ class BasePersona:
             elif user_input.lower() == 'history':
                 self.display_history()
             elif Utility.is_valid_prompt(user_input):
+                category_management = CategoryManagement()
+                category_management.stage_files(user_input)
+
+                #ToDo adding to the user_encyclopedia needs to be influenced by context category
                 user_encyclopedia_manager = UserEncyclopediaManagement()
-                user_encyclopedia_manager.add_to_encyclopedia(user_input)
+                user_encyclopedia_manager.add_to_encyclopedia([user_input])
+                
                 self.select_workflow(user_input)
             else:
                 print("Invalid input. Please ask a clear and valid question.")

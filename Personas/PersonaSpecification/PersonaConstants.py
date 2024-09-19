@@ -21,7 +21,7 @@ execution_logs_filename = "execution_logs.txt"
 
 SELECT_WORKFLOW_INSTRUCTIONS = [{
     "name": "executiveDirective",
-    "description": f"""Given what my next task which of the following workflows is the most appropriate?
+    "description": """Given what my next task which of the following workflows is the most appropriate?
     Just select which workflow is most appropriate.""",
     "parameters": {
         TYPE: "object",

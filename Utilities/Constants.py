@@ -39,3 +39,36 @@ Instructions:
 - Evaluate Prompt: Review the provided prompt thoroughly and concisely.
 - Detail and Clarity: Add useful details while being succinct.
 - Follow Directives: Use next_steps and areas_of_improvement to append the required improvements to the solution."""
+
+DETERMINE_CATEGORY_FUNCTION_SCHEMA = [{
+    "name": "executiveDirective",
+    "description": """The categorisation of the given files and messages""",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "categorisations": {
+                "type": "array",
+                "description": """An array of categories to assign to the given user prompt and the files they included 
+                 with their prompt, ideally this should be the one singular category without specification. But in the 
+                 rare odd case where a file is included that really has nothing to do with the prompt or other files,
+                 include another categorisation for it. 1 or more entries required""",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "category": {
+                            "type": "string",
+                            "description": "The category that best applies to the given material, be as simple as "
+                                           "possible, i.e. personal organisation, notes, etc"
+                        },
+                        "outlier": {
+                            "type": "string",
+                            "description": "The specific file this categorisation belongs to, only to be used if the "
+                                           "included file doesn't really fit the categorisation of the others"
+                        }
+                    },
+                    "required": ["category"]
+                }
+            }
+        }
+    }
+}]

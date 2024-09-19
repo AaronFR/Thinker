@@ -2,13 +2,8 @@ import csv
 import os
 import logging
 from typing import List, Dict
-from datetime import datetime
 
 import yaml
-from pygments import highlight
-from pygments.formatters import HtmlFormatter
-from pygments.lexers import PythonLexer
-
 from Utilities import Globals, Constants
 from Utilities.Constants import DEFAULT_ENCODING
 from Utilities.ErrorHandler import ErrorHandler
@@ -25,7 +20,13 @@ class MyDumper(yaml.Dumper):
 
 
 class FileManagement:
-    """Class for managing files related to tasks and solutions."""
+    """
+    Class for managing files related to tasks and solutions.
+
+    Its worth noting the file management system as a whole has a deliberately in-flexible system to prevent
+    possible prompt injection and extraction of data from outside the designated data areas.
+    ONLY information within the boundaries of the 'thoughts' directory can be edited by the user.
+    """
 
     thoughts_directory = os.path.join(os.path.dirname(__file__), '..', 'thoughts')
 
@@ -76,7 +77,7 @@ class FileManagement:
         """
         os.makedirs(FileManagement.thoughts_directory, exist_ok=True)
         return len([name for name in os.listdir(FileManagement.thoughts_directory) if
-                    os.path.isdir(os.path.join(FileManagement.thoughts_directory, name))]) + 1
+                    os.path.isdir(os.path.join(FileManagement.thoughts_directory, name))])
 
     @staticmethod
     def _get_thought_folder() -> str:
@@ -172,7 +173,7 @@ class FileManagement:
     @staticmethod
     def write_to_csv(file_name, dictionaries, fieldnames):
         """
-        Writes a list of dictionaries to a brand new CSV file.
+        Writes or appends a list of dictionaries to a brand new CSV file.
         """
 
         logging.info(f"Data being written to CSV: {dictionaries}")
@@ -182,7 +183,9 @@ class FileManagement:
         mode = 'a' if file_exists else 'w'
         with open(file_path, mode=mode, newline='', encoding=DEFAULT_ENCODING) as file:
             writer = csv.DictWriter(file, fieldnames=fieldnames)
-            writer.writeheader()
+
+            if not file_exists:
+                writer.writeheader()
 
             if isinstance(dictionaries, list) and all(isinstance(item, dict) for item in dictionaries):
                 writer.writerows(dictionaries)
