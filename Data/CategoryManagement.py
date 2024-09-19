@@ -90,28 +90,32 @@ class CategoryManagement:
         logging.info(f"Suggested categorisations: {categorisations}")
 
         if len(categorisations) > 1:
-            # ToDO: Split multiple categorisations, for each check if the given category or something similar already
-            #  exists then either move the material to that category or create a new one
+            """Eventually these categorisations should be handled, i.e. a user includes an errant file just to get it
+            processed, but it might actually make more sense to just query for input twice. 
+            
+            allowing files to have separate categorisations breaks the 'all staged files can be processed together' rule
+            For now during prototyping, we will just note when the system *wants* to use multiple categorisations
+            """
 
-            logging.warning("'Men at work' 👷‍♂️⚠")
-            pass
-        else:
-            category_name = categorisations[0]['category']
-            id = self._return_id_for_category(category_name, executor)
-            logging.info(f"Category selected: [{id}] - {category_name}")
-            Globals.current_thought_id = id
+            logging.warning("\n\n'MULTIPLE CATEGORISATIONS'  ⚠⚠️⚠\n\n")
 
-            if not files:
-                return
 
-            try:
-                for file in files:
-                    staged_file_path = os.path.join(FileManagement.thoughts_directory, "0", file)
-                    new_file_path = os.path.join(FileManagement.thoughts_directory, str(id), file)
-                    shutil.move(staged_file_path, new_file_path)
-                    logging.info(f"{file} moved to {id}")
-            except Exception:
-                logging.exception(f"ERROR: Failed to move all files: {files} to folder: {id} .")
+        category_name = categorisations[0]['category']
+        id = self._return_id_for_category(category_name, executor)
+        logging.info(f"Category selected: [{id}] - {category_name}")
+        Globals.current_thought_id = id
+
+        if not files:
+            return
+
+        try:
+            for file in files:
+                staged_file_path = os.path.join(FileManagement.thoughts_directory, "0", file)
+                new_file_path = os.path.join(FileManagement.thoughts_directory, str(id), file)
+                shutil.move(staged_file_path, new_file_path)
+                logging.info(f"{file} moved to {id}")
+        except Exception:
+            logging.exception(f"ERROR: Failed to move all files: {files} to folder: {id} .")
 
     def _return_id_for_category(self, category_name: str, executor: AiOrchestrator) -> str | None:
         reversed_categories = {v: k for k, v in self.categories.items()}
