@@ -72,7 +72,6 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
         terms = self.extract_terms_from_input(user_input)
         logging.info(f"Extracted terms for {self.ENCYCLOPEDIA_NAME}: {terms}")
 
-
         new_entries = self.process_terms(terms)
 
         if new_entries:

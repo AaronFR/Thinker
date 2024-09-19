@@ -31,10 +31,8 @@ class EncyclopediaManagementInterface:
         return cls._instance
 
     def __init__(self):
-        """Initializes the EncyclopediaManagementInterface.
-
-        :param executor: An instance of AiOrchestrator for executing external functions.
-                         If none is provided, a new instance will be created.
+        """
+        Initializes the EncyclopediaManagementInterface.
         """
         self.encyclopedia: Dict[str, str] = {}
         self.redirects: Dict[str, str] = {}

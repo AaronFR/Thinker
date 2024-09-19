@@ -33,20 +33,6 @@ class FileManagement:
     def __init__(self):
         ErrorHandler.setup_logging()
 
-    @staticmethod
-    def initialise_file(file_name: str):
-        """Initialise a given file as an empty file, in advance of it being opened
-
-        :param file_name: The name of the file to initialise
-        """
-        directory_path = os.path.join(FileManagement.thoughts_directory, str(Globals.current_thought_id))
-        file_path = os.path.join(directory_path, file_name)
-        try:
-            os.makedirs(directory_path, exist_ok=True)
-            with open(file_path, "w", encoding=Constants.DEFAULT_ENCODING):
-                logging.info(f"Successfully created and opened file: {file_path}.")
-        except Exception:
-            logging.exception(f"ERROR: Failed to create directory or open file: {file_path}.")
 
     @staticmethod
     def list_file_names() -> List[str]:
