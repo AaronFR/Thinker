@@ -137,9 +137,6 @@ class CategoryManagement:
                 id = reversed_categories.get(possible_category)
             else:
                 id = FileManagement.get_current_thought_id()
-                new_directory = os.path.join(FileManagement.thoughts_directory, str(id))
-
-                os.makedirs(new_directory, exist_ok=True)  # Create new folder for the given id
                 self._add_new_category(id, category_name)
 
                 logging.info(f"New category created: [{id}] - {category_name}")
@@ -154,6 +151,9 @@ class CategoryManagement:
         :param id: The new folder id to create
         :param category_name: The name of this folder in the categorisation system, will be automatically lowercase-d
         """
+        new_directory = os.path.join(FileManagement.thoughts_directory, str(id))
+        os.makedirs(new_directory, exist_ok=True)  # Create new folder for the given id
+
         category_name = category_name.lower()
         redirect_dicts = [{'id': id, 'category': category_name}]
 
