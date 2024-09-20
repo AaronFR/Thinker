@@ -92,7 +92,7 @@ class AiOrchestrator:
             logging.error("Failed to obtain a valid response from OpenAI API.")
             raise RuntimeError("OpenAI API returned no response.")
 
-        logging.info(f"Function evaluated with response {response}")
+        logging.info(f"Function evaluated with response: {pformat(response)}")
         return response
 
     def generate_messages(self,

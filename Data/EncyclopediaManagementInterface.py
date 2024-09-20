@@ -76,14 +76,18 @@ class EncyclopediaManagementInterface:
         """
         executor = AiOrchestrator()
 
-        terms = executor.execute_function(
-            [self.instructions],
-            user_messages,
-            SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
-        )['terms']
-        logging.info(f"terms to search for in {self.ENCYCLOPEDIA_NAME}: {terms}")
+        try:
+            output = executor.execute_function(
+                [self.instructions],
+                user_messages,
+                SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
+            )
+            terms = output['terms']
+            logging.info(f"terms to search for in {self.ENCYCLOPEDIA_NAME}: {terms}")
 
-        return self.extract_terms_from_encyclopedia(terms)
+            return self.extract_terms_from_encyclopedia(terms)
+        except Exception:
+            logging.error(f"failed to process terms: {output}")
 
     def extract_terms_from_encyclopedia(self, terms: List[dict[str, str]]) -> str:
         """Extract terms from the encyclopedia or fetch them if not found.

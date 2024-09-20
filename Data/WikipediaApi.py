@@ -122,9 +122,12 @@ def _get_infobox(content: str) -> str | None:
     Extracts an infobox from the content of a Wikipedia page. Balanced in that any braces starting braces pair with
     ending braces so only the matching brace for the infobox section is used to extract the infobox
 
+    ToDo: https://github.com/martin-majlis/Wikipedia-API/issues/32#issuecomment-724785111 may be a better approach
+
     :param content: The complete content of the Wikipedia page.
     :return: The extracted infobox string or an error message.
     """
+
     infobox_start = content.find("{{Infobox")
     if infobox_start == -1:
         logging.info(f"No infobox found")

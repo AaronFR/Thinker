@@ -1,12 +1,10 @@
 import logging
-from typing import Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Functionality.Coding import Coding
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import PersonaConstants, CoderSpecification
 from Personas.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
-from Utilities.Utility import Utility
 
 
 class Coder(BasePersona):
@@ -123,13 +121,14 @@ class Coder(BasePersona):
         )
 
         test_prompt_messages = [
-            f"Create unit tests for the functionality provided in {file_name}. Ensure all major functions are tested.",
-            f"Assess edge cases and boundary conditions in {file_name}, generating appropriate tests.",
-            f"Generate tests that ensure robust error handling in the functions defined in {file_name}.",
-            f"Compile the unit tests generated into one cohesive test suite for {file_name}.",
+            f"Review {file_name} in light of [{initial_message}. What should we test? How? What should we prioritise "
+            "and how should the test file be structured",
+            f"Write a test file for {file_name}, implementing the tests as we discussed, make sure each test has robust"
+            "documentation explaining the tests purpose",
+            f"Assess edge cases and boundary conditions in {file_name}, generating appropriate tests."
             f"Present the final test cases in {file_name} and comment on coverage and areas needing additional tests."
         ]
-        prompt_messages = [initial_message] + test_prompt_messages
+        prompt_messages = test_prompt_messages
 
         try:
             for iteration, message in enumerate(prompt_messages):

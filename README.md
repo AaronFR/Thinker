@@ -48,7 +48,9 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 ## Planned
 To refine the system's architecture and enhance its capabilities and efficiency, several key features are intended for implementation:
-- **Streamlining the Writer and Editor personas**: Streamlining persona workflows and increasing capability, re-adding the ability to write an arbitary number of pages based on
+- **Graph Database**: utilise a singular graph data base with nodes and edges to work as a better approximation of a mind, rather than desperate folders and files.
+  - more efficient too, allowing a single call by context to determine knowledge, user knowledge, configuration and memory context.
+- **Streamlining the Writer and Editor personas**: Streamlining persona workflows and increasing capability, re-adding the ability to write an arbitrary number of pages based on
  the user's request.
 - **Staging user prompts**: User prompts and uploaded files will be staged to an appropriate folder based on content type
  (e.g., note-taking, scheduling). This allows files to be referenced down the line with minimal user involvement.
