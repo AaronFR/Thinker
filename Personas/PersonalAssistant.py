@@ -3,12 +3,12 @@ import logging
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Functionality.Coding import Coding
 from Personas.BasePersona import BasePersona
-from Personas.PersonaSpecification import PersonaConstants, CoderSpecification
+from Personas.PersonaSpecification import PersonaConstants, PersonalAssistantSpecification as PaSpecification
 
 
 class PersonalAssistant(BasePersona):
     """
-    Philosopher persona for discussing interesting philosophical ideas.
+    Personal Assistant persona for helping the user organise
 
     Because 'assistant' is already a term in the ChatGpt API, and we do not need that confusion
     """
@@ -24,8 +24,8 @@ class PersonalAssistant(BasePersona):
             "chat": "Just converse with the user naturally",
             "write": "Workflow for writing an organised note to be given to the user"
         }
-        self.instructions = CoderSpecification.CODER_INSTRUCTIONS
-        self.configuration = CoderSpecification.load_configuration()
+        self.instructions = PaSpecification.PERSONAL_ASSISTANT_INSTRUCTIONS
+        self.configuration = PaSpecification.load_configuration()
 
     def run_workflow(self, selected_workflow: str, initial_message: str):
         if selected_workflow in self.workflows.keys():
@@ -61,7 +61,8 @@ class PersonalAssistant(BasePersona):
         """
         executor = AiOrchestrator()
         file_name = executor.execute(
-            ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary"],
+            ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary"
+             "The user will point files out, reference files will be used elsewhere, write to the file they suggest"],
             [initial_message])
 
         # ToDo: Would be a strong contender for 'prompt optimisation'
