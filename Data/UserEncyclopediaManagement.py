@@ -25,9 +25,13 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
 
     instructions = (
         "For the given prompt return an array of things you want to know about the user and things they know, "
-        "the term should be as simple as possible, e.g., the actual word of that concept. "
-        "You can use the 'specifics' field if there is a specific aspect of this concept "
-        "you would prefer to know more about."
+        "as in personal information, *based* on their prompt. "
+        "For example: if a user asks if you know their name, look for their name,"
+        "If a user wants to test their knowledge of dutch, you should look up dutch to return their level of "
+        "competency."
+        "If a user asks for a question that would not benefit from knowing anything about them, don't look up anything"
+        "The term should be as simple as possible, e.g., the actual word of that concept. "
+        "You can use the 'specifics' field to highlight what *exactly* you want to know"
     )
 
     _instance = None
