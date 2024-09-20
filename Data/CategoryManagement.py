@@ -109,7 +109,7 @@ class CategoryManagement:
             return
 
         try:
-            for file in files:
+            for file in files + summaries:
                 staged_file_path = os.path.join(FileManagement.thoughts_directory, "0", file)
                 new_file_path = os.path.join(FileManagement.thoughts_directory, str(id), file)
                 shutil.move(staged_file_path, new_file_path)
