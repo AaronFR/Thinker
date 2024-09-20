@@ -113,7 +113,7 @@ class BasePersona:
             user_context = user_encyclopedia_manager.search_encyclopedia(user_messages)
             system_messages.append(user_context)
 
-        recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
+            recent_history = [f"{entry[0]}: {entry[1]}" for entry in reversed(self.history[-self.MAX_HISTORY:])]
 
         try:
             output = executor.execute(
