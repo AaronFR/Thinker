@@ -32,7 +32,7 @@ class Organising:
         executor = AiOrchestrator()
         try:
             output = executor.execute_function(
-                [ThinkerSpecification.build_file_query_prompt(summaries)],
+                [Organising._build_file_query_prompt(summaries)],
                 input,
                 SELECT_FILES_FUNCTION_SCHEMA
             )
@@ -43,6 +43,17 @@ class Organising:
         except Exception as e:
             logging.exception("Error retrieving relevant files", e)
             return []
+
+    @staticmethod
+    def _build_file_query_prompt(evaluation_files: Tuple[str, str]) -> str:
+        """Construct the prompt for selecting relevant files."""
+        file_name_and_summary = ""
+        for file_name, file_summary in evaluation_files:
+            file_name_and_summary += f"\n{file_name} Summary: {file_summary}"
+
+        return f"""From the list of files, choose which files are expressively explicitly relevant to my prompt. 
+        This could be one, many, or NO files. Be cautious about including files.
+        files: {evaluation_files}"""
 
     @staticmethod
     def get_files_with_summary() -> Tuple[str, str]:
