@@ -16,6 +16,9 @@ from Utilities.Utility import Utility
 class BasePersona:
     """
     Base class for creating personas that execute tasks.
+
+    history: Note that history is written first on the left, latest on the right, but openAi uses latest on
+    the left, first on the right. So it must be reversed if put into openAi API as messages
     """
     MAX_HISTORY = 5
 
@@ -113,7 +116,10 @@ class BasePersona:
             user_context = user_encyclopedia_manager.search_encyclopedia(user_messages)
             system_messages.append(user_context)
 
+        if config['optimization']['message_history']:
             recent_history = [f"{entry[0]}: {entry[1]}" for entry in reversed(self.history[-self.MAX_HISTORY:])]
+        else:
+            recent_history = self.detect_relevant_history()
 
         try:
             output = executor.execute(
@@ -125,3 +131,38 @@ class BasePersona:
         except Exception as e:
             logging.exception("An error occurred while thinking: %s", e)
             return f"An error occurred while processing: {e}"
+
+    def detect_relevant_history(self, user_messages: List[str]):
+        """
+        Uses an ai call to actually determine which prompt - response pairs to send on
+
+        ToDo: latter this project would probably be better suited extracting 'concepts' from prompts, these concepts
+         would be keywords that can then relate *back* to the knowledge base, user knowledge, history, configuration,
+         persona, workflow, etc. With contexts having different strengths based on the input prompt and response
+
+        :param user_messages:
+        :return:
+        """
+        numbered_prompts = "Prompt History: " + "\n".join(
+            [f"{idx}: {entry[0]}" for idx, entry in enumerate(self.history)]
+        )
+
+        executor = AiOrchestrator()
+        relevant_history_list = executor.execute(
+            ["Review the messages I've entered and am about to enter, check them against the Prompt History, write a "
+             "list of number ids for the prompts, if *any* that relate to my user messages."
+             "Just the list of numbers, no commentary",
+             numbered_prompts],
+            #ToDo change to ordered list dict????
+            user_messages
+        )
+        logging.info(f"Relevant messages detected in history: {relevant_history_list}")
+
+        relevant_history = ""
+        try:
+            for id in relevant_history_list:
+                relevant_history += self.history[int(id)]
+        except Exception as e:
+            logging.warning(f"Failed to Retrieve relevant history!")
+
+        return relevant_history
