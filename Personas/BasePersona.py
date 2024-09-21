@@ -1,3 +1,4 @@
+import ast
 import logging
 from typing import List, Tuple
 
@@ -119,7 +120,7 @@ class BasePersona:
         if config['optimization']['message_history']:
             recent_history = [f"{entry[0]}: {entry[1]}" for entry in reversed(self.history[-self.MAX_HISTORY:])]
         else:
-            recent_history = self.detect_relevant_history()
+            recent_history = self.detect_relevant_history(user_messages)
 
         try:
             output = executor.execute(
@@ -150,18 +151,21 @@ class BasePersona:
         executor = AiOrchestrator()
         relevant_history_list = executor.execute(
             ["Review the messages I've entered and am about to enter, check them against the Prompt History, write a "
-             "list of number ids for the prompts, if *any* that relate to my user messages."
-             "Just the list of numbers, no commentary",
+             "list of number ids for the prompts."
+             "Be very harsh only include a message from the history if it DIRECTLY relates to the user message, "
+             "Otherwise include NOTHING. "
+             "Just the list of numbers in square brackets, no commentary",
              numbered_prompts],
-            #ToDo change to ordered list dict????
             user_messages
         )
         logging.info(f"Relevant messages detected in history: {relevant_history_list}")
 
-        relevant_history = ""
+        relevant_history = []
         try:
-            for id in relevant_history_list:
-                relevant_history += self.history[int(id)]
+            relevant_history_list = ast.literal_eval(relevant_history_list)
+            if relevant_history_list:
+                for id in relevant_history_list:
+                    relevant_history.append(str(self.history[int(id)]))
         except Exception as e:
             logging.warning(f"Failed to Retrieve relevant history!")
 
