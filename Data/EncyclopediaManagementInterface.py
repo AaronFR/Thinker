@@ -34,13 +34,15 @@ class EncyclopediaManagementInterface:
         """
         Initializes the EncyclopediaManagementInterface.
         """
-        self.encyclopedia: Dict[str, str] = {}
-        self.redirects: Dict[str, str] = {}
+        if not hasattr(self, 'initialized'):  # Prevent reinitialization
+            self.encyclopedia: Dict[str, str] = {}
+            self.redirects: Dict[str, str] = {}
 
-        self.encyclopedia_path = "To Define"
-        self.redirect_encyclopedia_path = "To Define"
+            self.encyclopedia_path = "To Define"
+            self.redirect_encyclopedia_path = "To Define"
 
-        self.data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
+            self.data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
+            self.initialized = True
 
     def load_encyclopedia_data(self) -> None:
         """
