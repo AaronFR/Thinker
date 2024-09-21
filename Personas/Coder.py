@@ -73,21 +73,33 @@ class Coder(BasePersona):
         for file in files:
             file_name = file['file_name']
             purpose = file['purpose']
-            logging.info(f"Writing code to {file_name}")
+            logging.info(f"Writing code to {file_name}, \nPurpose: {purpose}")
 
             if Coding.is_coding_file(file_name):
-                step_two = f"Write/Rewrite {file_name} based on your comments, focusing on addressing " \
-                           f"[{purpose}] as well as possible."
+                step_two = f"Write/Rewrite {file_name} based on your previous plan of action and the actual contents of"\
+                            "of this particular file,"\
+                           f"focusing on fulfilling the <purpose>{purpose}</purpose> for this file. "\
+                           "Making sure that the file imports as necessary, referencing the appropriate classes"\
+                            "DO NOT OVERWRITE THIS FILE WITH A SUMMARY, do not include the contents of another file" \
+                            "Unless explicitly requests, the files content must be preserved by default"
             else:
-                step_two = f"Write/Rewrite {file_name} based on your comments, focusing on addressing " \
-                           f"[{purpose}] as well as possible. Making sure that the file imports as necessary, " \
-                           "referencing the appropriate classes"
+                step_two = f"Write/Rewrite {file_name} based on your previous plan of action for this particular file,"\
+                           f"focusing on fulfilling the <purpose>{purpose}</purpose> for this file."\
+                            "DO NOT OVERWRITE THIS FILE WITH A SUMMARY, do not include the contents of another file"\
+                            "Unless explicitly requests, the files content must be preserved by default"
+
+            logging.info(f"\n\n\n STEP TWO: {step_two}")
 
             analyser_messages = [
-                f"{initial_message}: We will focus on {file_name} so as to {purpose}, to start with think through the"
-                "proposed problem step by step, discuss what we now, what we want to accomplish, the goals and subgoals"
-                " we should optimise for, and any existing flaws to address in the file if it exists yet."
-                "Add a authros note Re the thinker",
+                # Todo: When the system is more reliable step one can be reimplemented but currently its reasonably
+                #  for a file to just be overwritten with a plan of action
+
+                # f"<user_prompt>{initial_message}</user_prompt>: to start with we will narrow our focus on {file_name} "
+                # "and think through how to change it/write it so as to fulfil the user prompt, step by step, discussing"
+                # " what we know, identify specifically what they want accomplished, goals and subgoals, "
+                # f"and any existing flaws or defects WITHOUT writing any text or code for {file_name}. "
+                # "Just writing up a plan of action telling the llm to follow how to rewrite/write the file in line with "
+                # "this plan and stating specifically that this plan is to be replaced with actual functioning file",
 
                 step_two
             ]
