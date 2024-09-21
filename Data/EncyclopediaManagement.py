@@ -32,7 +32,8 @@ class EncyclopediaManagement(EncyclopediaManagementInterface):
 
     def __init__(self):
         """
-        Initializes the EncyclopediaManagement instance and loads the data files.
+        Initializes the EncyclopediaManagement instance, setting paths for the encyclopedia data files
+        and loading the initial data.
         """
         super().__init__()
         self.encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + ".yaml")
@@ -41,6 +42,9 @@ class EncyclopediaManagement(EncyclopediaManagementInterface):
 
     def fetch_term_and_update(self, term_name: str) -> bool:
         """Fetches the term from Wikipedia and updates the encyclopedia.
+
+        This method retrieves the specified term's data from the Wikipedia API and refreshes the local encyclopedia
+        cache to reflect the most current information. If any exception occurs during the process, it logs the error.
 
         :param term_name: The name of the term to fetch from Wikipedia.
         :return: A status indicating whether the fetching and updating were successful.

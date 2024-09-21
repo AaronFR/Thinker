@@ -2,14 +2,12 @@ import logging
 import os
 from typing import List, Dict, Any
 
-import pandas as pd
 import yaml
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
 from Data.FileManagement import FileManagement
 from Personas.PersonaSpecification.PersonaConstants import ADD_TO_ENCYCLOPEDIA_FUNCTION_SCHEMA
-from Utilities.Constants import DEFAULT_ENCODING
 
 
 class UserEncyclopediaManagement(EncyclopediaManagementInterface):
@@ -17,8 +15,9 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
     **UserEncyclopediaManagement**: A class for managing encyclopedia entries, enabling retrieval,
     updating, and organization of user information.
 
-    This class implements a singleton pattern to ensure a single instance to ensure only a single cache is held in
-    memory.
+    This class implements a singleton pattern to ensure only a single instance exists in
+    memory. It facilitates the addition and management of user-specific terms
+    extracted from interactions.
     """
 
     ENCYCLOPEDIA_NAME = "UserEncyclopedia"
@@ -51,10 +50,12 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
 
     def fetch_term_and_update(self, term_name: str) -> bool:
         """Loads the current state of the user encyclopedia.
-        User encyclopedia is updated more selectively than the encyclopedia, typically only based on user input
 
-        :param term_name: The name of the term to fetch from Wikipedia.
-        :return: A status indicating whether the fetching and updating were successful.
+        The user encyclopedia is updated more selectively than the general encyclopedia,
+        typically based only on user input.
+
+        :param term_name: The name of the term to fetch from the user encyclopedia.
+        :return: True if fetching and updating were successful, False otherwise.
         """
         try:
             self.load_encyclopedia_data()
@@ -67,17 +68,15 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
             logging.exception(f"Unexpected error while trying to fetch '{term_name}': {e}")
             return False
 
-    def add_to_encyclopedia(self, user_input: List[str]):
+    def add_to_encyclopedia(self, user_input: List[str]) -> None:
         """Review the input user_messages and determine if anything meaningful can be added to the user encyclopedia
 
         :param user_input: The user input to analyse
-        :return: A string representation of the additional context found.
         """
         terms = self.extract_terms_from_input(user_input)
         logging.info(f"Extracted terms for {self.ENCYCLOPEDIA_NAME}: {terms}")
 
         new_entries = self.process_terms(terms)
-
         if new_entries:
             FileManagement.write_to_yaml(new_entries, self.encyclopedia_path)
 
@@ -85,7 +84,7 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
         """Extracts terms from user input using AiOrchestrator.
 
         :param user_input: The input text provided by the user.
-        :return: A list of dictionaries containing terms and their respective content.
+        :return: A list of dictionaries containing extracted terms and their respective content.
         """
         executor = AiOrchestrator()
         response = executor.execute_function(
@@ -98,8 +97,10 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
     def process_terms(self, terms: List[Dict[str, Any]]) -> Dict[str, str]:
         """Processes new terms and prepares them for addition to the encyclopedia.
 
+        This method validates each term extracted from user input before adding it to the encyclopedia.
+
         :param terms: The new terms extracted from user input.
-        :return: A dictionary of key-value pairs for the new terms to be added.
+        :return: A dictionary of new terms to be added to the encyclopedia.
         """
         existing_data = FileManagement.load_yaml(self.encyclopedia_path)
         new_entries = {}

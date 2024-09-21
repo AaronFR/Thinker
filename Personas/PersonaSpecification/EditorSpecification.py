@@ -11,7 +11,13 @@ EditorTasks = {
 }
 
 
-def load_configuration():
+def load_configuration() -> str:
+    """
+    Load configuration settings to guide the text editing process.
+
+    :return: A string providing editing guidelines derived from the loaded configuration,
+             including the expected tone, audience, and vocabulary focus.
+    """
     config = Configuration.load_config()
 
     return f"""Following the following guidelines when editing text.

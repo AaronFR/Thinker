@@ -2,7 +2,7 @@
 import logging
 import os
 import shutil
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import pandas as pd
 
@@ -13,11 +13,9 @@ from Utilities import Constants, Globals
 
 
 class CategoryManagement:
-    """Manages encyclopedia data files and provides search and retrieval capabilities.
-
-        This class facilitates loading encyclopedia entries and redirects, searching for terms,
-        and summarizing information relevant to user queries.
-        """
+    """
+    Manages the automatic categorisation of uploaded files by the user and of files created by the system
+    """
 
     ENCYCLOPEDIA_EXT = ".yaml"
     REDIRECTS_EXT = "Redirects.csv"
@@ -33,8 +31,7 @@ class CategoryManagement:
         return cls._instance
 
     def __init__(self):
-        """Initializes the EncyclopediaManagementInterface.
-        """
+        """Initializes the CategoryManagement instance."""
         self.categories: Dict[int, str] = {}
 
         self.thoughts_directory = os.path.join(os.path.dirname(__file__), '..', 'thoughts')
@@ -44,9 +41,7 @@ class CategoryManagement:
         self.load_categories()
 
     def load_categories(self) -> None:
-        """
-        Load category data
-        """
+        """Loads category data from a CSV file into the internal categories dictionary."""
         try:
             categories_df = pd.read_csv(self.categories_path, names=['id', 'category'], skiprows=1)
             self.categories = categories_df.set_index('id')['category'].to_dict()
@@ -54,22 +49,23 @@ class CategoryManagement:
             logging.info(f"Categories successfully loaded: \n {self.categories}")
         except FileNotFoundError:
             logging.error("File not found: %s", self.categories_path)
-            print("Could not load folder categories data. Ensure the files exist in the specified path.")
         except pd.errors.EmptyDataError:
             logging.error("CSV file is empty: %s", self.categories_path)
-            print("The folder categories file is empty, please check the content.")
         except Exception as e:
             logging.exception("Error loading encyclopedia data: %s", exc_info=e)
-            print("An unknown error occurred while loading folder categories data. Check logs for more details.")
 
     def stage_files(self, user_prompt: str):
         """
-        Stage files to a given categorical folder
+        Stages files into a specific category based on user prompt.
+
+        This method retrieves files from the staging area, summarises them, and categorises them
+        according to their content with the help of an AI orchestrator.
+
+        :param user_prompt: The user-provided prompt to assist with categorisation.
         """
         Globals.current_thought_id = 0  # staging area is 0 in 1-indexed thoughts folder structure
         files = FileManagement.list_file_names()
 
-        # get summaries for executor
         summaries = []
         if files:
             Organising.summarise_files(files)
@@ -117,7 +113,13 @@ class CategoryManagement:
         except Exception:
             logging.exception(f"ERROR: Failed to move all files: {files} to folder: {id} .")
 
-    def _return_id_for_category(self, category_name: str, executor: AiOrchestrator) -> str | None:
+    def _return_id_for_category(self, category_name: str, executor: AiOrchestrator) -> Optional[str]:
+        """Retrieves the ID for the specified category, creating a new category if necessary.
+
+        :param category_name: The name of the category associated with an existing category ID.
+        :param executor: An instance of AiOrchestrator for category determination.
+        :return: The category ID if found, otherwise None.
+        """
         reversed_categories = {v: k for k, v in self.categories.items()}
         id = reversed_categories.get(category_name, False)
 
@@ -127,7 +129,7 @@ class CategoryManagement:
                  " any other category? "
                  "Just return the name of the category, if nothing is similar please just respond with 'False'."
                  "Please be very harsh in your evaluation, only return a possible category if it really SHOULD have"
-                 "Been assigned this category but wasn't, it need to be the same categorically, not just *similar*",
+                 "Been assigned this category but wasn't, it needs to be the same categorically, not just *similar*",
                  f"category id with category csv: \n{self.categories}"],
                 [category_name]
             )

@@ -121,9 +121,8 @@ class EncyclopediaManagementInterface:
 
         return str(additional_context)
 
-    def selectively_process_entry(self, term_name: str, specifics: str):
-        """
-        Must be run after data files have been loaded.
+    def selectively_process_entry(self, term_name: str, specifics: str) -> str:
+        """Must be run after data files have been loaded.
 
         :param term_name: term to search for in encyclopedia data files
         :param specifics: the reason you are searching for this term, what the llm hopes to find more info on
