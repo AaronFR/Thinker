@@ -53,9 +53,8 @@ SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA = [{
         "properties": {
             "terms": {
                 "type": "array",
-                "description": """An array of objects that you want to look up/cross reference against the
-                 encyclopedia definition, including what *specifically* you want to know about that concept.
-                 Can be 0 or more entries depending on context. None can be completely valid.""",
+                "description": """An array of objects to look up/cross-reference against the encyclopedia definitions.
+                 Can be 0 or more entries depending on context; none can be completely valid.""",
                 "items": {
                     "type": "object",
                     "properties": {
@@ -83,21 +82,21 @@ ADD_TO_ENCYCLOPEDIA_FUNCTION_SCHEMA = [{
         "properties": {
             "terms": {
                 "type": "array",
-                "description": "An array of objects representing information you want to add to the users encyclopedia "
-                               "data, be selective, only include things if they mention new information which could be "
-                               "useful for further prompts down the line",
+                "description": "An array of objects representing the information to add to the user's encyclopedia data"
+                               ". Be selective; only include things if they mention new information useful for further "
+                               "prompts.",
                 "items": {
                     "type": "object",
                     "properties": {
                         "term": {
                             "type": "string",
-                            "description": "A term you want to add to the users encyclopedia file, *can* include "
-                                           "subsections, so user/name if the user tells you their name for example"
+                            "description": "A term to add to the user's encyclopedia file, *can* include subsections; "
+                                           "e.g., user/name."
                         },
                         "content": {
                             "type": "string",
-                            "description": "The information you want to write down, strictly to the point will filled "
-                                           "with as much useful detail as possible/necessary"
+                            "description": "The information to write down, strictly to the point and filled with "
+                                           "effective detail."
                         }
                     },
                     "required": ["term", "content"]

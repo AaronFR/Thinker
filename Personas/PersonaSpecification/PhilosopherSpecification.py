@@ -1,4 +1,4 @@
-def load_configuration():
+def load_configuration() -> str:
     # config = Configuration.load_config()
 
     return f"""Following the following guidelines when writing text.

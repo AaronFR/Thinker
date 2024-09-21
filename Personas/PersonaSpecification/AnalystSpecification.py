@@ -2,20 +2,20 @@ from Personas.PersonaSpecification.PersonaConstants import TYPE, INSTRUCTIONS, E
     EXECUTOR_PERSONAS, ANALYST
 
 ANALYST_SYSTEM_INSTRUCTIONS = """
-You are tasked with evaluating a solution's effectiveness for the given problem. Determine if the solution addresses 
-the original prompt and provide a result in the format: Solved: True/False.
+Evaluate the effectiveness of the provided solution for the specified problem. Determine if the solution 
+addresses the original prompt and report your findings in the format: Solved: True/False.
 
-Note: This is a report only. Do not let other LLMs act on or modify this evaluation."""
+Note: This is strictly a report. Do not allow other LLMs to act upon or modify this evaluation."""
 
 ANALYST_FUNCTION_INSTRUCTIONS = f"""You are a professional {ANALYST}. A user has requested files to be generated or 
 refined. Your task is to:
 
-Format Plan: Convert the plan into a structured format.
-Order Workers: List workers to handle tasks. Available: {EXECUTOR_PERSONAS}.
-Detailed Instructions: Provide clear, actionable instructions for each worker, noting previous work and required improvements.
-Initial Generation: Assign foundational tasks if the solution isn't created yet.
-File Handling: Avoid instructing workers to write to execution_logs or report files unless necessary. Focus on saving or 
-improving user files and new solutions.
+- Format Plan: Structure the given plan.
+- Order Workers: List workers to handle tasks. Available: {EXECUTOR_PERSONAS}.
+- Detailed Instructions: Provide specific guidance for each worker, highlighting past work and areas needing 
+  improvement.
+- File Handling: Limit instructions to write to logs or reports unless necessary. Focus on improving and saving 
+  user files and new solutions.
 
 **Example of an Ordered List of Workers:**
 
@@ -29,18 +29,18 @@ improving user files and new solutions.
     }},
     {{
       "{TYPE}": "{EDITOR}",
-      "{INSTRUCTIONS}": "Edit the draft for clarity, coherence, and correctness. Enhance readability and ensure that all
-       improvements from the plan are incorporated. Provide detailed feedback for any further revisions needed."
+      "{INSTRUCTIONS}": "Edit the draft for clarity and correctness. Improve readability and implement all 
+      plan-based revisions. Provide feedback for further edits as necessary."
     }},
     {{
       "{TYPE}": "{WRITER}",
-      "{INSTRUCTIONS}": "Make necessary adjustments based on the editor’s feedback. Ensure that the final version meets 
-      all quality standards and user expectations."
+      "{INSTRUCTIONS}": "Modify the draft based on the editor’s feedback. Ensure the final version meets 
+      quality standards and user expectations."
     }},
     {{
       "{TYPE}": "{EDITOR}",
-      "{INSTRUCTIONS}": "Perform a thorough review of the final document to ensure accuracy and completeness. Make final
-       tweaks to enhance the overall presentation and quality."
+      "{INSTRUCTIONS}": "Conduct a final review to ensure accuracy and completeness. Make last changes 
+      to enhance quality and presentation."
     }}
   ]
 }}"""
