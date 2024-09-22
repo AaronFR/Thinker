@@ -137,9 +137,26 @@ class ChatGptWrapper:
 if __name__ == '__main__':
     ChatGptWrapper = ChatGptWrapper()
 
+    # output = ChatGptWrapper.get_open_ai_response([
+    #     {
+    #         "role": ChatGptRole.USER.value, "content": """Which llm ai model is the best available at time of writing"""
+    #     }  # there are no prizes for guessing the answer
+    # ])
     output = ChatGptWrapper.get_open_ai_response([
         {
-            "role": ChatGptRole.USER.value, "content": """Which llm ai model is the best available at time of writing"""
-        }  # there are no prizes for guessing the answer
+            "role": ChatGptRole.USER.value, "content": "Describe Spain?",
+        },
+        {
+            "role": ChatGptRole.ASSISTANT.value, "content": "Whats the capital of France?"
+        },
+        {
+            "role": ChatGptRole.ASSISTANT.value, "content": "My name is joe"
+        },
+        {
+            "role": ChatGptRole.SYSTEM.value, "content": "You will answer responses in Chinese"
+        },
+        {
+            "role": ChatGptRole.SYSTEM.value, "content": "You will answer responses in Portuguese"
+        }
     ])
     print(output)

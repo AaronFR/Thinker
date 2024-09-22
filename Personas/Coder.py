@@ -91,15 +91,12 @@ class Coder(BasePersona):
             logging.info(f"\n\n\n STEP TWO: {step_two}")
 
             analyser_messages = [
-                # Todo: When the system is more reliable step one can be reimplemented but currently its reasonably
-                #  for a file to just be overwritten with a plan of action
-
-                # f"<user_prompt>{initial_message}</user_prompt>: to start with we will narrow our focus on {file_name} "
-                # "and think through how to change it/write it so as to fulfil the user prompt, step by step, discussing"
-                # " what we know, identify specifically what they want accomplished, goals and subgoals, "
-                # f"and any existing flaws or defects WITHOUT writing any text or code for {file_name}. "
-                # "Just writing up a plan of action telling the llm to follow how to rewrite/write the file in line with "
-                # "this plan and stating specifically that this plan is to be replaced with actual functioning file",
+                f"<user_prompt>{initial_message}</user_prompt>: to start with we will narrow our focus on {file_name} "
+                "and think through how to change it/write it so as to fulfil the user prompt, step by step, discussing"
+                " what we know, identify specifically what they want accomplished, goals and subgoals, "
+                f"and any existing flaws or defects WITHOUT writing any text or code for {file_name}. "
+                "Just writing up a plan of action telling the llm to follow how to rewrite/write the file in line with "
+                "this plan and stating specifically that this plan is to be replaced with actual functioning file",
 
                 step_two
             ]

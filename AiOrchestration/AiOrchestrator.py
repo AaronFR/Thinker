@@ -45,6 +45,7 @@ class AiOrchestrator:
         """
         assistant_messages = assistant_messages or []
         messages = self.generate_messages(system_prompts, user_prompts, assistant_messages)
+        logging.info(f"Executing LLM call with messages: \n{pformat(messages, width=500)}")
 
         if rerun_count == 1:
             response = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_response(messages, model))
@@ -123,11 +124,12 @@ class AiOrchestrator:
         :param assistant_messages: messages which represent the prior course of the conversation
         :return:
         """
-        role_messages = [
-            {"role": ChatGptRole.SYSTEM.value, "content": prompt} for prompt in system_prompts
-        ] + [
-            {"role": ChatGptRole.USER.value, "content": prompt} for prompt in user_prompts
-        ]
+        role_messages = []
+        if assistant_messages:
+            role_messages.extend({
+                "role": ChatGptRole.ASSISTANT.value,
+                "content": prompt
+            } for prompt in assistant_messages)
 
         for file in self.input_files:
             try:
@@ -142,11 +144,11 @@ class AiOrchestrator:
                     {"role": ChatGptRole.SYSTEM.value, "content": f"Error reading file {file}. Exception: {e}"}
                 )
 
-        if assistant_messages:
-            role_messages.extend({
-                "role": ChatGptRole.ASSISTANT.value,
-                "content": prompt
-            } for prompt in assistant_messages)
+        role_messages += [
+            {"role": ChatGptRole.SYSTEM.value, "content": prompt} for prompt in system_prompts
+        ] + [
+            {"role": ChatGptRole.USER.value, "content": prompt} for prompt in user_prompts
+        ]
 
         return role_messages
 

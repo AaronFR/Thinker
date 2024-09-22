@@ -118,7 +118,7 @@ class BasePersona:
             system_messages.append(user_context)
 
         if config['optimization']['message_history']:
-            recent_history = [f"{entry[0]}: {entry[1]}" for entry in reversed(self.history[-self.MAX_HISTORY:])]
+            recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
         else:
             recent_history = self.detect_relevant_history(user_messages)
 

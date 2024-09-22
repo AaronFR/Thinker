@@ -27,8 +27,10 @@ utilising multiple LLM calls to be able to iterate and evaluate prompts with qua
 
 ## Current Limitations
 
-- **Inconsistency**: The program can produce decent work and take in configuration, but it still occasionally mangles output
 - **Limited workflows**: Currently the Thinker can create code classes, test classes and write general reports for a given topic.
+- **Inability to bring things together**: The thinker uses multiple files to determines different types of context for the prompt
+ changing this to a more unified (graph) database, could improve program coherency and contextual awareness while reducing
+ costs and simplifying outputs.
 
 ## Features
 - **Workflows**: A user prompt is fed into a persona and evaluated for one of its workflows, a workflow representing a

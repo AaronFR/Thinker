@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Coder: write_workflow streamlined, now quicker while more consistent and versatile
+- Message Processing: The most important message for chatGpt is the last AKA 'latest' message, Ai Orchestration has been
+ corrected to use this design properly leading to less confused and erroneous operations by the system
 
 ### Removed
 
