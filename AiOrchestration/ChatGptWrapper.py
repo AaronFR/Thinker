@@ -8,7 +8,6 @@ from openai import OpenAI, OpenAIError
 from openai.types.chat import ChatCompletion
 
 from Utilities import Globals
-from Utilities.ErrorHandler import ErrorHandler
 
 
 class ChatGptModel(enum.Enum):
@@ -66,7 +65,6 @@ class ChatGptWrapper:
         """
         try:
             logging.debug(f"Calling OpenAI API with messages: {messages}")
-
             chat_completion = self.open_ai_client.chat.completions.create(
                 model=model.value, messages=messages, n=rerun_count
             )

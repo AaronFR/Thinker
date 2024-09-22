@@ -82,7 +82,6 @@ class EncyclopediaManagementInterface:
         :return: A string representation of the additional context found.
         """
         executor = AiOrchestrator()
-
         try:
             output = executor.execute_function(
                 [self.instructions],

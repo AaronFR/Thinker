@@ -83,8 +83,8 @@ class AiOrchestrator:
         if not function_schema:
             logging.error("No function schema found")
             raise ValueError("Function schema cannot be empty.")
-        messages = self.generate_messages(system_prompts, user_prompts)
 
+        messages = self.generate_messages(system_prompts, user_prompts)
         response = Utility.execute_with_retries(
             lambda: self.prompter.get_open_ai_function_response(messages, function_schema, model)
         )
@@ -100,6 +100,13 @@ class AiOrchestrator:
                           system_prompts: List[str] | str,
                           user_prompts: List[str],
                           assistant_messages: List[str] = None) -> List[Dict[str, str]]:
+        """Generates the list of messages by composing user and system prompts.
+
+        :param system_prompts: Messages providing contextual guidance to the LLM
+        :param user_prompts: User prompts representing instructions
+        :param assistant_messages: History of the current interaction
+        :return: List of formatted messages for LLM processing
+        """
         logging.debug(f"Composing messages with user prompts: {pformat(user_prompts, width=280)}")
 
         system_prompts = Utility.ensure_string_list(system_prompts)
@@ -116,8 +123,8 @@ class AiOrchestrator:
                             system_prompts: List[str],
                             user_prompts: List[str],
                             assistant_messages: List[str] = None) -> List[Dict[str, str]]:
-        """Creates a list of messages to be handled by the ChatGpt API, first the system messages then user messages
-        with any input files at the end. Prioritising the instructions of the system messages
+        """Creates a list of messages to be handled by the ChatGpt API, the most important messages is the very last
+        'latest' message in the list
 
         :param system_prompts: list of instructions to be saved as system info
         :param user_prompts: primary initial instruction and other supplied material
