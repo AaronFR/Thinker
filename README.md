@@ -14,11 +14,12 @@
 applications are focused on single prompt to a few llm calls, The Thinker is intended to be automated as much as possible
 and capable of initiating and completing lengthy tasks longer than a single response.
 
-Another part of the applications design is to streamline using a llm as much as possible, with pre-prompt processing, 
+All the while streamling using a llm as much as possible, with pre-prompt processing, 
 defined workflows to be used automatically based on use case and automatic file management and user preference configuration.
 
 ## Objectives
-The primary objective of this project is to create an intelligent system that's more than the sum of its parts, 
+The primary objective of this project is to create an intelligent system that improves upon the quality of responses given 
+by the base model, 
 utilising multiple LLM calls to be able to iterate and evaluate prompts with quality and if requested quantity.
 
 - Automate Problem-Solving: To provide a system that can evaluate and generate solutions for various tasks without
@@ -35,7 +36,7 @@ utilising multiple LLM calls to be able to iterate and evaluate prompts with qua
 ## Features
 - **Workflows**: A user prompt is fed into a persona and evaluated for one of its workflows, a workflow representing a
  series of prompts to be run to achieve an ideal outcome for the given task type.
-- **Pre-Prompt-Processing**: 'sub-conscious' processes, referencing information as required by context in advance of an
+- **Pre-Prompt-Processing**: 'sub-conscious' processes, referencing contextual information as required by context in advance of an
  actual LLM call
 
 ## Architecture
@@ -54,19 +55,15 @@ To refine the system's architecture and enhance its capabilities and efficiency,
   - more efficient too, allowing a single call by context to determine knowledge, user knowledge, configuration and memory context.
 - **Streamlining the Writer and Editor personas**: Streamlining persona workflows and increasing capability, re-adding the ability to write an arbitrary number of pages based on
  the user's request.
-- **Staging user prompts**: User prompts and uploaded files will be staged to an appropriate folder based on content type
- (e.g., note-taking, scheduling). This allows files to be referenced down the line with minimal user involvement.
 - **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can 
  actually write its own tests automatically to full standard.
 - **Internet access**: Adding internet access for workflows based on context, including the ability to expand the 
  encyclopedia with web-sourced data.#
 - **Attributes**: Summaries and simple summaries to be stored as attributes against files
+- **Message History**: Message's saved for future reference
 - **Improved persona configurations**: Personas currently don't fully "understand" their roles or the tools available to them.
  Improving this configuration will enable personas to better leverage their resources.
-- **Encyclopedia overhaul**: A complete rewrite of the encyclopedia system is planned, transitioning from a YAML file 
- format to a structured database. This will allow for better organization, including metadata such as source and date of
- creation.
-- **Programmes**: schedules and programs written on the fly for use by the user, customisable code base.
+
 - **Expand Workflows**: More workflows for more use-cases, improving on the quality of existing workflows.
   - **Modular Workflows**: In write_workflow for coder there's always a step for improving code quality/
     writing documentation this should actually be a switch depending on the context.
@@ -76,6 +73,7 @@ To refine the system's architecture and enhance its capabilities and efficiency,
    and this is the best it can do, this is a huge improvement in value.
   - **Blueprint**: Certain workflows should follow outlined blueprints created on the spot, guiding the construction of 
    documents, ensuring internal consistency and coherence.
+- **Programmes**: schedules and programs written on the fly for use by the user, customisable code base.
 - **n-shot prompting**: Give the AI models examples of how it should answer roughly similar tasks.
 - **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.
-- **API Integrations**: Integrate additional AI models for improved capability and accuracy, along with the ability to search resources like Wikipedia and the web.
+- **API Integrations**: Integrate additional AI models to leverage the most appropriate based on context

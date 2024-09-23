@@ -1,0 +1,22 @@
+✔ Increase consistency and specification of Personas by putting messages in the correct order
+
+## Coder:
+Coder should probably do its reasoning FIRST then code, not the other way around retroactively.
+Coder is overly eager to erase comments in the name of streamlining a file
+Coder should check that its code actually works
+Coder should focus on improvements when editing an existing document.
+
+## PA
+Still acting unreliably for some tasks, like referencing multiple files, occasionally deleting content
+
+## Graph Database
+For the graph database adding in a strength to the edges between nodes could be really practical for the system
+
+Issues that may be solved with the graph database switch
+    files are not loaded from disk in time to incorporate changes
+
+Issues that will not
+    Mangles output to fit inside 2000 content window (ChatGpt Mini)
+
+
+

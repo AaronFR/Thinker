@@ -83,6 +83,7 @@ class Organising:
     @staticmethod
     def summarise_files(evaluation_files: List[str]):
         """Creates summaries for any file that does not have an associated summary.
+        ToDo: should be triggered when a file is rewritten or otherwise edited
 
         :param evaluation_files: A list of evaluation files to be potentially summarised
         """
@@ -108,6 +109,7 @@ class Organising:
     @staticmethod
     def create_summary_file(file_name: str):
         """Creates and saves a summary file for the given file.
+        ToDo: should use AST for coding files
 
         :param file_name: The original file for which a summary will be created
         """

@@ -73,7 +73,7 @@ class PersonalAssistant(BasePersona):
 
         # ToDo: Would be a strong contender for 'prompt optimisation'
         analyser_messages = [
-            f"{initial_message}: Now write that to an organised file"
+            f"{initial_message}: Now write that to an organised file, DO NOT COMMENT, just re/write the file"
         ]
         prompt_messages = analyser_messages
 
