@@ -141,7 +141,7 @@ class AiOrchestrator:
         for file in self.input_files:
             try:
                 content = FileManagement.read_file(file)
-                role_messages.append({"role": ChatGptRole.SYSTEM.value, "content": content})
+                role_messages.append({"role": ChatGptRole.SYSTEM.value, "content": f"<{file}>{content}</{file}>"})
             except FileNotFoundError:
                 logging.error(f"File not found: {file}. Please ensure the file exists.")
                 role_messages.append({"role": ChatGptRole.SYSTEM.value, "content": f"File not found: {file}"})
