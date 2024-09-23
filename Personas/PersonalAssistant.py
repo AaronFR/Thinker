@@ -5,6 +5,7 @@ from Functionality.Coding import Coding
 from Functionality.Writing import Writing
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import PersonaConstants, PersonalAssistantSpecification as PaSpecification
+from Personas.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
 
 
 class PersonalAssistant(BasePersona):
@@ -61,10 +62,14 @@ class PersonalAssistant(BasePersona):
         :param initial_message: The user's initial guidance for writing the response.
         """
         executor = AiOrchestrator()
-        file_name = executor.execute(
+        files = executor.execute_function(
             ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary"
-             "The user will point files out, reference files will be used elsewhere, write to the file they suggest"],
-            [initial_message])
+             "The user will point files out, reference files will be used elsewhere, write to the file(s) they "
+             "suggest"],
+            [initial_message],
+            GENERATE_FILE_NAMES_FUNCTION_SCHEMA
+        )['files']
+        logging.info(f"Referencing/Creating the following files: {files}")
 
         # ToDo: Would be a strong contender for 'prompt optimisation'
         analyser_messages = [
@@ -72,19 +77,23 @@ class PersonalAssistant(BasePersona):
         ]
         prompt_messages = analyser_messages
 
-        try:
-            for iteration, message in enumerate(prompt_messages):
-                response = self.process_question(message)
-                logging.info("Iteration %d completed with response: %s", iteration, response)
+        for file in files:
+            file_name = file['file_name']
+            purpose = file['purpose']
+            logging.info(f"PA writing to {file_name}, \nPurpose: {purpose}")
 
-                if iteration == 0:
-                    Coding.write_to_file_task({
-                        PersonaConstants.SAVE_TO: file_name,
-                        PersonaConstants.INSTRUCTION: response
-                    })
+            try:
+                for iteration, message in enumerate(prompt_messages, start=1):
+                    response = self.process_question(message)
+                    logging.info("Iteration %d completed with response: %s", iteration, response)
 
-        except Exception as e:
-            logging.error("Error during writing workflow: %s", str(e))
+                    if iteration == len(prompt_messages):
+                        Writing.write_to_file_task({  #
+                            PersonaConstants.SAVE_TO: file_name,
+                            PersonaConstants.INSTRUCTION: response
+                        })
+            except Exception as e:
+                logging.error("Error during writing workflow: %s", str(e))
 
 
 if __name__ == '__main__':

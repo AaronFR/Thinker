@@ -50,7 +50,7 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 ## Planned
 To refine the system's architecture and enhance its capabilities and efficiency, several key features are intended for implementation:
-- **Graph Database**: utilise a singular graph data base with nodes and edges to work as a better approximation of a mind, rather than desperate folders and files.
+- **Graph Database**: utilise a singular graph database with nodes and edges to work as a better approximation of a mind, rather than desperate folders and files.
   - more efficient too, allowing a single call by context to determine knowledge, user knowledge, configuration and memory context.
 - **Streamlining the Writer and Editor personas**: Streamlining persona workflows and increasing capability, re-adding the ability to write an arbitrary number of pages based on
  the user's request.
@@ -59,7 +59,8 @@ To refine the system's architecture and enhance its capabilities and efficiency,
 - **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can 
  actually write its own tests automatically to full standard.
 - **Internet access**: Adding internet access for workflows based on context, including the ability to expand the 
- encyclopedia with web-sourced data.
+ encyclopedia with web-sourced data.#
+- **Attributes**: Summaries and simple summaries to be stored as attributes against files
 - **Improved persona configurations**: Personas currently don't fully "understand" their roles or the tools available to them.
  Improving this configuration will enable personas to better leverage their resources.
 - **Encyclopedia overhaul**: A complete rewrite of the encyclopedia system is planned, transitioning from a YAML file 
