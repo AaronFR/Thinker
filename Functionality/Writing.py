@@ -18,6 +18,23 @@ class Writing(enum.Enum):
     """Writing represents various task types used within the persona system."""
 
     @staticmethod
+    def write_to_file_task(task_parameters: Dict[str, object]):
+        """
+        Repeatedly writes content to the specified number of pages. Where one page roughly corresponds to 500 words
+        (2000 tokens output)
+
+        :param task_parameters: Dict with SAVE_TO and INSTRUCTION
+        """
+        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
+        output = executor.execute(
+            ["Just write the key text, without any of the typical LLM 'would you like to know more' parts"],
+            [task_parameters[PersonaConstants.INSTRUCTION]]
+        )
+
+        FileManagement.save_file(output, task_parameters[PersonaConstants.SAVE_TO], overwrite=True)
+        ExecutionLogs.add_to_logs(f"Saved to {task_parameters[PersonaConstants.SAVE_TO]}")
+
+    @staticmethod
     def write_to_file(task_parameters: Dict[str, object]):
         """Repeatedly writes content to the specified number of pages. Where one page roughly corresponds to 500 words
         (2000 tokens output)

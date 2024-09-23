@@ -1,7 +1,7 @@
 import logging
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Functionality.Coding import Coding
+from Functionality.Writing import Writing
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import PersonaConstants, CoderSpecification
 
@@ -44,7 +44,7 @@ class Thinker(BasePersona):
             logging.info("Iteration %d completed with response: %s", iteration, response)
 
             if iteration == 4:
-                Coding.write_to_file_task({
+                Writing.write_to_file_task({
                     PersonaConstants.SAVE_TO: file_name,
                     PersonaConstants.INSTRUCTION: response
                 })
