@@ -1,8 +1,11 @@
 import enum
 import os
+import py_compile
+import subprocess
 from typing import Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Utilities import Globals
 from Utilities.ExecutionLogs import ExecutionLogs
 from Data.FileManagement import FileManagement
 from Personas.PersonaSpecification import PersonaConstants
@@ -42,6 +45,29 @@ class Coding(enum.Enum):
 
         # Check if the file extension is in the list
         return extension in coding_extensions
+
+    @staticmethod
+    def check_syntax(file_name: str) -> bool | str:
+        """ToDo: implement
+        ToDo: Assuming that script is written in python"""
+        script_path = os.path.join(FileManagement.thoughts_directory, Globals.current_thought_id, file_name)
+        try:
+            py_compile.compile(script_path, doraise=True)
+            return True
+        except py_compile.PyCompileError as e:
+            return f"Syntax error: {e.msg}"
+
+    @staticmethod
+    def run_generated_script(file_name: str) -> str:
+        """ToDo: implement + add method to check IF a script should be run
+        ToDo: Write method for running tests (depending on chosen framework)
+        """
+        script_path = os.path.join(FileManagement.thoughts_directory, Globals.current_thought_id, file_name)
+        try:
+            result = subprocess.run(['python', script_path], capture_output=True, text=True, check=True)
+            return f"Script Output:\n{result.stdout}"
+        except subprocess.CalledProcessError as e:
+            return f"Error running the script:\n{e.stderr}"
 
 
 if __name__ == '__main__':
