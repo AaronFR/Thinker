@@ -77,6 +77,7 @@ class CategoryManagement:
 
         existing_categories = f"The following categories already exist: {self.categories.values()}"
         executor = AiOrchestrator(summaries)
+        #ToDo - occasionally returning incorrect schemas for generic prompts
         categorisations = executor.execute_function(
             ["Review the entered files and prompts and determine the category that fits these tasks best",
              existing_categories],

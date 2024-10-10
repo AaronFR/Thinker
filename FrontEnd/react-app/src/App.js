@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import './App.css';
 
 
@@ -55,24 +57,30 @@ function App () {
 
     return (
         <div className="app-container">
-            <p className="app-heading">{error ? error : message}</p> {/* Display error message or the fetched message */}
-            <h2>{userInput ? userInput : "Enter your message"}</h2>
+          <div
+            className="markdown-output"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(error ? error : marked(message))
+            }}
+          />
+          <h2>{userInput ? userInput : "Enter your message"}</h2>
 
-            <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
-              <input
-                type="text"
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                placeholder='Enter your prompt'
-                style={{ padding: '1opx', fontSize: '16px'}}
-              />
-              <button 
-                type="submit"
-                className="submit-button"
-              >
-                {isProcessing ? 'Processing...' : 'Enter'}
-              </button>
-            </form>
+          <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
+            <input
+              type="text"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              placeholder='Enter your prompt'
+              className="prompt-input"
+              disabled={isProcessing} // in future the user should be allowed serial prompts
+            />
+            <button 
+              type="submit"
+              className="submit-button"
+            >
+              {isProcessing ? 'Processing...' : 'Enter'}
+            </button>
+          </form>
             
         </div>
     );

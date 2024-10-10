@@ -67,3 +67,8 @@
   font-size: 1.5em;
   color: #444;
 }
+
+.markdown-output {
+  text-align: left; /* Or markeddown lists will look terrible */
+  font-size:12px;
+}
