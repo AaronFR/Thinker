@@ -30,11 +30,11 @@ class Coder(BasePersona):
     def run_workflow(self, selected_workflow: str, initial_message: str):
         if selected_workflow in self.workflows.keys():
             if selected_workflow == "chat":
-                self.chat_workflow(initial_message)
+                return self.chat_workflow(initial_message)
             if selected_workflow == "write":
-                self.write_workflow(initial_message)
+                return self.write_workflow(initial_message)
             if selected_workflow == "write_tests":
-                self.write_tests_workflow(initial_message)
+                return self.write_tests_workflow(initial_message)
 
     def chat_workflow(self, initial_message: str):
         """
@@ -51,9 +51,11 @@ class Coder(BasePersona):
             for iteration, message in enumerate(prompt_messages):
                 response = self.process_question(message)
                 logging.info("Iteration %d completed with response: %s", iteration, response)
-
+        
         except Exception as e:
             logging.exception("Error during writing workflow: %s", str(e), exc_info=e)
+
+        return response
 
     def write_workflow(self, initial_message: str):
         """
@@ -115,6 +117,8 @@ class Coder(BasePersona):
 
             except Exception as e:
                 logging.error("Error during writing workflow: %s", str(e))
+
+        return response
 
     def write_tests_workflow(self, initial_message: str) -> None:
         """

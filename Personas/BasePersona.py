@@ -32,8 +32,29 @@ class BasePersona:
 
         ErrorHandler.setup_logging()
 
+    def query(self, user_prompt):
+        """
+        Handles a user prompt
+
+        :param user_input: user input prompt
+        """
+        if Utility.is_valid_prompt(user_prompt):
+                category_management = CategoryManagement()
+                category_management.stage_files(user_prompt)
+
+                #ToDo adding to the user_encyclopedia needs to be influenced by context category
+                user_encyclopedia_manager = UserEncyclopediaManagement()
+                user_encyclopedia_manager.add_to_encyclopedia([user_prompt])
+                
+                return self.select_workflow(user_prompt)
+        else:
+            print("Invalid input. Please ask a clear and valid question.")
+
     def query_user_for_input(self):
-        """Continuously prompts the user for questions until they choose to exit. """
+        """
+        Continuously prompts the user for questions until they choose to exit.
+        For debugging the backend from the terminal.
+        """
         while True:
             user_input = input("Please enter your task (or type 'exit' to quit): ")
             if Utility.is_exit_command(user_input):
@@ -78,7 +99,7 @@ class BasePersona:
         selected_workflow = output['selection']
 
         logging.info(f"Selected workflow: {selected_workflow}")
-        self.run_workflow(selected_workflow, initial_message)
+        return self.run_workflow(selected_workflow, initial_message)
 
     def run_workflow(self, selected_workflow: str, initial_message: str):
         raise NotImplementedError("This method should be overridden by subclasses")

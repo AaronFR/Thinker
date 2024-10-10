@@ -1,0 +1,69 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* General container for the entire app */
+.app-container {
+  font-family: 'Times New Roman', serif;
+  text-align: center;
+  font-size: 8px;
+}
+
+/* Heading styles for error or message */
+.app-heading {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+/* Input field styling */
+.prompt-input {
+  padding: 10px;
+  font-size: 16px;
+  width: 300px;
+  max-width: 80%;
+}
+
+/* Submit button styling */
+.submit-button {
+  padding: 10px;
+  margin-left: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Disabled button styling for processing */
+.submit-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Message display styling */
+.user-message {
+  margin-top: 15px;
+  font-size: 1.5em;
+  color: #444;
+}
