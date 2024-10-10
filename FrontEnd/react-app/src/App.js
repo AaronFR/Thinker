@@ -33,6 +33,7 @@ function App () {
       setError(null);
 
       try {
+        setIsProcessing(true)
         const response = await fetch(flask_port + '/api/message', {
           method: 'POST',
           headers: {
@@ -49,6 +50,7 @@ function App () {
         const data = await response.json();
         setMessage(data.message); // Update state with the fetched message
         setUserInput('')
+        setIsProcessing(false)
       } catch (error) {
           console.error('Error submitting the prompt:', error);
           setError('Error submitting and fetching the message. Please try again later.');  // Update error state
