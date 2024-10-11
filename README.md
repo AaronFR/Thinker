@@ -1,5 +1,7 @@
 # The Thinker
 
+🚧🚧🚧 ***WORK IN PROGRESS PROTOTYPE*** 🚧🚧🚧
+
 ### Table of Contents
 
 1. [Objectives](#objectives)
@@ -10,12 +12,10 @@
 
 ## About
 
-'The Thinker' is designed to be a llm wrapper application that is more than the sum of its parts, where most wrapper
-applications are focused on single prompt to a few llm calls, The Thinker is intended to be automated as much as possible
-and capable of initiating and completing lengthy tasks longer than a single response.
+'The Thinker' is orientated towards bringing more complex continuous and iterative agentic workflows to the average everyday
+user, filling the middle ground between simple LLM wrapper applications and advanced Enterprise-orientated AI products.
 
-All the while streamling using a llm as much as possible, with pre-prompt processing, 
-defined workflows to be used automatically based on use case and automatic file management and user preference configuration.
+A powerful, general purpose AI application
 
 ## Objectives
 The primary objective of this project is to create an intelligent system that improves upon the quality of responses given 
@@ -24,7 +24,14 @@ utilising multiple LLM calls to be able to iterate and evaluate prompts with qua
 
 - Automate Problem-Solving: To provide a system that can evaluate and generate solutions for various tasks without
  extensive manual intervention.
-- Modular-Architecture: That can explore and evaluate a wide range of tasks using AI-based thought processing, with flexibility and adaptability.
+- Role driven: Users can utilise roles that specialise in a specific domain -or themselves can delegate and instruct other
+ roles as required to complete its given 
+- Flexible and useful memory and configuration system: The system learns the users preferences *once* and can 
+ continually refer to them or any appropriate internal or external reference material as required.
+- Hallucination avoidance/minimisation through pre- and post-process analysis, feeding the system the approprite reference
+ material to keep it grounded in reality.
+- Scheduling: Enabling the scheduling and running of workflows/generated code at specific user defined intervals
+
 
 ## Current Limitations
 
@@ -51,29 +58,52 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 ## Planned
 To refine the system's architecture and enhance its capabilities and efficiency, several key features are intended for implementation:
+- **Micro thoughts**: Generated even while the prompt is being written. Question -> answer
+  - Generate list of questions in regard to prompt, if appropriate ask user, otherwise pull from memory.
+  - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
+    - file references/uploaded files noted -> inform user and system how they should be processed.
+
+- **Beta features**: Currently many features: workflows, auto-configeration, user encyclopedia data actually hinder requests due to their incomplete status, these features should be disable-able by toggle
+
+- **Front end**: Developing a user interface at this stage would help illustrate how finer details like selecting persona's/
+ demonstrating personas in action, showing what their doing, what their referencing, asking for questions, etc clearly.
+ Facilitating the creation of these features.
+  
+
 - **Graph Database**: utilise a singular graph database with nodes and edges to work as a better approximation of a mind, rather than desperate folders and files.
   - more efficient too, allowing a single call by context to determine knowledge, user knowledge, configuration and memory context.
-- **Streamlining the Writer and Editor personas**: Streamlining persona workflows and increasing capability, re-adding the ability to write an arbitrary number of pages based on
- the user's request.
+
+- **Message History**: Message's saved for future reference.
+
 - **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can 
  actually write its own tests automatically to full standard.
+  - Long due that specific "integration" user tests where created to test that the system can satisfactorily answer the user,
+   avoid hallucinations, provide scores of high value, asses performance against tests and benchmarks etc.
+
 - **Internet access**: Adding internet access for workflows based on context, including the ability to expand the 
- encyclopedia with web-sourced data.#
+ encyclopedia with web-sourced data.
+
 - **Attributes**: Summaries and simple summaries to be stored as attributes against files
-- **Message History**: Message's saved for future reference
-- **Improved persona configurations**: Personas currently don't fully "understand" their roles or the tools available to them.
- Improving this configuration will enable personas to better leverage their resources.
 
 - **Expand Workflows**: More workflows for more use-cases, improving on the quality of existing workflows.
   - **Modular Workflows**: In write_workflow for coder there's always a step for improving code quality/
     writing documentation this should actually be a switch depending on the context.
     Many workflows should consist of switch logic that allows for intelligent processing of a given request without needless details.
+  
   - **Workflow Feedback**: The coder module can and should actually check that its code works and try and improve upon itself if it doesn't.
    even if it can only try a fixed number of times and worst case scenario explains to the user that its solution is invalid 
    and this is the best it can do, this is a huge improvement in value.
+
   - **Blueprint**: Certain workflows should follow outlined blueprints created on the spot, guiding the construction of 
    documents, ensuring internal consistency and coherence.
+
+  - **Mathematician/Engineer/Physicist**: LLMs are bad at math the same way Humans are bad at math, neurons are just not well
+   suited to counting and arithmetic operations compared to binary functions. However, unlike humans their *terrible* at **spatial reasoning**
+   But why does that need to be a limitation? If we let it connect to tools that help it simulate the world while it ""thinks"" in words
+   we can have the best of both worlds. Unlocking a lot of capability/accuracy.
+
 - **Programmes**: schedules and programs written on the fly for use by the user, customisable code base.
-- **n-shot prompting**: Give the AI models examples of how it should answer roughly similar tasks.
+
 - **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.
+
 - **API Integrations**: Integrate additional AI models to leverage the most appropriate based on context

@@ -17,6 +17,7 @@ Issues that may be solved with the graph database switch
 
 Issues that will not
     Mangles output to fit inside 2000 content window (ChatGpt Mini)
+    Should formulate an idea of what a solution to the given prompt looks like - feed that in and then checks at the end if it actually did satisfy that request
 
 
 
