@@ -14,6 +14,7 @@ from flask_cors import CORS
 # Add the project root to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from Personas.Coder import Coder
+from Data.Configuration import Configuration
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -68,6 +69,52 @@ def process_message():
     except Exception as e:
         logging.exception("Failed to process message")
         return jsonify({"error": str(e)}), 500
+
+@app.route('/data/config', methods=['GET'])
+def load_config():
+    """
+    Load the configuration from the YAML file and return it as a JSON response.
+
+    This endpoint retrieves the entire application configuration, stored in
+    a YAML file, and returns it as a JSON object. This is useful for reading
+    the current settings, such as dark mode preferences, without modifying
+    the configuration.
+
+    :returns: JSON response containing the configuration dictionary.
+    """
+    try:
+        config = Configuration.load_config()
+        return jsonify(config), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/data/config', methods=['POST'])
+def update_config():
+    """
+    Load the configuration from the YAML file and return it as a JSON response.
+
+    This endpoint retrieves the entire application configuration, stored in
+    a YAML file, and returns it as a JSON object. This is useful for reading
+    the current settings, such as dark mode preferences, without modifying
+    the configuration.
+
+    :returns: JSON response containing the configuration dictionary.
+    """
+    try:
+        logging.info("trying to update config")
+        data = request.json
+        if not data:
+            raise ValueError("No JSON data received")
+        field = data.get('field')
+        value = data.get('value')
+
+        if not field or value is None:
+            return jsonify({'error': 'Field and value are required'}), 400
+
+        config = Configuration.update_config_field(field, value)
+        return jsonify({'message': 'Config - {field}: {value} updated successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':

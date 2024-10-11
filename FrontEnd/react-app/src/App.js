@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import { marked } from 'marked';
+import { Link } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import './App.css';
 
-
-export function Settings() {
-  return (
-    <div>Insert configuration here</div>
-  )
-}
 
 export function Pricing() {
   return (
@@ -83,6 +78,11 @@ function App () {
               {isProcessing ? 'Processing...' : 'Enter'}
             </button>
           </form>
+
+          {/* Link to the Settings page */}
+          <nav>
+            <Link to="/settings" className="link">Go to Settings</Link>
+          </nav>
             
         </div>
     );

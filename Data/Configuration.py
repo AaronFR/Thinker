@@ -41,6 +41,34 @@ class Configuration:
 
         return merged_config
 
+    @staticmethod
+    def update_config_field(field_path, value, yaml_file="UserConfig.yaml"):
+        """Updates a particular field in the users YAML configuration file.
+
+        :param field_path: The dot-separated path to the field to update (e.g., 'interface.dark_mode')
+        :param value: The value to set for the specified field
+        :param yaml_file: The path to the YAML file
+        :returns: None
+        """
+        config_path = os.path.join(Configuration.data_path, yaml_file)
+
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as file:
+                config = yaml.safe_load(file) or {}
+        else:
+            config = {}
+
+        # Navigate to the specified field and update the value
+        keys = field_path.split('.')
+        current = config
+        for key in keys[:-1]:
+            current = current.setdefault(key, {})
+        current[keys[-1]] = value
+
+        # Save the updated configuration back to the YAML file
+        with open(config_path, 'w') as file:
+            yaml.safe_dump(config, file)
+
 
 if __name__ == '__main__':
     # Example usage

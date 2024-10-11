@@ -1,19 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App, { Settings, Pricing } from "./App";
+import App, { Pricing } from "./App";
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from "react-router-dom"
+import Settings, { SettingsProvider } from './Settings';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<App />} />
-      <Route path="/settings" element={<Settings />} />
-      <Route path="/pricing" element={<Pricing />} />
-    </Routes>
-  </BrowserRouter>,
+  <SettingsProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/pricing" element={<Pricing />} />
+      </Routes>
+    </BrowserRouter>
+  </SettingsProvider>,
   document.getElementById("root")
 );
 
