@@ -1,74 +1,144 @@
-.App {
-  text-align: center;
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 /* General container for the entire app */
 .app-container {
-  font-family: 'Times New Roman', serif;
+  font-family: 'Montserrat', sans-serif; /* Switch to a modern sans-serif font for a cleaner look */
   text-align: center;
-  font-size: 8px;
+  font-size: 16px;
+  color: #e0e0e0; /* Light grey for better contrast */
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow to give the container depth */
+  border-radius: 10px; /* Rounded corners for better visuals */
+  background: rgba(40, 44, 52, 0.9); /* Semi-transparent background for better emphasis */
 }
 
 /* Heading styles for error or message */
 .app-heading {
-  font-size: 2em;
-  margin-bottom: 10px;
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Add shadow for depth */
 }
 
 /* Input field styling */
 .prompt-input {
-  padding: 10px;
-  font-size: 16px;
-  width: 300px;
-  max-width: 80%;
+  padding: 15px;
+  font-size: 18px;
+  width: 400px;
+  max-width: 90%;
+  border: 2px solid #564dd2;
+  border-radius: 8px;
+  outline: none;
+  background-color: #333;
+  color: #f5f5f5;
+  transition: all 0.3s ease-in-out;
+}
+.prompt-input:focus {
+  border-color: #82e4f3; /* Change color on focus for an interactive feel */
+  box-shadow: 0 0 10px #4498a5;
 }
 
 /* Submit button styling */
 .submit-button {
-  padding: 10px;
+  padding: 15px 25px;
   margin-left: 10px;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  background: linear-gradient(45deg, #f093fb, #61dafb);
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+.submit-button:hover {
+  background: linear-gradient(45deg, #61dafb, #f093fb); /* Inverse gradient on hover */
+  transform: translateY(-3px); /* Adds a lifting effect on hover */
+}
+.submit-button:disabled {
+  background: #999999;
+  cursor: not-allowed;
 }
 
-/* Disabled button styling for processing */
-.submit-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
+/* Dropdown styling */
+.dropdown {
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 2px solid #61dafb;
+  outline: none;
+  background-color: #333;
+  color: #f5f5f5;
+  transition: border-color 0.3s ease-in-out;
+}
+.dropdown:focus {
+  border-color: #f093fb; /* Similar focus effect to input */
 }
 
 /* Message display styling */
 .user-message {
-  margin-top: 15px;
-  font-size: 1.5em;
-  color: #444;
+  margin-top: 25px;
+  font-size: 1.8em;
+  color: #f5f5f5;
+  line-height: 1.5;
+  letter-spacing: 1px;
+  text-align: left;
 }
 
+/* Markdown output styling */
 .markdown-output {
-  text-align: left; /* Or markeddown lists will look terrible */
-  font-size:12px;
+  text-align: left; /* Ensures markdown lists are well aligned */
+  font-size: 1em;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  margin-top: 20px;
+  box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.3s ease-in-out;
 }
+.markdown-output:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Subtle lightening on hover */
+}
+
+/* Link styling for navigation */
+.link {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 15px;
+  font-weight: bold;
+  font-size: 1.1em;
+  text-decoration: none;
+  color: #61dafb;
+  transition: color 0.3s ease-in-out;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow to give the container depth */
+  border-radius: 10px; /* Rounded corners for better visuals */
+  background: rgba(21, 27, 41, 0.9); /* Semi-transparent background for better emphasis */
+}
+.link:hover {
+  color: #f093fb;
+}
+/* Add a subtle animation to the link */
+@keyframes link-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+.link:hover {
+  animation: link-bounce 0.5s ease-in-out;
+}
+
+/* Animation for the button to look "pressed" on click */
+.submit-button:active {
+  transform: scale(0.95); /* Makes the button look pressed */
+}
+
+/* Smooth scroll behavior for a more polished navigation */
+html {
+  scroll-behavior: smooth;
+}
+
+

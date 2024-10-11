@@ -1,10 +1,84 @@
+/* Dark mode body styles */
 body.dark-mode {
-    background-color: #121212;
-    color: #ffffff;
-  }
-  
-  body {
-    background-color: #ffffff;
-    color: #000000;
-  }
-  
+  background-color: #121212;
+  color: #ffffff;
+  transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition for dark mode toggle */
+}
+
+/* Light mode body styles */
+body {
+  background-color: #ffffff;
+  color: #000000;
+  transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition for dark mode toggle */
+}
+
+/* Container for settings */
+.settings-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  font-family: 'Montserrat', sans-serif; /* Consistent modern look */
+}
+
+/* Heading for settings page */
+.settings-heading {
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); /* Give a subtle glowing effect */
+}
+
+/* Dark mode toggle label */
+.settings-label {
+  font-size: 1.3em;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Checkbox for dark mode */
+.settings-checkbox {
+  transform: scale(1.5);
+  accent-color: #61dafb; /* Customized color for the checkbox */
+}
+
+/* Navigation link styling */
+.link {
+  display: inline-block;
+  margin: 15px 10px;
+  padding: 10px 20px;
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #61dafb;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+}
+
+.link:hover {
+  color: #f093fb;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-3px);
+}
+
+/* Button-like effect for links */
+.link:active {
+  transform: translateY(0);
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Navigation container styling */
+nav {
+  margin-bottom: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 15px;
+}
+
+/* Smooth scrolling for navigation links */
+html {
+  scroll-behavior: smooth;
+}
