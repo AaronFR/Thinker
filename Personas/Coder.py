@@ -72,7 +72,7 @@ class Coder(BasePersona):
         )['files']
         logging.info(f"Referencing/Creating the following files: {files}")
 
-        for file in files:
+        for file in files:  # ToDo - Needs to be made a config option and disabled
             file_name = file['file_name']
             purpose = file['purpose']
             logging.info(f"Writing code to {file_name}, \nPurpose: {purpose}")

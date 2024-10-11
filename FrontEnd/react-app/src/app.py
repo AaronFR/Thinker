@@ -117,14 +117,14 @@ def update_config():
         data = request.json
         if not data:
             raise ValueError("No JSON data received")
+
         field = data.get('field')
         value = data.get('value')
-
         if not field or value is None:
             return jsonify({'error': 'Field and value are required'}), 400
 
-        config = Configuration.update_config_field(field, value)
-        return jsonify({'message': 'Config - {field}: {value} updated successfully'}), 200
+        Configuration.update_config_field(field, value)
+        return jsonify({"message": f"Config - {field}: {value} updated successfully"}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

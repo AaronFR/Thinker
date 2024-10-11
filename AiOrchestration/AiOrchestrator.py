@@ -163,8 +163,12 @@ class AiOrchestrator:
 if __name__ == '__main__':
     ai_wrapper = AiOrchestrator(["example.txt"])
 
+    # print(ai_wrapper.execute(
+    #     Constants.EXECUTIVE_SYSTEM_INSTRUCTIONS,
+    #     ["rewrite solution.txt to be more concise"]
+    # ))
     print(ai_wrapper.execute(
-        Constants.EXECUTIVE_SYSTEM_INSTRUCTIONS,
-        """
-        rewrite solution.txt to be more concise"""
+        ["""Given the following user prompt what are your questions, be consise and targetted. 
+        What would you like to know before proceeding"""],
+        ["rewrite solution.txt to be more concise"]
     ))

@@ -13,52 +13,56 @@ function App () {
     const [userInput, setUserInput] = useState('') // State to hold user input
     const [isProcessing, setIsProcessing] = useState(false); // State to while processing prompt
     const [selectedPersona, setSelectedPersona] = useState('auto'); // State to hold dropdown selection
-    const autoDetectedPersona = 'Coder' // lol
-
-    console.log("App component called")
+    
+    const autoDetectedPersona = 'Coder' // Temporary hardcoded value
  
     // Handle user input submission
     const handleSubmit = async (e) => {
-      console.log("HandleSubmit triggered")
       e.preventDefault();
       setError(null);
+      setIsProcessing(true)
 
       try {
-        setIsProcessing(true)
         const response = await fetch(flask_port + '/api/message', {
           method: 'POST',
           headers: {
             "Content-Type": 'application/json'
           },
-          body: JSON.stringify({ prompt: userInput, persona: selectedPersona}), // send user input as JSON payload
-        }); // Call Flask API
-        console.log(response)
+          body: JSON.stringify({ prompt: userInput, persona: selectedPersona}), 
+        });
         
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
 
         const data = await response.json();
-        setMessage(data.message); // Update state with the fetched message
-        setUserInput('')
-        setIsProcessing(false)
+        updateMessage(data.message);
       } catch (error) {
-          console.error('Error submitting the prompt:', error);
-          setError('Error submitting and fetching the message. Please try again later.');  // Update error state
+          setError('Error submitting and fetching the message. Please try again later.');
+      } finally {
+          setIsProcessing(false);
       }
+    };
+
+    const updateMessage = (newMessage) => {
+        setMessage(newMessage);
+        setUserInput(''); // Clear the input after successful submission
     };
 
     return (
         <div className="app-container">
+
+          {/* Output Section */}
           <div
             className="markdown-output"
             dangerouslySetInnerHTML={{
               __html: DOMPurify.sanitize(error ? error : marked(message))
             }}
           />
+
           <h2>{userInput ? userInput : "Enter your message"}</h2>
 
-          {/* Added dropdown to select category */}
+          {/* Dropdown for Selecting Persona */}
           <div style={{ marginBottom: '20px' }}>
             <label>
               Select Persona:
@@ -73,6 +77,7 @@ function App () {
             </label>
           </div>
 
+          {/* Form for User Input */}
           <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
             <input
               type="text"
@@ -80,17 +85,17 @@ function App () {
               onChange={(e) => setUserInput(e.target.value)}
               placeholder='Enter your prompt'
               className="prompt-input"
-              disabled={isProcessing} // in future the user should be allowed serial prompts
             />
             <button 
               type="submit"
               className="submit-button"
+              disabled={isProcessing} // Prevent multiple submissions - for now
             >
               {isProcessing ? 'Processing...' : 'Enter'}
             </button>
           </form>
 
-          {/* Link to the Settings page */}
+          {/* Link to Settings page */}
           <nav>
             <Link to="/settings" className="link">Go to Settings</Link>
           </nav>
