@@ -76,7 +76,7 @@ export function SettingsProvider({ children }) {
   }, [settings.darkMode]);
 
   return (
-    <SettingsContext.Provider value={{ settings, setSettings }}>
+    <SettingsContext.Provider value={{ settings, setSettings, toggleDarkMode }}>
       {children}
     </SettingsContext.Provider>
   );
