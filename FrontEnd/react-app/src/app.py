@@ -43,8 +43,8 @@ def process_message():
     """
     Accept a user prompt and process it.
 
-    This endpoint accepts a JSON payload containing a user prompt,
-    processes it, and returns a response.
+    This endpoint accepts a JSON payload containing a user prompt and persona
+    processes the prompt through the selected persona, returning a response.
 
     :returns: A Flask Response object containing a JSON representation
               of the processed message.
@@ -60,10 +60,16 @@ def process_message():
             return jsonify({"error": "No prompt provided"}), 400
         
         # Process the prompt with the coder persona (placeholder)
-        persona = "Coder"
-        coder = Coder("Coder")
-        # response_message = f"PROTO: Trying to send request : {user_prompt}"
-        response_message = coder.query(user_prompt)
+
+        personaSelection = data.get("persona")
+        if not personaSelection:
+            logging.error("!!! SELECT PERSONA FUNCTIONALITY IS BROKEN")
+            personaSelection = 'coder'
+
+        if personaSelection == 'coder':
+            persona = Coder("Coder")
+            
+        response_message = persona.query(user_prompt)
         logging.info(response_message)
 
         return jsonify({"message": response_message})

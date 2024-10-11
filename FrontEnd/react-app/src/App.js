@@ -12,6 +12,8 @@ function App () {
     const [error, setError] = useState(null); // State to hold error messages
     const [userInput, setUserInput] = useState('') // State to hold user input
     const [isProcessing, setIsProcessing] = useState(false); // State to while processing prompt
+    const [selectedPersona, setSelectedPersona] = useState('auto'); // State to hold dropdown selection
+    const autoDetectedPersona = 'Coder' // lol
 
     console.log("App component called")
  
@@ -28,7 +30,7 @@ function App () {
           headers: {
             "Content-Type": 'application/json'
           },
-          body: JSON.stringify({ prompt: userInput}), // send user input as JSON payload
+          body: JSON.stringify({ prompt: userInput, persona: selectedPersona}), // send user input as JSON payload
         }); // Call Flask API
         console.log(response)
         
@@ -55,6 +57,21 @@ function App () {
             }}
           />
           <h2>{userInput ? userInput : "Enter your message"}</h2>
+
+          {/* Added dropdown to select category */}
+          <div style={{ marginBottom: '20px' }}>
+            <label>
+              Select Persona:
+              <select 
+                value={selectedPersona} 
+                onChange={(e) => setSelectedPersona(e.target.value)}
+                className="dropdown"
+              >
+                <option value="auto">Auto - {autoDetectedPersona}</option>
+                <option value="coder">Coder</option>
+              </select>
+            </label>
+          </div>
 
           <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
             <input
