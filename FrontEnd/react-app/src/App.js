@@ -5,12 +5,6 @@ import DOMPurify from 'dompurify';
 import './App.css';
 
 
-export function Pricing() {
-  return (
-    <div>Insert pricing information here</div>
-  )
-}
-
 const flask_port= "http://localhost:5000"
 
 function App () {

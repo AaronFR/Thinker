@@ -15,6 +15,7 @@ from flask_cors import CORS
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from Personas.Coder import Coder
 from Data.Configuration import Configuration
+from Data.Pricing import Pricing
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -35,6 +36,7 @@ def get_message():
               of the development message.
     """
     return jsonify({"message": "Hello, this site is in development!"})
+
 
 @app.route('/api/message', methods=['POST'])
 def process_message():
@@ -70,6 +72,7 @@ def process_message():
         logging.exception("Failed to process message")
         return jsonify({"error": str(e)}), 500
 
+
 @app.route('/data/config', methods=['GET'])
 def load_config():
     """
@@ -87,7 +90,8 @@ def load_config():
         return jsonify(config), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
+
+
 @app.route('/data/config', methods=['POST'])
 def update_config():
     """
@@ -113,6 +117,17 @@ def update_config():
 
         config = Configuration.update_config_field(field, value)
         return jsonify({'message': 'Config - {field}: {value} updated successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/pricing/session', methods=['GET'])
+def get_session_cost():
+    try:
+        logging.info("Extracting current session cost")
+        cost = Pricing.get_session_cost()
+
+        return jsonify({"cost": cost}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

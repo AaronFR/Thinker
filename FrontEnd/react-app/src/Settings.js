@@ -89,6 +89,7 @@ export function Settings() {
     <div>
       <nav>
         <Link to="/" className="link">Home</Link>
+        <Link to="/pricing" className="link">Pricing</Link>
       </nav>
 
       <h2>Insert configuration here</h2>
