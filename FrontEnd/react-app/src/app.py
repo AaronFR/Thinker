@@ -68,6 +68,8 @@ def process_message():
 
         if personaSelection == 'coder':
             persona = Coder("Coder")
+        else:
+            persona = Coder("Default")
             
         response_message = persona.query(user_prompt)
         logging.info(response_message)
