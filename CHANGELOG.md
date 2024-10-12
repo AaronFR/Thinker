@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - A front end to interactive with 🎉
   - placeholders for configuration and pricing information
+- Configuration: Beta features can be enabled or disabled from settings
 
 ### Changed
 

@@ -36,17 +36,19 @@ class BasePersona:
         """
         Handles a user prompt
 
-        :param user_input: user input prompt
+        :param user_prompt: user input prompt
         """
         if Utility.is_valid_prompt(user_prompt):
                 category_management = CategoryManagement()
                 category_management.stage_files(user_prompt)
 
                 #ToDo adding to the user_encyclopedia needs to be influenced by context category
+            if config['beta_features']['user_encyclopedia_enabled']:
+                # ToDo adding to the user_encyclopedia needs to be influenced by context category
                 user_encyclopedia_manager = UserEncyclopediaManagement()
                 user_encyclopedia_manager.add_to_encyclopedia([user_prompt])
                 
-                return self.select_workflow(user_prompt)
+            return self.select_workflow(user_prompt)
         else:
             print("Invalid input. Please ask a clear and valid question.")
 
@@ -55,6 +57,7 @@ class BasePersona:
         Continuously prompts the user for questions until they choose to exit.
         For debugging the backend from the terminal.
         """
+        config = Configuration.load_config()
         while True:
             user_input = input("Please enter your task (or type 'exit' to quit): ")
             if Utility.is_exit_command(user_input):
@@ -66,9 +69,11 @@ class BasePersona:
                 category_management = CategoryManagement()
                 category_management.stage_files(user_input)
 
-                #ToDo adding to the user_encyclopedia needs to be influenced by context category
-                user_encyclopedia_manager = UserEncyclopediaManagement()
-                user_encyclopedia_manager.add_to_encyclopedia([user_input])
+                # ToDo adding to the user_encyclopedia needs to be influenced by context category
+                if config['beta_features']['user_encyclopedia_enabled']:
+                    # ToDo adding to the user_encyclopedia needs to be influenced by context category
+                    user_encyclopedia_manager = UserEncyclopediaManagement()
+                    user_encyclopedia_manager.add_to_encyclopedia([user_input])
                 
                 self.select_workflow(user_input)
             else:
@@ -133,7 +138,7 @@ class BasePersona:
             additional_context = encyclopedia_manager.search_encyclopedia(user_messages)
             system_messages.append(additional_context)
 
-        if config['encyclopedias']['user_encyclopedia_enabled']:
+        if config['beta_features']['user_encyclopedia_enabled']:
             user_encyclopedia_manager = UserEncyclopediaManagement()
             user_context = user_encyclopedia_manager.search_encyclopedia(user_messages)
             system_messages.append(user_context)

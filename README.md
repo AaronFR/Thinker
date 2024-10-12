@@ -28,7 +28,7 @@ utilising multiple LLM calls to be able to iterate and evaluate prompts with qua
  roles as required to complete its given 
 - Flexible and useful memory and configuration system: The system learns the users preferences *once* and can 
  continually refer to them or any appropriate internal or external reference material as required.
-- Hallucination avoidance/minimisation through pre- and post-process analysis, feeding the system the approprite reference
+- Hallucination avoidance/minimisation through pre- and post-process analysis, feeding the system the appropriate reference
  material to keep it grounded in reality.
 - Scheduling: Enabling the scheduling and running of workflows/generated code at specific user defined intervals
 
@@ -63,12 +63,9 @@ To refine the system's architecture and enhance its capabilities and efficiency,
   - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
     - file references/uploaded files noted -> inform user and system how they should be processed.
 
-- **Beta features**: Currently many features: workflows, auto-configeration, user encyclopedia data actually hinder requests due to their incomplete status, these features should be disable-able by toggle
-
 - **Front end**: Developing a user interface at this stage would help illustrate how finer details like selecting persona's/
  demonstrating personas in action, showing what their doing, what their referencing, asking for questions, etc clearly.
  Facilitating the creation of these features.
-  
 
 - **Graph Database**: utilise a singular graph database with nodes and edges to work as a better approximation of a mind, rather than desperate folders and files.
   - more efficient too, allowing a single call by context to determine knowledge, user knowledge, configuration and memory context.
