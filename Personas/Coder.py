@@ -1,6 +1,7 @@
 import logging
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Data.Configuration import Configuration
 from Functionality.Coding import Coding
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import PersonaConstants, CoderSpecification
@@ -64,15 +65,28 @@ class Coder(BasePersona):
         :param initial_message: The user's initial guidance for writing the code.
         """
         executor = AiOrchestrator()
-        files = executor.execute_function(
-            ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary."
-             "If appropriate write multiple files, the ones at the top of the class hierarchy first/ on the top"],
-            [initial_message],
-            GENERATE_FILE_NAMES_FUNCTION_SCHEMA
-        )['files']
+        config = Configuration.load_config()
+        if config['beta_features']['multi_file_processing_enabled']:
+            files = executor.execute_function(
+                ["Give just a filename (with extension) that should be worked on given the following prompt. "
+                 "No commentary."
+                 "If appropriate write multiple files, the ones at the top of the class hierarchy first/ on the top"],
+                [initial_message],
+                GENERATE_FILE_NAMES_FUNCTION_SCHEMA
+            )['files']
+        else:
+            files = executor.execute_function(
+                [
+                    "Give just a filename (with extension) that should be worked on given the following prompt. "
+                    "No commentary."
+                    "Select only one singular file alone."],
+                [initial_message],
+                GENERATE_FILE_NAMES_FUNCTION_SCHEMA
+            )['files']
+
         logging.info(f"Referencing/Creating the following files: {files}")
 
-        for file in files:  # ToDo - Needs to be made a config option and disabled
+        for file in files:
             file_name = file['file_name']
             purpose = file['purpose']
             logging.info(f"Writing code to {file_name}, \nPurpose: {purpose}")

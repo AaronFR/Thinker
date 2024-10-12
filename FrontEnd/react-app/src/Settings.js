@@ -44,6 +44,9 @@ export function SettingsProvider({ children }) {
     darkMode: false,
     language: 'en',
     userEncyclopediaEnabled: false,
+    encyclopediaEnabled: false,
+    categorisationEnabled: false,
+    multiFileProcessingEnabled: false
   });
 
   // Load config from server
@@ -55,6 +58,9 @@ export function SettingsProvider({ children }) {
           ...prevSettings,
           darkMode: loadedConfig.interface.dark_mode ?? false,
           userEncyclopediaEnabled: loadedConfig.beta_features.user_encyclopedia_enabled ?? false,
+          encyclopediaEnabled: loadedConfig.beta_features.encyclopedia_enabled ?? false,
+          categorisationEnabled: loadedConfig.beta_features.categorisation_enabled ?? false,
+          multiFileProcessingEnabled: loadedConfig.beta_features.multi_file_processing_enabled ?? false,
         }));
       }
     };
@@ -77,6 +83,9 @@ export function SettingsProvider({ children }) {
       settings,
       toggleDarkMode: () => toggleSetting('interface.dark_mode', 'darkMode'),
       toggleUserEncyclopedia: () => toggleSetting('beta_features.user_encyclopedia_enabled', 'userEncyclopediaEnabled'),
+      toggleEncyclopedia: () => toggleSetting('beta_features.encyclopedia_enabled', 'encyclopediaEnabled'),
+      toggleCategorisation: () => toggleSetting('beta_features.categorisation_enabled', 'categorisationEnabled'),
+      toggleMultiFileProcessing: () => toggleSetting('beta_features.multi_file_processing_enabled', 'multiFileProcessingEnabled'),
     }}>
       {children}
     </SettingsContext.Provider>
@@ -88,6 +97,9 @@ export function Settings() {
     settings,
     toggleDarkMode,
     toggleUserEncyclopedia,
+    toggleEncyclopedia,
+    toggleCategorisation,
+    toggleMultiFileProcessing
   } = React.useContext(SettingsContext);
 
   const uiOptions = [
@@ -97,6 +109,12 @@ export function Settings() {
   const betaOptions = [
     { label: "User knowledge - The thinker will remember details about the user and their preferences",
      value: settings.userEncyclopediaEnabled, onChange: toggleUserEncyclopedia },
+    { label: "Reference knowledge - The thinker will look up details online (Wikipedia currently) and use them in reference to your prompt where appropriate",
+     value: settings.encyclopediaEnabled, onChange: toggleEncyclopedia },
+    { label: "Categorisation - input files and generated files will be categorised by context e.g. 'notes' ",
+     value: settings.categorisationEnabled, onChange: toggleCategorisation },
+    { label: "Multi file processing - personas can operate on multiple files at once (unstable)",
+     value: settings.multiFileProcessingEnabled, onChange: toggleMultiFileProcessing },
   ];
 
   return (

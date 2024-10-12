@@ -38,7 +38,9 @@ class BasePersona:
 
         :param user_prompt: user input prompt
         """
+        config = Configuration.load_config()
         if Utility.is_valid_prompt(user_prompt):
+            if config['beta_features']['categorisation_enabled']:
                 category_management = CategoryManagement()
                 category_management.stage_files(user_prompt)
 
@@ -66,8 +68,9 @@ class BasePersona:
             elif user_input.lower() == 'history':
                 self.display_history()
             elif Utility.is_valid_prompt(user_input):
-                category_management = CategoryManagement()
-                category_management.stage_files(user_input)
+                if config['beta_features']['categorisation_enabled']:
+                    category_management = CategoryManagement()
+                    category_management.stage_files(user_input)
 
                 # ToDo adding to the user_encyclopedia needs to be influenced by context category
                 if config['beta_features']['user_encyclopedia_enabled']:
@@ -133,7 +136,7 @@ class BasePersona:
 
         system_messages = [self.instructions, self.configuration]
 
-        if config['encyclopedias']['encyclopedia_enabled']:
+        if config['beta_features']['encyclopedia_enabled']:
             encyclopedia_manager = EncyclopediaManagement()
             additional_context = encyclopedia_manager.search_encyclopedia(user_messages)
             system_messages.append(additional_context)
@@ -192,7 +195,7 @@ class BasePersona:
             if relevant_history_list:
                 for id in relevant_history_list:
                     relevant_history.append(str(self.history[int(id)]))
-        except Exception as e:
-            logging.warning(f"Failed to Retrieve relevant history!")
+        except Exception:
+            logging.exception(f"Failed to Retrieve relevant history!")
 
         return relevant_history
