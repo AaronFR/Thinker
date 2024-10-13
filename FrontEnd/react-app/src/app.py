@@ -42,73 +42,68 @@ def get_message():
 @app.route('/api/message', methods=['POST'])
 def process_message():
     """
-    Accept a user prompt and process it.
+    Accept a user prompt and process it through the selected persona.
 
-    This endpoint accepts a JSON payload containing a user prompt and persona
-    processes the prompt through the selected persona, returning a response.
-
-    :returns: A Flask Response object containing a JSON representation
-              of the processed message.
+    :returns: A Flask Response object containing a JSON representation of the processed message.
     """
-    logging.info("proces_message triggered")
-
+    logging.info("process_message triggered")
     try:
         data = request.get_json()
-        logging.info(f"processing prompt, data: {data}")
-
         user_prompt = data.get("prompt")
-        if not user_prompt:
-            return jsonify({"error": "No prompt provided"}), 400
-        
-        # Process the prompt with the coder persona (placeholder)
+        if user_prompt is None:
+            return jsonify({"error": ERROR_NO_PROMPT}), 400
 
-        personaSelection = data.get("persona")
-        if not personaSelection:
-            logging.error("!!! SELECT PERSONA FUNCTIONALITY IS BROKEN")
-            personaSelection = 'coder'
-
-        if personaSelection == 'coder':
-            persona = Coder("Coder")
-        else:
-            persona = Coder("Default")
-            
-        response_message = persona.query(user_prompt)
-        logging.info(response_message)
+        selected_persona = get_selected_persona(data) 
+        response_message = selected_persona.query(user_prompt)
+        logging.info("Response generated: %s", response_message)
 
         return jsonify({"message": response_message})
     
+    except ValueError as ve:
+        logging.error("Value error: %s", str(ve))
+        return jsonify({"error": str(ve)}), 400
     except Exception as e:
         logging.exception("Failed to process message")
         return jsonify({"error": str(e)}), 500
-    
+
+def get_selected_persona(data):
+    """ Determine the selected persona or default to 'coder'. """
+    persona_selection = data.get("persona")
+    if persona_selection == 'coder':
+        persona = Coder("Coder")
+    if persona_selection not in ['coder']:
+        logging.warning("Invalid persona selected, defaulting to coder")
+        return Coder("Default")
+    return persona
+
 
 @app.route('/api/augment_prompt', methods=['POST'])
 def augment_user_prompt():
     """
-    Accept an user prompt and augment it in line with prompt enginering techniques
+    Accept a user prompt and augment it in line with prompt engineering standards.
 
-    This endpoint accepts a JSON payload containing an user prompt.
-
-    :returns: A Flask Response object containing a JSON representation
-              of the processed augmented prompt.
+    :returns: A Flask Response object containing a JSON representation of the augmented message.
     """
-    logging.info("process_user_prompt triggered")
+    logging.info("augment_user_prompt triggered")
 
     try:
         data = request.get_json()
         logging.info(f"Processing augmented prompt, data: {data}")
 
         user_prompt = data.get("user_prompt")
-        if not user_prompt:
+        if user_prompt is None:
             return jsonify({"error": "No user prompt provided"}), 400
 
         augmented_response = Augmentation.augment_prompt(user_prompt)
-        logging.info(f"Augmented response: {augmented_response}")
+        logging.info(f"Augmented response: \n{augmented_response}")
 
         return jsonify({"message": augmented_response})
 
+    except ValueError as ve:
+        logging.error("Value error: %s", str(ve))
+        return jsonify({"error": str(ve)}), 400
     except Exception as e:
-        logging.exception("Failed to augment prompt")
+        logging.exception("Failed to augment message")
         return jsonify({"error": str(e)}), 500
 
 
