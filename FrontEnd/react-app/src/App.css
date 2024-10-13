@@ -60,6 +60,23 @@
   cursor: not-allowed;
 }
 
+/* Copy augmented prompt button styling */
+.augment-button {
+  padding: 8px 10px;
+  margin-left: 10px;
+  font-size: 12px;
+  color: #ffffff;
+  background: linear-gradient(45deg, #61dafb, #f093fb);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+.augment-button:hover {
+  background: linear-gradient(90deg, #61dafb, #f093fb);
+  transform: translateY(-3px); /* Adds a lifting effect on hover */
+}
+
 /* Dropdown styling */
 .dropdown {
   margin-top: 10px;

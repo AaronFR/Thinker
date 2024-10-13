@@ -100,6 +100,10 @@ function App () {
       }
     };
 
+    const copyAugmentedPrompt = () => {
+      setUserInput(augmentedPrompt); // Copy augmentedPrompt into userInput
+    };
+
     // Clean up the typing timer when the component unmounts
     useEffect(() => {
       return () => clearTimeout(typingTimer.current);
