@@ -12,7 +12,8 @@ function App () {
     const [error, setError] = useState(null); // State to hold error messages
     const [userInput, setUserInput] = useState('') // State to hold user input
     const [augmentedPrompt, setAugmentedPrompt] = useState(''); // New state for augmented prompt
-    const [isProcessing, setIsProcessing] = useState(false); // State to while processing prompt
+    const [isProcessing, setIsProcessing] = useState(false); // State tracking if processing prompt
+    const [isAugmenting, setIsAugmenting] = useState(false); // State tracking if prompt is being augmented
     const [selectedPersona, setSelectedPersona] = useState('auto'); // State to hold dropdown selection
     
     const autoDetectedPersona = 'Coder' // Temporary hardcoded value
@@ -48,9 +49,11 @@ function App () {
       }
     };
 
+    // Clear the messages after successful submission
     const updateMessage = (newMessage) => {
         setMessage(newMessage);
-        setUserInput(''); // Clear the input after successful submission
+        setUserInput(''); 
+        setAugmentedPrompt('')
     };
 
     const handleInputChange = (e) => {
@@ -70,6 +73,7 @@ function App () {
 
     const generateAugmentedPrompt = async (input) => {
       console.log("Generating augmented prompt for:", input);
+      setIsAugmenting(true)
       try {
         const response = await fetch("http://localhost:5000/api/augment_prompt", {
           method: 'POST',
@@ -91,6 +95,8 @@ function App () {
     
       } catch (error) {
         console.error("Error in augmenting prompt:", error);
+      } finally {
+        setIsAugmenting(false)
       }
     };
 
@@ -104,13 +110,34 @@ function App () {
 
           {/* Output Section */}
           <div
+            style={{ opacity: isProcessing ? 0.5 : 1 }}
             className="markdown-output"
             dangerouslySetInnerHTML={{
               __html: DOMPurify.sanitize(error ? error : marked(message))
             }}
           />
 
-          <h2>{augmentedPrompt ? augmentedPrompt : "Enter your message"}</h2>
+          {/* Prompt augmentation Section */}
+          <div style={{ opacity: isAugmenting ? 0.5 : 1 }}>
+            {augmentedPrompt ? 
+              <div
+                
+                className="markdown-augmented"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(error ? error : marked(augmentedPrompt))
+                }}
+              /> : "Waiting to augment prompt.."
+            }
+          </div>
+          { augmentedPrompt && (
+            <button
+              className="augment-button"
+              onClick={copyAugmentedPrompt}
+            >
+              {isAugmenting ? 'Augmenting...' : 'Copy Augmented Prompt'}
+                
+            </button>
+          )}
 
           {/* Dropdown for Selecting Persona */}
           <div style={{ marginBottom: '20px' }}>
