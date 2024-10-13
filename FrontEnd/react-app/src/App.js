@@ -78,14 +78,33 @@ function App () {
           </div>
 
           {/* Form for User Input */}
-          <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
-            <input
-              type="text"
+          <form 
+            onSubmit={handleSubmit}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && e.shiftKey) {
+                e.preventDefault(); // Prevent form submission
+                const { selectionStart, selectionEnd, value } = e.target;
+                
+                // Insert a new line at the cursor position
+                e.target.value = 
+                  value.substring(0, selectionStart) + '\n' + value.substring(selectionEnd);
+                
+                // Set the cursor position after the new line
+                e.target.selectionStart = e.target.selectionEnd = selectionStart + 1;
+              } else if (e.key === 'Enter') {
+                // Enter on its own: Submit the form
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
+            style={{ marginTop: '20px' }}>
+            <textarea
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
               placeholder='Enter your prompt'
               className="prompt-input"
-            />
+              rows="2"
+            ></textarea>
             <button 
               type="submit"
               className="submit-button"
