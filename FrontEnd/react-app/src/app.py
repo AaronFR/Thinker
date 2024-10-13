@@ -13,6 +13,7 @@ from flask_cors import CORS
 
 # Add the project root to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
+from Functionality.Augmentation import Augmentation
 from Personas.Coder import Coder
 from Data.Configuration import Configuration
 from Data.Pricing import Pricing
@@ -78,6 +79,36 @@ def process_message():
     
     except Exception as e:
         logging.exception("Failed to process message")
+        return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/api/augment_prompt', methods=['POST'])
+def augment_user_prompt():
+    """
+    Accept an user prompt and augment it in line with prompt enginering techniques
+
+    This endpoint accepts a JSON payload containing an user prompt.
+
+    :returns: A Flask Response object containing a JSON representation
+              of the processed augmented prompt.
+    """
+    logging.info("process_user_prompt triggered")
+
+    try:
+        data = request.get_json()
+        logging.info(f"Processing augmented prompt, data: {data}")
+
+        user_prompt = data.get("user_prompt")
+        if not user_prompt:
+            return jsonify({"error": "No user prompt provided"}), 400
+
+        augmented_response = Augmentation.augment_prompt(user_prompt)
+        logging.info(f"Augmented response: {augmented_response}")
+
+        return jsonify({"message": augmented_response})
+
+    except Exception as e:
+        logging.exception("Failed to augment prompt")
         return jsonify({"error": str(e)}), 500
 
 
