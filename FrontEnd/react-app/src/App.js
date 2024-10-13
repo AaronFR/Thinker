@@ -176,21 +176,23 @@ function App () {
               }
             }}
             style={{ marginTop: '20px' }}>
-            <textarea
-              value={userInput}
-              onChange={handleInputChange}
-              placeholder='Enter your prompt'
-              className="prompt-input"
-              rows="2"
-              style={{ resize: 'none', overflowY: 'auto'  }} // Prevent resizing
-            ></textarea>
-            <button 
-              type="submit"
-              className="submit-button"
-              disabled={isProcessing} // Prevent multiple submissions - for now
-            >
-              {isProcessing ? 'Processing...' : 'Enter'}
-            </button>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <textarea
+                value={userInput}
+                onChange={handleInputChange}
+                placeholder='Enter your prompt'
+                className="prompt-input"
+                rows="2"
+                style={{ resize: 'none', overflowY: 'auto'  }} // Prevent resizing
+              ></textarea>
+              <button 
+                type="submit"
+                className="submit-button"
+                disabled={isProcessing} // Prevent multiple submissions - for now
+              >
+                {isProcessing ? 'Processing...' : 'Enter'}
+              </button>
+            </div>
           </form>
 
           {/* Link to Settings page */}

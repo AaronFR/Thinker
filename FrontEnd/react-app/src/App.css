@@ -52,8 +52,8 @@
   transition: all 0.3s ease-in-out;
 }
 .submit-button:hover {
-  background: linear-gradient(45deg, #61dafb, #f093fb); /* Inverse gradient on hover */
-  transform: translateY(-3px); /* Adds a lifting effect on hover */
+  background: linear-gradient(25deg, #f093fb, #61dafb);
+  transform: translateX(-3px); /* Adds a sliding effect on hover */
 }
 .submit-button:disabled {
   background: #999999;
