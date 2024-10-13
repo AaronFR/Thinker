@@ -18,7 +18,7 @@ function App () {
  
     // Handle user input submission
     const handleSubmit = async (e) => {
-      e.preventDefault();
+      if (e) e.preventDefault();
       setError(null);
       setIsProcessing(true)
 
@@ -48,6 +48,15 @@ function App () {
         setMessage(newMessage);
         setUserInput(''); // Clear the input after successful submission
     };
+
+    const handleInputChange = (e) => {
+      setUserInput(e.target.value);
+      
+      // Adjust height to fit content, up to a max height
+      e.target.style.height = "auto"; // Reset height to calculate scroll height properly
+      e.target.style.height = `${Math.min(e.target.scrollHeight, 8 * 24)}px`; // 24px per row, max 8 rows
+    };
+
 
     return (
         <div className="app-container">
@@ -100,10 +109,11 @@ function App () {
             style={{ marginTop: '20px' }}>
             <textarea
               value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
+              onChange={handleInputChange}
               placeholder='Enter your prompt'
               className="prompt-input"
               rows="2"
+              style={{ resize: 'none', overflowY: 'auto'  }} // Prevent resizing
             ></textarea>
             <button 
               type="submit"
