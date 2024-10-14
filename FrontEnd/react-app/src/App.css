@@ -20,89 +20,6 @@
   text-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Add shadow for depth */
 }
 
-/* Input field styling */
-.prompt-input {
-  padding: 15px;
-  font-size: 18px;
-  width: 400px;
-  max-width: 90%;
-  border: 2px solid #564dd2;
-  border-radius: 8px;
-  outline: none;
-  background-color: #333;
-  color: #f5f5f5;
-  transition: all 0.3s ease-in-out;
-}
-.prompt-input:focus {
-  border-color: #82e4f3; /* Change color on focus for an interactive feel */
-  box-shadow: 0 0 10px #4498a5;
-}
-
-/* Submit button styling */
-.submit-button {
-  padding: 15px 25px;
-  margin-left: 10px;
-  font-size: 18px;
-  font-weight: bold;
-  color: #ffffff;
-  background: linear-gradient(45deg, #f093fb, #61dafb);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-}
-.submit-button:hover {
-  background: linear-gradient(25deg, #f093fb, #61dafb);
-  transform: translateX(-3px); /* Adds a sliding effect on hover */
-}
-.submit-button:disabled {
-  background: #999999;
-  cursor: not-allowed;
-}
-
-/* Copy augmented prompt button styling */
-.augment-button {
-  padding: 8px 10px;
-  margin-left: 10px;
-  font-size: 12px;
-  color: #ffffff;
-  background: linear-gradient(45deg, #61dafb, #f093fb);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-}
-.augment-button:hover {
-  background: linear-gradient(90deg, #61dafb, #f093fb);
-  transform: translateY(-3px); /* Adds a lifting effect on hover */
-}
-
-/* Dropdown styling */
-.dropdown {
-  margin-top: 10px;
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 5px;
-  border: 2px solid #61dafb;
-  outline: none;
-  background-color: #333;
-  color: #f5f5f5;
-  transition: border-color 0.3s ease-in-out;
-}
-.dropdown:focus {
-  border-color: #f093fb; /* Similar focus effect to input */
-}
-
-/* Message display styling */
-.user-message {
-  margin-top: 25px;
-  font-size: 1.8em;
-  color: #f5f5f5;
-  line-height: 1.5;
-  letter-spacing: 1px;
-  text-align: left;
-}
-
 /* Markdown output styling */
 .markdown-output {
   text-align: left; /* Ensures markdown lists are well aligned */
@@ -112,21 +29,6 @@
   border-radius: 10px;
   margin-top: 20px;
   box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.5);
-  transition: background-color 0.3s ease-in-out;
-}
-.markdown-output:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Subtle lightening on hover */
-}
-
-/* Markdown augmented text styling */
-.markdown-augmented {
-  text-align: left; /* Ensures markdown lists are well aligned */
-  font-size: 0.8em;
-  padding: 25px;
-  background-color: rgba(111, 111, 111, 0.05);
-  border-radius: 10px;
-  margin-top: 20px;
-  box-shadow: inset 0px 0px 15px rgba(124, 124, 124, 0.5);
   transition: background-color 0.3s ease-in-out;
 }
 .markdown-output:hover {
@@ -147,9 +49,6 @@
   border-radius: 10px; /* Rounded corners for better visuals */
   background: rgba(21, 27, 41, 0.9); /* Semi-transparent background for better emphasis */
 }
-.link:hover {
-  color: #f093fb;
-}
 /* Add a subtle animation to the link */
 @keyframes link-bounce {
   0%, 100% {
@@ -160,12 +59,8 @@
   }
 }
 .link:hover {
+  color: #f093fb;
   animation: link-bounce 0.5s ease-in-out;
-}
-
-/* Animation for the button to look "pressed" on click */
-.submit-button:active {
-  transform: scale(0.95); /* Makes the button look pressed */
 }
 
 /* Smooth scroll behavior for a more polished navigation */

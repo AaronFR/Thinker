@@ -1,0 +1,43 @@
+/* Input field styling */
+.prompt-input {
+  padding: 15px;
+  font-size: 18px;
+  width: 400px;
+  max-width: 90%;
+  border: 2px solid #564dd2;
+  border-radius: 8px;
+  outline: none;
+  background-color: #333;
+  color: #f5f5f5;
+  transition: all 0.3s ease-in-out;
+}
+.prompt-input:focus {
+  border-color: #82e4f3; /* Change color on focus for an interactive feel */
+  box-shadow: 0 0 10px #4498a5;
+}
+
+/* Submit button styling */
+.submit-button {
+    padding: 15px 25px;
+    margin-left: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ffffff;
+    background: linear-gradient(45deg, #f093fb, #61dafb);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  .submit-button:hover {
+    background: linear-gradient(25deg, #f093fb, #61dafb);
+    transform: translateX(-3px); /* Adds a sliding effect on hover */
+  }
+  .submit-button:disabled {
+    background: #999999;
+    cursor: not-allowed;
+  }
+/* Animation for the button to look "pressed" on click */
+.submit-button:active {
+    transform: scale(0.95); /* Makes the button look pressed */
+  }

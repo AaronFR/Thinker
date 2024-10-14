@@ -1,0 +1,32 @@
+
+/* Copy augmented prompt button styling */
+.augment-button {
+    padding: 8px 10px;
+    margin-left: 10px;
+    font-size: 12px;
+    color: #ffffff;
+    background: linear-gradient(45deg, #61dafb, #f093fb);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  .augment-button:hover {
+    background: linear-gradient(90deg, #61dafb, #f093fb);
+    transform: translateY(-3px); /* Adds a lifting effect on hover */
+  }
+
+/* Markdown augmented text styling */
+.markdown-augmented {
+    text-align: left; /* Ensures markdown lists are well aligned */
+    font-size: 0.8em;
+    padding: 25px;
+    background-color: rgba(111, 111, 111, 0.05);
+    border-radius: 10px;
+    margin-top: 20px;
+    box-shadow: inset 0px 0px 15px rgba(124, 124, 124, 0.5);
+    transition: background-color 0.3s ease-in-out;
+  }
+  .markdown-augmented:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle lightening on hover */
+  }
