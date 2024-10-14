@@ -10,10 +10,15 @@ const flask_port= "http://localhost:5000"
 function App () {
     const [message, setMessage] = useState(''); // State to hold the message
     const [error, setError] = useState(null); // State to hold error messages
+
     const [userInput, setUserInput] = useState('') // State to hold user input
     const [augmentedPrompt, setAugmentedPrompt] = useState(''); // New state for augmented prompt
+    const [questionsForPrompt, setQuestionsForPrompt] = useState('');
+
     const [isProcessing, setIsProcessing] = useState(false); // State tracking if processing prompt
     const [isAugmenting, setIsAugmenting] = useState(false); // State tracking if prompt is being augmented
+    const [isQuestioning, setIsQuestioning] = useState(false); // State tracking questions are being generated for user prompt
+
     const [selectedPersona, setSelectedPersona] = useState('auto'); // State to hold dropdown selection
     
     const autoDetectedPersona = 'Coder' // Temporary hardcoded value
@@ -23,6 +28,7 @@ function App () {
  
     // Handle user input submission
     const handleSubmit = async (e) => {
+      // ToDo: When submitting the micro thoughts (augmented and questions) should be minimised
       if (e) e.preventDefault();
       setError(null);
       setIsProcessing(true)
@@ -54,9 +60,11 @@ function App () {
         setMessage(newMessage);
         setUserInput(''); 
         setAugmentedPrompt('')
+        setQuestionsForPrompt('')
     };
 
     const handleInputChange = (e) => {
+      // ToDo: don't think it respects shift enters, issue for inputting code
       setUserInput(e.target.value);
       if (typingTimer.current) {
         clearTimeout(typingTimer.current);
@@ -68,6 +76,7 @@ function App () {
 
       typingTimer.current = setTimeout(() => {
         generateAugmentedPrompt(e.target.value);
+        generateQuestionsForPrompt(e.target.value);
       }, idleTime);
     };
 
@@ -97,6 +106,34 @@ function App () {
         console.error("Error in augmenting prompt:", error);
       } finally {
         setIsAugmenting(false)
+      }
+    };
+
+    const generateQuestionsForPrompt = async (input) => {
+      console.log("Generating questions for:", input);
+      setIsQuestioning(true)
+      try {
+        const response = await fetch("http://localhost:5000/api/question_prompt", {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ user_prompt: input })
+        });
+    
+        if (!response.ok) {
+          throw new Error('Failed to generate questions for prompt');
+        }
+    
+        const data = await response.json();
+        console.log("questions against user prompt:", data.message);
+    
+        setQuestionsForPrompt(data.message);
+    
+      } catch (error) {
+        console.error("Error in questioning user prompt:", error);
+      } finally {
+        setIsQuestioning(false)
       }
     };
 
@@ -194,6 +231,19 @@ function App () {
               </button>
             </div>
           </form>
+
+          {/* Suggested questions Section */}
+          <div style={{ opacity: isQuestioning ? 0.5 : 1 }}>
+            {questionsForPrompt ? 
+              <div
+                
+                className="markdown-augmented"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(error ? error : marked(questionsForPrompt))
+                }}
+              /> : ""
+            }
+          </div>
 
           {/* Link to Settings page */}
           <nav>

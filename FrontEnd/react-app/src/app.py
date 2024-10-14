@@ -88,7 +88,7 @@ def augment_user_prompt():
 
     try:
         data = request.get_json()
-        logging.info(f"Processing augmented prompt, data: {data}")
+        logging.debug(f"Processing augmented prompt, data: {data}")
 
         user_prompt = data.get("user_prompt")
         if user_prompt is None:
@@ -104,6 +104,36 @@ def augment_user_prompt():
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
         logging.exception("Failed to augment message")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/question_prompt', methods=['POST'])
+def question_user_prompt():
+    """
+    Accept a user prompt and generates a list of questions that *may* improve the llm's response
+
+    :returns: A Flask Response object containing a JSON representation of the questions for the given message.
+    """
+    logging.info("question_user_prompt triggered")
+
+    try:
+        data = request.get_json()
+        logging.debug(f"Genearting questions against user prompt, data: {data}")
+
+        user_prompt = data.get("user_prompt")
+        if user_prompt is None:
+            return jsonify({"error": "No user prompt provided"}), 400
+
+        questions_for_prompt = Augmentation.question_user_prompt(user_prompt)
+        logging.info(f"questions for user prompt: \n{questions_for_prompt}")
+
+        return jsonify({"message": questions_for_prompt})
+
+    except ValueError as ve:
+        logging.error("Value error: %s", str(ve))
+        return jsonify({"error": str(ve)}), 400
+    except Exception as e:
+        logging.exception("Failed to generate questions for message")
         return jsonify({"error": str(e)}), 500
 
 
