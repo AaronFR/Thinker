@@ -4,32 +4,37 @@ import { Link } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import './App.css';
 
-
+/**
+ * App component
+ * 
+ * Main application component that handles user input, displays messages,
+ * and manages state related to prompts and API interactions.
+ */
 const flask_port= "http://localhost:5000"
 
 function App () {
-    const [message, setMessage] = useState(''); // State to hold the message
-    const [error, setError] = useState(null); // State to hold error messages
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState(null);
 
-    const [userInput, setUserInput] = useState('') // State to hold user input
-    const [augmentedPrompt, setAugmentedPrompt] = useState(''); // New state for augmented prompt
+    const [userInput, setUserInput] = useState('')
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    const [augmentedPrompt, setAugmentedPrompt] = useState('');
+    const [isAugmenting, setIsAugmenting] = useState(false);
+
     const [questionsForPrompt, setQuestionsForPrompt] = useState('');
+    const [isQuestioning, setIsQuestioning] = useState(false);
 
-    const [isProcessing, setIsProcessing] = useState(false); // State tracking if processing prompt
-    const [isAugmenting, setIsAugmenting] = useState(false); // State tracking if prompt is being augmented
-    const [isQuestioning, setIsQuestioning] = useState(false); // State tracking questions are being generated for user prompt
-
-    const [selectedPersona, setSelectedPersona] = useState('auto'); // State to hold dropdown selection
-    
+    const [selectedPersona, setSelectedPersona] = useState('auto');
     const autoDetectedPersona = 'Coder' // Temporary hardcoded value
 
-    const idleTime = 1000;
+    const idleTime = 1500; // Time in milliseconds before triggering input handlers
     const typingTimer = useRef(null);
  
     // Handle user input submission
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (event) => {
       // ToDo: When submitting the micro thoughts (augmented and questions) should be minimised
-      if (e) e.preventDefault();
+      if (event) event.preventDefault();
       setError(null);
       setIsProcessing(true)
 
@@ -63,23 +68,24 @@ function App () {
         setQuestionsForPrompt('')
     };
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (event) => {
       // ToDo: don't think it respects shift enters, issue for inputting code
-      setUserInput(e.target.value);
+      setUserInput(event.target.value);
       if (typingTimer.current) {
         clearTimeout(typingTimer.current);
       }
       
       // Adjust height to fit content, up to a max height
-      e.target.style.height = "auto"; // Reset height to calculate scroll height properly
-      e.target.style.height = `${Math.min(e.target.scrollHeight, 8 * 24)}px`; // 24px per row, max 8 rows
+      event.target.style.height = "auto"; // Reset height to calculate scroll height properly
+      event.target.style.height = `${Math.min(event.target.scrollHeight, 8 * 24)}px`; // 24px per row, max 8 rows
 
       typingTimer.current = setTimeout(() => {
-        generateAugmentedPrompt(e.target.value);
-        generateQuestionsForPrompt(e.target.value);
+        generateAugmentedPrompt(event.target.value);
+        generateQuestionsForPrompt(event.target.value);
       }, idleTime);
     };
 
+    // Generates an augmented prompt based on user input.
     const generateAugmentedPrompt = async (input) => {
       console.log("Generating augmented prompt for:", input);
       setIsAugmenting(true)
@@ -162,7 +168,6 @@ function App () {
           <div style={{ opacity: isAugmenting ? 0.5 : 1 }}>
             {augmentedPrompt ? 
               <div
-                
                 className="markdown-augmented"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(error ? error : marked(augmentedPrompt))
@@ -171,12 +176,8 @@ function App () {
             }
           </div>
           { augmentedPrompt && (
-            <button
-              className="augment-button"
-              onClick={copyAugmentedPrompt}
-            >
+            <button className="augment-button" onClick={copyAugmentedPrompt}>
               {isAugmenting ? 'Augmenting...' : 'Copy Augmented Prompt'}
-                
             </button>
           )}
 

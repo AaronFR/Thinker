@@ -24,6 +24,8 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 CORS(app)
 
+ERROR_NO_PROMPT = "No prompt found"
+
 
 @app.route('/api/message', methods=['GET'])
 def get_message():
