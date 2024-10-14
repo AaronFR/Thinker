@@ -168,7 +168,7 @@ if __name__ == '__main__':
     #     ["rewrite solution.txt to be more concise"]
     # ))
     print(ai_wrapper.execute(
-        ["""Given the following user prompt what are your questions, be consise and targetted. 
+        ["""Given the following user prompt what are your questions, be concise and targeted. 
         What would you like to know before proceeding"""],
         ["rewrite solution.txt to be more concise"]
     ))
