@@ -43,6 +43,7 @@ export function SettingsProvider({ children }) {
   const [settings, setSettings] = useState({
     darkMode: false,
     language: 'en',
+    augmentedPromptsEnabled: true,
     userEncyclopediaEnabled: false,
     encyclopediaEnabled: false,
     categorisationEnabled: false,
@@ -57,6 +58,7 @@ export function SettingsProvider({ children }) {
         setSettings(prevSettings => ({
           ...prevSettings,
           darkMode: loadedConfig.interface.dark_mode ?? false,
+          augmentedPromptsEnabled: loadedConfig.beta_features.augmented_prompts_enabled ?? false,
           userEncyclopediaEnabled: loadedConfig.beta_features.user_encyclopedia_enabled ?? false,
           encyclopediaEnabled: loadedConfig.beta_features.encyclopedia_enabled ?? false,
           categorisationEnabled: loadedConfig.beta_features.categorisation_enabled ?? false,
@@ -82,6 +84,7 @@ export function SettingsProvider({ children }) {
     <SettingsContext.Provider value={{
       settings,
       toggleDarkMode: () => toggleSetting('interface.dark_mode', 'darkMode'),
+      toggleAugmentedPrompts: () => toggleSetting('beta_features.augmented_prompts_enabled', 'augmentedPromptsEnabled'),
       toggleUserEncyclopedia: () => toggleSetting('beta_features.user_encyclopedia_enabled', 'userEncyclopediaEnabled'),
       toggleEncyclopedia: () => toggleSetting('beta_features.encyclopedia_enabled', 'encyclopediaEnabled'),
       toggleCategorisation: () => toggleSetting('beta_features.categorisation_enabled', 'categorisationEnabled'),
@@ -96,6 +99,7 @@ export function Settings() {
   const { 
     settings,
     toggleDarkMode,
+    toggleAugmentedPrompts,
     toggleUserEncyclopedia,
     toggleEncyclopedia,
     toggleCategorisation,
@@ -107,6 +111,8 @@ export function Settings() {
   ];
 
   const betaOptions = [
+    { label: "Augmented prompt suggestions - A copy of the prompt will be generated, optimised with prompt engineering in mind to produce better responses. For reference or copying all",
+     value: settings.augmentedPromptsEnabled, onChange: toggleAugmentedPrompts },
     { label: "User knowledge - The thinker will remember details about the user and their preferences",
      value: settings.userEncyclopediaEnabled, onChange: toggleUserEncyclopedia },
     { label: "Reference knowledge - The thinker will look up details online (Wikipedia currently) and use them in reference to your prompt where appropriate",

@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { marked } from 'marked';
 import { Link } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import './App.css';
+
+import { SettingsContext } from './Settings';
 
 /**
  * App component
@@ -30,6 +32,9 @@ function App () {
 
     const idleTime = 1500; // Time in milliseconds before triggering input handlers
     const typingTimer = useRef(null);
+
+    const { settings } = useContext(SettingsContext);
+    const { augmentedPromptsEnabled } = settings;
  
     // Handle user input submission
     const handleSubmit = async (event) => {
@@ -80,7 +85,9 @@ function App () {
       event.target.style.height = `${Math.min(event.target.scrollHeight, 8 * 24)}px`; // 24px per row, max 8 rows
 
       typingTimer.current = setTimeout(() => {
-        generateAugmentedPrompt(event.target.value);
+        if (augmentedPromptsEnabled) {
+          generateAugmentedPrompt(event.target.value);
+        }
         generateQuestionsForPrompt(event.target.value);
       }, idleTime);
     };
@@ -165,20 +172,24 @@ function App () {
           />
 
           {/* Prompt augmentation Section */}
-          <div style={{ opacity: isAugmenting ? 0.5 : 1 }}>
-            {augmentedPrompt ? 
-              <div
-                className="markdown-augmented"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(error ? error : marked(augmentedPrompt))
-                }}
-              /> : "Waiting to augment prompt.."
-            }
-          </div>
-          { augmentedPrompt && (
-            <button className="augment-button" onClick={copyAugmentedPrompt}>
-              {isAugmenting ? 'Augmenting...' : 'Copy Augmented Prompt'}
-            </button>
+          {augmentedPromptsEnabled && (
+            <>
+              <div style={{ opacity: isAugmenting ? 0.5 : 1 }}>
+                {augmentedPrompt ? 
+                  <div
+                    className="markdown-augmented"
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(error ? error : marked(augmentedPrompt))
+                    }}
+                  /> : "Waiting to augment prompt.."
+                }
+              </div>
+              { augmentedPrompt && (
+                <button className="augment-button" onClick={copyAugmentedPrompt}>
+                  {isAugmenting ? 'Augmenting...' : 'Copy Augmented Prompt'}
+                </button>
+              )}
+            </>
           )}
 
           {/* Dropdown for Selecting Persona */}
