@@ -3,14 +3,20 @@
   font-family: 'Montserrat', sans-serif; /* Switch to a modern sans-serif font for a cleaner look */
   text-align: center;
   font-size: 16px;
-  color: #e0e0e0; /* Light grey for better contrast */
+  color: #000000; /* Light grey for better contrast */
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow to give the container depth */
   border-radius: 10px; /* Rounded corners for better visuals */
-  background: rgba(40, 44, 52, 0.9); /* Semi-transparent background for better emphasis */
+  background: rgba(255, 255, 255, 0.9); /* Semi-transparent background for better emphasis */
 }
+body.dark-mode .app-container {
+  background-color: rgba(40, 44, 52, 0.9);
+  color: #f2f2f2;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
 
 /* Heading styles for error or message */
 .app-heading {
@@ -43,11 +49,11 @@
   font-weight: bold;
   font-size: 1.1em;
   text-decoration: none;
-  color: #61dafb;
+  color: #353839;
   transition: color 0.3s ease-in-out;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow to give the container depth */
   border-radius: 10px; /* Rounded corners for better visuals */
-  background: rgba(21, 27, 41, 0.9); /* Semi-transparent background for better emphasis */
+  background: rgba(236, 242, 242, 0.9); /* Semi-transparent background for better emphasis */
 }
 /* Add a subtle animation to the link */
 @keyframes link-bounce {
@@ -61,6 +67,11 @@
 .link:hover {
   color: #f093fb;
   animation: link-bounce 0.5s ease-in-out;
+}
+body.dark-mode .link {
+  background-color: rgba(40, 44, 52, 0.9);
+  color: #5199c6;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 /* Smooth scroll behavior for a more polished navigation */

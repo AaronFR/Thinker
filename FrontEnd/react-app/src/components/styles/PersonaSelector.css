@@ -1,15 +1,20 @@
 /* Dropdown styling */
 .dropdown {
-    margin-top: 10px;
-    padding: 10px;
-    font-size: 16px;
-    border-radius: 5px;
-    border: 2px solid #61dafb;
-    outline: none;
-    background-color: #333;
-    color: #f5f5f5;
-    transition: border-color 0.3s ease-in-out;
-  }
-  .dropdown:focus {
-    border-color: #f093fb; /* Similar focus effect to input */
-  }
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 2px solid #61dafb;
+  outline: none;
+  background-color: #f5f5f5;
+  color: #333;
+  transition: border-color 0.3s ease-in-out;
+}
+.dropdown:focus {
+  border-color: #f093fb; /* Similar focus effect to input */
+}
+body.dark-mode .dropdown {
+  background-color: #333;
+  color: #f5f5f5;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
