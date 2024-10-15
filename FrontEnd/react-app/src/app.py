@@ -55,6 +55,9 @@ def process_message():
         if user_prompt is None:
             return jsonify({"error": ERROR_NO_PROMPT}), 400
 
+        additional_qa = data.get("additionalQA")
+        if additional_qa:
+            user_prompt = user_prompt + "\nAdditional Instructions: \n" + additional_qa
         selected_persona = get_selected_persona(data) 
         response_message = selected_persona.query(user_prompt)
         logging.info("Response generated: %s", response_message)

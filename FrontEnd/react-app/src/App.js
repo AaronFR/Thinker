@@ -34,18 +34,26 @@ function App () {
 
     const { settings } = useContext(SettingsContext);
     const { augmentedPromptsEnabled, questionUserPromptsEnabled } = settings;
+
+    const [concatenatedQA, setConcatenatedQA] = useState('');
+    const [resetResponsesTrigger, setResetResponsesTrigger] = useState(0);
  
     // Custom hooks
-    const { message, setMessage, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(flask_port);
+    const { message, setMessage, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(flask_port, concatenatedQA);
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt(flask_port);
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions(flask_port);
+
+    const [formsFilled, setFormsFilled] = useState(false);
 
     const handleFormSubmit = async (event) => {
       if (event) event.preventDefault();
       await handleSubmit(userInput, selectedPersona);
       setUserInput(''); 
       setAugmentedPrompt('');
+
       setQuestionsForPrompt('');
+      setFormsFilled(false)
+      setResetResponsesTrigger(prev => prev + 1);
     };
 
     const handleInputChange = (event) => {
@@ -63,7 +71,7 @@ function App () {
         if (augmentedPromptsEnabled) {
           generateAugmentedPrompt(event.target.value);
         }
-        if (questionUserPromptsEnabled) {
+        if (questionUserPromptsEnabled && !formsFilled) {
           generateQuestionsForPrompt(event.target.value);
         }
       }, idleTime);
@@ -114,6 +122,9 @@ function App () {
             questionsForPrompt={questionsForPrompt}
             error={questionsError}
             isQuestioning={isQuestioning}
+            onFormsFilled={setFormsFilled} // Pass the state updater as callback
+            setConcatenatedQA={setConcatenatedQA}
+            resetResponsesTrigger={resetResponsesTrigger}
           />
 
           <Navigation />

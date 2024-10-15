@@ -41,7 +41,7 @@ utilising multiple LLM calls to be able to iterate and evaluate prompts with qua
  costs and simplifying outputs.
 
 ## Features
-- **Prompt optimisation**: User prompts will automatically be enhanced side by side with the Prompt Enginering stanards, giving the user ideas for how to improve their prompt or just to run the augmented prompt instead for better results.
+- **Prompt optimisation**: User prompts will automatically be enhanced side by side with the Prompt Enginering standards,giving the user ideas for how to improve their prompt or just to run the augmented prompt instead for better results. Questions are automatically generated and presented to the user, that help the AI provide a more relevant answer.
 - **Workflows**: A user prompt is fed into a persona and evaluated for one of its workflows, a workflow representing a
  series of prompts to be run to achieve an ideal outcome for the given task type.
 - **Pre-Prompt-Processing**: 'sub-conscious' processes, referencing contextual information as required by context in advance of an
