@@ -1,7 +1,10 @@
-### User prompt: "What is my name?"
+# Notes
+
+## User prompt: "What is my name?"
 
 Fascinatingly with the encyclopedia system added the System is basically already asking for n-shot examples 
 before answering a given question:
+
 ```Python
 #Function evaluated with response:
 terms = {'terms': [
@@ -10,6 +13,7 @@ terms = {'terms': [
     {'term': 'educated response', 'specifics': 'how to formulate an educated response in intellectual conversations'},
     {'term': 'name_query.txt', 'specifics': "context and contents of the file 'name_query.txt'"}
 ]}
+
 ```
 It is also looking for file that would already answer this question, which is incorrect and suggests a possible conflict
 for where the program should be looking for information.
@@ -35,6 +39,7 @@ an opportunity for adding in more technical information in a more configurable i
 but we would need to be wary of conflicts/redundancy.
 
 ### Conversing with Coder first before asking it to write
+
 ```commandline
 2024-09-12 19:51:11,838 [INFO] (Coder.py:52) Iteration 0 completed with response: 
 
@@ -82,8 +87,8 @@ By focusing on these areas, you can enhance the clarity, usability, and performa
 User prompt:
 Hmm interesting, so 1, I'd be interested to see what you mean? Lets look just at the EncyclopediaManagement.py class, how can we change the base interface so we don't need this code in the child class? 2: It actually is cached so I'll remove that comment. 3: Alright try and use the specifics field better then. 4. That's fine, we're prototyping eventually the encycloedia files will be proper databases, 5. Okay ignore that one, its a valid point but the change is not in the 3 classes I've given to you. 6. Refer to my comment about caching already being implemented. 7. Oh great, please add to the documentation then, I'll pick and choose so add a lot. Okay great like I said please write that to the EncyclopediaMangement.py class specifically
 
+#### Output
 
-#### Output:
 This prompt, took ***Eighteen minutes*** to run, due to the new encyclopedia entries being searched for, created and 
 condensed.
 Though it *did* only cost ¢1, so perhaps the majority of the time is actually spent on wikipedia calls.
@@ -140,7 +145,7 @@ Output:
 Still aprox ¢1
 Between the two classes the only shared method if fetch_term_and_update, the coder with encyclopedia search enabled
 understood the purpose of the admittedly obtuse and difficult to understand method. That is that we already search the
-existing encyclopedia for the given term in the parent class, it also fails to spot that you can reuse the 
+existing encyclopedia for the given term in the parent class, it also fails to spot that you can reuse the
 load_encyclopedia_data method (as did I the first time).
 I also generally prefer what it wrote for the docstrings. Though other docstrings there's no obvious advantage it should
 have other the coder without encyclopedia references, more testing is needed.
@@ -149,6 +154,7 @@ Outside of that the code written for splitting the add_to_encyclopedia method wa
 comparison in EncyclopediaManagement.py
 
 #### Note: Application is being *too* selective when choosing files to feed into the Ai Orchestrator
+
 More files need to be sent at once or context is lost. I.e. the errors made in this run in regard to the class order.
 Can't find an example of this issue, will need to keep an eye on it.
 
@@ -210,19 +216,20 @@ In summary, while the `EncyclopediaManagementInterface` class does exhibit a sol
 ```
 
 User Prompt:
-Okay thanks, how about you write up your suggested changes then, specifically rewrite EncyclopediaManagementInterface.py, lets address your concerns 
+Okay thanks, how about you write up your suggested changes then, specifically rewrite EncyclopediaManagementInterface.py, lets address your concerns
+
 1. Maybe I didn't mention it specifically but EncyclopediaManagementInterface is obviously the parent class to UserEncyclopediaManagement
 2. Sure, write up an alternative configuratibel approach
 3. Add validations for user_messages or terms to the class
 4. Correct the return types
-5. Split methods you think are too verbose up 
+5. Split methods you think are too verbose up
 6. If you can either remove the comment or implement the described functionality
 7. If you can try and improve the caching and performance issues go for it.
 8. Write them up as class constants and I can export them to a more appropriate file
 9. Rewrite the class using dependency injection for AiOrchestrator instead
 
-
 #### Has caching made a difference?
+
 2024-09-12 23:09:20,746
 2024-09-12 23:13:34,826
 Time = 4 minutes. Caching made a *significant* difference, that also means most of the time was actually waiting for the wikipedia api as it rather reasonably might have concluded it was being abused
@@ -230,7 +237,8 @@ Time = 4 minutes. Caching made a *significant* difference, that also means most 
 As for the output itself, relatively poor with little to add and misunderstandings of the structure of the classes, but there had been changes to the base class with the other tests so perhaps this isn't exactly fair.
 
 ## After Coder Streamlining
-2024-09-17 18:41:43,852 
+
+2024-09-17 18:41:43,852
 2024-09-17 18:43:59,828
 Halved to 2 Minutes 16 seconds
 Though now the program is working on 3 different files

@@ -197,9 +197,6 @@ When integrating questions and answers related to a prompt into the ChatGPT API,
 
 Overall, using prior messages for the Q&A will likely yield more effective and nuanced interactions with the ChatGPT API.
 
-
-
-
 </div>
   <div>
 
@@ -218,27 +215,35 @@ Overall, using prior messages for the Q&A will likely yield more effective and n
   <div>
 
 ## Augmented Prompt + with questions
+
 "When considering the integration of questions and answers (Q&A) into the ChatGPT API, the choice between concatenating Q&A to the user prompt or including them as prior system or user messages can significantly affect interaction quality. Here's a detailed analysis of both methods based on the specified factors:
 
 ### 1. Concatenating the Q&A to the User Prompt
 
 **Advantages**:
+
 - **Simplicity**: This method creates a single cohesive text block, making it straightforward for implementation.
+
 - **Immediate Context**: The model receives all relevant information at once, which may help in generating a unified response that considers the provided Q&A.
 
 **Disadvantages**:
+
 - **Context Overload**: If the Q&A content is extensive, it might overwhelm the user prompt, leading to confusion regarding the main query.
+
 - **Reduced Clarity**: The model might struggle to discern which parts of the concatenated text are most relevant, as everything is bundled together. This can lead to less focused responses.
 
 ### 2. Including the Q&A as Prior System or User Messages
 
 **Advantages**:
+
 - **Enhanced Contextual Clarity**: By treating Q&A as distinct prior messages, the model can better understand the conversation's flow and the relevance of each component. It allows the model to process the context in a more structured manner.
 - **Response Relevance**: The model can generate responses that are more directly influenced by the preceding conversation context, leading to potentially higher relevant output.
 - **Flexibility**: Using system messages can help in setting the context and tone explicitly. For example, a system message can clarify that Q&A is instructional or supplementary to the user's inquiry.
 
 **Disadvantages**:
+
 - **Implementation Complexity**: This approach requires proper handling of message formatting, ensuring that the model can discern and prioritize incoming messages correctly.
+
 - **Context Management**: Care must be taken to manage the flow of conversation, as too many prior messages could lead to a diluting effect where the main user prompt becomes less pronounced.
 
 ### Evaluation of Factors
@@ -269,11 +274,11 @@ In scenarios involving diverse question complexities, such as coding queries, th
   <div>
 
 #### Solo Prompt
+
 Advocates clearly for including as a prior message
 Not actually sure point 4 is true. (it isn't)
 
 Makes a decent argument, basically that at the very least its better to separate concerns.
-
 
 </div>
   <div>
@@ -301,10 +306,8 @@ Makes an unconvincing case for handling QA as additional user or system messages
 
 Makes a strong, well put case for user and system messages which genuinely convinced me
 
-
 </div>
 </div>
-
 
 ## Conclusion
 
@@ -315,8 +318,8 @@ Makes a strong, well put case for user and system messages which genuinely convi
 It's worth mentioning these prompts where generated with ChatGpt 4o- Mini. O1 might provide more logical, correct answers.
 As well in this case the questions where generated from the **original** response, next test should see if an augmented prompt leads to better questions being asked
 
-
 ## Prompt: What things, pitfalls, etc should I be aware of while creating my own pay as you go web application on my own and releasing it online?
+
 *ahem*
 
 Though this is specifically chosen as a question that would benefit from prompt augmentation and from the context of Q&A
@@ -328,6 +331,7 @@ Though this is specifically chosen as a question that would benefit from prompt 
 2nd attempt after changing the system prompt, didn't include ONLY the augmented user prompt but also commentary
 
 3rd attempt after rephrasing system message for augment_prompt:
+
 ```
 What key considerations and potential pitfalls should I be aware of when developing and launching
 my own pay-as-you-go web application?
@@ -338,30 +342,31 @@ Additionally, include any common challenges faced by developers in this process 
 ```
 
 ### Questions
+
 1. What specific features do you plan to include in your pay-as-you-go web application?
 2. Who is your target audience for this application?
 3. Are you familiar with the legal and regulatory requirements for payment processing?
 4. What technology stack are you considering for building the application?
 5. Do you have experience with web application security practices?
 6. What are your plans for scaling the application as user demand grows?
-7. How do you intend to handle customer support and feedback? 
-8. Have you researched your competition in this space? 
-9. What budget do you have for development, marketing, and ongoing maintenance? 
-10. Are you planning to use third-party services for payment processing, and if so, which ones? 
+7. How do you intend to handle customer support and feedback?
+8. Have you researched your competition in this space?
+9. What budget do you have for development, marketing, and ongoing maintenance?
+10. Are you planning to use third-party services for payment processing, and if so, which ones?
 
 ### Answers
+
 1. What specific features do you plan to include in your pay-as-you-go web application?: ChatGpt wrapper with prompt augmentation and response optimisation, workflows for managing files and creating content, intelligent understanding and memory of user context and supplied information/files, schedules for running ai instructions.
 2. Who is your target audience for this application?: The general user, people who want to have access to AI LLM's for work and personal advantage
 3. Are you familiar with the legal and regulatory requirements for payment processing?: No
 4. What technology stack are you considering for building the application?: Javascript/React -> Flask/Python
  Neo4j for databases and possibly vercel for deployment
 5. Do you have experience with web application security practices?: Not really
-6.  What are your plans for scaling the application as user demand grows?: Containerisation and using edge processing
+6. What are your plans for scaling the application as user demand grows?: Containerisation and using edge processing
 7. How do you intend to handle customer support and feedback? : With an email address?
 8. Have you researched your competition in this space? : Yes, their terrible
 9. What budget do you have for development, marketing, and ongoing maintenance? : Pffff well development is done by myself so free, marketing and maintenance I can afford to spend a good amount of money on till it gets rolling however long that takes
 10. Are you planning to use third-party services for payment processing, and if so, which ones?: Stripe
-
 
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
   <div>
@@ -427,7 +432,6 @@ Pitfalls provided all makes sense and are helpful to understand
 
 3/20 Fine    15%
 
-
 </div>
   <div>
 
@@ -448,7 +452,7 @@ c. Obvious but good idea
 
 Pitfalls are more focused and 'Suggestions for overcoming' is great
 
-Its actually does show that I could benefit from asking others (more) if they like the idea of my application. 
+Its actually does show that I could benefit from asking others (more) if they like the idea of my application.
 'Community research' would also be a reasonable use of time eventually
 
 2. Technical Requirements
@@ -502,7 +506,7 @@ Seemingly more obvious and trite than the original prompt but it did have some g
 1. Good. VAT and sales tax are good point. Action steps are useful too
 2. Good, OWASP Top Ten is a really good point, and I didn't even know there where security libraries for React and Flask
 3. Decent but basically just repeating what I told it I would do
-4. Just repeating what I told it. 
+4. Just repeating what I told it.
 "For relational data, SQL databases might be more efficient." In what context? Speed alone? Sure but that's not really the point.
 Suggesting Heroku or AWS Elastic Beanstalk is a pretty good suggestion though
 5. Decent points
@@ -527,8 +531,6 @@ Eh, seems fine though no really strong points but that's probably because they'v
 2 Obvious               15%
 
 2 Repeating user input  15%
-
-
 
 </div>
 </div>
@@ -560,9 +562,8 @@ Eh, seems fine though no really strong points but that's probably because they'v
 5. Financial projection are a good idea
 6. Educating user
 
-
-
 ### Conclusion
+
 Original            60% (above 'fine')
 Augmented           62%
 Augmented with QA   70%
@@ -577,4 +578,3 @@ Less clear than the prior original prompt what's superior (ironically)
 The augmented prompt with Q&A was more specific - a little, but it also contained regurgitation's of user input which is annoying to read.
 
 Still if you focus on 'obviousness' there's a clear drop along each step so there is *some* value in this specific case.
-

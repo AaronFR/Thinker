@@ -1,4 +1,7 @@
+# Prompt Optimisation Comparison
+
 ## Original - Whats the best way to get to dublin from cork?
+
 There are several options for traveling from Cork to Dublin, each with its own advantages:
 
 By Train:
@@ -23,8 +26,8 @@ Service: There are flights between Cork Airport and Dublin Airport, but given th
 Duration: Flight time is around 1 hour, but you’ll need to consider airport transfer and waiting times.
 For most travelers, the train is often the most convenient and comfortable option, while the bus is typically the most economical.
 
-
 ## Augmented
+
 ### 'What are the most effective transportation options to travel from Cork to Dublin? Please provide a step-by-step analysis of each method, including details such as travel time, cost, and any necessary transfers. Additionally, include information on the most convenient locations for departures and arrivals, as well as potential schedules for each option. Aim for clarity and simplicity in your explanations.'
 
 To travel from Cork to Dublin, there are several effective transportation options, each with its own advantages and considerations. Below is a step-by-step analysis of each method, focusing on travel time, cost, transfers, departure and arrival locations, and schedules.
@@ -117,10 +120,10 @@ Each option has its merits based on budget, convenience, and personal preference
 I prefer the augmented response. Wordier but it provides a lot more useful information and could form an actual real comparison for someone
 depending on their priorities
 
-
 ## Original
 
 How would you improve the following method?
+
 ```python
 @app.route('/api/message', methods=['POST'])
 def process_message():
@@ -166,7 +169,7 @@ def process_message():
 ```
 
 Augmentation 1:
-Tries to ACTUALLY modify the code 
+Tries to ACTUALLY modify the code
 
 Augementation 2:
 To improve the following Python method, please consider the following structured approach. Your goal is to enhance clarity, functionality, and error handling, while adhering to best practices in coding standards and prompt engineering. Here is an augmented version of the prompt, emphasizing clarity, detail, and step-by-step reasoning.
@@ -238,12 +241,13 @@ def process_message():
 ```
 
 Based on your analysis, provide a clear set of recommendations to enhance the quality and functionality of the `process_message()` method while maintaining its core purpose. Specifically, ensure that each suggestion is actionable, easy to implement, and contributes to overall code quality.
+
 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
   <div>
 
 ## Original Response
 
-To improve the `process_message` method while adhering to the provided guidelines, we can implement several changes that enhance readability, maintainability, and functionality. Below is a revamped version of the method, which follows 
+To improve the `process_message` method while adhering to the provided guidelines, we can implement several changes that enhance readability, maintainability, and functionality. Below is a revamped version of the method, which follows
 the specified guidelines regarding docstrings, indentation, line length, and import order.
 
 ### Improved Method
@@ -293,9 +297,9 @@ def process_message():
 
 ### Key Improvements
 
-1. **Docstring Style**: The docstring follows the reStructuredText format with clear descriptions of the method and its return values.     
+1. **Docstring Style**: The docstring follows the reStructuredText format with clear descriptions of the method and its return values.
 
-2. **Indentation and Formatting**: Ensured consistent 4-space indentation and formatted lines to adhere to the 120-character limit.        
+2. **Indentation and Formatting**: Ensured consistent 4-space indentation and formatted lines to adhere to the 120-character limit.
 
 3. **Persona Selection Handling**: The `persona_selection` variable now defaults to 'coder'. A validation step checks if the provided persona is valid, logging an error if it is not and defaulting to 'coder'.
 
@@ -310,13 +314,14 @@ def process_message():
 These modifications not only address readability and maintainability but also align the way the code handles persona selection and user input validation, resulting in a more robust and user-friendly API endpoint.
   </div>
   <div>
-    
+
 ## Augmented Response
 
 To improve the provided Python method that utilizes the Flask framework to create a RESTful API 
 endpoint, I will analyze and provide recommendations based on the structured approach outlined in your prompt. Below, I will address each criterion step-by-step.
 
-### Original Method:
+### Original Method
+
 ```python
 @app.route('/api/message', methods=['POST'])
 def process_message():
@@ -353,7 +358,7 @@ def process_message():
         return jsonify({"error": str(e)}), 500
 ```
 
-### Recommendations:
+### Recommendations
 
 1. **Clarity:**
    - **Descriptive Variable Names:**
@@ -368,7 +373,7 @@ def process_message():
 
 2. **Code Structure:**
    - **Separation of Concerns:**
-     Consider breaking the function into smaller functions, such as `get_user_prompt()`, `get_selected_persona()`, and `process_prompt()`. 
+     Consider breaking the function into smaller functions, such as `get_user_prompt()`, `get_selected_persona()`, and `process_prompt()`.
 This will enhance readability and maintainability.
 
    ```python
@@ -415,7 +420,7 @@ This will enhance readability and maintainability.
 
 7. **Testing:**
    - **Unit Test Areas:**
-     Suggest writing unit tests for functions like `get_user_prompt`, `get_selected_persona`, and `process_prompt`. Additionally, test for 
+     Suggest writing unit tests for functions like `get_user_prompt`, `get_selected_persona`, and `process_prompt`. Additionally, test for
 cases like missing prompts and invalid persona requests.
 
    ```python
@@ -424,7 +429,8 @@ cases like missing prompts and invalid persona requests.
        assert get_user_prompt({}) is None
    ```
 
-### Revised Method Example:
+### Revised Method Example
+
 Here's a revised version of the `process_message()` method incorporating the suggestions:
 
 ```python
@@ -472,11 +478,12 @@ def get_selected_persona(data):
     return persona_selection
 ```
 
-### Conclusion:
+### Conclusion
+
 These changes collectively improve the clarity, structure, error handling, and maintainability of the `process_message()` method while maintaining its core functionality. By implementing these recommendations, the code will be easier to understand, less prone to errors, and much simpler to test and maintain.
   </div>
 </div>
 
-
 ## Review
-The augmented version has: reasoning BEFORE code modification (which is important for prompt engineering/response optimisation), a shortned consise method description, module code, more error casses and an overall more readable function. So I'm happy to say it's much better. 
+
+The augmented version has: reasoning BEFORE code modification (which is important for prompt engineering/response optimisation), a shortned consise method description, module code, more error casses and an overall more readable function. So I'm happy to say it's much better.

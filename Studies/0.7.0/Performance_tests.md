@@ -1,4 +1,7 @@
+# Performance Tests
+
 ## Initial testing
+
 User Prompt:
 Can we talk about the performance of these two files? AiOrchestrator and the api interface it uses ChatGptWrapper? When the application is run a query takes a lot of time and my suspicion is these classes are to blame
 
@@ -135,10 +138,12 @@ By addressing these areas, you should be able to enhance the performance of both
 Please enter your task (or type 'exit' to quit): 
 
 ```
+
 Duration: 33 seconds
 No singular time gaps.
 
-#### Time spent on ApiCalls: 
+### Time spent on ApiCalls
+
 2024-09-13 11:25:56,026 [INFO] (AiOrchestrator.py:111) Tokens used (limit 128k): 109
 2024-09-13 11:25:58,040 [INFO]
 2 seconds
@@ -180,9 +185,11 @@ Total: 24.6 seconds, 75% of runtime
 2 calls to wikipedia api taking ~0.3 seconds approx
 
 ## Next User Prompt
+
 Okay lets rewrite ChatGpt as a singleton then, for the other options I'm afraid there just not options, this isn't production and we don't want to get rid of logging
 
 ### Rerunning the first user prompt
+
 2024-09-13 12:08:56,424
 2024-09-13 12:09:31,064
 35 seconds.

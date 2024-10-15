@@ -2,7 +2,7 @@
 
 🚧🚧🚧 ***WORK IN PROGRESS PROTOTYPE*** 🚧🚧🚧
 
-### Table of Contents
+## Table of Contents
 
 1. [Objectives](#objectives)
 2. [Current Limitations](#current-limitations)
@@ -18,20 +18,20 @@ user, filling the middle ground between simple LLM wrapper applications and adva
 A powerful, general purpose AI application
 
 ## Objectives
-The primary objective of this project is to create an intelligent system that improves upon the quality of responses given 
-by the base model, 
+
+The primary objective of this project is to create an intelligent system that improves upon the quality of responses given
+by the base model,
 utilising multiple LLM calls to be able to iterate and evaluate prompts with quality and if requested quantity.
 
 - Automate Problem-Solving: To provide a system that can evaluate and generate solutions for various tasks without
  extensive manual intervention.
 - Role driven: Users can utilise roles that specialise in a specific domain -or themselves can delegate and instruct other
- roles as required to complete its given 
-- Flexible and useful memory and configuration system: The system learns the users preferences *once* and can 
+ roles as required to complete its given
+- Flexible and useful memory and configuration system: The system learns the users preferences *once* and can
  continually refer to them or any appropriate internal or external reference material as required.
 - Hallucination avoidance/minimisation through pre- and post-process analysis, feeding the system the appropriate reference
  material to keep it grounded in reality.
 - Scheduling: Enabling the scheduling and running of workflows/generated code at specific user defined intervals
-
 
 ## Current Limitations
 
@@ -41,6 +41,7 @@ utilising multiple LLM calls to be able to iterate and evaluate prompts with qua
  costs and simplifying outputs.
 
 ## Features
+
 - **Prompt optimisation**: User prompts will automatically be enhanced side by side with the Prompt Enginering standards,giving the user ideas for how to improve their prompt or just to run the augmented prompt instead for better results. Questions are automatically generated and presented to the user, that help the AI provide a more relevant answer.
 - **Workflows**: A user prompt is fed into a persona and evaluated for one of its workflows, a workflow representing a
  series of prompts to be run to achieve an ideal outcome for the given task type.
@@ -48,6 +49,7 @@ utilising multiple LLM calls to be able to iterate and evaluate prompts with qua
  actual LLM call
 
 ## Architecture
+
 The project's architecture is designed with modularity in mind, allowing for the easy addition of new features and components:
 
 - **Personas**: (because ChatGpt uses 'roles' already) a class that structurally represents the idea of a worker specialised for a
@@ -58,7 +60,9 @@ The project's architecture is designed with modularity in mind, allowing for the
 - **Data**: Handles the processing, creation and editing of data, including written files and accessed configuration files
 
 ## Planned
+
 To refine the system's architecture and enhance its capabilities and efficiency, several key features are intended for implementation:
+
 - **Micro thoughts**: Generated even while the prompt is being written. Question -> answer
   - Generate list of questions in regard to prompt, if appropriate ask user, otherwise pull from memory.
   - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
@@ -73,12 +77,12 @@ To refine the system's architecture and enhance its capabilities and efficiency,
 
 - **Message History**: Message's saved for future reference.
 
-- **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can 
+- **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can
  actually write its own tests automatically to full standard.
   - Long due that specific "integration" user tests where created to test that the system can satisfactorily answer the user,
    avoid hallucinations, provide scores of high value, asses performance against tests and benchmarks etc.
 
-- **Internet access**: Adding internet access for workflows based on context, including the ability to expand the 
+- **Internet access**: Adding internet access for workflows based on context, including the ability to expand the
  encyclopedia with web-sourced data.
 
 - **Attributes**: Summaries and simple summaries to be stored as attributes against files
@@ -89,10 +93,10 @@ To refine the system's architecture and enhance its capabilities and efficiency,
     Many workflows should consist of switch logic that allows for intelligent processing of a given request without needless details.
   
   - **Workflow Feedback**: The coder module can and should actually check that its code works and try and improve upon itself if it doesn't.
-   even if it can only try a fixed number of times and worst case scenario explains to the user that its solution is invalid 
+   even if it can only try a fixed number of times and worst case scenario explains to the user that its solution is invalid
    and this is the best it can do, this is a huge improvement in value.
 
-  - **Blueprint**: Certain workflows should follow outlined blueprints created on the spot, guiding the construction of 
+  - **Blueprint**: Certain workflows should follow outlined blueprints created on the spot, guiding the construction of
    documents, ensuring internal consistency and coherence.
 
   - **Mathematician/Engineer/Physicist**: LLMs are bad at math the same way Humans are bad at math, neurons are just not well

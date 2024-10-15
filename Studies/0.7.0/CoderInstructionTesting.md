@@ -1,6 +1,7 @@
 # Testing
 
 Coder currently uses 5 stages in its primary write workflow:
+
 ```Python
 analyser_messages = [
     f"As part of <user prompt>{initial_message}</user prompt> "
@@ -23,12 +24,12 @@ analyser_messages = [
 ```
 
 This can be understood as the following stages:
+
 1. Identify Logical Issues: Examine the current implementation for logical inconsistencies or failures, and suggest revisions.
 2. Enhance Features & Clarity: Evaluate opportunities to improve features, naming conventions, and documentation clarity, then revise accordingly.
 3. Improve Documentation & Structure: Review and enhance the organization, clarity, and flow of the code and its documentation.
 4. Adhere to Best Practices: Assess compliance with coding standards and recommend changes to improve code quality.
 5. Final Review & Summary: Present the final, revised code version and summarize key changes and their benefits. (currently not provided to user)
-
 
 Documentation clarity comes up way too often for something which might actually be optional to the user
 Simultaneously there's isn't enough proper 'chain of thought reasoning', limitations and facts are not discussed.
@@ -63,6 +64,7 @@ analyser_messages = [
 ```
 
 We want to see how these workflow performs on a variety of tasks
+
 1. Implement a merge sort algorithm method
 2. Create a file reader, that converts everything to upper case and then saves it
 3. Create a Prime Number Checker
@@ -82,6 +84,7 @@ We want to see how these workflow performs on a variety of tasks
 | Text based dungeon |      9/10       |    8/10    |        6/10        |                            5/10 |                    6/10 |        6/10 -> 8/10 |
 
 #### Totals
+
 ChatGpt 4o Mini     : 60 / 70
 
 ChatGpt 4o          : 54 / 70
@@ -94,8 +97,8 @@ Thinker new         : 55 / 70
 
 Thinker streamlined : 57 / 70
 
-
 ### Thinker streamlined
+
 Merge sort: Gives examples and the code is readable. And it actually wrote a decent, fully explained README
 File Reading: Like the others, specify 'input.txt' will write to 'output.txt'
 Prime Checker: Doesn't requery the user for prime numbers
@@ -109,10 +112,12 @@ because Thinker doesn't know / doesn't know how to make multiple python files li
 -> With some modification Thinker is (nearly) able to link files together, the game is a bit simple also not AI controlled,
 but you can explore, and it forms a decent foundation for more content
 
-Notes: Much quicker, plus READMEs 
+Notes: Much quicker, plus READMEs
 
 ## Commentary
+
 ### ChatGpt 4o Mini
+
 Merge sort: Fine
 File Reading: Fine
 Prime Checker: Fine, only one example given but that's fine.
@@ -125,23 +130,24 @@ Really limited by the fact there's only 3 rooms and the programs ends quickly bu
 
 Overall suspiciously good for the smaller model (These tests where run AFTER 4o's)
 
-
 ### ChatGpt 4o
+
 Merge sort: Completely satisfactory, works on testing.
 File Reading: ..
 Prime Checker: ..
-ToDo CLI : Good error checking, gives option to remove a task even if no tasks exist which is understandable. 
+ToDo CLI : Good error checking, gives option to remove a task even if no tasks exist which is understandable.
 (stil handling for invalid choice there)
 Snake: Every button pressed causes snake to eat itself instantly
-Chatbot w/ Memory: A surprisingly decent attempt, but the actual code to recall favorites doesn't work 
+Chatbot w/ Memory: A surprisingly decent attempt, but the actual code to recall favorites doesn't work
 (because both terms contain the term 'like' or 'preference' which is first in the logic)
 Text based dungeon: First run hilariously flee'd from every single enemy for 25 rooms. Counter for rooms, events,
 experience doesn't do anything but a good starting off point.
 
 ### ChatGpt o1-preview
+
 Merge sort: Best answer, gives lots of examples and is arguably the easiest program to read
 File Reading: Easily the best answer, being the only one to give the option to overwrite the input file, to choose which file
-to read and write, to offer optional changes to make the program work with CLI inputs. 
+to read and write, to offer optional changes to make the program work with CLI inputs.
 Maybe a bit wordy for a simple question perhaps
 Prime Checker: VERY CONFLICTING, on one hand it listed an actual algorithm by name, on the other it didn't actually answer
 the user request, its a prime generator not a prime checker
@@ -157,6 +163,7 @@ still it's a good base? I'm rating low though as it
 Strong theme of better or at least more complicated technical solutions at the expense of user value
 
 ### Thinker Original Coder workflow
+
 Merge sort: Completely satisfactory, works on testing. But with documentation, but no points because it tries to separately define a type?
 File Reading: Works, but redundantly saved the information to 'output.txt' probably because it thought that file was "important"
 Prime Checker: Works and provides more examples
@@ -164,7 +171,7 @@ ToDo CLI : Excellent, lists options, but it uses emojis to highlight incomplete 
 AND it saved the tasks to memory! (Did create a needless, malformed readme file)
 Snake: Game actually works as a java script based html page, Complete with colour, working restart button and you can
 actually eat your own tail and game over. Complete with documentation my backend brain doesn't understand
-Chatbot w/ Memory: Poor. It works, but asks for a name without actually functionally letting the user enter one. 
+Chatbot w/ Memory: Poor. It works, but asks for a name without actually functionally letting the user enter one.
 Text based dungeon: Takes ages to generate and costs a lot (~15 cents), application does however work but doesn't satisfy
 the *AI* controlled aspect really.
 NOTE: Coder does not know how to handle non-code files, e.g. README's or data files
@@ -172,18 +179,13 @@ NOTE: Coder does not know how to handle non-code files, e.g. README's or data fi
 On the whole fine, takes much longer but files do have documentation though there are occasional flaws and redundancies
 
 ### Thinker new workflow
+
 Merge sort: Not a fan of using asserts instead of showing the results but *fine*
 File Reading: Fine
 Prime Checker: Fine
-ToDo CLI : Works but just isn't as good, less intuitive, confusing. 
+ToDo CLI : Works but just isn't as good, less intuitive, confusing.
 Snake: Works just the same as the prior Thinker attempt but in pygame
 Chatbot w/ Memory: Functional, doesn't do a lot, asks a name and gets a single preference but at least it does it without failing?
 Text based dungeon: One version is rather impressive including walls that you can't move through but lots of redundancy,
 no imports between files
 NOTE: Coder doesn't know to make files import functionality from other created files
-
-
-
-
-
-
