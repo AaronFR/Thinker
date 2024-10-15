@@ -9,10 +9,11 @@ class Augmentation:
 
         # ToDo: Indepth study of prompt engineering principles and testing to optimise this prompt
         result = executor.execute(
-            ["""Just take the given prompt and rewrite it augmenting it in line with prompt engineering standards to be given to another LLM. 
+            ["""Take the given user prompt and rewrite it augmenting it in line with prompt engineering standards. 
             Increase clarity, state facts simply, use for step by step reasoning. 
-            Just augment my prompt with as many prompt engineering standards crammed in as possible, don't answer it"""],
-            [initial_prompt]
+            Returning *only* the new and improved user prompt
+            Augment user prompt with as many prompt engineering standards crammed in as possible, don't answer it"""],
+            ["user prompt: \"\"\"\n" + initial_prompt + "\n\"\"\""]
         )
 
         return result
