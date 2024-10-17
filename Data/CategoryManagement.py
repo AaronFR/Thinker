@@ -82,7 +82,7 @@ class CategoryManagement:
             ["Review the entered files and prompts and determine the category that fits these tasks best",
              existing_categories],
             [user_prompt],
-            Constants.DETERMINE_CATEGORY_FUNCTION_SCHEMA
+            Constants.DETERMINE_CATEGORIES_FUNCTION_SCHEMA
         )['categorisations']
         logging.info(f"Suggested categorisations: {categorisations}")
 
