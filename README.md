@@ -64,12 +64,15 @@ The project's architecture is designed with modularity in mind, allowing for the
 To refine the system's architecture and enhance its capabilities and efficiency, several key features are intended for implementation:
 
 - **Micro thoughts**: Generated even while the prompt is being written. Question -> answer
-  - Generate list of questions in regard to prompt, if appropriate ask user, otherwise pull from memory.
+  - ~~Generate list of questions in regard to prompt, if appropriate ask user~~, otherwise pull from memory.
   - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
     - file references/uploaded files noted -> inform user and system how they should be processed.
 
-- **Front end**: Developing a user interface at this stage would help illustrate how finer details like selecting persona's/
- demonstrating personas in action, showing what their doing, what their referencing, asking for questions, etc clearly.
+- **Persona Configuration**: Left to the user as much as possible, with the persona given an 'expensive_model' option, e.g. Coder
+ could benefit from 4o or O1, but a writer would probably benefit from a detailed workflow on a basic model.
+
+- **Front end**: Developing a user interface at this stage would help illustrate how finer details like ~~selecting persona's~~/
+ demonstrating personas in action, showing what their doing, what their referencing, ~~asking for questions~~, etc clearly.
  Facilitating the creation of these features.
 
 - **Graph Database**: utilise a singular graph database with nodes and edges to work as a better approximation of a mind, rather than desperate folders and files.

@@ -10,7 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - A front end to interactive with 🎉
-  - placeholders for configuration and pricing information
+  - A main page where the user can send prompts with options for prompt augmentation
+  - Settings page where users can toggle beta features
+    - Dark mode 😎
+  - Pricing page placeholder that gives current session costs
 - Configuration: Beta features can be enabled or disabled from settings
 - Micro thoughts - processes that run in the background to improve prompts and responses
   - Augemented prompt is suggested to the user

@@ -5,10 +5,6 @@ import yaml
 
 
 class Configuration:
-    """
-    ToDo: A method will need to be created for configuring new config files for new users
-    """
-
     data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
 
     @staticmethod
@@ -44,6 +40,7 @@ class Configuration:
     @staticmethod
     def update_config_field(field_path, value, yaml_file="UserConfig.yaml"):
         """Updates a particular field in the users YAML configuration file.
+        For first time changes, the config file will be created automatically
 
         :param field_path: The dot-separated path to the field to update (e.g., 'interface.dark_mode')
         :param value: The value to set for the specified field

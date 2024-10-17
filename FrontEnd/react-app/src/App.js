@@ -98,7 +98,7 @@ function App () {
           <PromptAugmentation 
             augmentedPromptsEnabled={augmentedPromptsEnabled}
             augmentedPrompt={augmentedPrompt}
-            error={augmentedError}  // ToDo: Yeahhh these should be different errors
+            error={augmentedError}
             isAugmenting={isAugmenting}
             copyAugmentedPrompt={copyAugmentedPrompt}
           />

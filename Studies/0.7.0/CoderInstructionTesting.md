@@ -102,7 +102,7 @@ Thinker streamlined : 57 / 70
 Merge sort: Gives examples and the code is readable. And it actually wrote a decent, fully explained README
 File Reading: Like the others, specify 'input.txt' will write to 'output.txt'
 Prime Checker: Doesn't requery the user for prime numbers
-ToDo CLI : Uses the enter number for method option like o1 which I am not a huge fan of. Does have a neat README though
+To do CLI : Uses the enter number for method option like o1 which I am not a huge fan of. Does have a neat README though
 Snake: Solid entry, handles well (maybe?) and still has the 180 turn allowed at size 2 'bug'. +README
 Chatbot w/ Memory: Really badly flawed, can't give preferences as the set preferences command is first, I suppose it doesn't lie
 and pretend its listening, also not clear: you need to read the code in order to understand how to use the chatbot, but 
@@ -121,7 +121,7 @@ Notes: Much quicker, plus READMEs
 Merge sort: Fine
 File Reading: Fine
 Prime Checker: Fine, only one example given but that's fine.
-ToDo CLI : using numbers to control the application instead of text is a little but less natural, but fine.
+To do CLI : using numbers to control the application instead of text is a little but less natural, but fine.
 Snake: Works completely fine, there is an issue where the snake can turn 180 degrees below 2 but not 1 length.
 Chatbot w/ Memory: Sardonically the best entry, just asks the user their name and their favourite colour then just pretends
 its listening as the user continues. Hilariously on point.
@@ -135,7 +135,7 @@ Overall suspiciously good for the smaller model (These tests where run AFTER 4o'
 Merge sort: Completely satisfactory, works on testing.
 File Reading: ..
 Prime Checker: ..
-ToDo CLI : Good error checking, gives option to remove a task even if no tasks exist which is understandable.
+To do CLI : Good error checking, gives option to remove a task even if no tasks exist which is understandable.
 (stil handling for invalid choice there)
 Snake: Every button pressed causes snake to eat itself instantly
 Chatbot w/ Memory: A surprisingly decent attempt, but the actual code to recall favorites doesn't work
@@ -151,7 +151,7 @@ to read and write, to offer optional changes to make the program work with CLI i
 Maybe a bit wordy for a simple question perhaps
 Prime Checker: VERY CONFLICTING, on one hand it listed an actual algorithm by name, on the other it didn't actually answer
 the user request, its a prime generator not a prime checker
-ToDo CLI : Very conflicted, works directly by executing the file from the CLI along with a command which is certainly
+To do CLI : Very conflicted, works directly by executing the file from the CLI along with a command which is certainly
 the most 'CLI' todo app given but also the most unwieldy and hard to use.
 Snake: Really different to the others, starts at size 5 and has warp walls, BUT it has no score, no game over window, and
 while harder to break than the others you can cause a 180 turn by hitting two inputs at once.
@@ -167,7 +167,7 @@ Strong theme of better or at least more complicated technical solutions at the e
 Merge sort: Completely satisfactory, works on testing. But with documentation, but no points because it tries to separately define a type?
 File Reading: Works, but redundantly saved the information to 'output.txt' probably because it thought that file was "important"
 Prime Checker: Works and provides more examples
-ToDo CLI : Excellent, lists options, but it uses emojis to highlight incomplete and complete tasks, and also has genres and priorities.
+To do CLI : Excellent, lists options, but it uses emojis to highlight incomplete and complete tasks, and also has genres and priorities.
 AND it saved the tasks to memory! (Did create a needless, malformed readme file)
 Snake: Game actually works as a java script based html page, Complete with colour, working restart button and you can
 actually eat your own tail and game over. Complete with documentation my backend brain doesn't understand
@@ -183,7 +183,7 @@ On the whole fine, takes much longer but files do have documentation though ther
 Merge sort: Not a fan of using asserts instead of showing the results but *fine*
 File Reading: Fine
 Prime Checker: Fine
-ToDo CLI : Works but just isn't as good, less intuitive, confusing.
+To do CLI : Works but just isn't as good, less intuitive, confusing.
 Snake: Works just the same as the prior Thinker attempt but in pygame
 Chatbot w/ Memory: Functional, doesn't do a lot, asks a name and gets a single preference but at least it does it without failing?
 Text based dungeon: One version is rather impressive including walls that you can't move through but lots of redundancy,

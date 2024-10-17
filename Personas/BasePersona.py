@@ -36,6 +36,8 @@ class BasePersona:
         """
         Handles a user prompt
 
+        ToDo adding to the user_encyclopedia needs to be influenced by context category
+
         :param user_prompt: user input prompt
         """
         config = Configuration.load_config()
@@ -44,9 +46,7 @@ class BasePersona:
                 category_management = CategoryManagement()
                 category_management.stage_files(user_prompt)
 
-                #ToDo adding to the user_encyclopedia needs to be influenced by context category
             if config['beta_features']['user_encyclopedia_enabled']:
-                # ToDo adding to the user_encyclopedia needs to be influenced by context category
                 user_encyclopedia_manager = UserEncyclopediaManagement()
                 user_encyclopedia_manager.add_to_encyclopedia([user_prompt])
                 
@@ -72,9 +72,8 @@ class BasePersona:
                     category_management = CategoryManagement()
                     category_management.stage_files(user_input)
 
-                # ToDo adding to the user_encyclopedia needs to be influenced by context category
+                
                 if config['beta_features']['user_encyclopedia_enabled']:
-                    # ToDo adding to the user_encyclopedia needs to be influenced by context category
                     user_encyclopedia_manager = UserEncyclopediaManagement()
                     user_encyclopedia_manager.add_to_encyclopedia([user_input])
                 

@@ -48,8 +48,10 @@ class Coding(enum.Enum):
 
     @staticmethod
     def check_syntax(file_name: str) -> bool | str:
-        """ToDo: implement
-        ToDo: Assuming that script is written in python"""
+        """
+        ToDo: implement
+        ToDo: Assuming that script is written in python
+        """
         script_path = os.path.join(FileManagement.thoughts_directory, Globals.current_thought_id, file_name)
         try:
             py_compile.compile(script_path, doraise=True)
@@ -59,7 +61,8 @@ class Coding(enum.Enum):
 
     @staticmethod
     def run_generated_script(file_name: str) -> str:
-        """ToDo: implement + add method to check IF a script should be run
+        """
+        ToDo: implement + add method to check IF a script should be run
         ToDo: Write method for running tests (depending on chosen framework)
         """
         script_path = os.path.join(FileManagement.thoughts_directory, Globals.current_thought_id, file_name)

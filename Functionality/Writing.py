@@ -250,7 +250,7 @@ class Writing(enum.Enum):
     @staticmethod
     def regex_refactor(task_parameters: Dict[str, object]):
         """Refactor files based on regex patterns provided in the task directives.
-        # ToDo: It would make sense to add a check of the output
+        ToDo: It would make sense to add a check of the output
          to make sure a name isn't being changed which *shouldn't*
 
         :param task_parameters: A dictionary containing key fields:
