@@ -73,6 +73,8 @@ DETERMINE_CATEGORIES_FUNCTION_SCHEMA = [{
     }
 }]
 
+
+# ToDo: Can other schema be reduced to something this simple?
 DETERMINE_CATEGORY_FUNCTION_SCHEMA = [{
     "name": "executiveDirective",
     "description": """The categorisation of the given files and messages""",

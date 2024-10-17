@@ -11,12 +11,15 @@ import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
+
+
 # Add the project root to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from Functionality.Augmentation import Augmentation
 from Personas.Coder import Coder
 from Data.Configuration import Configuration
 from Data.Pricing import Pricing
+from Data.UserPromptManagement import UserPromptManagement
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -63,6 +66,10 @@ def process_message():
         response_message = selected_persona.query(user_prompt)
         logging.info("Response generated: %s", response_message)
 
+        # ToDo: should be a ancillary side job, currently slows down recieving a response if the database doesn't respond quickly
+        userPromptManagement = UserPromptManagement()
+        userPromptManagement.create_user_prompt_node(user_prompt, response_message)
+
         return jsonify({"message": response_message})
     
     except ValueError as ve:
@@ -71,6 +78,7 @@ def process_message():
     except Exception as e:
         logging.exception("Failed to process message")
         return jsonify({"error": str(e)}), 500
+
 
 def get_selected_persona(data):
     """ Determine the selected persona or default to 'coder'. """

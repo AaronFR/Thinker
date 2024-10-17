@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
@@ -9,7 +10,7 @@ class UserPromptManagement:
     def __init__(self):
         self.neo4jDriver = Neo4jDriver()
         self.executor = AiOrchestrator()
-        self.prompt_id_counter = 1  # ToDo: handle persistently
+        self.prompt_id_counter = 1  # ToDo: - irrelevant
 
     def create_user_prompt_node(self, user_prompt, llm_response):
         timestamp = int(datetime.now().timestamp())
@@ -25,12 +26,14 @@ class UserPromptManagement:
             [categorisation_input],
             Constants.DETERMINE_CATEGORY_FUNCTION_SCHEMA
         )
-        category = category_data["Category"]
+        logging.info("category_data:", category_data)
+        category = category_data["category"]
+
 
         create_user_prompt_query = """
         MERGE (user:USER)
-        MERGE (category:CATEGORY) {name: $category})
-        CREATE (user_prompt:USER_PROMPT {id: $id, prompt: $user_prompt, response: $llm_response. time: $time})
+        MERGE (category:CATEGORY {name: $category})
+        CREATE (user_prompt:USER_PROMPT {id: $id, prompt: $prompt, response: $response, time: $time})
         MERGE (user)-[:USES]->(category)
         MERGE (user_prompt)-[:BELONGS_TO]->(category)
         RETURN user_prompt, category
@@ -58,7 +61,7 @@ class UserPromptManagement:
         RETURN DISTINCT category.name as category_name
         ORDER by category_name
         """
-        result = self.neo4jDriver.execute_write(list_categories_query)
+        result = self.neo4jDriver.execute_read(list_categories_query)
         categories = [record["category_name"] for record in result]
         return categories
 
