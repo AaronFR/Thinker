@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import './App.css';
 
-import { SettingsContext } from './Settings';
+import { SettingsContext } from './pages/Settings/Settings';
 
 import OutputSection from './components/OutputSection';
 import PromptAugmentation from './components/PromptAugmentation';

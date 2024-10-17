@@ -4,8 +4,8 @@ import './index.css';
 import App from "./App";
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import Settings, { SettingsProvider } from './Settings';
-import Pricing from './Pricing';
+import Settings, { SettingsProvider } from './pages/Settings/Settings';
+import Pricing from './pages/Pricing/Pricing';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
