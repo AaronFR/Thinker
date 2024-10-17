@@ -4,6 +4,18 @@ import { Link } from 'react-router-dom';
 
 const flask_port= "http://localhost:5000"
 
+function FormatPrice(price) {
+    const scale = 100
+    if (price < 1) {
+        const cents = Math.round(price * 100 * scale) / scale
+        return `¢ ${cents}`;
+    } else {
+        const roundedPrice = parseFloat(price.toPrecision(4))
+        return `$${roundedPrice}`;
+    }
+}
+
+
 export function Pricing() {
     const [sessionCost, setSessionCost] = useState(0.0)
 
@@ -40,7 +52,7 @@ export function Pricing() {
           <Link to="/settings" className="link">Settings</Link>
         </nav>
         
-        <h2>Session cost: ${sessionCost}</h2>
+        <h2>Session cost: {FormatPrice(sessionCost)}</h2>
       </div>
     );
   }
