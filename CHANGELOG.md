@@ -14,9 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Settings page where users can toggle beta features
     - Dark mode 😎
   - Pricing page placeholder that gives current session costs
+- A database to save user messages, allowing the system to finally display and retain message history
 - Configuration: Beta features can be enabled or disabled from settings
 - Micro thoughts - processes that run in the background to improve prompts and responses
-  - Augemented prompt is suggested to the user
+  - Augmented prompt is suggested to the user
   - Automatically generated questions, that are presented to the user, giving the opertunity to supply additional context to a given prompt
 
 ### Changed

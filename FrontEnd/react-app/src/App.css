@@ -79,4 +79,25 @@ html {
   scroll-behavior: smooth;
 }
 
+.left-pane {
+  width: 33%; /* Left pane takes 25% of the width */
+  background-color: #f4f4f4; /* Background color for differentiation */
+  padding: 10px;
+}
+body.dark-mode .left-pane {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.04) 100%);
+  color: #f2f2f2;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
 
+.right-pane {
+  width: 64%; /* Right pane takes 75% of the width */
+  padding: 20px;
+  background-color: #fff;
+  overflow-y: auto; /* Allow scrolling if content overflows */
+}
+body.dark-mode .right-pane {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%);
+  color: #f2f2f2;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}

@@ -3,6 +3,7 @@ import './App.css';
 
 import { SettingsContext } from './pages/Settings/Settings';
 
+import MessageHistory from './components/MessageHistory';
 import OutputSection from './components/OutputSection';
 import PromptAugmentation from './components/PromptAugmentation';
 import PersonaSelector from './components/PersonaSelector';
@@ -88,46 +89,51 @@ function App () {
 
     return (
         <div className="app-container">
-          
-          <OutputSection 
-            message={message} 
-            error={messageError} 
-            isProcessing={isProcessing} 
-          />
+          <div className="left-pane">
+            <MessageHistory />
+          </div>
 
-          <PromptAugmentation 
-            augmentedPromptsEnabled={augmentedPromptsEnabled}
-            augmentedPrompt={augmentedPrompt}
-            error={augmentedError}
-            isAugmenting={isAugmenting}
-            copyAugmentedPrompt={copyAugmentedPrompt}
-          />
+          <div className="right-pane">
+            <OutputSection 
+              message={message} 
+              error={messageError} 
+              isProcessing={isProcessing} 
+            />
 
-          <PersonaSelector 
-            selectedPersona={selectedPersona} 
-            setSelectedPersona={setSelectedPersona} 
-            autoDetectedPersona={autoDetectedPersona}
-          />
+            <PromptAugmentation 
+              augmentedPromptsEnabled={augmentedPromptsEnabled}
+              augmentedPrompt={augmentedPrompt}
+              error={augmentedError}
+              isAugmenting={isAugmenting}
+              copyAugmentedPrompt={copyAugmentedPrompt}
+            />
 
-          {/* ToDo: Should expand out on hover */}
-          <UserInputForm 
-            handleSubmit={handleFormSubmit}
-            handleInputChange={handleInputChange}
-            userInput={userInput}
-            isProcessing={isProcessing}
-          />
-          
-          <SuggestedQuestions 
-            questionUserPromptsEnabled={questionUserPromptsEnabled}
-            questionsForPrompt={questionsForPrompt}
-            error={questionsError}
-            isQuestioning={isQuestioning}
-            onFormsFilled={setFormsFilled} // Pass the state updater as callback
-            setConcatenatedQA={setConcatenatedQA}
-            resetResponsesTrigger={resetResponsesTrigger}
-          />
+            <PersonaSelector 
+              selectedPersona={selectedPersona} 
+              setSelectedPersona={setSelectedPersona} 
+              autoDetectedPersona={autoDetectedPersona}
+            />
 
-          <Navigation />
+            {/* ToDo: Should expand out on hover */}
+            <UserInputForm 
+              handleSubmit={handleFormSubmit}
+              handleInputChange={handleInputChange}
+              userInput={userInput}
+              isProcessing={isProcessing}
+            />
+            
+            <SuggestedQuestions 
+              questionUserPromptsEnabled={questionUserPromptsEnabled}
+              questionsForPrompt={questionsForPrompt}
+              error={questionsError}
+              isQuestioning={isQuestioning}
+              onFormsFilled={setFormsFilled} // Pass the state updater as callback
+              setConcatenatedQA={setConcatenatedQA}
+              resetResponsesTrigger={resetResponsesTrigger}
+            />
+
+            <Navigation />
+          </div>
         </div>
     );
 };

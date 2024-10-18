@@ -79,5 +79,5 @@ class UserPromptManagement:
         ORDER by user_prompt.time
         """
         parameters = {"category_name": category_name}
-        result = self.neo4jDriver.execute_write(get_messages_query, parameters)
+        result = self.neo4jDriver.execute_read(get_messages_query, parameters)
         return result

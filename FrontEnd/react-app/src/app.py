@@ -67,8 +67,8 @@ def process_message():
         logging.info("Response generated: %s", response_message)
 
         # ToDo: should be a ancillary side job, currently slows down recieving a response if the database doesn't respond quickly
-        userPromptManagement = UserPromptManagement()
-        userPromptManagement.create_user_prompt_node(user_prompt, response_message)
+        user_prompt_management = UserPromptManagement()
+        user_prompt_management.create_user_prompt_node(user_prompt, response_message)
 
         return jsonify({"message": response_message})
     
@@ -208,6 +208,30 @@ def get_session_cost():
         return jsonify({"cost": cost}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+
+@app.route('/categories', methods=['GET'])
+def list_categories():
+    try:
+        user_prompt_management = UserPromptManagement()
+        categories = user_prompt_management.list_user_categories()
+        return jsonify({"categories": categories}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/categories/<category_name>/messages', methods=['GET'])
+def get_messages(category_name):
+    try:
+        category_name = category_name.lower()
+        user_prompt_management = UserPromptManagement()
+        messages = user_prompt_management.get_messages_by_category(category_name)
+        messages_list = [{"prompt": record["prompt"], "response": record["response"], "time": record["time"]}
+                         for record in messages]
+        return jsonify({"messages": messages_list}), 200
+    except Exception as e:
+        logging.exception(f"Failed to get messages for category, {category_name}")
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':

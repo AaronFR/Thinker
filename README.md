@@ -75,10 +75,8 @@ To refine the system's architecture and enhance its capabilities and efficiency,
  demonstrating personas in action, showing what their doing, what their referencing, ~~asking for questions~~, etc clearly.
  Facilitating the creation of these features.
 
-- **Graph Database**: utilise a singular graph database with nodes and edges to work as a better approximation of a mind, rather than desperate folders and files.
+- **Graph Database**: utilise a singular graph database with nodes and edges to work as a better approximation of a mind, rather than disparate folders and files.
   - more efficient too, allowing a single call by context to determine knowledge, user knowledge, configuration and memory context.
-
-- **Message History**: Message's saved for future reference.
 
 - **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can
  actually write its own tests automatically to full standard.
