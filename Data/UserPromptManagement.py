@@ -17,18 +17,19 @@ class UserPromptManagement:
         prompt_id = self.prompt_id_counter
         self.prompt_id_counter += 1
 
-        categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n" + "<response>" + \
-                               llm_response + "</response>"
         categories = self.list_user_categories()
+        categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n" + \
+                               "<response>" + llm_response + "</response>"
         category_data = self.executor.execute_function(
-            ["Given the following prompt - response pair, categorise the data with a single word answer."
-             "These are the following existent categories which *may* be appropriate: " + str(categories)],
+            ["Given the following prompt-response pair, categorize the data with the most suitable single-word answer."
+             "The categories provided are a backup option, to be used only if they are the most fitting: " + str(
+                categories) + "."
+             "If none of the categories are appropriate, feel free to generate a more suitable term."],
             [categorisation_input],
             Constants.DETERMINE_CATEGORY_FUNCTION_SCHEMA
         )
         logging.info("category_data:", category_data)
         category = category_data["category"]
-
 
         create_user_prompt_query = """
         MERGE (user:USER)
