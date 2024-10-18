@@ -67,7 +67,7 @@ class UserPromptManagement:
 
     def get_messages_by_category(self, category_name):
         """
-        Retrieve all messages linked to a particular category.
+        Retrieve all messages linked to a particular category, newest first.
 
         :param category_name: Name of the category node to investigate
         :return: all messages related to that category node
@@ -76,7 +76,7 @@ class UserPromptManagement:
         MATCH (user:USER)-[:USES]->(category:CATEGORY {name: $category_name})
             <-[:BELONGS_TO]-(user_prompt:USER_PROMPT)
         RETURN user_prompt.prompt AS prompt, user_prompt.response AS response, user_prompt.time AS time
-        ORDER by user_prompt.time
+        ORDER by user_prompt.time DESC
         """
         parameters = {"category_name": category_name}
         result = self.neo4jDriver.execute_read(get_messages_query, parameters)
