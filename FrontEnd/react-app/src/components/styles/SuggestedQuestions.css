@@ -1,56 +1,54 @@
 .response-textarea {
-  padding: 5px;
-  font-size: 10px;
-  width: 400px;
+  padding: var(--spacing-xs);
+  font-size: var(--font-size-xs);
+  width: 100%;
   max-width: 90%;
-  border: 1px solid #564dd2;
-  border-radius: 8px;
+  resize: vertical;
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
   outline: none;
-  background-color: #333;
-  color: #f5f5f5;
-  transition: all 0.3s ease-in-out;
-}
-.response-textarea:focus {
-  border-color: #82e4f3; /* Change color on focus for an interactive feel */
-  box-shadow: 0 0 10px #4498a5;
+  background-color: var(--color-input-bg-dark);
+  color: var(--color-input-text-dark);
+  transition: all var(--transition-fast);
 }
 
-/* Markdown suggested question text styling */
+.response-textarea:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 var(--shadow-focus-size) var(--color-shadow-focus);
+}
+
+/* Markdown Suggested Question Text Styling */
 .markdown-questions-for-prompt {
   text-align: left; /* Ensures markdown lists are well aligned */
-  font-size: 0.8em;
-  padding: 25px;
-  background-color: rgba(111, 111, 111, 0.05);
-  border-radius: 10px;
-  margin-top: 20px;
-  box-shadow: inset 0px 0px 15px rgba(124, 124, 124, 0.5);
-  transition: background-color 0.3s ease-in-out;}
+  font-size: var(--font-size-small-lg);
+  padding: var(--spacing-xxl);
+  background-color: var(--color-markdown-augmented-bg);
+  border-radius: var(--border-radius-lg);
+  margin-top: var(--spacing-xl);
+  box-shadow: var(--box-shadow-augmented);
+  transition: background-color var(--transition-fast);
+}
+
 .markdown-questions-for-prompt:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Subtle lightening on hover */
+  background-color: var(--color-markdown-hover-bg);
 }
 
 .questions-list {
   list-style-type: decimal;
-  padding-left: 20px;
+  padding-left: var(--spacing-xl);
 }
 
 .question-item {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 12px;
+  margin-bottom: var(--spacing-lg-md);
 }
 
 .question-text {
   flex: 1;
-  margin-right: 16px;
+  margin-right: var(--spacing-lg);
 }
 
 .response-form {
   flex: 1;
-}
-
-.response-textarea {
-  width: 100%;
-  resize: vertical;
-  border: 1px solid #ccc;
 }

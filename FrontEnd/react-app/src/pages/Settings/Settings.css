@@ -1,62 +1,53 @@
-/* Dark mode body styles */
-body.dark-mode {
-  background-color: #121212;
-  color: #ffffff;
-  transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition for dark mode toggle */
-}
-
-/* Light mode body styles */
 body {
-  background-color: #ffffff;
-  color: #000000;
-  transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition for dark mode toggle */
+  background-color: var(--color-white);
+  color: var(--color-text);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+body.dark-mode {
+  background-color: var(--color-body-bg-dark);
+  color: var(--color-white);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
-/* Container for settings */
 .settings-container {
   max-width: 800px;
-  margin: 50px auto;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
-  font-family: 'Montserrat', sans-serif; /* Consistent modern look */
+  margin: var(--spacing-xxxl) auto;
+  padding: var(--spacing-xl);
+  background: var(--color-settings-bg);
+  box-shadow: var(--box-shadow-settings);
+  border-radius: var(--border-radius-lg-md);
+  font-family: var(--font-family-base); /* Consistent modern look */
 }
 
-/* Heading for settings page */
 .settings-heading {
-  font-size: 2.5em;
+  font-size: var(--font-size-xxl);
   font-weight: bold;
-  margin-bottom: 20px;
-  text-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4); /* Give a subtle glowing effect */
+  margin-bottom: var(--spacing-xl);
+  text-shadow: var(--text-shadow-settings); /* Gives a subtle glowing effect */
 }
 
-/* Dark mode toggle label */
 .settings-label {
-  font-size: 1.3em;
-  margin-bottom: 20px;
+  font-size: var(--font-size-lg-md);
+  margin-bottom: var(--spacing-xl);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--spacing-md);
 }
 
-/* Checkbox for dark mode */
 .settings-checkbox {
   transform: scale(1.5);
-  accent-color: #61dafb; /* Customized color for the checkbox */
+  accent-color: var(--color-border-active); /* Customized color for the checkbox */
 }
 
-/* Button-like effect for links */
 .link:active {
   transform: translateY(0);
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--color-link-active-bg);
 }
 
-/* Navigation container styling */
 nav {
-  margin-bottom: 30px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  padding-bottom: 15px;
+  margin-bottom: var(--spacing-xxl-lg);
+  border-bottom: 1px solid var(--color-border-nav);
+  padding-bottom: var(--spacing-lg);
 }
 
 /* Smooth scrolling for navigation links */

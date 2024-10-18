@@ -1,77 +1,83 @@
 /* General container for the entire app */
 .app-container {
-  font-family: 'Montserrat', sans-serif; /* Switch to a modern sans-serif font for a cleaner look */
+  font-family: var(--font-family-base);
   text-align: center;
-  font-size: 16px;
+  font-size: var(--font-size-base);
   display: flex;
-  height: 100vh; /* Make the container take full height of the screen */
-  color: #000000; /* Light grey for better contrast */
-  padding: 20px;
+  height: 100vh;
+  color: var(--color-text);
+  padding: var(--spacing-md);
   margin: 0 auto;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow to give the container depth */
-  border-radius: 10px; /* Rounded corners for better visuals */
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(236, 236, 236, 0.9) 100%);
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-background);
 }
+
 body.dark-mode .app-container {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%);
-  color: #f2f2f2;
-  transition: background-color 0.5s ease, color 0.5s ease;
+  background: var(--color-background-dark);
+  color: var(--color-text-light);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 /* Heading styles for error or message */
 .app-heading {
-  font-size: 2.5em;
+  font-size: var(--font-size-large);
   font-weight: bold;
-  margin-bottom: 15px;
-  text-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Add shadow for depth */
+  margin-bottom: var(--spacing-sm);
+  text-shadow: var(--text-shadow);
 }
 
 /* Markdown output styling */
 .markdown-output {
-  text-align: left; /* Ensures markdown lists are well aligned */
-  font-size: 1em;
-  padding: 15px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  margin-top: 20px;
-  box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.5);
-  transition: background-color 0.3s ease-in-out;
+  text-align: left;
+  font-size: var(--font-size-markdown);
+  padding: var(--spacing-sm);
+  background-color: var(--color-markdown-bg);
+  border-radius: var(--border-radius-sm);
+  margin-top: var(--spacing-md);
+  box-shadow: var(--box-shadow-deep);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
+
 .markdown-output:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Subtle lightening on hover */
+  background-color: var(--color-markdown-hover-bg);
 }
 
 /* Link styling for navigation */
 .link {
   display: inline-block;
-  margin-top: 20px;
-  padding: 10px 15px;
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-sm);
   font-weight: bold;
-  font-size: 1.1em;
+  font-size: var(--font-size-link);
   text-decoration: none;
-  color: #353839;
-  transition: color 0.3s ease-in-out;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow to give the container depth */
-  border-radius: 10px; /* Rounded corners for better visuals */
-  background: rgba(236, 242, 242, 0.9); /* Semi-transparent background for better emphasis */
+  color: var(--color-link);
+  transition: color var(--transition-fast);
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius-sm);
+  background: var(--color-link-bg);
 }
+
 /* Add a subtle animation to the link */
 @keyframes link-bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-2px);
+    transform: var(--transform-bounce);
   }
 }
+
 .link:hover {
-  color: #f093fb;
-  animation: link-bounce 0.5s ease-in-out;
+  color: var(--color-link-hover);
+  animation: link-bounce var(--animation-duration) ease-in-out;
 }
+
 body.dark-mode .link {
-  background-color: rgba(40, 44, 52, 0.9);
-  color: #5199c6;
-  transition: background-color 0.5s ease, color 0.5s ease;
+  background-color: var(--color-link-bg-dark);
+  color: var(--color-link-dark);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 /* Smooth scroll behavior for a more polished navigation */
@@ -79,25 +85,29 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Left Pane */
 .left-pane {
-  width: 33%; /* Left pane takes 25% of the width */
-  background-color: #f4f4f4; /* Background color for differentiation */
-  padding: 10px;
-}
-body.dark-mode .left-pane {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.04) 100%);
-  color: #f2f2f2;
-  transition: background-color 0.5s ease, color 0.5s ease;
+  width: 33%;
+  background-color: var(--color-left-pane-bg);
+  padding: var(--spacing-xs);
 }
 
-.right-pane {
-  width: 64%; /* Right pane takes 75% of the width */
-  padding: 20px;
-  background-color: #fff;
-  overflow-y: auto; /* Allow scrolling if content overflows */
+body.dark-mode .left-pane {
+  background: var(--color-background-dark);
+  color: var(--color-text-light);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }
+
+/* Right Pane */
+.right-pane {
+  width: 64%;
+  padding: var(--spacing-md);
+  background-color: var(--color-right-pane-bg);
+  overflow-y: auto;
+}
+
 body.dark-mode .right-pane {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%);
-  color: #f2f2f2;
-  transition: background-color 0.5s ease, color 0.5s ease;
+  background: var(--color-background-dark);
+  color: var(--color-text-light);
+  transition: background-color var(--transition-normal), color var(--transition-normal);
 }

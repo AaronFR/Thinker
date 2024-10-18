@@ -1,48 +1,40 @@
-/* Input field styling */
 .prompt-input {
-  padding: 15px;
-  font-size: 12px;
-  width: 400px;
+  padding: var(--spacing-lg);
+  font-size: var(--font-size-small-md);
+  width: 80%;
   max-width: 90%;
-  border: 2px solid #564dd2;
-  border-radius: 8px;
+  border: 2px solid var(--color-border-input);
+  border-radius: var(--border-radius-md);
   outline: none;
-  background-color: #c7cfd1;
-  color: #333;
-  transition: all 0.3s ease-in-out;
+  background-color: var(--color-input-bg-light);
+  color: var(--color-input-text);
+  transition: all var(--transition-fast);
 }
 .prompt-input:focus {
-  border-color: #82e4f3; /* Change color on focus for an interactive feel */
-  box-shadow: 0 0 10px #4498a5;
-}
-.app-container.dark-mode {
-  background-color: rgba(40, 44, 52, 0.9);
-  color: #f5f5f5;
-  transition: background-color 0.5s ease, color 0.5s ease; /* Smooth transition for dark mode toggle */
+  border-color: var(--color-border-focus); /* Change color on focus for an interactive feel */
+  box-shadow: 0 0 var(--shadow-focus-size) var(--color-shadow-focus);
 }
 
-/* Submit button styling */
 .submit-button {
-    padding: 15px 25px;
-    margin-left: 10px;
-    font-size: 18px;
-    font-weight: bold;
-    color: #ffffff;
-    background: linear-gradient(45deg, #f093fb, #61dafb);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease-in-out;
-  }
-  .submit-button:hover {
-    background: linear-gradient(25deg, #f093fb, #61dafb);
-    transform: translateX(-3px); /* Adds a sliding effect on hover */
-  }
-  .submit-button:disabled {
-    background: #999999;
-    cursor: not-allowed;
-  }
-/* Animation for the button to look "pressed" on click */
+  padding: var(--spacing-lg) var(--spacing-xxl);
+  margin-left: var(--spacing-md);
+  font-size: var(--font-size-xl);
+  font-weight: bold;
+  color: var(--color-white);
+  background: linear-gradient(45deg, var(--color-link-hover), var(--color-border-active));
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.submit-button:hover {
+  background: linear-gradient(25deg, var(--color-link-hover), var(--color-border-active));
+  transform: var(--transform-slide-left); /* Adds a sliding effect on hover */
+}
+.submit-button:disabled {
+  background: var(--color-button-disabled);
+  cursor: not-allowed;
+}
 .submit-button:active {
-    transform: scale(0.95); /* Makes the button look pressed */
-  }
+  transform: scale(0.95); /* Makes the button look pressed */
+}
