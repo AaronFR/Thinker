@@ -226,11 +226,29 @@ def get_messages(category_name):
         category_name = category_name.lower()
         user_prompt_management = UserPromptManagement()
         messages = user_prompt_management.get_messages_by_category(category_name)
-        messages_list = [{"prompt": record["prompt"], "response": record["response"], "time": record["time"]}
-                         for record in messages]
+        messages_list = [
+            {"id": record["id"],
+             "prompt": record["prompt"],
+             "response": record["response"],
+             "time": record["time"]} for record in messages]
+
         return jsonify({"messages": messages_list}), 200
     except Exception as e:
         logging.exception(f"Failed to get messages for category, {category_name}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/messages/<message_id>', methods=['DELETE'])
+def delete_message(message_id):
+    try:
+        message_id = message_id
+        user_prompt_management = UserPromptManagement()
+        user_prompt_management.delete_message_by_id(message_id)
+
+        logging.info(f"User prompt node {message_id} deleted")
+        return jsonify({"message": f"Message {message_id} deleted successfully"}), 200
+    except Exception as e:
+        logging.exception(f"Failed to delete message {message_id}")
         return jsonify({"error": str(e)}), 500
 
 

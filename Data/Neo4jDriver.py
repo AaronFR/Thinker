@@ -21,3 +21,13 @@ class Neo4jDriver:
     def execute_read(self, query, parameters=None):
         with self.driver.session() as session:
             return session.read_transaction(lambda tx: list(tx.run(query, parameters)))
+
+    def execute_delete(self, query, parameters=None):
+        with self.driver.session() as session:
+            try:
+                session.write_transaction(lambda tx: tx.run(query, parameters))
+                logging.info(f"Successfully executed delete operation: {query} with params: {parameters}")
+            except Exception as e:
+                logging.error(f"Failed to execute write operation: {e}")
+                raise
+

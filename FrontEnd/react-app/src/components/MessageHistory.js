@@ -56,7 +56,6 @@ const MessageHistory = ({ isProcessing }) => {
       messages: []
     }));
 
-    console.log(data)
     setCategories(categoriesWithId)
   }
 
@@ -91,7 +90,21 @@ const MessageHistory = ({ isProcessing }) => {
     fetchCategories();
   }, []);
 
-  const MessageItem = ({ msg }) => {
+  const handleDeleteMessage = (categoryId, messageId) => {
+    // Create a new category list with the updated messages
+    const updatedCategories = categories.map((category) => {
+      if (category.id === categoryId) {
+        // Filter out the deleted message
+        const updatedMessages = category.messages.filter((msg) => msg.id !== messageId);
+        return { ...category, messages: updatedMessages };
+      }
+      return category;
+    });
+
+    setCategories(updatedCategories);
+  };
+
+  const MessageItem = ({ msg, onDelete }) => {
     const [isExpanded, setIsExpanded] = useState(false);
   
     const toggleExpansion = () => {
@@ -111,6 +124,22 @@ const MessageHistory = ({ isProcessing }) => {
     const markedFull = (text) => {
       return DOMPurify.sanitize(marked(text));
     };
+
+    const handleDelete = async () => {
+      try {
+        const response = await fetch(`${flask_port}/messages/${msg.id}`, {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete the message.");
+        }
+
+        onDelete(msg.id);  // Call the onDelete callback to remove the message from the UI
+      } catch (error) {
+        console.error("Error deleting the message:", error);
+      }
+    };
   
     return (
       <div key={msg.id} className="message-item" onClick={toggleExpansion} style={{ cursor: 'pointer' }}>
@@ -121,6 +150,9 @@ const MessageHistory = ({ isProcessing }) => {
           />
         </p>
         <p className='time'>{new Date(msg.time * 1000).toLocaleString()}</p>
+        <button onClick={handleDelete} className="delete-button">
+          Delete
+        </button>
       </div>
     );
   };
@@ -142,8 +174,12 @@ const MessageHistory = ({ isProcessing }) => {
                       {category.messages.length === 0 ? (
                         <p>Loading messages...</p>
                       ) : (
-                        category.messages.map((msg, index) => (
-                          <MessageItem key={index} msg={msg} />
+                        category.messages.map((msg) => (
+                          <MessageItem
+                            key={msg.id} 
+                            msg={msg} 
+                            onDelete={() => handleDeleteMessage(category.id, msg.id)} 
+                          />
                         ))
                       )}
                     </div>

@@ -76,9 +76,35 @@ class UserPromptManagement:
         get_messages_query = """
         MATCH (user:USER)-[:USES]->(category:CATEGORY {name: $category_name})
             <-[:BELONGS_TO]-(user_prompt:USER_PROMPT)
-        RETURN user_prompt.prompt AS prompt, user_prompt.response AS response, user_prompt.time AS time
+        RETURN id(user_prompt) AS id, user_prompt.prompt AS prompt, user_prompt.response AS response, user_prompt.time AS time
         ORDER by user_prompt.time DESC
         """
         parameters = {"category_name": category_name}
         result = self.neo4jDriver.execute_read(get_messages_query, parameters)
+        return result
+
+    def delete_message_by_id(self, message_id: int):
+        """
+        Deletes a specific message (isolated USER_PROMPT node) by its id.
+        If the CATEGORY the message is associated with has no more messages, it deletes the CATEGORY node as well.
+
+        :param message_id: ID of the message to be deleted (Neo4j internal id or custom id)
+        """
+        message_id = int(message_id)
+
+        delete_query = """
+        MATCH (message:USER_PROMPT)-[:BELONGS_TO]->(category:CATEGORY)
+        WHERE id(message) = $message_id
+        DETACH DELETE message
+        WITH category
+        OPTIONAL MATCH (category)<-[:BELONGS_TO]-(remaining_messages:USER_PROMPT)
+        WITH category, count(remaining_messages) AS remaining_count
+        WHERE remaining_count = 0
+        DETACH DELETE category
+        """
+        parameters = {
+            "message_id": message_id,
+        }
+
+        result = self.neo4jDriver.execute_delete(delete_query, parameters)
         return result
