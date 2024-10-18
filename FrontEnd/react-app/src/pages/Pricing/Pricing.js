@@ -15,7 +15,6 @@ function FormatPrice(price) {
     }
 }
 
-
 export function Pricing() {
     const [sessionCost, setSessionCost] = useState(0.0)
 
