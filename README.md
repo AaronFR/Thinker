@@ -63,20 +63,23 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 To refine the system's architecture and enhance its capabilities and efficiency, several key features are intended for implementation:
 
+- **4o and o1-mini**: Option in settings dependent on the workflow/persona
+
+- **Files**: upload files to work on and for future reference, visible attached to categorise and user prompts
+
 - **Micro thoughts**: Generated even while the prompt is being written. Question -> answer
   - ~~Generate list of questions in regard to prompt, if appropriate ask user~~, otherwise pull from memory.
   - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
-    - file references/uploaded files noted -> inform user and system how they should be processed.
 
-- **Persona Configuration**: Left to the user as much as possible, with the persona given an 'expensive_model' option, e.g. Coder
- could benefit from 4o or O1, but a writer would probably benefit from a detailed workflow on a basic model.
+- **Persona Configuration**: Left to the user as much as possible.
 
-- **Front end**: Developing a user interface at this stage would help illustrate how finer details like ~~selecting persona's~~/
- demonstrating personas in action, showing what their doing, what their referencing, ~~asking for questions~~, etc clearly.
- Facilitating the creation of these features.
-
-- **Graph Database**: utilise a singular graph database with nodes and edges to work as a better approximation of a mind, rather than disparate folders and files.
-  - more efficient too, allowing a single call by context to determine knowledge, user knowledge, configuration and memory context.
+- **Graph Database Implementation**: A lot of work was put into creating functionality which now needs to be done with a 
+ graph based methodology
+  - general knowledge
+  - user knowledge
+  - configuration (changes)
+  - Connecting relevant messages to the current prompt -> chain of messages displayed on the main section
+  - sub-categories (possibly)
 
 - **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can
  actually write its own tests automatically to full standard.
