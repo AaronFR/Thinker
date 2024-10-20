@@ -1,6 +1,8 @@
 import React from 'react';
 import './styles/UserInputForm.css';
 
+import FileUploadButton from './FileUploadButton';
+
 const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessing }) => {
   return (
     <form 
@@ -22,6 +24,7 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
       style={{ marginTop: '20px' }}
     >
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <FileUploadButton />
         <textarea
           value={userInput}
           onChange={handleInputChange}

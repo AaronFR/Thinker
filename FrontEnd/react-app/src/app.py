@@ -11,6 +11,8 @@ import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
+from werkzeug.utils import secure_filename
+
 
 
 # Add the project root to the Python path
@@ -78,6 +80,36 @@ def process_message():
     except Exception as e:
         logging.exception("Failed to process message")
         return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/file', methods=['POST'])
+def upload_file():
+    """
+    Accept a user file and try uploading it for future reference.
+
+    :returns: A Flask Response object containing a JSON representation of the processed message.
+    """
+    if 'file' not in request.files:
+        return jsonify({'message': 'No file part in the request.'}), 400
+
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({'message': 'No selected file.'}), 400
+
+    # ToDo: app.py needs to be put in the backend proper immediately
+    UPLOAD_DIRECTORY = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'thoughts', "0")
+
+    # Secure the filename to prevent directory traversal attacks
+    filename = secure_filename(file.filename)
+    file_path = os.path.join(UPLOAD_DIRECTORY, filename)
+
+    try:
+        file.save(file_path)
+        return jsonify({'message': 'File uploaded successfully.', 'filename': filename}), 200
+    except Exception as e:
+        print(f"Error saving file: {e}")
+        return jsonify({'message': 'File upload failed due to server error.'}), 500
 
 
 def get_selected_persona(data):
