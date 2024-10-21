@@ -65,7 +65,7 @@ def process_message():
 
         # ToDo: should be a ancillary side job, currently slows down recieving a response if the database doesn't respond quickly
         user_prompt_management = UserPromptManagement()
-        user_prompt_management.create_user_prompt_node(user_prompt, response_message)
+        result = user_prompt_management.create_user_prompt_node(user_prompt, response_message)
 
         return jsonify({"message": response_message})
     

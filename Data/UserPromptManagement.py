@@ -3,6 +3,7 @@ from datetime import datetime
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.CategoryManagement import CategoryManagement
+from Data.FileManagement import FileManagement
 from Data.Neo4jDriver import Neo4jDriver
 from Utilities import Constants
 
@@ -43,7 +44,7 @@ class UserPromptManagement:
         CREATE (user_prompt:USER_PROMPT {prompt: $prompt, response: $response, time: $time})
         MERGE (user)-[:USES]->(category)
         MERGE (user_prompt)-[:BELONGS_TO]->(category)
-        RETURN user_prompt, category
+        RETURN id(user_prompt) AS user_prompt_id
         """
         parameters = {
             "prompt": user_prompt,
@@ -52,11 +53,13 @@ class UserPromptManagement:
             "category": category
         }
 
-        result = self.neo4jDriver.execute_write(create_user_prompt_query, parameters)
+        user_prompt_id = self.neo4jDriver.execute_write(create_user_prompt_query, parameters, "user_prompt_id")
+        FileManagement.create_file_nodes_for_user_prompt(user_prompt_id, category)
+
         categoryManagement = CategoryManagement()
         categoryManagement.stage_files(user_prompt, category)
 
-        return result
+        return user_prompt_id
 
     def list_user_categories(self):
         """
