@@ -41,6 +41,7 @@ class Organising:
             #
             # logging.info(f"Selected: {selected_files}, \nfrom: {evaluation_files}")
 
+            selected_files = FileManagement.list_file_names()  # defaulting to grabbing staged files
             logging.info(f"Selected files: {selected_files}")
             return selected_files
         except Exception as e:
