@@ -5,7 +5,6 @@ This module sets up a Flask server to serve a simple development message
 in JSON format through the `/api/message` endpoint.
 """
 import logging
-import sys
 import os
 
 from flask import Flask, jsonify, request
@@ -13,10 +12,6 @@ from flask_cors import CORS
 
 from werkzeug.utils import secure_filename
 
-
-
-# Add the project root to the Python path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 from Functionality.Augmentation import Augmentation
 from Personas.Coder import Coder
 from Data.Configuration import Configuration
@@ -30,7 +25,7 @@ app = Flask(__name__)
 CORS(app)
 
 ERROR_NO_PROMPT = "No prompt found"
-
+STAGING_AREA = os.path.join(os.path.dirname(__file__), 'thoughts', "0")
 
 @app.route('/api/message', methods=['GET'])
 def get_message():
@@ -82,6 +77,31 @@ def process_message():
         return jsonify({"error": str(e)}), 500
 
 
+def get_selected_persona(data):
+    """ Determine the selected persona or default to 'coder'. """
+    persona_selection = data.get("persona")
+    if persona_selection == 'coder':
+        persona = Coder("Coder")
+    if persona_selection not in ['coder']:
+        logging.warning("Invalid persona selected, defaulting to coder")
+        return Coder("Default")
+    return persona
+
+
+@app.route('/messages/<message_id>', methods=['DELETE'])
+def delete_message(message_id):
+    try:
+        message_id = message_id
+        user_prompt_management = UserPromptManagement()
+        user_prompt_management.delete_message_by_id(message_id)
+
+        logging.info(f"User prompt node {message_id} deleted")
+        return jsonify({"message": f"Message {message_id} deleted successfully"}), 200
+    except Exception as e:
+        logging.exception(f"Failed to delete message {message_id}")
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/api/file', methods=['POST'])
 def upload_file():
     """
@@ -97,12 +117,9 @@ def upload_file():
     if file.filename == '':
         return jsonify({'message': 'No selected file.'}), 400
 
-    # ToDo: app.py needs to be put in the backend proper immediately
-    UPLOAD_DIRECTORY = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'thoughts', "0")
-
     # Secure the filename to prevent directory traversal attacks
     filename = secure_filename(file.filename)
-    file_path = os.path.join(UPLOAD_DIRECTORY, filename)
+    file_path = os.path.join(STAGING_AREA, filename)
 
     try:
         file.save(file_path)
@@ -112,15 +129,14 @@ def upload_file():
         return jsonify({'message': 'File upload failed due to server error.'}), 500
 
 
-def get_selected_persona(data):
-    """ Determine the selected persona or default to 'coder'. """
-    persona_selection = data.get("persona")
-    if persona_selection == 'coder':
-        persona = Coder("Coder")
-    if persona_selection not in ['coder']:
-        logging.warning("Invalid persona selected, defaulting to coder")
-        return Coder("Default")
-    return persona
+@app.route('/api/files', methods=['GET'])
+def list_files():
+    try:
+        files = os.listdir(STAGING_AREA)
+        return jsonify({'files': files}), 200
+    except Exception as e:
+        print(f"Error listing files: {e}")
+        return jsonify({'message': 'Failed to retrieve files.'}), 500
 
 
 @app.route('/api/augment_prompt', methods=['POST'])
@@ -267,20 +283,6 @@ def get_messages(category_name):
         return jsonify({"messages": messages_list}), 200
     except Exception as e:
         logging.exception(f"Failed to get messages for category, {category_name}")
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route('/messages/<message_id>', methods=['DELETE'])
-def delete_message(message_id):
-    try:
-        message_id = message_id
-        user_prompt_management = UserPromptManagement()
-        user_prompt_management.delete_message_by_id(message_id)
-
-        logging.info(f"User prompt node {message_id} deleted")
-        return jsonify({"message": f"Message {message_id} deleted successfully"}), 200
-    except Exception as e:
-        logging.exception(f"Failed to delete message {message_id}")
         return jsonify({"error": str(e)}), 500
 
 
