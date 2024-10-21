@@ -5,6 +5,7 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.CategoryManagement import CategoryManagement
 from Data.FileManagement import FileManagement
 from Data.Neo4jDriver import Neo4jDriver
+from Functionality.Organising import Organising
 from Utilities import Constants
 
 
@@ -54,12 +55,57 @@ class UserPromptManagement:
         }
 
         user_prompt_id = self.neo4jDriver.execute_write(create_user_prompt_query, parameters, "user_prompt_id")
-        FileManagement.create_file_nodes_for_user_prompt(user_prompt_id, category)
+        UserPromptManagement.create_file_nodes_for_user_prompt(user_prompt_id, category)
 
         categoryManagement = CategoryManagement()
         categoryManagement.stage_files(user_prompt, category)
 
         return user_prompt_id
+
+    @staticmethod
+    def create_file_nodes_for_user_prompt(user_prompt_id: str, category: str):
+        file_names = FileManagement.list_file_names()
+
+        for file_name in file_names:
+            UserPromptManagement.create_file_node(user_prompt_id, category, file_name)
+
+    @staticmethod
+    def create_file_node(user_prompt_id: str, category: str, file_name: str):
+        """
+        Saves a prompt - response pair as a USER_PROMPT in the neo4j database
+        Categorising the prompt and staging any attached files under that category
+
+        :param user_prompt_id: create the file node attached to the following message
+        :param category: The name of the category the file belongs to
+        :file_name: the name of the file, including extension
+        """
+        timestamp = int(datetime.now().timestamp())
+        content = FileManagement.read_file(file_name)
+        summary = Organising.summarise_content(content)
+
+        neo4jDriver = Neo4jDriver()
+        create_file_query = """
+            MERGE (user:USER)
+            MERGE (category:CATEGORY {name: $category})
+            WITH user, category
+            MATCH (user_prompt:USER_PROMPT)
+            WHERE id(user_prompt) = $user_prompt_id
+            CREATE (file:FILE {name: $name, timestamp: $timestamp, summary: $summary, structure: $structure})
+            MERGE (file)-[:ORIGINATES_FROM]->(user_prompt)
+            MERGE (file)-[:BELONGS_TO]->(category)
+            RETURN file
+            """
+        parameters = {
+            "category": category,
+            "user_prompt_id": user_prompt_id,
+            "name": file_name,
+            "timestamp": timestamp,
+            "summary": summary,
+            "structure": "PROTOTYPING"
+        }
+
+        result = neo4jDriver.execute_write(create_file_query, parameters)
+        return result
 
     def list_user_categories(self):
         """

@@ -41,7 +41,7 @@ class CategoryManagement:
         self.load_categories()
 
     def load_categories(self) -> None:
-        """Loads category data from a CSV file into the internal categories dictionary."""
+        """Loads category data from a CSV file into the internal categories' dictionary."""
         try:
             categories_df = pd.read_csv(self.categories_path, names=['id', 'category'], skiprows=1)
             self.categories = categories_df.set_index('id')['category'].to_dict()
@@ -67,41 +67,7 @@ class CategoryManagement:
         Globals.current_thought_id = 0  # staging area is 0 in 1-indexed thoughts folder structure
         files = FileManagement.list_file_names()
 
-        summaries = []
-        if files:
-            Organising.summarise_files(files)
-            files_with_summaries = Organising.get_files_with_summary()
-
-            for file_tuple in files_with_summaries:
-                file_name, summary_file_name = file_tuple
-                summaries.append(summary_file_name)
-
-        existing_categories = f"The following categories already exist: {self.categories.values()}"
-        executor = AiOrchestrator(summaries)
-
-        if not category:
-            #ToDo - occasionally returning incorrect schemas for generic prompts
-            categorisations = executor.execute_function(
-                ["Review the entered files and prompts and determine the category that fits these tasks best",
-                 existing_categories],
-                [user_prompt],
-                Constants.DETERMINE_CATEGORIES_FUNCTION_SCHEMA
-            )['categorisations']
-            logging.info(f"Suggested categorisations: {categorisations}")
-
-            if len(categorisations) > 1:
-                """Eventually these categorisations should be handled, i.e. a user includes an errant file just to get it
-                processed, but it might actually make more sense to just query for input twice. 
-                
-                allowing files to have separate categorisations breaks the 'all staged files can be processed together' rule
-                For now during prototyping, we will just note when the system *wants* to use multiple categorisations
-                """
-
-                logging.warning("\n\n'MULTIPLE CATEGORISATIONS'  ⚠⚠️⚠\n\n")
-
-            category = categorisations[0]['category']
-
-        id = self._return_id_for_category(category, executor)
+        id = self._return_id_for_category(category)
         logging.info(f"Category selected: [{id}] - {category}")
         Globals.current_thought_id = id
 
@@ -109,7 +75,7 @@ class CategoryManagement:
             return
 
         try:
-            for file in files + summaries:
+            for file in files:
                 staged_file_path = os.path.join(FileManagement.thoughts_directory, "0", file)
                 new_file_path = os.path.join(FileManagement.thoughts_directory, str(id), file)
                 shutil.move(staged_file_path, new_file_path)
@@ -117,36 +83,21 @@ class CategoryManagement:
         except Exception:
             logging.exception(f"ERROR: Failed to move all files: {files} to folder: {id} .")
 
-    def _return_id_for_category(self, category_name: str, executor: AiOrchestrator) -> Optional[str]:
+
+    def _return_id_for_category(self, category_name: str) -> Optional[str]:
         """Retrieves the ID for the specified category, creating a new category if necessary.
 
         :param category_name: The name of the category associated with an existing category ID.
-        :param executor: An instance of AiOrchestrator for category determination.
         :return: The category ID if found, otherwise None.
         """
         reversed_categories = {v: k for k, v in self.categories.items()}
         id = reversed_categories.get(category_name, False)
 
         if not id:
-            # possible_category = executor.execute(
-            #     ["Given the input file and the previous list of categories to id number, is the given input synonym for"
-            #      " any other category? "
-            #      "Just return the name of the category, if nothing is similar please just respond with 'False'."
-            #      "Please be very harsh in your evaluation, only return a possible category if it really SHOULD have"
-            #      "Been assigned this category but wasn't, it needs to be the same categorically, not just *similar*",
-            #      f"category id with category csv: \n{self.categories}"],
-            #     [category_name]
-            # )
-            # logging.info("Possible category: " + possible_category)
-            possible_category = "False"
+            id = FileManagement.get_current_thought_id()
+            self._add_new_category(id, category_name)
 
-            if possible_category != "False":
-                id = reversed_categories.get(possible_category)
-            else:
-                id = FileManagement.get_current_thought_id()
-                self._add_new_category(id, category_name)
-
-                logging.info(f"New category created: [{id}] - {category_name}")
+            logging.info(f"New category created: [{id}] - {category_name}")
 
         return id
 

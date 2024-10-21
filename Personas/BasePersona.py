@@ -7,6 +7,7 @@ from Data.CategoryManagement import CategoryManagement
 from Data.Configuration import Configuration
 
 from Data.EncyclopediaManagement import EncyclopediaManagement
+from Data.FileManagement import FileManagement
 from Data.UserEncyclopediaManagement import UserEncyclopediaManagement
 from Functionality.Organising import Organising
 from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
@@ -121,7 +122,7 @@ class BasePersona:
         """
         logging.info("Processing user messages: %s", user_messages)
 
-        selected_files = Organising.get_relevant_files(user_messages)
+        selected_files = FileManagement.list_file_names()
         executor = AiOrchestrator(selected_files)
         config = Configuration.load_config()
 

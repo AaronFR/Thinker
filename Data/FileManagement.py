@@ -154,50 +154,6 @@ class FileManagement:
             logging.exception(f"ERROR: could not save file_name: {file_path}")
 
     @staticmethod
-    def create_file_nodes_for_user_prompt(user_prompt_id: str, category: str):
-        file_names = FileManagement.list_file_names()
-
-        for file_name in file_names:
-            FileManagement.create_file_node(user_prompt_id, category, file_name)
-
-
-    @staticmethod
-    def create_file_node(user_prompt_id: str, category: str, file_name: str):
-        """
-        Saves a prompt - response pair as a USER_PROMPT in the neo4j database
-        Categorising the prompt and staging any attached files under that category
-
-        :param user_prompt_id: create the file node attached to the following message
-        :param category: The name of the category the file belongs to
-        :file_name: the name of the file, including extension
-        """
-        timestamp = int(datetime.now().timestamp())
-        neo4jDriver = Neo4jDriver()
-
-        create_file_query = """
-        MERGE (user:USER)
-        MERGE (category:CATEGORY {name: $category})
-        WITH user, category
-        MATCH (user_prompt:USER_PROMPT)
-        WHERE id(user_prompt) = $user_prompt_id
-        CREATE (file:FILE {name: $name, timestamp: $timestamp, summary: $summary, structure: $structure})
-        MERGE (file)-[:ORIGINATES_FROM]->(user_prompt)
-        MERGE (file)-[:BELONGS_TO]->(category)
-        RETURN file
-        """
-        parameters = {
-            "category": category,
-            "user_prompt_id": user_prompt_id,
-            "name": file_name,
-            "timestamp": timestamp,
-            "summary": "PROTOTYPING",
-            "structure": "PROTOTYPING"
-        }
-
-        result = neo4jDriver.execute_write(create_file_query, parameters)
-        return result
-
-    @staticmethod
     def _get_file_path(file_name: str) -> str:
         """Get the full path for a file_name in the given thought and file_name name.
 
