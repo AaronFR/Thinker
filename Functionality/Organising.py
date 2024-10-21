@@ -15,7 +15,7 @@ class Organising:
     def get_relevant_files(input: List[str]) -> List[str]:
         """Retrieves relevant files based on the input question.
 
-        ToDo: Optimisation, including a quick check to filter if a question should *even* be referencing other files and
+        ToDo Optimisation, including a quick check to filter if a question should *even* be referencing other files and
          if so which files should it even read the summary of
 
         :param input: A list of input questions

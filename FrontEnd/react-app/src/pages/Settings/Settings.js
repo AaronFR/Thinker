@@ -47,7 +47,6 @@ export function SettingsProvider({ children }) {
     questionUserPromptsEnabled: true,
     userEncyclopediaEnabled: false,
     encyclopediaEnabled: false,
-    categorisationEnabled: false,
     multiFileProcessingEnabled: false
   });
 
@@ -63,7 +62,6 @@ export function SettingsProvider({ children }) {
           questionUserPromptsEnabled: loadedConfig.beta_features.question_user_prompts_enabled ?? false,
           userEncyclopediaEnabled: loadedConfig.beta_features.user_encyclopedia_enabled ?? false,
           encyclopediaEnabled: loadedConfig.beta_features.encyclopedia_enabled ?? false,
-          categorisationEnabled: loadedConfig.beta_features.categorisation_enabled ?? false,
           multiFileProcessingEnabled: loadedConfig.beta_features.multi_file_processing_enabled ?? false,
         }));
       }
@@ -90,7 +88,6 @@ export function SettingsProvider({ children }) {
       toggleQuestionUserPrompts: () => toggleSetting('beta_features.question_user_prompts_enabled', 'questionUserPromptsEnabled'),
       toggleUserEncyclopedia: () => toggleSetting('beta_features.user_encyclopedia_enabled', 'userEncyclopediaEnabled'),
       toggleEncyclopedia: () => toggleSetting('beta_features.encyclopedia_enabled', 'encyclopediaEnabled'),
-      toggleCategorisation: () => toggleSetting('beta_features.categorisation_enabled', 'categorisationEnabled'),
       toggleMultiFileProcessing: () => toggleSetting('beta_features.multi_file_processing_enabled', 'multiFileProcessingEnabled'),
     }}>
       {children}
@@ -106,7 +103,6 @@ export function Settings() {
     toggleQuestionUserPrompts,
     toggleUserEncyclopedia,
     toggleEncyclopedia,
-    toggleCategorisation,
     toggleMultiFileProcessing
   } = React.useContext(SettingsContext);
 
@@ -123,8 +119,6 @@ export function Settings() {
      value: settings.userEncyclopediaEnabled, onChange: toggleUserEncyclopedia },
     { label: "Reference knowledge - The thinker will look up details online (Wikipedia currently) and use them in reference to your prompt where appropriate",
      value: settings.encyclopediaEnabled, onChange: toggleEncyclopedia },
-    { label: "Categorisation - input files and generated files will be categorised by context e.g. 'notes' ",
-     value: settings.categorisationEnabled, onChange: toggleCategorisation },
     { label: "Multi file processing - personas can operate on multiple files at once (unstable)",
      value: settings.multiFileProcessingEnabled, onChange: toggleMultiFileProcessing },
   ];

@@ -42,10 +42,6 @@ class BasePersona:
         """
         config = Configuration.load_config()
         if Utility.is_valid_prompt(user_prompt):
-            if config['beta_features']['categorisation_enabled']:
-                category_management = CategoryManagement()
-                category_management.stage_files(user_prompt)
-
             if config['beta_features']['user_encyclopedia_enabled']:
                 user_encyclopedia_manager = UserEncyclopediaManagement()
                 user_encyclopedia_manager.add_to_encyclopedia([user_prompt])
@@ -68,11 +64,7 @@ class BasePersona:
             elif user_input.lower() == 'history':
                 self.display_history()
             elif Utility.is_valid_prompt(user_input):
-                if config['beta_features']['categorisation_enabled']:
-                    category_management = CategoryManagement()
-                    category_management.stage_files(user_input)
 
-                
                 if config['beta_features']['user_encyclopedia_enabled']:
                     user_encyclopedia_manager = UserEncyclopediaManagement()
                     user_encyclopedia_manager.add_to_encyclopedia([user_input])
