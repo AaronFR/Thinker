@@ -21,24 +21,29 @@ class Organising:
         :param input: A list of input questions
         :return A list of selected file names that are deemed relevant to the input questions
         """
-        evaluation_files = FileManagement.list_file_names()
-        if not evaluation_files:
-            logging.warning("No evaluation files found.")
-            return []
-
-        Organising.summarise_files(evaluation_files)
-        summaries = Organising.get_files_with_summary()
-
-        executor = AiOrchestrator()
+        logging.info("GET_RELEVANT_FILES triggered")
+        # evaluation_files = FileManagement.list_file_names()
+        # if not evaluation_files:
+        #     logging.warning("No evaluation files found.")
+        #     return []
+        #
+        # Organising.summarise_files(evaluation_files)
+        # summaries = Organising.get_files_with_summary()
+        #
+        # executor = AiOrchestrator()
         try:
-            output = executor.execute_function(
-                [Organising._build_file_query_prompt(summaries)],
-                input,
-                SELECT_FILES_FUNCTION_SCHEMA
-            )
-            selected_files = output.get('files', [])
+            # output = executor.execute_function(
+            #     [Organising._build_file_query_prompt(summaries)],
+            #     input,
+            #     SELECT_FILES_FUNCTION_SCHEMA
+            # )
+            # selected_files = output.get('files', [])
+            #
+            # logging.info(f"Selected: {selected_files}, \nfrom: {evaluation_files}")
 
-            logging.info(f"Selected: {selected_files}, \nfrom: {evaluation_files}")
+            logging.info("!!!!! WHATS GOING ON?")
+            selected_files = FileManagement.list_file_names("0")  # defaulting to grabbing staged files
+            logging.info(f"Selected files: {selected_files}")
             return selected_files
         except Exception as e:
             logging.exception("Error retrieving relevant files", e)

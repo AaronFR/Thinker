@@ -19,6 +19,9 @@ class MyDumper(yaml.Dumper):
         return super().represent_scalar(tag, value, style)
 
 
+staging_index = "0"
+
+
 class FileManagement:
     """
     Class for managing files related to tasks and solutions.
@@ -30,9 +33,9 @@ class FileManagement:
 
     thoughts_directory = os.path.join(os.path.dirname(__file__), '..', 'thoughts')
 
+
     def __init__(self):
         ErrorHandler.setup_logging()
-
 
     @staticmethod
     def list_file_names() -> List[str]:
@@ -71,7 +74,7 @@ class FileManagement:
 
         :return: The folder path for the given thought ID
         """
-        return os.path.join(FileManagement.thoughts_directory, str(Globals.current_thought_id))
+        return os.path.join(FileManagement.thoughts_directory, str(staging_index))
 
     @staticmethod
     def get_numbered_string(lines) -> str:
@@ -86,7 +89,7 @@ class FileManagement:
         :param number_lines: Flag to determine if the content should be returned as numbered lines
         :return: The content of the file or an error message to inform the next LLM what happened
         """
-        full_path = os.path.join(FileManagement.thoughts_directory, str(Globals.current_thought_id), file_path)
+        full_path = os.path.join(FileManagement.thoughts_directory, staging_index, file_path)
         logging.info(f"Loading file_name content from: {full_path}")
 
         try:

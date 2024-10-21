@@ -9,24 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- A front end to interactive with 🎉
-  - A main page where the user can send prompts with options for prompt augmentation
-  - Settings page where users can toggle beta features
-    - Dark mode 😎
-  - Pricing page placeholder that gives current session costs
-- A database to save user messages, allowing the system to finally display and retain message history
-- Configuration: Beta features can be enabled or disabled from settings
-- Micro thoughts - processes that run in the background to improve prompts and responses
-  - Augmented prompt is suggested to the user
-  - Automatically generated questions, that are presented to the user, giving the opertunity to supply additional context to a given prompt
+- User can upload files for reference in their prompts
 
 ### Changed
 
-- Coder: write_workflow streamlined, now quicker while more consistent and versatile
-- Message Processing: The most important message for chatGpt is the last AKA 'latest' message, Ai Orchestration has been
- corrected to use this design properly leading to less confused and erroneous operations by the system
-- Resolved an issue where the application says it doesn't have access to a file, because the file name wasn't supplied with
- the associated content.
+- 
 
 ### Removed
 
