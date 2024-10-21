@@ -11,7 +11,6 @@ class UserPromptManagement:
     def __init__(self):
         self.neo4jDriver = Neo4jDriver()
         self.executor = AiOrchestrator()
-        self.prompt_id_counter = 1  # ToDo: - irrelevant
 
     def create_user_prompt_node(self, user_prompt, llm_response):
         """
@@ -23,8 +22,6 @@ class UserPromptManagement:
         :return:
         """
         timestamp = int(datetime.now().timestamp())
-        prompt_id = self.prompt_id_counter
-        self.prompt_id_counter += 1
 
         categories = self.list_user_categories()
         categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n" + \
@@ -43,13 +40,12 @@ class UserPromptManagement:
         create_user_prompt_query = """
         MERGE (user:USER)
         MERGE (category:CATEGORY {name: $category})
-        CREATE (user_prompt:USER_PROMPT {id: $id, prompt: $prompt, response: $response, time: $time})
+        CREATE (user_prompt:USER_PROMPT {prompt: $prompt, response: $response, time: $time})
         MERGE (user)-[:USES]->(category)
         MERGE (user_prompt)-[:BELONGS_TO]->(category)
         RETURN user_prompt, category
         """
         parameters = {
-            "id": prompt_id,
             "prompt": user_prompt,
             "response": llm_response,
             "time": timestamp,
