@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 
 const flask_port = "http://localhost:5000";
 
-const FileUploadButton = () => {
+const FileUploadButton = ({ onUploadSuccess }) => {
   const [uploadStatus, setUploadStatus] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
-  // Handle file selection and upload
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     
@@ -17,33 +17,55 @@ const FileUploadButton = () => {
 
     setUploadStatus('Uploading...');
     setIsUploading(true);
+    setUploadProgress(0);
 
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-      const response = await fetch(`${flask_port}/api/file`, {
-        method: "POST",
-        body: formData,
-      });
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", `${flask_port}/api/file`, true);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        setUploadStatus(`Upload failed: ${errorData.message || 'Unknown error'}`);
-        console.error('Error uploading file:', errorData);
+      // Track upload progress
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percentComplete = Math.round((event.loaded / event.total) * 100);
+          setUploadProgress(percentComplete);
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          const data = JSON.parse(xhr.responseText);
+          setUploadStatus('File uploaded successfully!');
+          console.log('Success:', data);
+          if (onUploadSuccess) {
+            onUploadSuccess(data.filename);
+          }
+        } else {
+          const errorData = JSON.parse(xhr.responseText);
+          setUploadStatus(`Upload failed: ${errorData.message || 'Unknown error'}`);
+          console.error('Error uploading file:', errorData);
+        }
         setIsUploading(false);
-        return;
-      }
+        setUploadProgress(0);
+      };
 
-      const data = await response.json();
-      setUploadStatus('File uploaded successfully!');
-      console.log('Success:', data);
+      xhr.onerror = () => {
+        setUploadStatus('File upload failed.');
+        console.error('Error uploading file:', xhr.statusText);
+        setIsUploading(false);
+        setUploadProgress(0);
+      };
+
+      xhr.send(formData);
     } catch (error) {
       setUploadStatus('File upload failed.');
       console.error('Error uploading file:', error);
-    } finally {
       setIsUploading(false);
-      event.target.value = null;
+      setUploadProgress(0);
+    } finally {
+      event.target.value = null; // Reset the file input
     }
   };
 
@@ -56,6 +78,20 @@ const FileUploadButton = () => {
         style={{ cursor: isUploading ? 'not-allowed' : 'pointer' }}
       />
       {uploadStatus && <p>{uploadStatus}</p>}
+      {isUploading && (
+        <div style={{ width: '100%', backgroundColor: '#f3f3f3', borderRadius: '4px', marginTop: '10px' }}>
+          <div 
+            style={{ 
+              width: `${uploadProgress}%`, 
+              height: '10px', 
+              backgroundColor: '#4caf50', 
+              borderRadius: '4px',
+              transition: 'width 0.3s'
+            }}
+          ></div>
+        </div>
+      )}
+      {isUploading && <p>{uploadProgress}%</p>}
     </div>
   );
 };
