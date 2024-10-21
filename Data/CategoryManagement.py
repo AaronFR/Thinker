@@ -54,7 +54,7 @@ class CategoryManagement:
         except Exception as e:
             logging.exception("Error loading encyclopedia data: %s", exc_info=e)
 
-    def stage_files(self, user_prompt: str):
+    def stage_files(self, user_prompt: str, category=None):
         """
         Stages files into a specific category based on user prompt.
 
@@ -62,6 +62,7 @@ class CategoryManagement:
         according to their content with the help of an AI orchestrator.
 
         :param user_prompt: The user-provided prompt to assist with categorisation.
+        :param category: If defined the system will categorise the staged files with the given category, otherwise a category will be generated
         """
         Globals.current_thought_id = 0  # staging area is 0 in 1-indexed thoughts folder structure
         files = FileManagement.list_file_names()
@@ -77,29 +78,31 @@ class CategoryManagement:
 
         existing_categories = f"The following categories already exist: {self.categories.values()}"
         executor = AiOrchestrator(summaries)
-        #ToDo - occasionally returning incorrect schemas for generic prompts
-        categorisations = executor.execute_function(
-            ["Review the entered files and prompts and determine the category that fits these tasks best",
-             existing_categories],
-            [user_prompt],
-            Constants.DETERMINE_CATEGORIES_FUNCTION_SCHEMA
-        )['categorisations']
-        logging.info(f"Suggested categorisations: {categorisations}")
 
-        if len(categorisations) > 1:
-            """Eventually these categorisations should be handled, i.e. a user includes an errant file just to get it
-            processed, but it might actually make more sense to just query for input twice. 
-            
-            allowing files to have separate categorisations breaks the 'all staged files can be processed together' rule
-            For now during prototyping, we will just note when the system *wants* to use multiple categorisations
-            """
+        if not category:
+            #ToDo - occasionally returning incorrect schemas for generic prompts
+            categorisations = executor.execute_function(
+                ["Review the entered files and prompts and determine the category that fits these tasks best",
+                 existing_categories],
+                [user_prompt],
+                Constants.DETERMINE_CATEGORIES_FUNCTION_SCHEMA
+            )['categorisations']
+            logging.info(f"Suggested categorisations: {categorisations}")
 
-            logging.warning("\n\n'MULTIPLE CATEGORISATIONS'  ⚠⚠️⚠\n\n")
+            if len(categorisations) > 1:
+                """Eventually these categorisations should be handled, i.e. a user includes an errant file just to get it
+                processed, but it might actually make more sense to just query for input twice. 
+                
+                allowing files to have separate categorisations breaks the 'all staged files can be processed together' rule
+                For now during prototyping, we will just note when the system *wants* to use multiple categorisations
+                """
 
+                logging.warning("\n\n'MULTIPLE CATEGORISATIONS'  ⚠⚠️⚠\n\n")
 
-        category_name = categorisations[0]['category']
-        id = self._return_id_for_category(category_name, executor)
-        logging.info(f"Category selected: [{id}] - {category_name}")
+            category = categorisations[0]['category']
+
+        id = self._return_id_for_category(category, executor)
+        logging.info(f"Category selected: [{id}] - {category}")
         Globals.current_thought_id = id
 
         if not files:
@@ -125,16 +128,17 @@ class CategoryManagement:
         id = reversed_categories.get(category_name, False)
 
         if not id:
-            possible_category = executor.execute(
-                ["Given the input file and the previous list of categories to id number, is the given input synonym for"
-                 " any other category? "
-                 "Just return the name of the category, if nothing is similar please just respond with 'False'."
-                 "Please be very harsh in your evaluation, only return a possible category if it really SHOULD have"
-                 "Been assigned this category but wasn't, it needs to be the same categorically, not just *similar*",
-                 f"category id with category csv: \n{self.categories}"],
-                [category_name]
-            )
-            logging.info("Possible category: " + possible_category)
+            # possible_category = executor.execute(
+            #     ["Given the input file and the previous list of categories to id number, is the given input synonym for"
+            #      " any other category? "
+            #      "Just return the name of the category, if nothing is similar please just respond with 'False'."
+            #      "Please be very harsh in your evaluation, only return a possible category if it really SHOULD have"
+            #      "Been assigned this category but wasn't, it needs to be the same categorically, not just *similar*",
+            #      f"category id with category csv: \n{self.categories}"],
+            #     [category_name]
+            # )
+            # logging.info("Possible category: " + possible_category)
+            possible_category = "False"
 
             if possible_category != "False":
                 id = reversed_categories.get(possible_category)

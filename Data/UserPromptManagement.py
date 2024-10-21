@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Data.CategoryManagement import CategoryManagement
 from Data.Neo4jDriver import Neo4jDriver
 from Utilities import Constants
 
@@ -13,6 +14,14 @@ class UserPromptManagement:
         self.prompt_id_counter = 1  # ToDo: - irrelevant
 
     def create_user_prompt_node(self, user_prompt, llm_response):
+        """
+        Saves a prompt - response pair as a USER_PROMPT in the neo4j database
+        Categorising the prompt and staging aany attached files under that category
+
+        :param user_prompt: The given user prompt
+        :param llm_response: The final response from the system
+        :return:
+        """
         timestamp = int(datetime.now().timestamp())
         prompt_id = self.prompt_id_counter
         self.prompt_id_counter += 1
@@ -48,6 +57,9 @@ class UserPromptManagement:
         }
 
         result = self.neo4jDriver.execute_write(create_user_prompt_query, parameters)
+        categoryManagement = CategoryManagement()
+        categoryManagement.stage_files(user_prompt, category)
+
         return result
 
     def list_user_categories(self):
