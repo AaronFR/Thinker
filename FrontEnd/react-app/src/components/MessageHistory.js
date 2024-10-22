@@ -1,21 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import DOMPurify from 'dompurify';
-import { marked } from 'marked';
+import PropTypes from 'prop-types';
+
+import MessageItem from './MessageItem';
+
 import './styles/MessageHistory.css';
 
 const flask_port= "http://localhost:5000"
 
+/**
+ * MessageHistory Component
+ * 
+ * Displays a list of message categories and their respective messages.
+ * Allows users to expand/collapse categories, view message details, select messages, and delete messages.
+ * 
+ * Props:
+ * - isProcessing (boolean): Indicates if the app is currently processing data.
+ */
 const MessageHistory = ({ isProcessing }) => {
-  const [categories, setCategories] = useState(null)
-  const [expandedCategory, setExpandedCategory] = useState(null);
+  const [categories, setCategories] = useState([])
+  const [expandedCategoryId, setExpandedCategoryId] = useState(null);
 
-  const abridged_text_length = 160
+  const abridgedTextLength = 160
 
+  /**
+   * Toggles the expansion of a category.
+   * If the category is already expanded, it collapses it.
+   * Otherwise, it expands the category and fetches its messages if not already loaded.
+   * 
+   * @param {number} id - The ID of the category.
+   * @param {string} name - The name of the category.
+   */
   const toggleCategory = async (id, name) => {
-    if (expandedCategory === id) {
-      setExpandedCategory(null); // Collapse if already expanded
+    if (expandedCategoryId === id) {
+      setExpandedCategoryId(null); // Collapse if already expanded
     } else {
-      setExpandedCategory(id); // Expand the clicked category
+      setExpandedCategoryId(id); // Expand the clicked category
 
       // Check if this category already has messages loaded
       const categoryIndex = categories.findIndex(cat => cat.id === id);
@@ -28,15 +47,26 @@ const MessageHistory = ({ isProcessing }) => {
     }
   };
 
-  function toTitleCase(string) {
+  /**
+   * Converts a string to Title Case.
+   * 
+   * @param {string} string - The string to convert.
+   * @returns {string} - The Title Cased string.
+   */
+  const toTitleCase = (string) => {
     return string
       .toLowerCase()
       .split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
-  }
+  };
 
-  const fetchCategories = async (e) => {
+  /**
+   * Fetches message categories from the backend API.
+   * 
+   * @returns {Promise<void>}
+   */
+  const fetchCategories = async () => {
     const response = await fetch(`${flask_port}/categories`, {
       method: "GET",
       headers: {
@@ -59,6 +89,13 @@ const MessageHistory = ({ isProcessing }) => {
     setCategories(categoriesWithId)
   }
 
+  /**
+   * Fetches messages for a specific category from the backend API.
+   * 
+   * @param {string} categoryName - The name of the category.
+   * @param {number} categoryId - The ID of the category.
+   * @returns {Promise<void>}
+   */
   const fetchMessagesByCategory = async (categoryName, categoryId) => {
     try {
       console.log(categoryName.toLowerCase())
@@ -84,12 +121,20 @@ const MessageHistory = ({ isProcessing }) => {
     } catch (error) {
       console.error("Error fetching messages:", error)
     }
-  }
+  };
 
+  
+  // Fetch categories when the component mounts
   useEffect(() => {
     fetchCategories();
   }, []);
 
+  /**
+   * Handles the deletion of a message.
+   * 
+   * @param {number} categoryId - The ID of the category containing the message.
+   * @param {number} messageId - The ID of the message to delete.
+   */
   const handleDeleteMessage = (categoryId, messageId) => {
     // Create a new category list with the updated messages
     const updatedCategories = categories.map((category) => {
@@ -104,94 +149,48 @@ const MessageHistory = ({ isProcessing }) => {
     setCategories(updatedCategories);
   };
 
-  const MessageItem = ({ msg, onDelete }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-  
-    const toggleExpansion = () => {
-      setIsExpanded(!isExpanded);
-    };
-  
-    const shortenText = (text) => {
-      return text.length > abridged_text_length ? text.slice(0, abridged_text_length) + '...' : text;
-    };
-
-    const shortenAndMarkupText = (text) => {
-      const shortenedText = text.length > abridged_text_length ? text.slice(0, abridged_text_length) + '...' : text;
-      const markedShortened = marked(shortenedText);
-      return DOMPurify.sanitize(markedShortened);
-    };
-  
-    const markedFull = (text) => {
-      return DOMPurify.sanitize(marked(text));
-    };
-
-    const handleDelete = async () => {
-      try {
-        const response = await fetch(`${flask_port}/messages/${msg.id}`, {
-          method: 'DELETE',
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to delete the message.");
-        }
-
-        onDelete(msg.id);  // Call the onDelete callback to remove the message from the UI
-      } catch (error) {
-        console.error("Error deleting the message:", error);
-      }
-    };
-  
-    return (
-      <div key={msg.id} className="message-item" onClick={toggleExpansion} style={{ cursor: 'pointer' }}>
-        <p><strong>Prompt:</strong> {isExpanded ? msg.prompt : shortenText(msg.prompt)}</p>
-        <p><strong>Response:</strong> 
-          <span 
-            dangerouslySetInnerHTML={{ __html: isExpanded ? markedFull(msg.response) : shortenAndMarkupText(msg.response) }}
-          />
-        </p>
-        <p className='time'>{new Date(msg.time * 1000).toLocaleString()}</p>
-        <button onClick={handleDelete} className="delete-button">
-          Delete
-        </button>
-      </div>
-    );
-  };
-
   return (
     <div className="message-history-container" style={{ opacity: isProcessing ? 0.5 : 1 }}>
-      <div className="sidebar">
-        <h2>Messages</h2>
-        <div className="category-list">
-          {categories && categories.length > 0 ? (
-            categories.map(
-              (category) => (
-                <div key={category.id} className="category-item">
-                  <div className="category-title" onClick={() => toggleCategory(category.id, category.name)}>
-                    {category.name}
-                  </div>
-                  {expandedCategory === category.id && (
-                    <div className="message-list">
-                      {category.messages.length === 0 ? (
-                        <p>Loading messages...</p>
-                      ) : (
-                        category.messages.map((msg) => (
-                          <MessageItem
-                            key={msg.id} 
-                            msg={msg} 
-                            onDelete={() => handleDeleteMessage(category.id, msg.id)} 
-                          />
-                        ))
-                      )}
-                    </div>
+      <h2>Messages</h2>
+      <section className="category-list">
+        {categories.length > 0 ? (
+          categories.map((category) => (
+            <div key={category.id} className="category-item">
+              <header 
+                className="category-title" 
+                onClick={() => toggleCategory(category.id, category.name)}
+                tabIndex={0}
+                role="button"
+                onKeyPress={(e) => { if (e.key === 'Enter') toggleCategory(category.id, category.name); }}
+                aria-expanded={expandedCategoryId === category.id}
+              >
+                {category.name}
+              </header>
+              {expandedCategoryId === category.id && (
+                <div className="message-list">
+                  {category.messages.length === 0 ? (
+                    <p>Loading messages...</p>
+                  ) : (
+                    category.messages.map((msg) => (
+                      <MessageItem
+                        key={msg.id} 
+                        msg={msg} 
+                        onDelete={() => handleDeleteMessage(category.id, msg.id)} 
+                      />
+                    ))
                   )}
                 </div>
-              )
-            )
-          ) : <div />}
-        </div>
-      </div>
+              )}
+            </div>
+          ))
+        ) : <div />}
+      </section>
     </div>
   );
+};
+
+MessageHistory.propTypes = {
+  isProcessing: PropTypes.bool.isRequired,
 };
 
 export default MessageHistory;

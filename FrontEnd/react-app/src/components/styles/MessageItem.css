@@ -1,0 +1,33 @@
+/* components/styles/MessageItem.module.css */
+.message-item {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  transition: background-color 0.3s;
+}
+
+.message-item:hover {
+  background-color: #f1f1f1;
+}
+
+.delete-button {
+  background-color: #3a3232;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  float: left;
+}
+
+.delete-button:hover {
+  background-color: #c0392b;
+}
+
+.time {
+  font-size: 12px;
+  color: #555;
+  margin-top: 5px;
+}
