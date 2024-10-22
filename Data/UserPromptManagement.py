@@ -17,13 +17,13 @@ class UserPromptManagement:
     def create_user_prompt_node(self, user_prompt, llm_response):
         """
         Saves a prompt - response pair as a USER_PROMPT in the neo4j database
-        Categorising the prompt and staging aany attached files under that category
+        Categorising the prompt and staging any attached files under that category
 
         :param user_prompt: The given user prompt
         :param llm_response: The final response from the system
         :return:
         """
-        timestamp = int(datetime.now().timestamp())
+        time = int(datetime.now().timestamp())
 
         categories = self.list_user_categories()
         categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n" + \
@@ -50,7 +50,7 @@ class UserPromptManagement:
         parameters = {
             "prompt": user_prompt,
             "response": llm_response,
-            "time": timestamp,
+            "time": time,
             "category": category
         }
 
@@ -79,7 +79,7 @@ class UserPromptManagement:
         :param category: The name of the category the file belongs to
         :file_name: the name of the file, including extension
         """
-        timestamp = int(datetime.now().timestamp())
+        time = int(datetime.now().timestamp())
         content = FileManagement.read_file(file_name)
         summary = Organising.summarise_content(content)
 
@@ -90,7 +90,7 @@ class UserPromptManagement:
             WITH user, category
             MATCH (user_prompt:USER_PROMPT)
             WHERE id(user_prompt) = $user_prompt_id
-            CREATE (file:FILE {name: $name, timestamp: $timestamp, summary: $summary, structure: $structure})
+            CREATE (file:FILE {name: $name, time: $time, summary: $summary, structure: $structure})
             MERGE (file)-[:ORIGINATES_FROM]->(user_prompt)
             MERGE (file)-[:BELONGS_TO]->(category)
             RETURN file
@@ -99,7 +99,7 @@ class UserPromptManagement:
             "category": category,
             "user_prompt_id": user_prompt_id,
             "name": file_name,
-            "timestamp": timestamp,
+            "time": time,
             "summary": summary,
             "structure": "PROTOTYPING"
         }
