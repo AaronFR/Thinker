@@ -5,7 +5,7 @@ import FileUploadButton from './FileUploadButton';
 
 const flask_port = "http://localhost:5000";
 
-const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessing }) => {
+const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessing, selectedFile }) => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [fetchError, setFetchError] = useState('');
 
@@ -22,7 +22,7 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
       }
 
       const data = await response.json();
-      setUploadedFiles(data.files);
+      // setUploadedFiles(data.files);
     } catch (error) {
       setFetchError('Error fetching files.');
       console.error('Error fetching files:', error);
@@ -39,15 +39,27 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
-  const handleUploadSuccess = (filename) => {
-    setUploadedFiles((prevFiles) => [...prevFiles, filename]);
+  const handleUploadSuccess = (file) => {
+    console.log("filename: ", file)
+    if (file) {
+      setUploadedFiles((prevFiles) => [...prevFiles, file.filename]);
+    }
+    console.log("uploaded files though upload: ", uploadedFiles)
   };
+
+  useEffect(() => {
+    console.log("selectedFile: ", selectedFile)
+    if (selectedFile) {
+      setUploadedFiles((prevFiles) => [...prevFiles, selectedFile.name]);
+    }
+    console.log("uploaded files through effect: ", uploadedFiles)
+  }, [selectedFile])
 
   return (
     <div>
       {/* Display Uploaded Files */}
       <div style={{ marginBottom: '20px' }}>
-        <h3>Uploaded Files:</h3>
+        <h3>Selected Files:</h3>
         {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
         {uploadedFiles.length === 0 && !fetchError && <p>No files uploaded yet.</p>}
         <ul style={{ listStyleType: 'none', padding: 0 }}>

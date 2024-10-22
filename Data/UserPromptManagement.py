@@ -140,6 +140,25 @@ class UserPromptManagement:
         result = self.neo4jDriver.execute_read(get_messages_query, parameters)
         return result
 
+    def get_files_by_category(self, category_name):
+        """
+        Retrieve all files linked to a particular category, newest first.
+
+        :param category_name: Name of the category node to investigate
+        :return: all messages related to that category node
+        """
+        logging.info(f"files: {category_name}")
+        get_messages_query = """
+        MATCH (user:USER)-[:USES]->(category:CATEGORY {name: $category_name})
+            <-[:BELONGS_TO]-(file:FILE)
+        RETURN id(file) AS id, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
+        ORDER by file.time DESC
+        """
+        parameters = {"category_name": category_name}
+        result = self.neo4jDriver.execute_read(get_messages_query, parameters)
+        logging.info(f"Files retrieved: {result}")
+        return result
+
     def delete_message_by_id(self, message_id: int):
         """
         Deletes a specific message (isolated USER_PROMPT node) by its id.

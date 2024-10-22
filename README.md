@@ -65,7 +65,7 @@ To refine the system's architecture and enhance its capabilities and efficiency,
 
 - **4o and o1-mini**: Option in settings dependent on the workflow/persona
 
-- **Files**: ~~upload files to work on@~~ and for future reference, visible attached to categorise and user prompts
+- **Files**: ~~upload files to work on@~~ and for future reference, visible attached to categorise and ~~user prompts~~
 
 - **Micro thoughts**: Generated even while the prompt is being written. Question -> answer
   - ~~Generate list of questions in regard to prompt, if appropriate ask user~~, otherwise pull from memory.

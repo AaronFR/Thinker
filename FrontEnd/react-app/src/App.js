@@ -4,6 +4,7 @@ import './App.css';
 import { SettingsContext } from './pages/Settings/Settings';
 
 import MessageHistory from './components/MessageHistory';
+import FilePane from './components/FilePane'
 import OutputSection from './components/OutputSection';
 import PromptAugmentation from './components/PromptAugmentation';
 import PersonaSelector from './components/PersonaSelector';
@@ -38,6 +39,8 @@ function App () {
 
     const [concatenatedQA, setConcatenatedQA] = useState('');
     const [resetResponsesTrigger, setResetResponsesTrigger] = useState(0);
+
+    const [selectedFile, setSelectedFile] = useState(null);
  
     // Custom hooks
     const { message, setMessage, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(flask_port, concatenatedQA);
@@ -87,9 +90,17 @@ function App () {
       return () => clearTimeout(typingTimer.current);
     }, []);
 
+    const handleFileSelect = (file) => {
+      setSelectedFile(file);
+      // Implement functionality to write a prompt related to the selected file
+      // This could involve opening a modal, displaying a form, etc.
+      console.log("Selected File:", file);
+    };
+
     return (
         <div className="app-container">
           <div className="left-pane">
+            <FilePane onFileSelect={handleFileSelect}/>
             <MessageHistory />
           </div>
 
@@ -120,6 +131,7 @@ function App () {
               handleInputChange={handleInputChange}
               userInput={userInput}
               isProcessing={isProcessing}
+              selectedFile={selectedFile}
             />
             
             <SuggestedQuestions 

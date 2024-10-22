@@ -40,7 +40,7 @@ const FileUploadButton = ({ onUploadSuccess }) => {
           setUploadStatus('File uploaded successfully!');
           console.log('Success:', data);
           if (onUploadSuccess) {
-            onUploadSuccess(data.filename);
+            onUploadSuccess(data);
           }
         } else {
           const errorData = JSON.parse(xhr.responseText);

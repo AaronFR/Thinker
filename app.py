@@ -91,7 +91,6 @@ def get_selected_persona(data):
 @app.route('/messages/<message_id>', methods=['DELETE'])
 def delete_message(message_id):
     try:
-        message_id = message_id
         user_prompt_management = UserPromptManagement()
         user_prompt_management.delete_message_by_id(message_id)
 
@@ -294,6 +293,27 @@ def get_messages(category_name):
              "time": record["time"]} for record in messages]
 
         return jsonify({"messages": messages_list}), 200
+    except Exception as e:
+        logging.exception(f"Failed to get messages for category, {category_name}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/categories/<category_name>/files', methods=['GET'])
+def get_files(category_name):
+    try:
+        category_name = category_name.lower()
+        user_prompt_management = UserPromptManagement()
+        files = user_prompt_management.get_files_by_category(category_name)
+        logging.info(f"DA files: {files}")
+        files_list = [
+            {"id": record["id"],
+             "name": record["name"],
+             "summary": record["summary"],
+             "structure": record["structure"],
+             "time": record["time"]} for record in files]
+
+        logging.info(f"DA files list: {files_list}")
+        return jsonify({"files": files_list}), 200
     except Exception as e:
         logging.exception(f"Failed to get messages for category, {category_name}")
         return jsonify({"error": str(e)}), 500
