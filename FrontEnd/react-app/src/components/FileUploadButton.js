@@ -1,99 +1,133 @@
-import React, { useState } from 'react';
+import React, { useState, useReducer, useCallback } from 'react';
+import PropTypes from 'prop-types';
+
+import ProgressBar from './ProgressBar';
+
+import './styles/FileUploadButton.css';
 
 const flask_port = "http://localhost:5000";
 
-const FileUploadButton = ({ onUploadSuccess }) => {
-  const [uploadStatus, setUploadStatus] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+const initialState = {
+  uploadStatus: '',
+  isUploading: false,
+  uploadProgress: 0,
+};
 
-  const handleFileChange = async (event) => {
-    const file = event.target.files[0];
-    
-    if (!file) {
-      setUploadStatus('No file selected.');
+/**
+ * Reducer function to manage upload state transitions.
+ * 
+ * @param {Object} state - Current state.
+ * @param {Object} action - Action object containing type and payload.
+ * @returns {Object} - New state.
+ */
+function uploadReducer(state, action) {
+  switch (action.type) {
+    case 'UPLOAD_START':
+      return { ...state, isUploading: true, uploadStatus: 'Uploading...', uploadProgress: 0 };
+    case 'UPLOAD_PROGRESS':
+      return { ...state, uploadProgress: action.payload };
+    case 'UPLOAD_SUCCESS':
+      return { ...state, isUploading: false, uploadStatus: 'File uploaded successfully!', uploadProgress: 0 };
+    case 'UPLOAD_FAILURE':
+      return { ...state, isUploading: false, uploadStatus: action.payload, uploadProgress: 0 };
+    case 'RESET':
+      return initialState;
+    default:
+      return state;
+  }
+}
+
+
+/**
+ * FileUploadButton Component
+ * 
+ * Allows users to upload files with real-time progress feedback.
+ * 
+ * @param {Object} props - Component props.
+ * @param {Function} props.onUploadSuccess - Callback invoked upon successful upload.
+ */
+const FileUploadButton = ({ onUploadSuccess }) => {
+  const [state, dispatch] = useReducer(uploadReducer, initialState);
+
+  /**
+   * Handles file upload when a user selects a file.
+   * Supports multiple file uploads and provides upload progress feedback.
+   * 
+   * @param {Event} event - The file input change event.
+   */
+  const handleFileChange = useCallback(async (event) => {
+    const files = Array.from(event.target.files);
+
+    if (files.length === 0) {
+      dispatch({ type: 'UPLOAD_FAILURE', payload: 'No file selected.' });
       return;
     }
+    dispatch({ type: 'UPLOAD_START' });
 
-    setUploadStatus('Uploading...');
-    setIsUploading(true);
-    setUploadProgress(0);
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('file', file);
 
-    const formData = new FormData();
-    formData.append('file', file);
+      const controller = new AbortController();
+      const signal = controller.signal;
 
-    try {
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", `${flask_port}/api/file`, true);
+      try {
+        const response = await fetch(`${flask_port}/api/file`, {
+          method: 'POST',
+          body: formData,
+          signal,
+        });
 
-      // Track upload progress
-      xhr.upload.onprogress = (event) => {
-        if (event.lengthComputable) {
-          const percentComplete = Math.round((event.loaded / event.total) * 100);
-          setUploadProgress(percentComplete);
-        }
-      };
-
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          const data = JSON.parse(xhr.responseText);
-          setUploadStatus('File uploaded successfully!');
-          console.log('Success:', data);
-          if (onUploadSuccess) {
-            onUploadSuccess(data);
-          }
-        } else {
-          const errorData = JSON.parse(xhr.responseText);
-          setUploadStatus(`Upload failed: ${errorData.message || 'Unknown error'}`);
+        if (!response.ok) {
+          const errorData = await response.json();
+          dispatch({ type: 'UPLOAD_FAILURE', payload: `Upload failed: ${errorData.message || 'Unknown error'}` });
           console.error('Error uploading file:', errorData);
+          continue;
         }
-        setIsUploading(false);
-        setUploadProgress(0);
-      };
 
-      xhr.onerror = () => {
-        setUploadStatus('File upload failed.');
-        console.error('Error uploading file:', xhr.statusText);
-        setIsUploading(false);
-        setUploadProgress(0);
-      };
-
-      xhr.send(formData);
-    } catch (error) {
-      setUploadStatus('File upload failed.');
-      console.error('Error uploading file:', error);
-      setIsUploading(false);
-      setUploadProgress(0);
-    } finally {
-      event.target.value = null; // Reset the file input
+        const data = await response.json();
+        dispatch({ type: 'UPLOAD_SUCCESS' });
+        console.log('Success:', data);
+        if (onUploadSuccess) {
+          onUploadSuccess(data);
+        }
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          console.warn('Upload aborted');
+        } else {
+          dispatch({ type: 'UPLOAD_FAILURE', payload: 'File upload failed.' });
+          console.error('Error uploading file:', error);
+        }
+      }
     }
-  };
+
+    // Reset the file input after upload
+    event.target.value = null;
+  }, [onUploadSuccess, dispatch]);
 
   return (
-    <div>
+    <div className="file-upload-button">
       <input 
         type="file" 
         onChange={handleFileChange} 
-        disabled={isUploading}
-        style={{ cursor: isUploading ? 'not-allowed' : 'pointer' }}
+        disabled={state.isUploading}
+        className='file-input'
+        aria-disabled={state.isUploading}
+        multiple
       />
-      {uploadStatus && <p>{uploadStatus}</p>}
-      {isUploading && (
-        <div style={{ width: '100%', backgroundColor: '#f3f3f3', borderRadius: '4px', marginTop: '10px' }}>
-          <div 
-            style={{ 
-              width: `${uploadProgress}%`, 
-              height: '10px', 
-              backgroundColor: '#4caf50', 
-              borderRadius: '4px',
-              transition: 'width 0.3s'
-            }}
-          ></div>
+      {state.uploadStatus && <p>{state.uploadStatus}</p>}
+      {state.isUploading && (
+        <div className='upload-progress'>
+          <ProgressBar progress={state.uploadProgress} />
+          <p>{state.uploadProgress}%</p>
         </div>
       )}
-      {isUploading && <p>{uploadProgress}%</p>}
     </div>
   );
+};
+
+FileUploadButton.propTypes = {
+  onUploadSuccess: PropTypes.func.isRequired,
 };
 
 export default FileUploadButton;
