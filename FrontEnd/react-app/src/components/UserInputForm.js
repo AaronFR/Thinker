@@ -40,19 +40,15 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
   }, []);
 
   const handleUploadSuccess = (file) => {
-    console.log("filename: ", file)
     if (file) {
       setUploadedFiles((prevFiles) => [...prevFiles, file.filename]);
     }
-    console.log("uploaded files though upload: ", uploadedFiles)
   };
 
   useEffect(() => {
-    console.log("selectedFile: ", selectedFile)
     if (selectedFile) {
       setUploadedFiles((prevFiles) => [...prevFiles, selectedFile.name]);
     }
-    console.log("uploaded files through effect: ", uploadedFiles)
   }, [selectedFile])
 
   return (

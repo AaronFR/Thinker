@@ -81,6 +81,9 @@ To refine the system's architecture and enhance its capabilities and efficiency,
   - Connecting relevant messages to the current prompt -> chain of messages displayed on the main section
   - sub-categories (possibly)
 
+- **User Configuration Profile**: Profiles the user can easily select from the prompt screen and are clearly visible, e.g
+ "expensive request", "private mode", "work", "humorous mode", etc so the user can quickly swap out configuration as they want
+
 - **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can
  actually write its own tests automatically to full standard.
   - Long due that specific "integration" user tests where created to test that the system can satisfactorily answer the user,

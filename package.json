@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "dompurify": "^3.1.7",
+    "lodash.debounce": "^4.0.8",
     "marked": "^14.1.2",
     "react-select": "^5.8.1"
   }

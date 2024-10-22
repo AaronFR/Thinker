@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import './App.css';
+import debounce from 'lodash.debounce';
 
 import { SettingsContext } from './pages/Settings/Settings';
 
-import MessageHistory from './components/MessageHistory';
 import FilePane from './components/FilePane'
+import MessageHistory from './components/MessageHistory';
 import OutputSection from './components/OutputSection';
 import PromptAugmentation from './components/PromptAugmentation';
 import PersonaSelector from './components/PersonaSelector';
@@ -16,6 +16,7 @@ import useSubmitMessage from './hooks/useSubmitMessage';
 import useAugmentedPrompt from './hooks/useAugmentedPrompt';
 import useSuggestedQuestions from './hooks/useSuggestedQuestions';
 
+import './App.css';
 /**
  * App component
  * 
@@ -26,20 +27,24 @@ const flask_port= "http://localhost:5000"
 
 function App () {
 
+    // User Input States
     const [userInput, setUserInput] = useState('')
-
     const [selectedPersona, setSelectedPersona] = useState('auto');
     const autoDetectedPersona = 'Coder' // Temporary hardcoded value
 
-    const idleTime = 1500; // Time in milliseconds before triggering input handlers
+    // Debounce timer reference to optimize input handling
+    const idleTime = 1500; // milliseconds
     const typingTimer = useRef(null);
 
+    // Context Settings
     const { settings } = useContext(SettingsContext);
     const { augmentedPromptsEnabled, questionUserPromptsEnabled } = settings;
 
+    // QA Management
     const [concatenatedQA, setConcatenatedQA] = useState('');
     const [resetResponsesTrigger, setResetResponsesTrigger] = useState(0);
 
+    // File Management
     const [selectedFile, setSelectedFile] = useState(null);
  
     // Custom hooks
@@ -47,18 +52,8 @@ function App () {
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt(flask_port);
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions(flask_port);
 
+    // Form State
     const [formsFilled, setFormsFilled] = useState(false);
-
-    const handleFormSubmit = async (event) => {
-      if (event) event.preventDefault();
-      await handleSubmit(userInput, selectedPersona);
-      setUserInput(''); 
-      setAugmentedPrompt('');
-
-      setQuestionsForPrompt('');
-      setFormsFilled(false)
-      setResetResponsesTrigger(prev => prev + 1);
-    };
 
     const handleInputChange = (event) => {
       // ToDo: don't think it respects shift enters, issue for inputting code
@@ -69,17 +64,46 @@ function App () {
       
       // Adjust height to fit content, up to a max height
       event.target.style.height = "auto"; // Reset height to calculate scroll height properly
-      event.target.style.height = `${Math.min(event.target.scrollHeight, 8 * 24)}px`; // 24px per row, max 8 rows
+      event.target.style.height = `${Math.min(event.target.scrollHeight, 8 * 24)}px`;
 
-      typingTimer.current = setTimeout(() => {
-        if (augmentedPromptsEnabled) {
-          generateAugmentedPrompt(event.target.value);
-        }
-        if (questionUserPromptsEnabled && !formsFilled) {
-          generateQuestionsForPrompt(event.target.value);
-        }
-      }, idleTime);
+      debouncedHandleTyping(event.target.value);
     };
+
+    const handleTyping = (value) => {
+      if (augmentedPromptsEnabled) {
+        generateAugmentedPrompt(value);
+      }
+      if (questionUserPromptsEnabled && !formsFilled) {
+        generateQuestionsForPrompt(value);
+      }
+    };
+
+    const debouncedHandleTyping = useRef(
+      debounce((value) => handleTyping(value), idleTime)
+    ).current;
+    
+    // Clean up the debounce on unmount
+    useEffect(() => {
+      return () => {
+        debouncedHandleTyping.cancel();
+      };
+    }, [debouncedHandleTyping]);
+
+    const handleFormSubmit = async (event) => {
+      event.preventDefault(); // Always prevent default if event exists
+      try {
+        await handleSubmit(userInput, selectedPersona);
+        setUserInput(''); 
+        setAugmentedPrompt('');
+        setQuestionsForPrompt('');
+        setFormsFilled(false);
+        setResetResponsesTrigger(prev => prev + 1);
+      } catch (error) {
+        // Handle submission errors here
+        console.error("Form submission error:", error);
+      }
+    };
+
 
     const copyAugmentedPrompt = () => {
       setUserInput(augmentedPrompt); // Copy augmentedPrompt into userInput
@@ -99,12 +123,12 @@ function App () {
 
     return (
         <div className="app-container">
-          <div className="left-pane">
+          <aside className="left-pane">
             <FilePane onFileSelect={handleFileSelect}/>
             <MessageHistory />
-          </div>
+          </aside>
 
-          <div className="right-pane">
+          <main className="right-pane">
             <OutputSection 
               message={message} 
               error={messageError} 
@@ -145,7 +169,7 @@ function App () {
             />
 
             <Navigation />
-          </div>
+          </main>
         </div>
     );
 };
