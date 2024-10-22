@@ -102,6 +102,19 @@ def delete_message(message_id):
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/files/<file_id>', methods=['DELETE'])
+def delete_file(file_id):
+    try:
+        user_prompt_management = UserPromptManagement()
+        user_prompt_management.delete_file_by_id(file_id)
+
+        logging.info(f"File node {file_id} deleted")
+        return jsonify({"message": f"File {file_id} deleted successfully"}), 200
+    except Exception as e:
+        logging.exception(f"Failed to delete file {file_id}")
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/api/file', methods=['POST'])
 def upload_file():
     """

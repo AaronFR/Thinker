@@ -165,3 +165,24 @@ class UserPromptManagement:
 
         result = self.neo4jDriver.execute_delete(delete_query, parameters)
         return result
+
+    def delete_file_by_id(self, file_id: int):
+        """
+        Deletes a specific message (isolated USER_PROMPT node) by its id.
+        If the CATEGORY the message is associated with has no more messages, it deletes the CATEGORY node as well.
+
+        :param file_id: ID of the file to be deleted (Neo4j internal id or custom id)
+        """
+        file_id = int(file_id)
+
+        delete_query = """
+        MATCH (file:FILE)-[:BELONGS_TO]->(category:CATEGORY)
+        WHERE id(file) = $file_id
+        DETACH DELETE file
+        """
+        parameters = {
+            "file_id": file_id,
+        }
+
+        result = self.neo4jDriver.execute_delete(delete_query, parameters)
+        return result
