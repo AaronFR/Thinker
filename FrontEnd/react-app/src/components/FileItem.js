@@ -4,6 +4,8 @@ import './styles/FileItem.css';
 
 import { shortenText, markedFull } from '../utils/textUtils';
 
+const flask_port= "http://localhost:5000"
+
 const FileItem = React.memo(({ file, onDelete, onSelect }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -14,7 +16,7 @@ const FileItem = React.memo(({ file, onDelete, onSelect }) => {
   const handleDelete = async (e) => {
     e.stopPropagation(); // Prevent triggering the toggleExpansion
     try {
-      const response = await fetch(`${process.env.REACT_APP_FLASK_PORT}/files/${file.id}`, {
+      const response = await fetch(`${flask_port}/files/${file.id}`, {
         method: 'DELETE',
       });
 

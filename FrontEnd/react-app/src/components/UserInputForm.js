@@ -5,10 +5,27 @@ import FileUploadButton from './FileUploadButton';
 
 const flask_port = "http://localhost:5000";
 
-const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessing, selectedFile }) => {
+/**
+ * UserInputForm Component
+ * 
+ * Renders a form that allows users to input text and upload files.
+ * Handles fetching of uploaded files, managing uploaded files state,
+ * and integrates the FileUploadButton component for file uploads.
+ * 
+ * Props:
+ * - handleSubmit (function): Function to handle form submission.
+ * - handleInputChange (function): Function to handle changes in user input.
+ * - userInput (string): Current value of the user input.
+ * - isProcessing (boolean): Indicates if the form is in a processing state.
+ * - selectedFile (File): Currently selected file for upload.
+ * - setFilesForPrompt (function): Function to set files that will be used for prompting.
+ */
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [fetchError, setFetchError] = useState('');
 
+  /**
+   * Fetches the list of uploaded files from the backend API.
+   */
   const fetchUploadedFiles = async () => {
     try {
       const response = await fetch(`${flask_port}/api/files`, {
@@ -22,13 +39,16 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
       }
 
       const data = await response.json();
-      // setUploadedFiles(data.files);
+      // setUploadedFiles(data.files);  // WIP, would replace with only staged
     } catch (error) {
       setFetchError('Error fetching files.');
       console.error('Error fetching files:', error);
     }
   };
 
+  /**
+   * useEffect hook to fetch uploaded files on component mount and set up polling.
+   */
   useEffect(() => {
     fetchUploadedFiles();
 
@@ -39,12 +59,22 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
     return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
+  /**
+   * Handles successful file uploads by updating the uploadedFiles state
+   * and setting the files for prompting.
+   * 
+   * @param {Object} file - The uploaded file object.
+   */
   const handleUploadSuccess = (file) => {
     if (file) {
       setUploadedFiles((prevFiles) => [...prevFiles, file.filename]);
     }
   };
 
+  /**
+   * useEffect hook to handle changes in the selectedFile prop.
+   * Updates the uploadedFiles state and sets the files for prompting.
+   */
   useEffect(() => {
     if (selectedFile) {
       setUploadedFiles((prevFiles) => [...prevFiles, selectedFile.name]);
@@ -109,6 +139,15 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
       </form>
     </div>
   );
+};
+
+UserInputForm.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  handleInputChange: PropTypes.func.isRequired,
+  userInput: PropTypes.string.isRequired,
+  isProcessing: PropTypes.bool.isRequired,
+  selectedFile: PropTypes.instanceOf(File),
+  setFilesForPrompt: PropTypes.func.isRequired,
 };
 
 export default UserInputForm;

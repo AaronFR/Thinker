@@ -7,6 +7,7 @@ import './styles/MessageItem.css'; // ToDo Create corresponding CSS
 
 const flask_port= "http://localhost:5000"
 
+
 /**
    * MessageItem Component
    * 
