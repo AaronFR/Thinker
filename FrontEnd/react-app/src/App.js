@@ -115,10 +115,16 @@ function App () {
     }, []);
 
     const handleFileSelect = (file) => {
-      setSelectedFile(file);
-      // Implement functionality to write a prompt related to the selected file
-      // This could involve opening a modal, displaying a form, etc.
-      console.log("Selected File:", file);
+      setSelectedFiles((prevFiles) => {
+        // ToDo: should filter by id not name, but uploaded files aren't setup for that yet
+        if (prevFiles.some((f) => f.name === file.name)) {
+          // If the file is already selected, filter it out
+          return prevFiles.filter((f) => f.name !== file.name);
+        } else {
+          // Otherwise, add new the new fille to the list of selectedFiles
+          return [...prevFiles, file];
+        }
+      });
     };
 
     return (

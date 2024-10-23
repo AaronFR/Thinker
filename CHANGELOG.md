@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - User can upload files for reference in their prompts
-- Users can (actually) select previously uploaded files for reference in a new prompt
+- Users can (actually) select and unselect previously uploaded files for reference in a new prompt
 
 ### Changed
 
