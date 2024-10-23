@@ -115,7 +115,7 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
             e.target.selectionStart = e.target.selectionEnd = selectionStart + 1;
           } else if (e.key === 'Enter') {
             e.preventDefault();
-            handleSubmit();
+            handleSubmit(e);
           }
         }}
         style={{ marginTop: '20px' }}
