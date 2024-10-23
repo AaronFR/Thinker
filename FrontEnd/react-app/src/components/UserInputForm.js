@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './styles/UserInputForm.css';
+import PropTypes from 'prop-types';
 
 import FileUploadButton from './FileUploadButton';
 
@@ -20,6 +21,7 @@ const flask_port = "http://localhost:5000";
  * - selectedFile (File): Currently selected file for upload.
  * - setFilesForPrompt (function): Function to set files that will be used for prompting.
  */
+const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessing, selectedFile, setFilesForPrompt }) => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [fetchError, setFetchError] = useState('');
 
@@ -68,6 +70,7 @@ const flask_port = "http://localhost:5000";
   const handleUploadSuccess = (file) => {
     if (file) {
       setUploadedFiles((prevFiles) => [...prevFiles, file.filename]);
+      setFilesForPrompt((prevFiles) => [...prevFiles, selectedFile]);
     }
   };
 
@@ -78,6 +81,7 @@ const flask_port = "http://localhost:5000";
   useEffect(() => {
     if (selectedFile) {
       setUploadedFiles((prevFiles) => [...prevFiles, selectedFile.name]);
+      setFilesForPrompt((prevFiles) => [...prevFiles, selectedFile]);
     }
   }, [selectedFile])
 

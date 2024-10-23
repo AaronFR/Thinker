@@ -159,6 +159,26 @@ class UserPromptManagement:
         logging.info(f"Files retrieved: {result}")
         return result
 
+    def get_file_by_id(self, file_id):
+        """
+        Retrieve a file by its id, including the category its attached to
+        ToDo: like most of these database calls we're going to have to ensure only the users files are
+         accessed
+
+        :param file_id: Neo4J id of the file
+        :return: all messages related to that category node
+        """
+        get_messages_query = """
+        MATCH (category:CATEGORY)--(file:FILE)
+        WHERE id(file) = $file_id
+        RETURN id(file) AS id, id(category) AS category, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
+        ORDER by file.time DESC
+        """
+        parameters = {"file_id": file_id}
+        result = self.neo4jDriver.execute_read(get_messages_query, parameters)
+        logging.info(f"File retrieved: {result}")
+        return result
+
     def delete_message_by_id(self, message_id: int):
         """
         Deletes a specific message (isolated USER_PROMPT node) by its id.

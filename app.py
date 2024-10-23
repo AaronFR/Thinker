@@ -12,6 +12,7 @@ from flask_cors import CORS
 
 from werkzeug.utils import secure_filename
 
+from Data.FileManagement import FileManagement
 from Functionality.Augmentation import Augmentation
 from Personas.Coder import Coder
 from Data.Configuration import Configuration
@@ -49,6 +50,8 @@ def process_message():
     :returns: A Flask Response object containing a JSON representation of the processed message.
     """
     logging.info("process_message triggered")
+    user_prompt_management = UserPromptManagement()
+
     try:
         data = request.get_json()
         user_prompt = data.get("prompt")
@@ -59,12 +62,21 @@ def process_message():
         additional_qa = data.get("additionalQA")
         if additional_qa:
             user_prompt = user_prompt + "\nAdditional Q&A context: \n" + additional_qa
+
+        files = data.get("files")
+        file_references = []
+        if files:
+            for file in files:
+                file_with_category = user_prompt_management.get_file_by_id(file.get("id"))
+                for record in file_with_category:
+                    file_system_address = f"{record['category']}/{record['name']}"
+                    file_references.append(file_system_address)
+
         selected_persona = get_selected_persona(data) 
-        response_message = selected_persona.query(user_prompt)
+        response_message = selected_persona.query(user_prompt, file_references)
         logging.info("Response generated: %s", response_message)
 
-        # ToDo: should be a ancillary side job, currently slows down recieving a response if the database doesn't respond quickly
-        user_prompt_management = UserPromptManagement()
+        # ToDo: should be an ancillary side job, currently slows down recieving a response if the database doesn't respond quickly
         result = user_prompt_management.create_user_prompt_node(user_prompt, response_message)
 
         return jsonify({"message": response_message})

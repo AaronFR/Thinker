@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const useSubmitMessage = (flaskPort, concatenatedQA) => {
+const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -18,6 +18,7 @@ const useSubmitMessage = (flaskPort, concatenatedQA) => {
         body: JSON.stringify({
           prompt: userInput,
           additionalQA: concatenatedQA,
+          files: filesForPrompt,
           persona: selectedPersona
         }),
       });

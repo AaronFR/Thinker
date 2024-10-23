@@ -1,12 +1,11 @@
 import csv
 import os
 import logging
-from datetime import datetime
+from mimetypes import guess_type
 from typing import List, Dict
 
 import yaml
 
-from Data.Neo4jDriver import Neo4jDriver
 from Utilities import Globals, Constants
 from Utilities.Constants import DEFAULT_ENCODING
 from Utilities.ErrorHandler import ErrorHandler
@@ -85,6 +84,41 @@ class FileManagement:
         return ''.join([f"{i + 1}: {line}" for i, line in enumerate(lines)])
 
     @staticmethod
+    def is_image_file(full_address: str) -> bool:
+        """Utility method to check if the file is an image."""
+        mime_type, _ = guess_type(full_address)
+        return mime_type is not None and mime_type.startswith('image')
+
+    @staticmethod
+    def read_file_full_address(full_address: str, number_lines: bool = False) -> str:
+        """Read the content of a specified file.
+        ToDo In future we will probably want to locate files by id alone
+
+        :param file_path: The path of the file_name to read
+        :param number_lines: Flag to determine if the content should be returned as numbered lines
+        :return: The content of the file or an error message to inform the next LLM what happened
+        """
+        full_path = os.path.join(FileManagement.thoughts_directory, full_address)
+        logging.info(f"Loading file_name content from: {full_path}")
+
+        if FileManagement.is_image_file(full_address):
+            logging.warning(f"Attempted to read an image file: {full_address}")
+            return f"[CANNOT READ IMAGE FILE: {full_address}]"
+
+        try:
+            with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
+                if number_lines:
+                    return FileManagement.get_numbered_string(file.readlines())
+                else:
+                    return file.read()
+        except FileNotFoundError:
+            logging.exception(f"File not found: {full_address}")
+            return f"[FAILED TO LOAD {full_address}]"
+        except Exception:
+            logging.exception(f"An unexpected error occurred")
+            return f"[FAILED TO LOAD {full_address}]"
+
+    @staticmethod
     def read_file(file_path: str, number_lines: bool = False) -> str:
         """Read the content of a specified file.
 
@@ -94,6 +128,10 @@ class FileManagement:
         """
         full_path = os.path.join(FileManagement.thoughts_directory, staging_index, file_path)
         logging.info(f"Loading file_name content from: {full_path}")
+
+        if FileManagement.is_image_file(full_path):
+            logging.warning(f"Attempted to read an image file: {full_path}")
+            return f"[CANNOT READ IMAGE FILE: {full_path}]"
 
         try:
             with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:

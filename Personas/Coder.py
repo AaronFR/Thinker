@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
@@ -28,16 +29,16 @@ class Coder(BasePersona):
         self.instructions = CoderSpecification.CODER_INSTRUCTIONS
         self.configuration = CoderSpecification.load_configuration()
 
-    def run_workflow(self, selected_workflow: str, initial_message: str):
+    def run_workflow(self, selected_workflow: str, initial_message: str, file_references: List[str] = None):
         if selected_workflow in self.workflows.keys():
             if selected_workflow == "chat":
-                return self.chat_workflow(initial_message)
+                return self.chat_workflow(initial_message, file_references)
             if selected_workflow == "write":
-                return self.write_workflow(initial_message)
+                return self.write_workflow(initial_message, file_references)
             if selected_workflow == "write_tests":
-                return self.write_tests_workflow(initial_message)
+                return self.write_tests_workflow(initial_message, file_references)
 
-    def chat_workflow(self, initial_message: str):
+    def chat_workflow(self, initial_message: str, file_references: List[str] = None):
         """
         Converses with the user
 
@@ -50,7 +51,7 @@ class Coder(BasePersona):
 
         try:
             for iteration, message in enumerate(prompt_messages):
-                response = self.process_question(message)
+                response = self.process_question(message, file_references)
                 logging.info("Iteration %d completed with response: %s", iteration, response)
         
         except Exception as e:
@@ -58,7 +59,7 @@ class Coder(BasePersona):
 
         return response
 
-    def write_workflow(self, initial_message: str):
+    def write_workflow(self, initial_message: str, file_references: List[str] = None):
         """
         Writes the improved code to a specified file.
 
@@ -120,7 +121,7 @@ class Coder(BasePersona):
 
             try:
                 for iteration, message in enumerate(prompt_messages, start=1):
-                    response = self.process_question(message)
+                    response = self.process_question(message, file_references)
                     logging.info("Iteration %d completed with response: %s", iteration, response)
 
                     if iteration == len(prompt_messages):
@@ -134,7 +135,7 @@ class Coder(BasePersona):
 
         return response
 
-    def write_tests_workflow(self, initial_message: str) -> None:
+    def write_tests_workflow(self, initial_message: str, file_references: List[str] = None) -> None:
         """
         Generates a test file for a specified file
 
@@ -159,7 +160,7 @@ class Coder(BasePersona):
 
         try:
             for iteration, message in enumerate(prompt_messages):
-                response = self.process_question(message)
+                response = self.process_question(message, file_references)
                 logging.info("Test Workflow Iteration %d completed with response: %s", iteration, response)
 
                 # Save the response after the last message
