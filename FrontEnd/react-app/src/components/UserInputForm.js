@@ -18,11 +18,9 @@ const flask_port = "http://localhost:5000";
  * - handleInputChange (function): Function to handle changes in user input.
  * - userInput (string): Current value of the user input.
  * - isProcessing (boolean): Indicates if the form is in a processing state.
- * - selectedFile (File): Currently selected file for upload.
- * - setFilesForPrompt (function): Function to set files that will be used for prompting.
+ * - selectedFiles (File): Currently selected file for upload.
  */
-const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessing, selectedFile, setFilesForPrompt }) => {
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessing, selectedFiles, setSelectedFiles }) => {
   const [fetchError, setFetchError] = useState('');
 
   /**
@@ -69,21 +67,11 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
    */
   const handleUploadSuccess = (file) => {
     if (file) {
-      setUploadedFiles((prevFiles) => [...prevFiles, file.filename]);
-      setFilesForPrompt((prevFiles) => [...prevFiles, selectedFile]);
+      // Ensure the file object is properly structured and append to the selectedFiles array
+      // ToDo: This will need to be handled properly
+      setSelectedFiles((prevFiles) => [...prevFiles, { name: file.filename }]);
     }
   };
-
-  /**
-   * useEffect hook to handle changes in the selectedFile prop.
-   * Updates the uploadedFiles state and sets the files for prompting.
-   */
-  useEffect(() => {
-    if (selectedFile) {
-      setUploadedFiles((prevFiles) => [...prevFiles, selectedFile.name]);
-      setFilesForPrompt((prevFiles) => [...prevFiles, selectedFile]);
-    }
-  }, [selectedFile])
 
   return (
     <div>
@@ -91,11 +79,11 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
       <div style={{ marginBottom: '20px' }}>
         <h3>Selected Files:</h3>
         {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
-        {uploadedFiles.length === 0 && !fetchError && <p>No files uploaded yet.</p>}
+        {selectedFiles.length === 0 && !fetchError && <p>No files uploaded yet.</p>}
         <ul style={{ listStyleType: 'none', padding: 0 }}>
-          {uploadedFiles.map((file, index) => (
+          {selectedFiles.map((file, index) => (
             <li key={index} style={{ padding: '5px 0' }}>
-              <span role="img" aria-label="file">📄</span> {file}
+              <span role="img" aria-label="file">📄</span> {file.name}
             </li>
           ))}
         </ul>
@@ -150,8 +138,7 @@ UserInputForm.propTypes = {
   handleInputChange: PropTypes.func.isRequired,
   userInput: PropTypes.string.isRequired,
   isProcessing: PropTypes.bool.isRequired,
-  selectedFile: PropTypes.instanceOf(File),
-  setFilesForPrompt: PropTypes.func.isRequired,
+  selectedFiles: PropTypes.instanceOf(File),
 };
 
 export default UserInputForm;

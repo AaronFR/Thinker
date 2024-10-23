@@ -45,11 +45,10 @@ function App () {
     const [resetResponsesTrigger, setResetResponsesTrigger] = useState(0);
 
     // File Management
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [filesForPrompt, setFilesForPrompt] = useState([])
+    const [selectedFiles, setSelectedFiles] = useState([]);
  
     // Custom hooks
-    const { message, setMessage, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(flask_port, concatenatedQA, filesForPrompt);
+    const { message, setMessage, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(flask_port, concatenatedQA, selectedFiles);
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt(flask_port);
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions(flask_port);
 
@@ -156,8 +155,8 @@ function App () {
               handleInputChange={handleInputChange}
               userInput={userInput}
               isProcessing={isProcessing}
-              selectedFile={selectedFile}
-              setFilesForPrompt={setFilesForPrompt}
+              selectedFiles={selectedFiles}
+              setSelectedFiles={setSelectedFiles}
             />
             
             <SuggestedQuestions 
