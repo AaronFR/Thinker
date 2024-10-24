@@ -90,12 +90,14 @@ html {
   width: 33%;
   background-color: var(--color-left-pane-bg);
   padding: var(--spacing-xs);
+  border-right: 0.0625em solid var(--color-border);
 }
 
 body.dark-mode .left-pane {
   background: var(--color-background-dark);
   color: var(--color-text-light);
   transition: background-color var(--transition-normal), color var(--transition-normal);
+  border-right: 0.0625em solid var(--color-border-secondary);
 }
 
 /* Right Pane */

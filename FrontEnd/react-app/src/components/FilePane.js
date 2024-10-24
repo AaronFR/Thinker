@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 
 import FileItem from './FileItem';
 
-import './styles/FilePane.css'; // Ensure you create corresponding CSS
-
 const flask_port = "http://localhost:5000";
 
 /**

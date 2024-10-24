@@ -1,7 +1,6 @@
 /* Message History Container */
 .message-history-container {
   background-color: var(--color-light-bg);
-  border-right: 0.0625em solid var(--color-border);
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -75,7 +74,6 @@ body.dark-mode .category-item {
   padding: var(--spacing-md) var(--spacing-xs);
   background-color: var(--color-light-bg);
   border-radius: var(--border-radius-sm);
-  border: 0.0625em solid var(--color-border);
 }
 
 .message-list p {
@@ -87,65 +85,4 @@ body.dark-mode .message-list {
   color: var(--color-text-light);
   transition: background-color var(--transition-duration) var(--transition-ease),
               color var(--transition-duration) var(--transition-ease);
-}
-
-/* Message Item */
-.message-item {
-  padding: var(--spacing-md);
-  background-color: var(--color-white);
-  border: 0.0625em solid var(--color-border-secondary);
-  border-radius: var(--border-radius-sm);
-  margin-bottom: var(--spacing-md);
-  text-align: left;
-  transition: transform 0.2s var(--transition-ease),
-              z-index 0.2s var(--transition-ease);
-  position: relative;
-  cursor: pointer;
-}
-
-body.dark-mode .message-item {
-  background-color: var(--color-dark-bg);
-  color: var(--color-text-light);
-  transition: background-color var(--transition-duration) var(--transition-ease),
-              color var(--transition-duration) var(--transition-ease);
-}
-
-.message-item:hover {
-  transform: scale(1.02);
-  z-index: 20;
-  box-shadow: var(--shadow-hover);
-}
-
-.message-item strong {
-  color: var(--color-text-dark);
-}
-
-.loading-message {
-  font-style: italic;
-  color: var(--color-text-muted);
-}
-
-.time {
-  font-size: var(--font-size-small);
-  opacity: var(--opacity-muted);
-  text-align: right;
-}
-
-.delete-button {
-  color: black;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
-  border-radius: 4px;
-  outline: none;
-}
-.delete-button:hover {
-  background-color: red;
-  color: white;
-  border-color: red;
-}
-@media (max-width: 600px) {
-  .delete-button {
-      font-size: 14px;
-  }
 }

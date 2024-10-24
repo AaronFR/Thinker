@@ -21,7 +21,7 @@ code {
   --color-dark-bg: #222222;
   --color-body-bg-dark: #121212;
   --color-border: #ddd;
-  --color-border-secondary: #ccc;
+  --color-border-secondary: #4f4f4f;
   --color-text: #000000;
   --color-text-dark: #495057;
   --color-text-light: #f2f2f2;
@@ -126,7 +126,7 @@ code {
   /* Background Gradient */
   --background-gradient: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.1) 0%,
+    rgba(45, 45, 45, 0.9) 0%,
     rgba(255, 255, 255, 0.04) 100%
   );
 }

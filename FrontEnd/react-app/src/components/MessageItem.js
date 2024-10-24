@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 
 import { shortenText, markedFull, shortenAndMarkupText } from '../utils/textUtils';
 
-import './styles/MessageItem.css'; // ToDo Create corresponding CSS
-
 const flask_port= "http://localhost:5000"
 
 
