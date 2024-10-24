@@ -9,7 +9,21 @@ const flask_port= "http://localhost:5000"
 const FileItem = React.memo(({ file, onDelete, onSelect }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const toggleExpansion = () => {
+  const toggleExpansion = async () => {
+    if (!isExpanded && !file.content) {
+      const response = await fetch(`${flask_port}/content/${file.category_id}/${file.name}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to get file content");
+      }
+
+      const data = await response.json();
+      file.content = data.content
+
+    }
+
     setIsExpanded(!isExpanded);
   };
 
@@ -47,6 +61,12 @@ const FileItem = React.memo(({ file, onDelete, onSelect }) => {
               dangerouslySetInnerHTML={{ __html: markedFull(file.summary) }}
             />
           </p>
+          <p><strong>Content:</strong> 
+            <span 
+              dangerouslySetInnerHTML={{ __html: markedFull(file.content) }}
+            />
+          </p>
+          
           {/* Add more file details if necessary */}
         </div>
       )}

@@ -151,7 +151,7 @@ class UserPromptManagement:
         get_messages_query = """
         MATCH (user:USER)-[:USES]->(category:CATEGORY {name: $category_name})
             <-[:BELONGS_TO]-(file:FILE)
-        RETURN id(file) AS id, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
+        RETURN id(file) AS id, id(category) AS category_id, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
         ORDER by file.time DESC
         """
         parameters = {"category_name": category_name}

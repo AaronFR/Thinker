@@ -113,7 +113,20 @@ def delete_message(message_id):
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/files/<file_id>', methods=['DELETE'])
+@app.route('/content/<file_category>/<file_name>', methods=['GET'])
+def get_file_content(file_category, file_name):
+    try:
+        full_path = str(file_category) + "/" + file_name
+        content = FileManagement.read_file_full_address(full_path)
+
+        logging.info(f"File node {file_category}/{file_name} content extracted")
+        return jsonify({"content": content}), 200
+    except Exception as e:
+        logging.exception(f"Failed to get content for {file_category}/{file_name}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/file/<file_id>', methods=['DELETE'])
 def delete_file(file_id):
     try:
         user_prompt_management = UserPromptManagement()
@@ -316,15 +329,14 @@ def get_files(category_name):
         category_name = category_name.lower()
         user_prompt_management = UserPromptManagement()
         files = user_prompt_management.get_files_by_category(category_name)
-        logging.info(f"DA files: {files}")
         files_list = [
             {"id": record["id"],
+             "category_id": record["category_id"],
              "name": record["name"],
              "summary": record["summary"],
              "structure": record["structure"],
              "time": record["time"]} for record in files]
 
-        logging.info(f"DA files list: {files_list}")
         return jsonify({"files": files_list}), 200
     except Exception as e:
         logging.exception(f"Failed to get messages for category, {category_name}")
