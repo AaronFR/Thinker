@@ -92,7 +92,6 @@ class FileManagement:
     @staticmethod
     def read_file_full_address(full_address: str, number_lines: bool = False) -> str:
         """Read the content of a specified file.
-        ToDo In future we will probably want to locate files by id alone
 
         :param file_path: The path of the file_name to read
         :param number_lines: Flag to determine if the content should be returned as numbered lines
@@ -113,7 +112,7 @@ class FileManagement:
                     return file.read()
         except FileNotFoundError:
             logging.exception(f"File not found: {full_address}")
-            return f"[FAILED TO LOAD {full_address}]"
+            return f"[FILE NOT FOUND {full_address}]"
         except Exception:
             logging.exception(f"An unexpected error occurred")
             return f"[FAILED TO LOAD {full_address}]"
@@ -141,7 +140,7 @@ class FileManagement:
                     return file.read()
         except FileNotFoundError:
             logging.exception(f"File not found: {file_path}")
-            return f"[FAILED TO LOAD {file_path}]"
+            return f"[FILE NOT FOUND {file_path}]"
         except Exception:
             logging.exception(f"An unexpected error occurred")
             return f"[FAILED TO LOAD {file_path}]"
