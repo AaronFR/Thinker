@@ -30,7 +30,7 @@ const FileItem = React.memo(({ file, onDelete, onSelect }) => {
   const handleDelete = async (e) => {
     e.stopPropagation(); // Prevent triggering the toggleExpansion
     try {
-      const response = await fetch(`${flask_port}/files/${file.id}`, {
+      const response = await fetch(`${flask_port}/file/${file.id}`, {
         method: 'DELETE',
       });
 

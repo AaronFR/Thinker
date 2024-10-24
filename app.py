@@ -69,7 +69,7 @@ def process_message():
             for file in files:
                 file_with_category = user_prompt_management.get_file_by_id(file.get("id"))
                 for record in file_with_category:
-                    file_system_address = f"{record['category']}/{record['name']}"
+                    file_system_address = f"{record['category']}\\{record['name']}"
                     file_references.append(file_system_address)
 
         selected_persona = get_selected_persona(data) 
