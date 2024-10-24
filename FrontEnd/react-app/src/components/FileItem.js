@@ -39,9 +39,6 @@ const FileItem = React.memo(({ file, onDelete, onSelect }) => {
     <div className="file-item" onClick={handleSelect} style={{ cursor: 'pointer' }}>
       <div onClick={toggleExpansion} className="file-item-header">
         <p><strong>File Name:</strong> {isExpanded ? file.name : shortenText(file.name)}</p>
-        <button onClick={handleDelete} className="delete-button">
-          Delete
-        </button>
       </div>
       {isExpanded && (
         <div className="file-details">
@@ -50,10 +47,13 @@ const FileItem = React.memo(({ file, onDelete, onSelect }) => {
               dangerouslySetInnerHTML={{ __html: markedFull(file.summary) }}
             />
           </p>
-          <p className='time'>{new Date(file.time * 1000).toLocaleString()}</p>
           {/* Add more file details if necessary */}
         </div>
       )}
+      <button onClick={handleDelete} className="delete-button">
+        Delete
+      </button>
+      <p className='time'>{new Date(file.time * 1000).toLocaleString()}</p>
     </div>
   );
 });
