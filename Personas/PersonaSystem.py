@@ -10,7 +10,7 @@ from Personas.Writer import Writer
 
 class PersonaSystem:
     def __init__(self):
-        self.thoughts_directory = os.path.join(os.path.dirname(__file__), '..', 'thoughts')
+        self.file_data_directory = os.path.join(os.path.dirname(__file__), '..', 'Data', 'FileData')
 
         self.personas = {
             ANALYST: Analyst(ANALYST),

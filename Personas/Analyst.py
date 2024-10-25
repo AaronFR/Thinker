@@ -16,7 +16,7 @@ class Analyst(BasePersona):
 
     def __init__(self, name):
         super().__init__(name)
-        self.thoughts_directory = os.path.join(os.path.dirname(__file__), "thoughts")
+        self.file_data_directory = os.path.join(os.path.dirname(__file__), "thoughts")
         self.evaluation_files = []
 
         ErrorHandler.setup_logging()

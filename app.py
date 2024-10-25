@@ -27,7 +27,7 @@ app = Flask(__name__)
 CORS(app)
 
 ERROR_NO_PROMPT = "No prompt found"
-STAGING_AREA = os.path.join(os.path.dirname(__file__), 'thoughts', "0")
+STAGING_AREA = os.path.join(os.path.dirname(__file__), 'Data/FileData', "0")
 
 @app.route('/api/message', methods=['GET'])
 def get_message():

@@ -31,11 +31,10 @@ class FileManagement:
 
     Its worth noting the file management system as a whole has a deliberately in-flexible system to prevent
     possible prompt injection and extraction of data from outside the designated data areas.
-    ONLY information within the boundaries of the 'thoughts' directory can be edited by the user.
+    ONLY information within the boundaries of the 'FileData' directory can be edited by the user.
     """
 
-    thoughts_directory = os.path.join(os.path.dirname(__file__), '..', 'thoughts')
-
+    file_data_directory = os.path.join(os.path.dirname(__file__), 'FileData')
 
     def __init__(self):
         ErrorHandler.setup_logging()
@@ -68,7 +67,7 @@ class FileManagement:
 
         :return: The folder path for the given thought ID
         """
-        return os.path.join(FileManagement.thoughts_directory, "0")
+        return os.path.join(FileManagement.file_data_directory, "0")
 
     @staticmethod
     def get_numbered_string(lines) -> str:
@@ -89,7 +88,7 @@ class FileManagement:
         :param number_lines: Flag to determine if the content should be returned as numbered lines
         :return: The content of the file or an error message to inform the next LLM what happened
         """
-        full_path = os.path.join(FileManagement.thoughts_directory, full_address)
+        full_path = os.path.join(FileManagement.file_data_directory, full_address)
         logging.info(f"Loading file_name content from: {full_path}")
 
         if FileManagement.is_image_file(full_address):
@@ -117,7 +116,7 @@ class FileManagement:
         :param number_lines: Flag to determine if the content should be returned as numbered lines
         :return: The content of the file or an error message to inform the next LLM what happened
         """
-        full_path = os.path.join(FileManagement.thoughts_directory, staging_index, file_path)
+        full_path = os.path.join(FileManagement.file_data_directory, staging_index, file_path)
         logging.info(f"Loading file_name content from: {full_path}")
 
         if FileManagement.is_image_file(full_path):

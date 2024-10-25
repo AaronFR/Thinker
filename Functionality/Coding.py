@@ -55,7 +55,7 @@ class Coding(enum.Enum):
         :returns: whether or not the coding file successfully complies and if it doesn't a message explaining
          why not
         """
-        script_path = os.path.join(FileManagement.thoughts_directory, file_path)
+        script_path = os.path.join(FileManagement.file_data_directory, file_path)
         try:
             py_compile.compile(script_path, doraise=True)
             return True
@@ -70,7 +70,7 @@ class Coding(enum.Enum):
         :param file_path: including category, file name and extension
         :returns: the output of the script or -if an error is encountered the error message
         """
-        script_path = os.path.join(FileManagement.thoughts_directory, file_path)
+        script_path = os.path.join(FileManagement.file_data_directory, file_path)
         try:
             result = subprocess.run(['python', script_path], capture_output=True, text=True, check=True)
             return f"Script Output:\n{result.stdout}"

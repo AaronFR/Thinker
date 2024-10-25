@@ -32,7 +32,7 @@ class CategoryManagement:
         """Initializes the CategoryManagement instance."""
         self.categories: Dict[int, str] = {}  # ToDo NEEDS to be changed, has to grab the users categories
 
-        self.thoughts_directory = os.path.join(os.path.dirname(__file__), '..', 'thoughts')
+        self.file_data_directory = os.path.join(os.path.dirname(__file__), 'FileData')
         self.data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
         self.categories_path = os.path.join(self.data_path, "Categories.csv")
 
@@ -72,8 +72,8 @@ class CategoryManagement:
 
         try:
             for file in files:
-                staged_file_path = os.path.join(FileManagement.thoughts_directory, "0", file)
-                new_file_path = os.path.join(FileManagement.thoughts_directory, str(id), file)
+                staged_file_path = os.path.join(FileManagement.file_data_directory, "0", file)
+                new_file_path = os.path.join(FileManagement.file_data_directory, str(id), file)
                 shutil.move(staged_file_path, new_file_path)
                 logging.info(f"{file} moved to {id}")
         except Exception:
@@ -106,7 +106,7 @@ class CategoryManagement:
         :param id: The new folder id to create
         :param category_name: The name of this folder in the categorisation system, will be automatically lowercase-d
         """
-        new_directory = os.path.join(FileManagement.thoughts_directory, str(id))
+        new_directory = os.path.join(FileManagement.file_data_directory, str(id))
         os.makedirs(new_directory, exist_ok=True)  # Create new folder for the given id
 
         category_name = category_name.lower()
