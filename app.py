@@ -309,6 +309,16 @@ def list_categories():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/categories_with_files', methods=['GET'])
+def list_categories_with_files():
+    try:
+        node_db = NodeDatabaseManagement()
+        categories = node_db.list_user_categories_with_files()
+        return jsonify({"categories": categories}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/categories/<category_name>/messages', methods=['GET'])
 def get_messages(category_name):
     try:

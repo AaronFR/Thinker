@@ -33,7 +33,7 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
  
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${flask_port}/categories`, {
+      const response = await fetch(`${flask_port}/categories_with_files`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"

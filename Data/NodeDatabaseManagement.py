@@ -119,6 +119,19 @@ class NodeDatabaseManagement:
         categories = [record["category_name"] for record in result]
         return categories
 
+    def list_user_categories_with_files(self):
+        """
+        List all unique categories associated with the user which have files attached
+        """
+        list_categories_query = """
+        MATCH (user:USER)-[:USES]->(category:CATEGORY)--(file:FILE)
+        RETURN DISTINCT category.name as category_name
+        ORDER by category_name
+        """
+        result = self.neo4jDriver.execute_read(list_categories_query)
+        categories = [record["category_name"] for record in result]
+        return categories
+
     def get_messages_by_category(self, category_name):
         """
         Retrieve all messages linked to a particular category, newest first.
