@@ -2,14 +2,13 @@
 import logging
 import os
 import shutil
-from typing import List, Dict, Optional
+from typing import Dict, Optional
 
 import pandas as pd
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.FileManagement import FileManagement
-from Functionality.Organising import Organising
-from Utilities import Constants, Globals
+from Data.UserPromptManagement import NodeDatabaseManagement
 
 
 class CategoryManagement:
@@ -32,7 +31,7 @@ class CategoryManagement:
 
     def __init__(self):
         """Initializes the CategoryManagement instance."""
-        self.categories: Dict[int, str] = {}
+        self.categories: Dict[int, str] = {}  # ToDo NEEDS to be changed, has to grab the users categories
 
         self.thoughts_directory = os.path.join(os.path.dirname(__file__), '..', 'thoughts')
         self.data_path = os.path.join(os.path.dirname(__file__), 'DataStores')

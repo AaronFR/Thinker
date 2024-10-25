@@ -8,7 +8,7 @@ from Functionality.Organising import Organising
 from Utilities import Constants
 
 
-class UserPromptManagement:
+class NodeDatabaseManagement:
     def __init__(self):
         self.neo4jDriver = Neo4jDriver()
         self.executor = AiOrchestrator()
@@ -54,7 +54,7 @@ class UserPromptManagement:
         }
 
         user_prompt_id = self.neo4jDriver.execute_write(create_user_prompt_query, parameters, "user_prompt_id")
-        UserPromptManagement.create_file_nodes_for_user_prompt(user_prompt_id, category)
+        NodeDatabaseManagement.create_file_nodes_for_user_prompt(user_prompt_id, category)
 
         return category
 
@@ -63,7 +63,7 @@ class UserPromptManagement:
         file_names = FileManagement.list_staged_files()
 
         for file_name in file_names:
-            UserPromptManagement.create_file_node(user_prompt_id, category, file_name)
+            NodeDatabaseManagement.create_file_node(user_prompt_id, category, file_name)
 
     @staticmethod
     def create_file_node(user_prompt_id: str, category: str, file_name: str):

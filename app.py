@@ -12,12 +12,13 @@ from flask_cors import CORS
 
 from werkzeug.utils import secure_filename
 
+from Data.CategoryManagement import CategoryManagement
 from Data.FileManagement import FileManagement
+from Data.NodeDatabaseManagement import NodeDatabaseManagement
 from Functionality.Augmentation import Augmentation
 from Personas.Coder import Coder
 from Data.Configuration import Configuration
 from Data.Pricing import Pricing
-from Data.UserPromptManagement import UserPromptManagement
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -50,7 +51,7 @@ def process_message():
     :returns: A Flask Response object containing a JSON representation of the processed message.
     """
     logging.info("process_message triggered")
-    user_prompt_management = UserPromptManagement()
+    node_db = NodeDatabaseManagement()
 
     try:
         data = request.get_json()
@@ -67,7 +68,7 @@ def process_message():
         file_references = []
         if files:
             for file in files:
-                file_with_category = user_prompt_management.get_file_by_id(file.get("id"))
+                file_with_category = node_db.get_file_by_id(file.get("id"))
                 for record in file_with_category:
                     file_system_address = f"{record['category']}\\{record['name']}"
                     file_references.append(file_system_address)
@@ -77,7 +78,10 @@ def process_message():
         logging.info("Response generated: %s", response_message)
 
         # ToDo: should be an ancillary side job, currently slows down recieving a response if the database doesn't respond quickly
-        result = user_prompt_management.create_user_prompt_node(user_prompt, response_message)
+        selected_category = node_db.create_user_prompt_node(user_prompt, response_message)
+
+        categoryManagement = CategoryManagement()
+        categoryManagement.stage_files(user_prompt, selected_category)
 
         return jsonify({"message": response_message})
     
@@ -103,8 +107,8 @@ def get_selected_persona(data):
 @app.route('/messages/<message_id>', methods=['DELETE'])
 def delete_message(message_id):
     try:
-        user_prompt_management = UserPromptManagement()
-        user_prompt_management.delete_message_by_id(message_id)
+        node_db = NodeDatabaseManagement()
+        node_db.delete_message_by_id(message_id)
 
         logging.info(f"User prompt node {message_id} deleted")
         return jsonify({"message": f"Message {message_id} deleted successfully"}), 200
@@ -129,8 +133,8 @@ def get_file_content(file_category, file_name):
 @app.route('/file/<file_id>', methods=['DELETE'])
 def delete_file(file_id):
     try:
-        user_prompt_management = UserPromptManagement()
-        user_prompt_management.delete_file_by_id(file_id)
+        node_db = NodeDatabaseManagement()
+        node_db.delete_file_by_id(file_id)
 
         logging.info(f"File node {file_id} deleted")
         return jsonify({"message": f"File {file_id} deleted successfully"}), 200
@@ -298,8 +302,8 @@ def get_session_cost():
 @app.route('/categories', methods=['GET'])
 def list_categories():
     try:
-        user_prompt_management = UserPromptManagement()
-        categories = user_prompt_management.list_user_categories()
+        node_db = NodeDatabaseManagement()
+        categories = node_db.list_user_categories()
         return jsonify({"categories": categories}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -309,8 +313,8 @@ def list_categories():
 def get_messages(category_name):
     try:
         category_name = category_name.lower()
-        user_prompt_management = UserPromptManagement()
-        messages = user_prompt_management.get_messages_by_category(category_name)
+        node_db = NodeDatabaseManagement()
+        messages = node_db.get_messages_by_category(category_name)
         messages_list = [
             {"id": record["id"],
              "prompt": record["prompt"],
@@ -327,8 +331,8 @@ def get_messages(category_name):
 def get_files(category_name):
     try:
         category_name = category_name.lower()
-        user_prompt_management = UserPromptManagement()
-        files = user_prompt_management.get_files_by_category(category_name)
+        node_db = NodeDatabaseManagement()
+        files = node_db.get_files_by_category(category_name)
         files_list = [
             {"id": record["id"],
              "category_id": record["category_id"],
