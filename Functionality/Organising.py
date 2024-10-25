@@ -23,7 +23,7 @@ class Organising:
         :return A list of selected file names that are deemed relevant to the input questions
         """
         logging.info("GET_RELEVANT_FILES triggered")
-        evaluation_files = FileManagement.list_file_names()
+        evaluation_files = FileManagement.list_staged_files()  # needs to be changed to find files from ALL categories
         if not evaluation_files:
             logging.warning("No evaluation files found.")
             return []
@@ -42,7 +42,7 @@ class Organising:
 
             logging.info(f"Selected: {selected_files}, \nfrom: {evaluation_files}")
 
-            selected_files = FileManagement.list_file_names()  # defaulting to grabbing staged files
+            selected_files = FileManagement.list_staged_files()  # defaulting to grabbing staged files
             logging.info(f"Selected files: {selected_files}")
             return selected_files
         except Exception as e:

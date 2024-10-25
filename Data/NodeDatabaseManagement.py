@@ -2,7 +2,6 @@ import logging
 from datetime import datetime
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Data.CategoryManagement import CategoryManagement
 from Data.FileManagement import FileManagement
 from Data.Neo4jDriver import Neo4jDriver
 from Functionality.Organising import Organising
@@ -57,14 +56,11 @@ class UserPromptManagement:
         user_prompt_id = self.neo4jDriver.execute_write(create_user_prompt_query, parameters, "user_prompt_id")
         UserPromptManagement.create_file_nodes_for_user_prompt(user_prompt_id, category)
 
-        categoryManagement = CategoryManagement()
-        categoryManagement.stage_files(user_prompt, category)
-
-        return user_prompt_id
+        return category
 
     @staticmethod
     def create_file_nodes_for_user_prompt(user_prompt_id: str, category: str):
-        file_names = FileManagement.list_file_names()
+        file_names = FileManagement.list_staged_files()
 
         for file_name in file_names:
             UserPromptManagement.create_file_node(user_prompt_id, category, file_name)
@@ -138,6 +134,22 @@ class UserPromptManagement:
         """
         parameters = {"category_name": category_name}
         result = self.neo4jDriver.execute_read(get_messages_query, parameters)
+        return result
+
+    def get_category_id(self, category_name):
+        """
+        Retrieve all files linked to a particular category, newest first.
+
+        :param category_name: Name of the category node
+        :return: the id of that category node
+        """
+        get_messages_query = """
+        MATCH (category:CATEGORY {name: $category_name})
+        RETURN id(category) AS category_id
+        """
+        parameters = {"category_name": category_name}
+        result = self.neo4jDriver.execute_read(get_messages_query, parameters)
+        logging.info(f"Category id for {category_name}: {result}")
         return result
 
     def get_files_by_category(self, category_name):

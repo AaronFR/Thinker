@@ -5,7 +5,6 @@ import subprocess
 from typing import Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Utilities import Globals
 from Utilities.ExecutionLogs import ExecutionLogs
 from Data.FileManagement import FileManagement
 from Personas.PersonaSpecification import PersonaConstants
@@ -47,12 +46,16 @@ class Coding(enum.Enum):
         return extension in coding_extensions
 
     @staticmethod
-    def check_syntax(file_name: str) -> bool | str:
+    def check_syntax(file_path: str) -> bool | str:
         """
         ToDo: implement
         ToDo: Assuming that script is written in python
+
+        :param file_path: including category, file name and extension
+        :returns: whether or not the coding file successfully complies and if it doesn't a message explaining
+         why not
         """
-        script_path = os.path.join(FileManagement.thoughts_directory, Globals.current_thought_id, file_name)
+        script_path = os.path.join(FileManagement.thoughts_directory, file_path)
         try:
             py_compile.compile(script_path, doraise=True)
             return True
@@ -60,12 +63,14 @@ class Coding(enum.Enum):
             return f"Syntax error: {e.msg}"
 
     @staticmethod
-    def run_generated_script(file_name: str) -> str:
+    def run_generated_script(file_path: str) -> str:
         """
         ToDo: implement + add method to check IF a script should be run
         ToDo: Write method for running tests (depending on chosen framework)
+        :param file_path: including category, file name and extension
+        :returns: the output of the script or -if an error is encountered the error message
         """
-        script_path = os.path.join(FileManagement.thoughts_directory, Globals.current_thought_id, file_name)
+        script_path = os.path.join(FileManagement.thoughts_directory, file_path)
         try:
             result = subprocess.run(['python', script_path], capture_output=True, text=True, check=True)
             return f"Script Output:\n{result.stdout}"

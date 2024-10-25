@@ -64,12 +64,10 @@ class CategoryManagement:
         :param user_prompt: The user-provided prompt to assist with categorisation.
         :param category: If defined the system will categorise the staged files with the given category, otherwise a category will be generated
         """
-        Globals.current_thought_id = 0  # staging area is 0 in 1-indexed thoughts folder structure
-        files = FileManagement.list_file_names()
+        files = FileManagement.list_staged_files()
 
         id = self._return_id_for_category(category)
         logging.info(f"Category selected: [{id}] - {category}")
-        Globals.current_thought_id = id
 
         if not files:
             return
@@ -94,10 +92,11 @@ class CategoryManagement:
         id = reversed_categories.get(category_name, False)
 
         if not id:
-            id = FileManagement.get_current_thought_id()
+            node_db = NodeDatabaseManagement()
+            id = node_db.get_category_id(category_name)
             self._add_new_category(id, category_name)
 
-            logging.info(f"New category created: [{id}] - {category_name}")
+            logging.info(f"Id found for category [{id}] - {category_name}")
 
         return id
 

@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Functionality.Writing import Writing
@@ -28,7 +29,7 @@ class PersonalAssistant(BasePersona):
         self.instructions = PaSpecification.PERSONAL_ASSISTANT_INSTRUCTIONS
         self.configuration = PaSpecification.load_configuration()
 
-    def run_workflow(self, selected_workflow: str, initial_message: str):
+    def run_workflow(self, selected_workflow: str, initial_message: str, file_references: List[str] = None):
         if selected_workflow in self.workflows.keys():
             if selected_workflow == "chat":
                 self.chat_workflow(initial_message)

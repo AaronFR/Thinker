@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Functionality.Writing import Writing
@@ -25,7 +26,7 @@ class Writer(BasePersona):
 
         ErrorHandler.setup_logging()
 
-    def run_workflow(self, selected_workflow: str, initial_message: str):
+    def run_workflow(self, selected_workflow: str, initial_message: str, file_references: List[str] = None):
         if selected_workflow in self.workflows.keys():
             if selected_workflow == "write":
                 self.write_workflow(initial_message)
@@ -37,7 +38,7 @@ class Writer(BasePersona):
             ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary"],
             [initial_message])
 
-        evaluation_files = FileManagement.list_file_names()
+        evaluation_files = FileManagement.list_staged_files()
         if file_name in evaluation_files:
             file_name = executor.execute(
                 ["Given the context of the following prompt, should the writing be appended or should it overwrite "

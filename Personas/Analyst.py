@@ -24,8 +24,10 @@ class Analyst(BasePersona):
     def execute_task(self, task_to_execute: str):
         """First create a document evaluating the current output, if any, against the initial problem
         Then generate a list of workers to improve the current solution
+
+        ToDo: In the new system this will probably be saved as a node, if used
         """
-        self.evaluation_files = FileManagement.list_file_names()
+        self.evaluation_files = FileManagement.list_staged_files()  # needs to be adapted to reference all selected files
 
         # evaluate current files
         analyst = AiOrchestrator(self.evaluation_files)
@@ -36,7 +38,8 @@ class Analyst(BasePersona):
         )
 
         # save to Analysis.txt file_name
-        FileManagement.save_file(analysis_report, PersonaConstants.meta_analysis_filename, overwrite=True)
+        file_path = "CATEGORY_ID_PLACEHOLDER\\" + PersonaConstants.meta_analysis_filename
+        FileManagement.save_file(analysis_report, file_path, overwrite=True)
         ExecutionLogs.add_to_logs("Analyst: Report written and saved")
 
         # Search for the pattern

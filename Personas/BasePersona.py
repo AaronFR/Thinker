@@ -3,7 +3,6 @@ import logging
 from typing import List, Tuple
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Data.CategoryManagement import CategoryManagement
 from Data.Configuration import Configuration
 
 from Data.EncyclopediaManagement import EncyclopediaManagement
@@ -129,8 +128,8 @@ class BasePersona:
         """
         logging.info("Processing user messages: %s", user_messages)
 
-        selected_files = FileManagement.list_file_names()
-        executor = AiOrchestrator(selected_files)
+        staged_files = FileManagement.list_staged_files()
+        executor = AiOrchestrator(staged_files)
         config = Configuration.load_config()
 
         system_messages = [self.instructions, self.configuration]

@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 from typing import List
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
@@ -62,8 +63,10 @@ class Coder(BasePersona):
     def write_workflow(self, initial_message: str, file_references: List[str] = None):
         """
         Writes the improved code to a specified file.
+        ToDo in future a less rudimentary way of guessing the category for a new file will be required
 
         :param initial_message: The user's initial guidance for writing the code.
+        :param file_references:
         """
         executor = AiOrchestrator()
         config = Configuration.load_config()
@@ -88,19 +91,21 @@ class Coder(BasePersona):
         logging.info(f"Referencing/Creating the following files: {files}")
 
         for file in files:
-            file_name = file['file_name']
+            category = Path(file_references[0]).parts[0]
+            file_path = Path(category).joinpath(file['file_name'])
+            logging.info(f"🚧 Constructed file with category prefix: {file_path}")
             purpose = file['purpose']
-            logging.info(f"Writing code to {file_name}, \nPurpose: {purpose}")
+            logging.info(f"Writing code to {file_path}, \nPurpose: {purpose}")
 
-            if Coding.is_coding_file(file_name):
-                step_two = f"Write/Rewrite {file_name} based on your previous plan of action and the actual contents of"\
+            if Coding.is_coding_file(file_path):
+                step_two = f"Write/Rewrite {file_path} based on your previous plan of action and the actual contents of"\
                             "of this particular file,"\
                            f"focusing on fulfilling the <purpose>{purpose}</purpose> for this file. "\
                            "Making sure that the file imports as necessary, referencing the appropriate classes"\
                             "DO NOT OVERWRITE THIS FILE WITH A SUMMARY, do not include the contents of another file" \
                             "Unless explicitly requests, the files content must be preserved by default"
             else:
-                step_two = f"Write/Rewrite {file_name} based on your previous plan of action for this particular file,"\
+                step_two = f"Write/Rewrite {file_path} based on your previous plan of action for this particular file,"\
                            f"focusing on fulfilling the <purpose>{purpose}</purpose> for this file."\
                             "DO NOT OVERWRITE THIS FILE WITH A SUMMARY, do not include the contents of another file"\
                             "Unless explicitly requests, the files content must be preserved by default"
@@ -108,10 +113,10 @@ class Coder(BasePersona):
             logging.info(f"\n\n\n STEP TWO: {step_two}")
 
             analyser_messages = [
-                f"<user_prompt>{initial_message}</user_prompt>: to start with we will narrow our focus on {file_name} "
+                f"<user_prompt>{initial_message}</user_prompt>: to start with we will narrow our focus on {file_path} "
                 "and think through how to change it/write it so as to fulfil the user prompt, step by step, discussing"
                 " what we know, identify specifically what they want accomplished, goals and subgoals, "
-                f"and any existing flaws or defects WITHOUT writing any text or code for {file_name}. "
+                f"and any existing flaws or defects WITHOUT writing any text or code for {file_path}. "
                 "Just writing up a plan of action telling the llm to follow how to rewrite/write the file in line with "
                 "this plan and stating specifically that this plan is to be replaced with actual functioning file",
 
@@ -126,7 +131,7 @@ class Coder(BasePersona):
 
                     if iteration == len(prompt_messages):
                         Coding.write_to_file_task({
-                            PersonaConstants.SAVE_TO: file_name,
+                            PersonaConstants.SAVE_TO: file_path,
                             PersonaConstants.INSTRUCTION: response
                         })
 

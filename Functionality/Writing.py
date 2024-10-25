@@ -2,6 +2,8 @@ import enum
 import logging
 from typing import Dict, List
 
+from typing_extensions import deprecated
+
 import Personas.PersonaSpecification.WriterSpecification
 from Utilities import Constants
 from Personas.PersonaSpecification.EditorSpecification import REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS, \
@@ -98,24 +100,6 @@ class Writing(enum.Enum):
         ExecutionLogs.add_to_logs(f"Appended content to {task_parameters[PersonaConstants.SAVE_TO]}")
 
     @staticmethod
-    def rewrite_file_lines(task_parameters: Dict[str, object]):
-        """Rewrite the specified lines in a file based on provided instructions and save the updated content.
-        NOTE: This is especially bad, at formatting code. ChatGpt wants to fill in ANY incomplete structural elements
-        i.e. if it gets a set with only one half of a pair of docstrings commas it ***WILL*** create a new docstring
-        triple comma, no amount of instructions can dissuade it. (Better to instruct what TO do)
-
-        :param task_parameters: Dict[str, object]:
-            'SAVE_TO': str - The path to the file where updates should be saved
-            'INSTRUCTION': str - Detailed instructions on how to process and rewrite the file lines
-        """
-        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
-        file_path = str(task_parameters[PersonaConstants.SAVE_TO])
-        file_lines = FileManagement.read_file_lines(file_path)
-
-        replacements = Writing.process_replacements(file_lines, task_parameters)
-        Writing.apply_replacements(executor, file_lines, replacements, file_path)
-
-    @staticmethod
     def process_replacements(file_lines: List[str], task_parameters: Dict[str, object]):
         """Performs replacements line by line in a specified file using instructions provided to an AI executor.
 
@@ -140,67 +124,6 @@ class Writing(enum.Enum):
             model=ChatGptModel.CHAT_GPT_4_OMNI_MINI
         )
         return replacements
-
-    @staticmethod
-    def apply_replacements(
-            executor_task: AiOrchestrator,
-            file_lines: List[str],
-            replacements: Dict[str, object],
-            target_file_path: str):
-        """Modifies specific lines in a file based on provided replacement instructions.
-
-        This method processes a list of replacement instructions, updating the file content
-        according to the specified changes, and saves the modified content to the given file path.
-
-        :param executor_task: An instance of AiOrchestrator that generates replacement content
-        :param file_lines: A list of strings representing the original lines of the file
-        :param replacements: Dict containing 'changes', a list of replacement instructions with:
-         'start', 'end', and 'replacement'
-        :param target_file_path: The file path where the updated content will be saved
-        """
-        new_content = []
-        current_line = 0
-        for change in sorted(replacements['changes'], key=lambda x: x['start']):
-            start = change['start'] - 1  # Adjust for zero-based indexing
-            end = change['end']
-
-            instruction = change['instruction']
-            text_to_rewrite = "".join(file_lines[start:end])
-            replacement = executor_task.execute(
-                [EDITOR_LINE_REPLACEMENT_INSTRUCTIONS, instruction],
-                [text_to_rewrite],
-                4,
-                [f"""\n<original>\n{text_to_rewrite}\n</original>\n
-                Given the original text, write as is the rewrite I gave you in accordance with these instructions: 
-                {instruction}
-                <rules>
-                Do NOT try and conclude the original text, if its incomplete leave it *EXACTLY* as incomplete as it was.
-                If you have the start to a docstring but not the end just leave it as is, don't the remaining pair.
-                DO not select any answer that would break the coherency of the document. E.g. breaking indentation
-                Adding things which should not be added, removing things that may be needed, etc.
-                DO NOT STRUCTURAL ELEMENTS WHICH ARE NOT PRESENT IN THE ORIGINAL.
-                
-                Do not add code block delimiters or language identifiers.</rules>"""]
-            )
-            # Ensure the replacement ends with a newline
-            if not replacement.endswith('\n'):
-                replacement += '\n'
-
-            ExecutionLogs.add_to_logs(
-                f"""Replacing {target_file_path}[{change['start']}:{change['end']}]:
-                {text_to_rewrite}
-                With -> :
-                {replacement}"""
-            )
-
-            new_content.extend(file_lines[current_line:start])
-            new_content.extend(replacement.splitlines(keepends=True))
-            current_line = end
-
-        new_content.extend(file_lines[current_line:])
-
-        FileManagement.save_file(''.join(new_content), target_file_path, overwrite=True)
-        ExecutionLogs.add_to_logs(f"Saved to {target_file_path}")
 
     @staticmethod
     def rewrite_file(task_parameters: Dict[str, object],
@@ -247,8 +170,9 @@ class Writing(enum.Enum):
         approx_max_chars = approx_max_tokens * char_per_token
         return split_into_chunks(text, approx_max_chars)
 
+    @deprecated("Not yet redesigned for the node based system")
     @staticmethod
-    def regex_refactor(task_parameters: Dict[str, object]):
+    def regex_refactor(task_parameters: Dict[str, object], file_references=None):
         """Refactor files based on regex patterns provided in the task directives.
         ToDo: It would make sense to add a check of the output
          to make sure a name isn't being changed which *shouldn't*
@@ -257,7 +181,7 @@ class Writing(enum.Enum):
             - INSTRUCTION: The regex pattern and modifications to be applied
             - REWRITE_THIS: The target string or pattern that needs to be rewritten
         """
-        evaluation_files = FileManagement.list_file_names()
+        evaluation_files = FileManagement.list_staged_files()  # defaulting to staged files
         for file in evaluation_files:
             try:
                 FileManagement.regex_refactor(
