@@ -1,5 +1,15 @@
+.augmented-container {
+  display: flex;
+  align-items: center; /* Vertically centers the items */
+  justify-content: center; /* Horizontally centers the items */
+  gap: 10px; /* Space between the content and the button */
+  /* Optional: Add padding or margin as needed */
+  padding: 10px;
+  text-align: center;
+}
+
 .augment-button {
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg);
   margin-left: var(--spacing-md);
   font-size: var(--font-size-small-md);
   color: var(--color-white);
@@ -12,6 +22,10 @@
 .augment-button:hover {
   background: linear-gradient(90deg, var(--color-border-active), var(--color-link-hover));
   transform: var(--transform-lift);
+}
+.augment-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 .markdown-augmented {

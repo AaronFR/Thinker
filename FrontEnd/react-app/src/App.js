@@ -141,13 +141,7 @@ function App () {
               isProcessing={isProcessing} 
             />
 
-            <PromptAugmentation 
-              augmentedPromptsEnabled={augmentedPromptsEnabled}
-              augmentedPrompt={augmentedPrompt}
-              error={augmentedError}
-              isAugmenting={isAugmenting}
-              copyAugmentedPrompt={copyAugmentedPrompt}
-            />
+            
 
             <PersonaSelector 
               selectedPersona={selectedPersona} 
@@ -173,6 +167,14 @@ function App () {
               onFormsFilled={setFormsFilled} // Pass the state updater as callback
               setConcatenatedQA={setConcatenatedQA}
               resetResponsesTrigger={resetResponsesTrigger}
+            />
+
+            <PromptAugmentation 
+              augmentedPromptsEnabled={augmentedPromptsEnabled}
+              augmentedPrompt={augmentedPrompt}
+              error={augmentedError}
+              isAugmenting={isAugmenting}
+              copyAugmentedPrompt={copyAugmentedPrompt}
             />
 
             <Navigation />

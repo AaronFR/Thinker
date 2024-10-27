@@ -7,8 +7,11 @@ const PromptAugmentation = ({ augmentedPromptsEnabled, augmentedPrompt, error=""
   if (!augmentedPromptsEnabled) return null;
 
   return (
-    <>
-      <div style={{ opacity: isAugmenting ? 0.5 : 1 }}>
+    <div className="augmented-container">
+      <div 
+        className="augmented-content"
+        style={{ opacity: isAugmenting ? 0.5 : 1 }}
+      >
         {augmentedPrompt ? (
           <div
             className="markdown-augmented"
@@ -17,15 +20,19 @@ const PromptAugmentation = ({ augmentedPromptsEnabled, augmentedPrompt, error=""
             }}
           />
         ) : (
-          "Waiting to augment prompt.."
+          isAugmenting ? '...' : ""
         )}
       </div>
       {augmentedPrompt && (
-        <button className="augment-button" onClick={copyAugmentedPrompt}>
-          {isAugmenting ? 'Augmenting...' : 'Copy Augmented Prompt'}
+        <button 
+          className="augment-button" 
+          onClick={copyAugmentedPrompt} 
+          disabled={isAugmenting}
+        >
+          {isAugmenting ? 'Augmenting...' : 'Copy'}
         </button>
       )}
-    </>
+    </div>
   );
 };
 

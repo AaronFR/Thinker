@@ -109,13 +109,20 @@ const FileUploadButton = ({ onUploadSuccess }) => {
     <div className="file-upload-button">
       <input 
         type="file" 
+        id="file-input"
         onChange={handleFileChange} 
         disabled={state.isUploading}
         className='file-input'
         aria-disabled={state.isUploading}
         multiple
+        style={{ display: 'none' }}
       />
-      {state.uploadStatus && <p>{state.uploadStatus}</p>}
+
+      {/* Custom Label as a Button */}
+      <label htmlFor="file-input" className='custom-file-label'>
+      📂 {/* Upload Emoji */}
+      </label>
+
       {state.isUploading && (
         <div className='upload-progress'>
           <ProgressBar progress={state.uploadProgress} />

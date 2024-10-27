@@ -54,7 +54,7 @@ const SuggestedQuestions = ({
   if (!questionsForPrompt) {
     return (
       <div style={{ opacity: isQuestioning ? 0.5 : 1 }}>
-        Waiting to question prompt...
+        {isQuestioning ? "..." : ""}
       </div>
     );
   }

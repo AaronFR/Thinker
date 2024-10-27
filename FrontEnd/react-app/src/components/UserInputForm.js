@@ -77,9 +77,8 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
     <div>
       {/* Display Uploaded Files */}
       <div style={{ marginBottom: '20px' }}>
-        <h3>Selected Files:</h3>
         {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
-        {selectedFiles.length === 0 && !fetchError && <p>No files uploaded yet.</p>}
+        {selectedFiles.length === 0 && !fetchError}
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {selectedFiles.map((file, index) => (
             <li key={index} style={{ padding: '5px 0' }}>
@@ -117,7 +116,7 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
             placeholder='Enter your prompt'
             className="prompt-input"
             rows="2"
-            style={{ resize: 'none', overflowY: 'auto', marginLeft: '10px', marginRight: '10px', width: '300px' }}
+            style={{ resize: 'none', overflowY: 'auto', marginLeft: '10px', marginRight: '10px', width: '500px' }}
           ></textarea>
           <button 
             type="submit"
