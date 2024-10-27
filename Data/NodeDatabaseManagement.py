@@ -149,7 +149,7 @@ class NodeDatabaseManagement:
         result = self.neo4jDriver.execute_read(get_messages_query, parameters)
         return result
 
-    def get_category_id(self, category_name):
+    def get_category_id(self, category_name: str) -> int:
         """
         Retrieve all files linked to a particular category, newest first.
 
@@ -161,9 +161,11 @@ class NodeDatabaseManagement:
         RETURN id(category) AS category_id
         """
         parameters = {"category_name": category_name}
+
         result = self.neo4jDriver.execute_read(get_messages_query, parameters)
-        logging.info(f"Category id for {category_name}: {result}")
-        return result
+        category_id = result[0]["category_id"]
+        logging.info(f"Category id for {category_name}: {category_id}")
+        return category_id
 
     def get_files_by_category(self, category_name):
         """
