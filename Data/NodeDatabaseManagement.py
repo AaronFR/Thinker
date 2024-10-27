@@ -2,6 +2,8 @@ import logging
 from datetime import datetime
 from typing import List, Dict
 
+import shortuuid as shortuuid
+
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.FileManagement import FileManagement
 from Data.Neo4jDriver import Neo4jDriver
@@ -24,6 +26,7 @@ class NodeDatabaseManagement:
         :return: The category associated with the new user prompt node
         """
         time = int(datetime.now().timestamp())
+        category_id = str(shortuuid.uuid())
 
         categories = self.list_user_categories()
         categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n" + \
@@ -41,7 +44,16 @@ class NodeDatabaseManagement:
 
         create_user_prompt_query = """
         MERGE (user:USER)
-        MERGE (category:CATEGORY {name: $category})
+        WITH user
+        OPTIONAL MATCH (existing_category:CATEGORY {name: $category})<-[:HAS_CATEGORY]-(user)
+        WITH user, existing_category
+        CALL apoc.do.when(
+            existing_category IS NULL,
+            'CREATE (new_category:CATEGORY {id: $category_id, name: $category})-[:HAS_CATEGORY]->(user) RETURN new_category',
+            'RETURN existing_category AS new_category',
+            {category_id: $category_id, category: $category}
+        ) YIELD value
+        WITH value.new_category AS category, user
         CREATE (user_prompt:USER_PROMPT {prompt: $prompt, response: $response, time: $time})
         MERGE (user)-[:USES]->(category)
         MERGE (user_prompt)-[:BELONGS_TO]->(category)
@@ -49,6 +61,7 @@ class NodeDatabaseManagement:
         """
         parameters = {
             "prompt": user_prompt,
+            "category_id": category_id,
             "response": llm_response,
             "time": time,
             "category": category
@@ -160,11 +173,11 @@ class NodeDatabaseManagement:
         Retrieve all files linked to a particular category, newest first.
 
         :param category_name: Name of the category node
-        :return: the id of that category node
+        :return: the uuid of that category node
         """
         get_messages_query = """
         MATCH (category:CATEGORY {name: $category_name})
-        RETURN id(category) AS category_id
+        RETURN category.id AS category_id
         """
         parameters = {"category_name": category_name}
 
@@ -184,7 +197,7 @@ class NodeDatabaseManagement:
         get_messages_query = """
         MATCH (user:USER)-[:USES]->(category:CATEGORY {name: $category_name})
             <-[:BELONGS_TO]-(file:FILE)
-        RETURN id(file) AS id, id(category) AS category_id, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
+        RETURN id(file) AS id, category.id AS category_id, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
         ORDER by file.time DESC
         """
         parameters = {"category_name": category_name}
@@ -212,7 +225,7 @@ class NodeDatabaseManagement:
         get_messages_query = """
         MATCH (category:CATEGORY)--(file:FILE)
         WHERE id(file) = $file_id
-        RETURN id(file) AS id, id(category) AS category, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
+        RETURN id(file) AS id, category.id AS category, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
         ORDER by file.time DESC
         """
         parameters = {"file_id": file_id}
