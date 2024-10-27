@@ -69,9 +69,9 @@ def process_message():
         if files:
             for file in files:
                 file_with_category = node_db.get_file_by_id(file.get("id"))
-                for record in file_with_category:
-                    file_system_address = f"{record['category']}\\{record['name']}"
-                    file_references.append(file_system_address)
+
+                file_system_address = f"{file_with_category['category']}\\{file_with_category['name']}"
+                file_references.append(file_system_address)
 
         selected_persona = get_selected_persona(data) 
         response_message = selected_persona.query(user_prompt, file_references)
@@ -324,12 +324,7 @@ def get_messages(category_name):
     try:
         category_name = category_name.lower()
         node_db = NodeDatabaseManagement()
-        messages = node_db.get_messages_by_category(category_name)
-        messages_list = [
-            {"id": record["id"],
-             "prompt": record["prompt"],
-             "response": record["response"],
-             "time": record["time"]} for record in messages]
+        messages_list = node_db.get_messages_by_category(category_name)
 
         return jsonify({"messages": messages_list}), 200
     except Exception as e:
@@ -342,14 +337,7 @@ def get_files(category_name):
     try:
         category_name = category_name.lower()
         node_db = NodeDatabaseManagement()
-        files = node_db.get_files_by_category(category_name)
-        files_list = [
-            {"id": record["id"],
-             "category_id": record["category_id"],
-             "name": record["name"],
-             "summary": record["summary"],
-             "structure": record["structure"],
-             "time": record["time"]} for record in files]
+        files_list = node_db.get_files_by_category(category_name)
 
         return jsonify({"files": files_list}), 200
     except Exception as e:

@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from typing import List, Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.FileManagement import FileManagement
@@ -13,14 +14,14 @@ class NodeDatabaseManagement:
         self.neo4jDriver = Neo4jDriver()
         self.executor = AiOrchestrator()
 
-    def create_user_prompt_node(self, user_prompt, llm_response):
+    def create_user_prompt_node(self, user_prompt: str, llm_response: str) -> str:
         """
         Saves a prompt - response pair as a USER_PROMPT in the neo4j database
         Categorising the prompt and staging any attached files under that category
 
         :param user_prompt: The given user prompt
         :param llm_response: The final response from the system
-        :return:
+        :return: The category associated with the new user prompt node
         """
         time = int(datetime.now().timestamp())
 
@@ -59,14 +60,14 @@ class NodeDatabaseManagement:
         return category
 
     @staticmethod
-    def create_file_nodes_for_user_prompt(user_prompt_id: str, category: str):
+    def create_file_nodes_for_user_prompt(user_prompt_id: str, category: str) -> None:
         file_names = FileManagement.list_staged_files()
 
         for file_name in file_names:
             NodeDatabaseManagement.create_file_node(user_prompt_id, category, file_name)
 
     @staticmethod
-    def create_file_node(user_prompt_id: str, category: str, file_name: str):
+    def create_file_node(user_prompt_id: str, category: str, file_name: str) -> None:
         """
         Saves a prompt - response pair as a USER_PROMPT in the neo4j database
         Categorising the prompt and staging any attached files under that category
@@ -100,10 +101,9 @@ class NodeDatabaseManagement:
             "structure": "PROTOTYPING"
         }
 
-        result = neo4jDriver.execute_write(create_file_query, parameters)
-        return result
+        neo4jDriver.execute_write(create_file_query, parameters)
 
-    def list_user_categories(self):
+    def list_user_categories(self) -> List[str]:
         """
         List all unique categories associated with the user
 
@@ -119,7 +119,7 @@ class NodeDatabaseManagement:
         categories = [record["category_name"] for record in result]
         return categories
 
-    def list_user_categories_with_files(self):
+    def list_user_categories_with_files(self) -> List[str]:
         """
         List all unique categories associated with the user which have files attached
         """
@@ -132,7 +132,7 @@ class NodeDatabaseManagement:
         categories = [record["category_name"] for record in result]
         return categories
 
-    def get_messages_by_category(self, category_name):
+    def get_messages_by_category(self, category_name: str) -> List[Dict]:
         """
         Retrieve all messages linked to a particular category, newest first.
 
@@ -146,8 +146,14 @@ class NodeDatabaseManagement:
         ORDER by user_prompt.time DESC
         """
         parameters = {"category_name": category_name}
-        result = self.neo4jDriver.execute_read(get_messages_query, parameters)
-        return result
+
+        records = self.neo4jDriver.execute_read(get_messages_query, parameters)
+        messages_list = [
+            {"id": record["id"],
+             "prompt": record["prompt"],
+             "response": record["response"],
+             "time": record["time"]} for record in records]
+        return messages_list
 
     def get_category_id(self, category_name: str) -> int:
         """
@@ -162,12 +168,12 @@ class NodeDatabaseManagement:
         """
         parameters = {"category_name": category_name}
 
-        result = self.neo4jDriver.execute_read(get_messages_query, parameters)
-        category_id = result[0]["category_id"]
+        records = self.neo4jDriver.execute_read(get_messages_query, parameters)
+        category_id = records[0]["category_id"]
         logging.info(f"Category id for {category_name}: {category_id}")
         return category_id
 
-    def get_files_by_category(self, category_name):
+    def get_files_by_category(self, category_name: str) -> List[Dict]:
         """
         Retrieve all files linked to a particular category, newest first.
 
@@ -182,18 +188,26 @@ class NodeDatabaseManagement:
         ORDER by file.time DESC
         """
         parameters = {"category_name": category_name}
-        result = self.neo4jDriver.execute_read(get_messages_query, parameters)
-        logging.info(f"Files retrieved: {result}")
-        return result
 
-    def get_file_by_id(self, file_id):
+        records = self.neo4jDriver.execute_read(get_messages_query, parameters)
+        files_list = [
+            {"id": record["id"],
+             "category_id": record["category_id"],
+             "name": record["name"],
+             "summary": record["summary"],
+             "structure": record["structure"],
+             "time": record["time"]} for record in records]
+        logging.info(f"Files retrieved: {files_list}")
+        return files_list
+
+    def get_file_by_id(self, file_id: int):
         """
         Retrieve a file by its id, including the category its attached to
         ToDo: like most of these database calls we're going to have to ensure only the users files are
          accessed
 
         :param file_id: Neo4J id of the file
-        :return: all messages related to that category node
+        :return: The singular file related to that id
         """
         get_messages_query = """
         MATCH (category:CATEGORY)--(file:FILE)
@@ -202,11 +216,11 @@ class NodeDatabaseManagement:
         ORDER by file.time DESC
         """
         parameters = {"file_id": file_id}
-        result = self.neo4jDriver.execute_read(get_messages_query, parameters)
-        logging.info(f"File retrieved: {result}")
-        return result
+        records = self.neo4jDriver.execute_read(get_messages_query, parameters)
+        logging.info(f"File retrieved: {records}")
+        return records[0]
 
-    def delete_message_by_id(self, message_id: int):
+    def delete_message_by_id(self, message_id: int) -> None:
         """
         Deletes a specific message (isolated USER_PROMPT node) by its id.
         If the CATEGORY the message is associated with has no more messages, it deletes the CATEGORY node as well.
@@ -229,10 +243,9 @@ class NodeDatabaseManagement:
             "message_id": message_id,
         }
 
-        result = self.neo4jDriver.execute_delete(delete_query, parameters)
-        return result
+        self.neo4jDriver.execute_delete(delete_query, parameters)
 
-    def delete_file_by_id(self, file_id: int):
+    def delete_file_by_id(self, file_id: int) -> None:
         """
         Deletes a specific message (isolated USER_PROMPT node) by its id.
         If the CATEGORY the message is associated with has no more messages, it deletes the CATEGORY node as well.
@@ -250,5 +263,4 @@ class NodeDatabaseManagement:
             "file_id": file_id,
         }
 
-        result = self.neo4jDriver.execute_delete(delete_query, parameters)
-        return result
+        self.neo4jDriver.execute_delete(delete_query, parameters)
