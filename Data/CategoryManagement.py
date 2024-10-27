@@ -2,9 +2,7 @@
 import logging
 import os
 import shutil
-from typing import Dict, Optional
-
-import pandas as pd
+from typing import Optional
 
 from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement
@@ -16,7 +14,6 @@ class CategoryManagement:
     """
 
     ENCYCLOPEDIA_EXT = ".yaml"
-    REDIRECTS_EXT = "Redirects.csv"
     ENCYCLOPEDIA_NAME = "To Define"
     instructions = "To Define"
 
@@ -30,27 +27,8 @@ class CategoryManagement:
 
     def __init__(self):
         """Initializes the CategoryManagement instance."""
-        self.categories: Dict[int, str] = {}  # ToDo NEEDS to be changed, has to grab the users categories
-
         self.file_data_directory = os.path.join(os.path.dirname(__file__), 'FileData')
         self.data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
-        self.categories_path = os.path.join(self.data_path, "Categories.csv")
-
-        self.load_categories()
-
-    def load_categories(self) -> None:
-        """Loads category data from a CSV file into the internal categories' dictionary."""
-        try:
-            categories_df = pd.read_csv(self.categories_path, names=['id', 'category'], skiprows=1)
-            self.categories = categories_df.set_index('id')['category'].to_dict()
-
-            logging.info(f"Categories successfully loaded: \n {self.categories}")
-        except FileNotFoundError:
-            logging.error("File not found: %s", self.categories_path)
-        except pd.errors.EmptyDataError:
-            logging.error("CSV file is empty: %s", self.categories_path)
-        except Exception as e:
-            logging.exception("Error loading encyclopedia data: %s", exc_info=e)
 
     def stage_files(self, user_prompt: str, category=None):
         """
@@ -79,41 +57,29 @@ class CategoryManagement:
         except Exception:
             logging.exception(f"ERROR: Failed to move all files: {files} to folder: {id} .")
 
-
     def _return_id_for_category(self, category_name: str) -> Optional[str]:
         """Retrieves the ID for the specified category, creating a new category if necessary.
 
         :param category_name: The name of the category associated with an existing category ID.
         :return: The category ID if found, otherwise None.
         """
-        reversed_categories = {v: k for k, v in self.categories.items()}
-        id = reversed_categories.get(category_name, False)
+        node_db = NodeDatabaseManagement()
+        id = node_db.get_category_id(category_name)
+        self._add_new_category(id)
 
-        if not id:
-            node_db = NodeDatabaseManagement()
-            id = node_db.get_category_id(category_name)
-            self._add_new_category(id, category_name)
-
-            logging.info(f"Id found for category [{id}] - {category_name}")
+        logging.info(f"Id found for category [{id}] - {category_name}")
 
         return id
 
     @staticmethod
-    def _add_new_category(id: int, category_name: str) -> None:
+    def _add_new_category(id: int) -> None:
         """
         Fetches the redirects for a given page and appends them to a specified CSV file.
 
         :param id: The new folder id to create
-        :param category_name: The name of this folder in the categorisation system, will be automatically lowercase-d
         """
         new_directory = os.path.join(FileManagement.file_data_directory, str(id))
         os.makedirs(new_directory, exist_ok=True)  # Create new folder for the given id
-
-        category_name = category_name.lower()
-        redirect_dicts = [{'id': id, 'category': category_name}]
-
-        fieldnames = ['id', 'category']
-        FileManagement.write_to_csv("Categories.csv", redirect_dicts, fieldnames)
 
 
 if __name__ == '__main__':
