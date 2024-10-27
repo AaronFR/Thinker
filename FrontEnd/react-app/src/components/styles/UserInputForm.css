@@ -68,6 +68,14 @@ body.dark-mode .message-item, .file-item {
   color: var(--color-text-dark);
 }
 
+/* Footer containing the delete button and timestamp */
+.message-footer {
+  display: flex;
+  justify-content: flex-end; /* Align items to the right */
+  align-items: center;
+  gap: 10px; /* Space between button and timestamp */
+}
+
 .loading-message {
   font-style: italic;
   color: var(--color-text-muted);
@@ -83,6 +91,7 @@ body.dark-mode .message-item, .file-item {
   color: black;
   text-align: center;
   cursor: pointer;
+  margin-right: auto;
   transition: background-color 0.3s, color 0.3s;
   border-radius: 4px;
   outline: none;
