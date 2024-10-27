@@ -9,7 +9,7 @@ const FileItem = React.memo(({ file, onDelete, onSelect }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpansion = async () => {
-    if (!isExpanded && !file.content) {
+    if (!isExpanded) {
       const response = await fetch(`${flask_port}/content/${file.category_id}/${file.name}`, {
         method: 'GET',
       });
