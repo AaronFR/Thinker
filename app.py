@@ -69,6 +69,8 @@ def process_message():
         if files:
             for file in files:
                 file_with_category = node_db.get_file_by_id(file.get("id"))
+                if not file_with_category:
+                    continue
 
                 file_system_address = f"{file_with_category['category']}\\{file_with_category['name']}"
                 file_references.append(file_system_address)

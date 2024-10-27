@@ -80,7 +80,7 @@ class NodeDatabaseManagement:
         content = FileManagement.read_file(file_name)
         summary = Organising.summarise_content(content)
 
-        neo4jDriver = Neo4jDriver()
+        neo4j_driver = Neo4jDriver()
         create_file_query = """
             MERGE (user:USER)
             MERGE (category:CATEGORY {name: $category})
@@ -101,7 +101,7 @@ class NodeDatabaseManagement:
             "structure": "PROTOTYPING"
         }
 
-        neo4jDriver.execute_write(create_file_query, parameters)
+        neo4j_driver.execute_write(create_file_query, parameters)
 
     def list_user_categories(self) -> List[str]:
         """
@@ -217,8 +217,11 @@ class NodeDatabaseManagement:
         """
         parameters = {"file_id": file_id}
         records = self.neo4jDriver.execute_read(get_messages_query, parameters)
-        logging.info(f"File retrieved: {records}")
-        return records[0]
+        logging.info(f"File retrieved for file id [{file_id}]: {records}")
+
+        if records:
+            return records[0]
+        return None
 
     def delete_message_by_id(self, message_id: int) -> None:
         """
