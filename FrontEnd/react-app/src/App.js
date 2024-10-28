@@ -4,7 +4,7 @@ import debounce from 'lodash.debounce';
 import { SettingsContext } from './pages/Settings/Settings';
 
 import FilePane from './components/FilePane'
-import MessagePane from './components/MessageHistory';
+import MessagePane from './components/MessagePane';
 import OutputSection from './components/OutputSection';
 import PromptAugmentation from './components/PromptAugmentation';
 import PersonaSelector from './components/PersonaSelector';
