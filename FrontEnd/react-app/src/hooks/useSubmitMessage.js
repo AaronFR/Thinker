@@ -10,7 +10,7 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt) => {
     setIsProcessing(true);
 
     try {
-      const response = await fetch(`${flaskPort}/api/message`, {
+      const response = await fetch(`${flaskPort}/message`, {
         method: 'POST',
         headers: {
           "Content-Type": 'application/json'

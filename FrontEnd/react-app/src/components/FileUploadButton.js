@@ -72,7 +72,7 @@ const FileUploadButton = ({ onUploadSuccess }) => {
       const signal = controller.signal;
 
       try {
-        const response = await fetch(`${flask_port}/api/file`, {
+        const response = await fetch(`${flask_port}/file`, {
           method: 'POST',
           body: formData,
           signal,

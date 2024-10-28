@@ -99,7 +99,7 @@ const MessageHistory = ({ isProcessing }) => {
   const fetchMessagesByCategory = async (categoryName, categoryId) => {
     try {
       console.log(categoryName.toLowerCase())
-      const response = await fetch(`${flask_port}/categories/${categoryName.toLowerCase()}/messages`, {
+      const response = await fetch(`${flask_port}/messages/${categoryName.toLowerCase()}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"

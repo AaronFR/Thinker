@@ -10,7 +10,7 @@ const useAugmentedPrompt = (flaskPort) => {
     setError(null);
 
     try {
-      const response = await fetch(`${flaskPort}/api/augment_prompt`, {
+      const response = await fetch(`${flaskPort}/augmentation/augment_prompt`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"

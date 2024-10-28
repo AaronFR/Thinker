@@ -33,21 +33,7 @@ STAGING_AREA = os.path.join(os.path.dirname(__file__), 'Data/FileData', "0")
 # Messages
 
 
-@app.route('/api/message', methods=['GET'])
-def get_message():
-    """
-    Retrieve a simple development message.
-
-    This endpoint returns a JSON object containing a message to inform 
-    users of the current development status of the site.
-
-    :returns: A Flask Response object containing a JSON representation 
-              of the development message.
-    """
-    return jsonify({"message": "Hello, this site is in development!"})
-
-
-@app.route('/categories/<category_name>/messages', methods=['GET'])
+@app.route('/messages/<category_name>', methods=['GET'])
 def get_messages(category_name):
     try:
         category_name = category_name.lower()
@@ -60,7 +46,7 @@ def get_messages(category_name):
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/api/message', methods=['POST'])
+@app.route('/message', methods=['POST'])
 def process_message():
     """
     Accept a user prompt and process it through the selected persona.
@@ -151,7 +137,7 @@ def list_categories_with_files():
 # Files
 
 
-@app.route('/categories/<category_name>/files', methods=['GET'])
+@app.route('/files/<category_name>', methods=['GET'])
 def get_files(category_name):
     try:
         category_name = category_name.lower()
@@ -163,7 +149,7 @@ def get_files(category_name):
         logging.exception(f"Failed to get messages for category, {category_name}")
         return jsonify({"error": str(e)}), 500
 
-@app.route('/content/<file_category>/<file_name>', methods=['GET'])
+@app.route('/file/<file_category>/<file_name>', methods=['GET'])
 def get_file_content(file_category, file_name):
     try:
         full_path = str(file_category) + "/" + file_name
@@ -176,8 +162,7 @@ def get_file_content(file_category, file_name):
         return jsonify({"error": str(e)}), 500
 
 
-
-@app.route('/api/files', methods=['GET'])
+@app.route('/list_files', methods=['GET'])
 def list_files():
     try:
         files = os.listdir(STAGING_AREA)
@@ -187,7 +172,7 @@ def list_files():
         return jsonify({'message': 'Failed to retrieve files.'}), 500
 
 
-@app.route('/api/file', methods=['POST'])
+@app.route('/file', methods=['POST'])
 def upload_file():
     """
     Accept a user file and try uploading it for future reference.
@@ -241,7 +226,7 @@ def get_selected_persona(data):
     return persona
 
 
-@app.route('/api/augment_prompt', methods=['POST'])
+@app.route('/augmentation/augment_prompt', methods=['POST'])
 def augment_user_prompt():
     """
     Accept a user prompt and augment it in line with prompt engineering standards.
@@ -271,7 +256,7 @@ def augment_user_prompt():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/api/question_prompt', methods=['POST'])
+@app.route('/augmentation/question_prompt', methods=['POST'])
 def question_user_prompt():
     """
     Accept a user prompt and generates a list of questions that *may* improve the llm's response

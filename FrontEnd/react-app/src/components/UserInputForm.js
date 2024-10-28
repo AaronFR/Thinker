@@ -28,7 +28,7 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
    */
   const fetchUploadedFiles = async () => {
     try {
-      const response = await fetch(`${flask_port}/api/files`, {
+      const response = await fetch(`${flask_port}/list_files`, {
         method: "GET",
       });
 

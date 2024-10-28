@@ -30,7 +30,7 @@ const FileItem = ({ file, onDelete, onSelect }) => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${FLASK_PORT}/content/${file.category_id}/${file.name}`, {
+        const response = await fetch(`${FLASK_PORT}/file/${file.category_id}/${file.name}`, {
           method: 'GET',
         });
 

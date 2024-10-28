@@ -11,7 +11,7 @@ const useSuggestedQuestions = (flaskPort) => {
     setError(null);
 
     try {
-      const response = await fetch(`${flaskPort}/api/question_prompt`, {
+      const response = await fetch(`${flaskPort}/augmentation/question_prompt`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"
