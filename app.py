@@ -29,6 +29,10 @@ CORS(app)
 ERROR_NO_PROMPT = "No prompt found"
 STAGING_AREA = os.path.join(os.path.dirname(__file__), 'Data/FileData', "0")
 
+
+# Messages
+
+
 @app.route('/api/message', methods=['GET'])
 def get_message():
     """
@@ -41,6 +45,19 @@ def get_message():
               of the development message.
     """
     return jsonify({"message": "Hello, this site is in development!"})
+
+
+@app.route('/categories/<category_name>/messages', methods=['GET'])
+def get_messages(category_name):
+    try:
+        category_name = category_name.lower()
+        node_db = NodeDatabaseManagement()
+        messages_list = node_db.get_messages_by_category(category_name)
+
+        return jsonify({"messages": messages_list}), 200
+    except Exception as e:
+        logging.exception(f"Failed to get messages for category, {category_name}")
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/api/message', methods=['POST'])
@@ -95,17 +112,6 @@ def process_message():
         return jsonify({"error": str(e)}), 500
 
 
-def get_selected_persona(data):
-    """ Determine the selected persona or default to 'coder'. """
-    persona_selection = data.get("persona")
-    if persona_selection == 'coder':
-        persona = Coder("Coder")
-    if persona_selection not in ['coder']:
-        logging.warning("Invalid persona selected, defaulting to coder")
-        return Coder("Default")
-    return persona
-
-
 @app.route('/messages/<message_id>', methods=['DELETE'])
 def delete_message(message_id):
     try:
@@ -118,6 +124,44 @@ def delete_message(message_id):
         logging.exception(f"Failed to delete message {message_id}")
         return jsonify({"error": str(e)}), 500
 
+
+# Categories
+
+
+@app.route('/categories', methods=['GET'])
+def list_categories():
+    try:
+        node_db = NodeDatabaseManagement()
+        categories = node_db.list_categories()
+        return jsonify({"categories": categories}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/categories_with_files', methods=['GET'])
+def list_categories_with_files():
+    try:
+        node_db = NodeDatabaseManagement()
+        categories = node_db.list_categories_with_files()
+        return jsonify({"categories": categories}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# Files
+
+
+@app.route('/categories/<category_name>/files', methods=['GET'])
+def get_files(category_name):
+    try:
+        category_name = category_name.lower()
+        node_db = NodeDatabaseManagement()
+        files_list = node_db.get_files_by_category(category_name)
+
+        return jsonify({"files": files_list}), 200
+    except Exception as e:
+        logging.exception(f"Failed to get messages for category, {category_name}")
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/content/<file_category>/<file_name>', methods=['GET'])
 def get_file_content(file_category, file_name):
@@ -132,17 +176,15 @@ def get_file_content(file_category, file_name):
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/file/<file_id>', methods=['DELETE'])
-def delete_file(file_id):
-    try:
-        node_db = NodeDatabaseManagement()
-        node_db.delete_file_by_id(file_id)
 
-        logging.info(f"File node {file_id} deleted")
-        return jsonify({"message": f"File {file_id} deleted successfully"}), 200
+@app.route('/api/files', methods=['GET'])
+def list_files():
+    try:
+        files = os.listdir(STAGING_AREA)
+        return jsonify({'files': files}), 200
     except Exception as e:
-        logging.exception(f"Failed to delete file {file_id}")
-        return jsonify({"error": str(e)}), 500
+        print(f"Error listing files: {e}")
+        return jsonify({'message': 'Failed to retrieve files.'}), 500
 
 
 @app.route('/api/file', methods=['POST'])
@@ -172,14 +214,31 @@ def upload_file():
         return jsonify({'message': 'File upload failed due to server error.'}), 500
 
 
-@app.route('/api/files', methods=['GET'])
-def list_files():
+@app.route('/file/<file_id>', methods=['DELETE'])
+def delete_file(file_id):
     try:
-        files = os.listdir(STAGING_AREA)
-        return jsonify({'files': files}), 200
+        node_db = NodeDatabaseManagement()
+        node_db.delete_file_by_id(file_id)
+
+        logging.info(f"File node {file_id} deleted")
+        return jsonify({"message": f"File {file_id} deleted successfully"}), 200
     except Exception as e:
-        print(f"Error listing files: {e}")
-        return jsonify({'message': 'Failed to retrieve files.'}), 500
+        logging.exception(f"Failed to delete file {file_id}")
+        return jsonify({"error": str(e)}), 500
+
+
+# Augmentation
+
+
+def get_selected_persona(data):
+    """ Determine the selected persona or default to 'coder'. """
+    persona_selection = data.get("persona")
+    if persona_selection == 'coder':
+        persona = Coder("Coder")
+    if persona_selection not in ['coder']:
+        logging.warning("Invalid persona selected, defaulting to coder")
+        return Coder("Default")
+    return persona
 
 
 @app.route('/api/augment_prompt', methods=['POST'])
@@ -290,6 +349,9 @@ def update_config():
         return jsonify({'error': str(e)}), 500
 
 
+# Costing
+
+
 @app.route('/pricing/session', methods=['GET'])
 def get_session_cost():
     try:
@@ -299,52 +361,6 @@ def get_session_cost():
         return jsonify({"cost": cost}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
-
-@app.route('/categories', methods=['GET'])
-def list_categories():
-    try:
-        node_db = NodeDatabaseManagement()
-        categories = node_db.list_user_categories()
-        return jsonify({"categories": categories}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route('/categories_with_files', methods=['GET'])
-def list_categories_with_files():
-    try:
-        node_db = NodeDatabaseManagement()
-        categories = node_db.list_user_categories_with_files()
-        return jsonify({"categories": categories}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route('/categories/<category_name>/messages', methods=['GET'])
-def get_messages(category_name):
-    try:
-        category_name = category_name.lower()
-        node_db = NodeDatabaseManagement()
-        messages_list = node_db.get_messages_by_category(category_name)
-
-        return jsonify({"messages": messages_list}), 200
-    except Exception as e:
-        logging.exception(f"Failed to get messages for category, {category_name}")
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route('/categories/<category_name>/files', methods=['GET'])
-def get_files(category_name):
-    try:
-        category_name = category_name.lower()
-        node_db = NodeDatabaseManagement()
-        files_list = node_db.get_files_by_category(category_name)
-
-        return jsonify({"files": files_list}), 200
-    except Exception as e:
-        logging.exception(f"Failed to get messages for category, {category_name}")
-        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == '__main__':
