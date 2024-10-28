@@ -18,10 +18,13 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
   const [categories, setCategories] = useState([]);
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
 
-  // Fetch categories on component mount
+  // Fetch categories on mount and when finished processing
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    if (!isProcessing) {
+        fetchCategories();
+    }
+}, [isProcessing]);
+
 
   function toTitleCase(string) {
     return string

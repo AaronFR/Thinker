@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useCallback } from 'react';
+import React, { useReducer, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import ProgressBar from './ProgressBar';

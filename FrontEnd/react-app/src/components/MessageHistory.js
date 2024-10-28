@@ -126,8 +126,10 @@ const MessageHistory = ({ isProcessing }) => {
   
   // Fetch categories when the component mounts
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    if (!isProcessing) {
+      fetchCategories();
+    }
+  }, [isProcessing]);
 
   /**
    * Handles the deletion of a message.

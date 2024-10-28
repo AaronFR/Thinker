@@ -4,7 +4,7 @@ import debounce from 'lodash.debounce';
 import { SettingsContext } from './pages/Settings/Settings';
 
 import FilePane from './components/FilePane'
-import MessageHistory from './components/MessageHistory';
+import MessagePane from './components/MessageHistory';
 import OutputSection from './components/OutputSection';
 import PromptAugmentation from './components/PromptAugmentation';
 import PersonaSelector from './components/PersonaSelector';
@@ -130,8 +130,13 @@ function App () {
     return (
         <div className="app-container">
           <aside className="left-pane">
-            <FilePane onFileSelect={handleFileSelect}/>
-            <MessageHistory />
+            <FilePane 
+              onFileSelect={handleFileSelect}
+              isProcessing={isProcessing}
+            />
+            <MessagePane 
+              isProcessing={isProcessing}
+            />
           </aside>
 
           <main className="right-pane">
