@@ -1,17 +1,17 @@
 
+CREATE_CATEGORY = """
+MERGE (user:USER)
+WITH user
+MERGE (category:CATEGORY {name: $category_name})
+ON CREATE SET category.id = $category_id
+MERGE (user)-[:HAS_CATEGORY]->(category)
+RETURN id(category) AS category_id
+"""
 
 CREATE_USER_PROMPT_AND_CATEGORY_NODES = """
 MERGE (user:USER)
 WITH user
-OPTIONAL MATCH (existing_category:CATEGORY {name: $category})<-[:HAS_CATEGORY]-(user)
-WITH user, existing_category
-CALL apoc.do.when(
-    existing_category IS NULL,
-    'CREATE (new_category:CATEGORY {id: $category_id, name: $category})-[:HAS_CATEGORY]->(user) RETURN new_category',
-    'RETURN existing_category AS new_category',
-    {category_id: $category_id, category: $category}
-) YIELD value
-WITH value.new_category AS category, user
+MATCH (category:CATEGORY {name: $category})<-[:HAS_CATEGORY]-(user)
 CREATE (user_prompt:USER_PROMPT {prompt: $prompt, response: $response, time: $time})
 MERGE (user)-[:USES]->(category)
 MERGE (user_prompt)-[:BELONGS_TO]->(category)

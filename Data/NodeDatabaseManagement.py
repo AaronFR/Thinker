@@ -43,6 +43,18 @@ class NodeDatabaseManagement:
         logging.info("category_data:", category_data)
         category = category_data["category"]
 
+        if category not in categories:
+            logging.info(f"Creating new category [{category_id}]: {category}")
+            parameters_for_new_category = {
+                "category_name": category,
+                "category_id": category_id,
+            }
+            self.neo4jDriver.execute_write(
+                CypherQueries.CREATE_CATEGORY,
+                parameters_for_new_category,
+                "user_prompt_id"
+            )
+
         parameters = {
             "prompt": user_prompt,
             "category_id": category_id,
