@@ -41,7 +41,7 @@ class CategoryManagement:
         :param category: If defined the system will categorise the staged files with the given category, otherwise a category will be generated
         """
         files = FileManagement.list_staged_files(user_id)
-        logging.info(f"What is dis: {files}")
+        logging.info(f"Staged files: {files}")
 
         id = self._return_id_for_category(category)
         logging.info(f"Category selected: [{id}] - {category}")

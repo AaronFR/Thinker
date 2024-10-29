@@ -6,6 +6,7 @@ import pandas as pd
 import yaml
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Data.NodeDatabaseManagement import NodeDatabaseManagement
 from Personas.PersonaSpecification.PersonaConstants import SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
 from Utilities.Constants import DEFAULT_ENCODING
 
@@ -93,8 +94,8 @@ class EncyclopediaManagementInterface:
 
             return self.extract_terms_from_encyclopedia(terms)
         except KeyError:
-            logging.error("Output error: expected 'terms' key missing in the response.")
-            return "An error occurred while processing the search."
+            logging.exception(f"Output error: expected 'terms' key missing in the response. Actual: {output}")
+            return "An error occurred while retrieving user information."
         except Exception:
             logging.error(f"failed to process terms: {output}")
             return "An error occurred while searching the encyclopedia."
@@ -110,22 +111,26 @@ class EncyclopediaManagementInterface:
         for term in terms:
             try:
                 term_name = term['term'].lower().strip()
-                redirected_term = self.redirects.get(term_name)
-                if redirected_term:
-                    term_name = redirected_term
-
-                entry = self.encyclopedia.get(term_name)
-                specifics = term.get('specifics', "Nothing specific")
-
-                if entry:
-                    entry = self.selectively_process_entry(term_name, specifics)
-                    additional_context.append((term, entry))
-                elif self.fetch_term_and_update(term_name):
-                    entry = self.selectively_process_entry(term_name, specifics)
-                    if entry:
-                        additional_context.append((term, entry))
-                else:
-                    logging.error(f"Could not find or create term '{term_name}' after fetching from Wikipedia.")
+                ndm = NodeDatabaseManagement()
+                content = ndm.search_for_user_topic_content(term_name)
+                if content:
+                    additional_context.append(content)
+                # redirected_term = self.redirects.get(term_name)
+                # if redirected_term:
+                #     term_name = redirected_term
+                #
+                # entry = self.encyclopedia.get(term_name)
+                # specifics = term.get('specifics', "Nothing specific")
+                #
+                # if entry:
+                #     entry = self.selectively_process_entry(term_name, specifics)
+                #     additional_context.append((term, entry))
+                # elif self.fetch_term_and_update(term_name):
+                #     entry = self.selectively_process_entry(term_name, specifics)
+                #     if entry:
+                #         additional_context.append((term, entry))
+                # else:
+                #     logging.error(f"Could not find or create term '{term_name}' after fetching from Wikipedia.")
             except Exception as e:
                 logging.exception(f"Error while trying to access {self.ENCYCLOPEDIA_NAME}: {term_name}", exc_info=e)
 

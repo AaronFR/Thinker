@@ -85,15 +85,21 @@ ADD_TO_ENCYCLOPEDIA_FUNCTION_SCHEMA = [{
                 "items": {
                     "type": "object",
                     "properties": {
-                        "term": {
+                        "node": {
                             "type": "string",
-                            "description": "A term to add to the user's encyclopedia file, *can* include subsections; "
-                                           "e.g., user/name."
+                            "description": "Create a concise, representative, high level and categorical node name "
+                                           "focused on the topic's category to ensure uniqueness and prevent "
+                                           "redundancy."
+                        },
+                        "parameter": {
+                            "type": "string",
+                            "description": "The name of the parameter content that will be attached to the node. "
+                                           "Prefer simple single word paremter names"
                         },
                         "content": {
                             "type": "string",
-                            "description": "The information to write down, strictly to the point and filled with "
-                                           "effective detail."
+                            "description": "Ensure the information is directly relevant to the topic at hand."
+                                           "Strictly to the point and filled with effective detail."
                         }
                     },
                     "required": ["term", "content"]

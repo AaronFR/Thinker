@@ -45,6 +45,39 @@ class NodeDatabaseManagement:
 
         return category
 
+    def create_user_topic_nodes(self, terms, user_id):
+        logging.info(f"Noted the following user topics : {terms}")
+
+        for term in terms:
+            parameters = {
+                "user_id": user_id,
+                "node_name": term.get('node').lower(),
+                "content": term.get('content')
+            }
+            user_topic_id = self.neo4jDriver.execute_write(
+                CypherQueries.format_create_user_topic_query(term.get('parameter')),
+                parameters
+            )
+
+    def search_for_user_topic_content(self, term, synonyms=None, user_id="totally4real2uuid"):
+        logging.info(f"Attempting search for the following term: {term}")
+        parameters = {
+            "user_id": user_id,
+            "node_name": term
+        }
+        records = self.neo4jDriver.execute_read(
+            CypherQueries.SEARCH_FOR_USER_TOPIC,
+            parameters
+        )
+        record = records[0]
+        if record:
+            node_content = record["all_properties"]
+
+            logging.info(f"Extracted content for {term} : {node_content}")
+            return node_content
+
+        return None
+
     def categorise_prompt_input(self, user_prompt: str, llm_response: str, time: int):
         category_id = str(shortuuid.uuid())
 

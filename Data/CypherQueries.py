@@ -8,6 +8,27 @@ MERGE (user)-[:HAS_CATEGORY]->(category)
 RETURN id(category) AS category_id
 """
 
+CREATE_USER_TOPIC = """
+MERGE (user:USER {{id: $user_id}})
+WITH user
+MERGE (user_topic:USER_TOPIC {{name: $node_name}})
+SET user_topic.{parameter} = $content
+MERGE (user_topic)-[:RELATES_TO]->(user)
+RETURN id(user_topic) AS user_topic_id
+"""
+
+
+def format_create_user_topic_query(parameter):
+    return CREATE_USER_TOPIC.format(parameter=parameter)
+
+
+SEARCH_FOR_USER_TOPIC = """
+MATCH (user:USER {id: $user_id})
+WITH user
+MATCH (user_topic:USER_TOPIC {name: $node_name})
+RETURN properties(user_topic) AS all_properties
+"""
+
 CREATE_USER_PROMPT_NODES = """
 MERGE (user:USER)
 WITH user

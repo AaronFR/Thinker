@@ -23,14 +23,10 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
     ENCYCLOPEDIA_NAME = "UserEncyclopedia"
 
     instructions = (
-        "For the given prompt return an array of things you want to know about the user and things they know, "
+        "For the given prompt return an array of things we can now say we know about the user, "
         "as in personal information, *based* on their prompt. "
-        "For example: if a user asks if you know their name, look for their name,"
-        "If a user wants to test their knowledge of dutch, you should look up dutch to return their level of "
-        "competency."
         "If a user asks for a question that would not benefit from knowing anything about them, don't look up anything"
-        "The term should be as simple as possible, e.g., the actual word of that concept. "
-        "You can use the 'specifics' field to highlight what *exactly* you want to know"
+        "The terms should be as simple as possible, e.g., the actual word of that concept. "
     )
 
     _instance = None

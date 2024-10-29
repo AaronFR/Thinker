@@ -15,6 +15,7 @@ from werkzeug.utils import secure_filename
 from Data.CategoryManagement import CategoryManagement
 from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement
+from Data.UserEncyclopediaManagement import UserEncyclopediaManagement
 from Functionality.Augmentation import Augmentation
 from Personas.Coder import Coder
 from Data.Configuration import Configuration
@@ -89,6 +90,11 @@ def process_message():
 
         # ToDo: should be an ancillary side job, currently slows down recieving a response if the database doesn't respond quickly
         selected_category = node_db.create_user_prompt_node(user_id, user_prompt, response_message)
+
+        uem = UserEncyclopediaManagement()
+        terms = uem.extract_terms_from_input([user_prompt])
+        node_db.create_user_topic_nodes(terms, user_id)
+
 
         categoryManagement = CategoryManagement()
         categoryManagement.stage_files(user_id, selected_category)
