@@ -30,16 +30,20 @@ class Coder(BasePersona):
         self.instructions = CoderSpecification.CODER_INSTRUCTIONS
         self.configuration = CoderSpecification.load_configuration()
 
-    def run_workflow(self, selected_workflow: str, initial_message: str, file_references: List[str] = None):
+    def run_workflow(self,
+                     user_id: str,
+                     selected_workflow: str,
+                     initial_message: str,
+                     file_references: List[str] = None):
         if selected_workflow in self.workflows.keys():
             if selected_workflow == "chat":
-                return self.chat_workflow(initial_message, file_references)
+                return self.chat_workflow(user_id, initial_message, file_references)
             if selected_workflow == "write":
-                return self.write_workflow(initial_message, file_references)
+                return self.write_workflow(user_id, initial_message, file_references)
             if selected_workflow == "write_tests":
-                return self.write_tests_workflow(initial_message, file_references)
+                return self.write_tests_workflow(user_id, initial_message, file_references)
 
-    def chat_workflow(self, initial_message: str, file_references: List[str] = None):
+    def chat_workflow(self, user_id: str, initial_message: str, file_references: List[str] = None):
         """
         Converses with the user
 
@@ -52,7 +56,7 @@ class Coder(BasePersona):
 
         try:
             for iteration, message in enumerate(prompt_messages):
-                response = self.process_question(message, file_references)
+                response = self.process_question(user_id, message, file_references)
                 logging.info("Iteration %d completed with response: %s", iteration, response)
         
         except Exception as e:
@@ -60,7 +64,7 @@ class Coder(BasePersona):
 
         return response
 
-    def write_workflow(self, initial_message: str, file_references: List[str] = None):
+    def write_workflow(self, user_id: str, initial_message: str, file_references: List[str] = None):
         """
         Writes the improved code to a specified file.
         ToDo in future a less rudimentary way of guessing the category for a new file will be required
@@ -126,7 +130,7 @@ class Coder(BasePersona):
 
             try:
                 for iteration, message in enumerate(prompt_messages, start=1):
-                    response = self.process_question(message, file_references)
+                    response = self.process_question(user_id, message, file_references)
                     logging.info("Iteration %d completed with response: %s", iteration, response)
 
                     if iteration == len(prompt_messages):
@@ -140,7 +144,7 @@ class Coder(BasePersona):
 
         return response
 
-    def write_tests_workflow(self, initial_message: str, file_references: List[str] = None) -> None:
+    def write_tests_workflow(self, user_id: str, initial_message: str, file_references: List[str] = None) -> None:
         """
         Generates a test file for a specified file
 
@@ -165,7 +169,7 @@ class Coder(BasePersona):
 
         try:
             for iteration, message in enumerate(prompt_messages):
-                response = self.process_question(message, file_references)
+                response = self.process_question(user_id, message, file_references)
                 logging.info("Test Workflow Iteration %d completed with response: %s", iteration, response)
 
                 # Save the response after the last message

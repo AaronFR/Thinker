@@ -24,12 +24,12 @@ class Philosopher(BasePersona):
         self.instructions = CoderSpecification.CODER_INSTRUCTIONS
         self.configuration = CoderSpecification.load_configuration()
 
-    def run_workflow(self, selected_workflow: str, initial_message: str):
+    def run_workflow(self, user_id: str, selected_workflow: str, initial_message: str):
         if selected_workflow in self.workflows.keys():
             if selected_workflow == "write":
-                self.write_workflow(initial_message)
+                self.write_workflow(user_id, initial_message)
 
-    def write_workflow(self, initial_message: str):
+    def write_workflow(self, user_id: str, initial_message: str):
         """
         Writes the response to a given idea
 
@@ -50,7 +50,7 @@ class Philosopher(BasePersona):
 
         try:
             for iteration, message in enumerate(prompt_messages):
-                response = self.process_question(message)
+                response = self.process_question(user_id, message)
                 logging.info("Iteration %d completed with response: %s", iteration, response)
 
                 if iteration == 0:

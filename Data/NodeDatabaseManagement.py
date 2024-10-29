@@ -17,7 +17,7 @@ class NodeDatabaseManagement:
         self.neo4jDriver = Neo4jDriver()
         self.executor = AiOrchestrator()
 
-    def create_user_prompt_node(self, user_prompt: str, llm_response: str) -> str:
+    def create_user_prompt_node(self, user_id: str, user_prompt: str, llm_response: str) -> str:
         """
         Saves a prompt - response pair as a USER_PROMPT in the neo4j database
         Categorising the prompt and staging any attached files under that category
@@ -56,13 +56,13 @@ class NodeDatabaseManagement:
             parameters,
             "user_prompt_id"
         )
-        NodeDatabaseManagement.create_file_nodes_for_user_prompt(user_prompt_id, category)
+        NodeDatabaseManagement.create_file_nodes_for_user_prompt(user_id, user_prompt_id, category)
 
         return category
 
     @staticmethod
-    def create_file_nodes_for_user_prompt(user_prompt_id: str, category: str) -> None:
-        file_names = FileManagement.list_staged_files()
+    def create_file_nodes_for_user_prompt(user_id: str, user_prompt_id: str, category: str) -> None:
+        file_names = FileManagement.list_staged_files(user_id)
 
         for file_name in file_names:
             NodeDatabaseManagement.create_file_node(user_prompt_id, category, file_name)

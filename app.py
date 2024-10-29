@@ -27,7 +27,8 @@ app = Flask(__name__)
 CORS(app)
 
 ERROR_NO_PROMPT = "No prompt found"
-STAGING_AREA = os.path.join(os.path.dirname(__file__), 'Data/FileData', "0")
+ERROR_NO_ID = "No user id found"
+FILES_PATH = os.path.join(os.path.dirname(__file__), 'Data/FileData')
 
 
 # Messages
@@ -62,6 +63,10 @@ def process_message():
         if user_prompt is None:
             return jsonify({"error": ERROR_NO_PROMPT}), 400
 
+        user_id = data.get("user_id")
+        if user_id is None:
+            return jsonify({"error": ERROR_NO_ID}), 400
+
         # ToDo: additional_qa should be sent as an additional user message or system message (requires system redesign)
         additional_qa = data.get("additionalQA")
         if additional_qa:
@@ -79,14 +84,14 @@ def process_message():
                 file_references.append(file_system_address)
 
         selected_persona = get_selected_persona(data) 
-        response_message = selected_persona.query(user_prompt, file_references)
+        response_message = selected_persona.query(user_id, user_prompt, file_references)
         logging.info("Response generated: %s", response_message)
 
         # ToDo: should be an ancillary side job, currently slows down recieving a response if the database doesn't respond quickly
-        selected_category = node_db.create_user_prompt_node(user_prompt, response_message)
+        selected_category = node_db.create_user_prompt_node(user_id, user_prompt, response_message)
 
         categoryManagement = CategoryManagement()
-        categoryManagement.stage_files(user_prompt, selected_category)
+        categoryManagement.stage_files(user_id, selected_category)
 
         return jsonify({"message": response_message})
     
@@ -162,13 +167,28 @@ def get_file_content(file_category, file_name):
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/list_files', methods=['GET'])
+@app.route('/list_staged_files', methods=['GET'])
 def list_files():
+    """
+    Lists the staged files for the user on prompt submission
+    ToDo: The user id and user id staging folder will need to be created on account creation
+
+    :return:
+    """
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({'message': 'User ID is required.'}), 400
+
+    user_folder = os.path.join(FILES_PATH, user_id)
+
     try:
-        files = os.listdir(STAGING_AREA)
-        return jsonify({'files': files}), 200
+        if os.path.exists(user_folder):
+            files = os.listdir(user_folder)
+            return jsonify({'files': files}), 200
+        else:
+            return jsonify({'message': 'User folder not found.'}), 404
     except Exception as e:
-        print(f"Error listing files: {e}")
+        print(f"Error listing files for user {user_id}: {e}")
         return jsonify({'message': 'Failed to retrieve files.'}), 500
 
 
@@ -181,18 +201,20 @@ def upload_file():
     """
     if 'file' not in request.files:
         return jsonify({'message': 'No file part in the request.'}), 400
-
     file = request.files['file']
-
     if file.filename == '':
         return jsonify({'message': 'No selected file.'}), 400
 
+    user_id = request.form.get('user_id')
+    if not user_id:
+        return jsonify({'message': 'User ID is required'}), 400
+
     # Secure the filename to prevent directory traversal attacks
     filename = secure_filename(file.filename)
-    file_path = os.path.join(STAGING_AREA, filename)
+    staged_file_path = os.path.join(FILES_PATH, user_id, filename)
 
     try:
-        file.save(file_path)
+        file.save(staged_file_path)
         return jsonify({'message': 'File uploaded successfully.', 'filename': filename}), 200
     except Exception as e:
         print(f"Error saving file: {e}")

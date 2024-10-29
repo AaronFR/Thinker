@@ -172,7 +172,7 @@ class Writing(enum.Enum):
 
     @deprecated("Not yet redesigned for the node based system")
     @staticmethod
-    def regex_refactor(task_parameters: Dict[str, object], file_references=None):
+    def regex_refactor(user_id: str , task_parameters: Dict[str, object], file_references=None):
         """Refactor files based on regex patterns provided in the task directives.
         ToDo: It would make sense to add a check of the output
          to make sure a name isn't being changed which *shouldn't*
@@ -181,7 +181,7 @@ class Writing(enum.Enum):
             - INSTRUCTION: The regex pattern and modifications to be applied
             - REWRITE_THIS: The target string or pattern that needs to be rewritten
         """
-        evaluation_files = FileManagement.list_staged_files()  # defaulting to staged files
+        evaluation_files = FileManagement.list_staged_files(user_id)  # defaulting to staged files
         for file in evaluation_files:
             try:
                 FileManagement.regex_refactor(

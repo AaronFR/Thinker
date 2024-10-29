@@ -27,7 +27,8 @@ class Analyst(BasePersona):
 
         ToDo: In the new system this will probably be saved as a node, if used
         """
-        self.evaluation_files = FileManagement.list_staged_files()  # needs to be adapted to reference all selected files
+        user_id = "WIP"
+        self.evaluation_files = FileManagement.list_staged_files(user_id)  # needs to be adapted to reference all selected files
 
         # evaluate current files
         analyst = AiOrchestrator(self.evaluation_files)

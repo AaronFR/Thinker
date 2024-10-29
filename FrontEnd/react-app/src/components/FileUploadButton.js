@@ -2,6 +2,7 @@ import React, { useReducer, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import ProgressBar from './ProgressBar';
+import { prototyping_user_id } from '../utils/loginUtils'
 
 import './styles/FileUploadButton.css';
 
@@ -67,6 +68,7 @@ const FileUploadButton = ({ onUploadSuccess }) => {
     for (const file of files) {
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('user_id', prototyping_user_id);
 
       const controller = new AbortController();
       const signal = controller.signal;

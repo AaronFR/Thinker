@@ -30,17 +30,18 @@ class CategoryManagement:
         self.file_data_directory = os.path.join(os.path.dirname(__file__), 'FileData')
         self.data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
 
-    def stage_files(self, user_prompt: str, category=None):
+    def stage_files(self, user_id: str, category=None):
         """
         Stages files into a specific category based on user prompt.
 
         This method retrieves files from the staging area, summarises them, and categorises them
         according to their content with the help of an AI orchestrator.
 
-        :param user_prompt: The user-provided prompt to assist with categorisation.
+        :param user_id: The user-provided id
         :param category: If defined the system will categorise the staged files with the given category, otherwise a category will be generated
         """
-        files = FileManagement.list_staged_files()
+        files = FileManagement.list_staged_files(user_id)
+        logging.info(f"What is dis: {files}")
 
         id = self._return_id_for_category(category)
         logging.info(f"Category selected: [{id}] - {category}")
@@ -50,7 +51,7 @@ class CategoryManagement:
 
         try:
             for file in files:
-                staged_file_path = os.path.join(FileManagement.file_data_directory, "0", file)
+                staged_file_path = os.path.join(FileManagement.file_data_directory, user_id, file)
                 new_file_path = os.path.join(FileManagement.file_data_directory, str(id), file)
                 shutil.move(staged_file_path, new_file_path)
                 logging.info(f"{file} moved to {id}")

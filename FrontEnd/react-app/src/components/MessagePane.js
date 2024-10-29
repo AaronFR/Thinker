@@ -123,7 +123,6 @@ const MessageHistory = ({ isProcessing }) => {
     }
   };
 
-  
   // Fetch categories when the component mounts
   useEffect(() => {
     if (!isProcessing) {

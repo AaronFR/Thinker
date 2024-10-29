@@ -31,7 +31,7 @@ class BasePersona:
 
         ErrorHandler.setup_logging()
 
-    def query(self, user_prompt, file_references: List[str] = None):
+    def query(self, user_id, user_prompt, file_references: List[str] = None):
         """
         Handles a user prompt
 
@@ -46,7 +46,7 @@ class BasePersona:
                 user_encyclopedia_manager = UserEncyclopediaManagement()
                 user_encyclopedia_manager.add_to_encyclopedia([user_prompt])
                 
-            return self.select_workflow(user_prompt, file_references)
+            return self.select_workflow(user_id, user_prompt, file_references)
         else:
             print("Invalid input. Please ask a clear and valid question.")
 
@@ -84,7 +84,7 @@ class BasePersona:
         for i, (question, response) in enumerate(self.history):
             print(f"{i + 1}: Q: {question}\n    A: {response}")
 
-    def select_workflow(self, initial_message: str, file_references: List[str] = None):
+    def select_workflow(self, user_id: str, initial_message: str, file_references: List[str] = None):
         """Determine and run the appropriate workflow based on the user's query"""
         executor = AiOrchestrator()
         output = executor.execute_function(
@@ -98,12 +98,16 @@ class BasePersona:
         selected_workflow = output['selection']
 
         logging.info(f"Selected workflow: {selected_workflow}")
-        return self.run_workflow(selected_workflow, initial_message, file_references)
+        return self.run_workflow(user_id, selected_workflow, initial_message, file_references)
 
-    def run_workflow(self, selected_workflow: str, initial_message: str, file_references: List[str] = None):
+    def run_workflow(self,
+                     user_id: str,
+                     selected_workflow: str,
+                     initial_message: str,
+                     file_references: List[str] = None):
         raise NotImplementedError("This method should be overridden by subclasses")
 
-    def process_question(self, question: str, file_references: List[str] = None):
+    def process_question(self, user_id: str, question: str, file_references: List[str] = None):
         """Process and store the user's question."""
         file_content = []
         for file_reference in file_references:
@@ -112,11 +116,11 @@ class BasePersona:
             file_content.append(content)
 
         input_messages = [question] + file_content
-        response = self.think(input_messages)
+        response = self.think(user_id, input_messages)
         self.history.append((question, response))
         return response
 
-    def think(self, user_messages: List[str]) -> str:
+    def think(self, user_id: str, user_messages: List[str]) -> str:
         """Process the input question and think through a response.
         ToDo: this will be called multiple times redundantly in a workflow, user_messages are small however and the
          context can change from step to step so its not a priority
@@ -128,7 +132,7 @@ class BasePersona:
         """
         logging.info("Processing user messages: %s", user_messages)
 
-        staged_files = FileManagement.list_staged_files()
+        staged_files = FileManagement.list_staged_files(user_id)
         executor = AiOrchestrator(staged_files)
         config = Configuration.load_config()
 

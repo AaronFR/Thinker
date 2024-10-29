@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { prototyping_user_id } from '../utils/loginUtils'
 
 const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt) => {
   const [message, setMessage] = useState('');
@@ -17,6 +18,7 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt) => {
         },
         body: JSON.stringify({
           prompt: userInput,
+          user_id: prototyping_user_id,
           additionalQA: concatenatedQA,
           files: filesForPrompt,
           persona: selectedPersona

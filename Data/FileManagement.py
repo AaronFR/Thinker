@@ -22,9 +22,6 @@ class MyDumper(yaml.Dumper):
         return super().represent_scalar(tag, value, style)
 
 
-staging_index = "0"
-
-
 class FileManagement:
     """
     Class for managing files related to tasks and solutions.
@@ -39,15 +36,15 @@ class FileManagement:
     def __init__(self):
         ErrorHandler.setup_logging()
 
-    @deprecated("Incompatible with node system, if 2 users upload files at once, files will be sent to the wrong user")
     @staticmethod
-    def list_staged_files() -> List[str]:
+    def list_staged_files(user_id: str) -> List[str]:
         """List all files in
         ToDo: should leave files tagged meta alone, as soon as we start tagging meta files...
 
+        :parameter user_id: user_id reference used as a file staging directory
         :return: A list of file_name names in the directory
         """
-        staging_directory = FileManagement._get_staging_directory()
+        staging_directory = os.path.join(FileManagement.file_data_directory, user_id)
         try:
             entries = os.listdir(staging_directory)
             file_names = [entry for entry in entries if os.path.isfile(os.path.join(staging_directory, entry))]
@@ -60,14 +57,6 @@ class FileManagement:
         except Exception:
             logging.exception(f"An error occurred")
             return []
-
-    @staticmethod
-    def _get_staging_directory() -> str:
-        """Get the folder path for a given thought ID.
-
-        :return: The folder path for the given thought ID
-        """
-        return os.path.join(FileManagement.file_data_directory, "0")
 
     @staticmethod
     def get_numbered_string(lines) -> str:
@@ -108,15 +97,17 @@ class FileManagement:
             logging.exception(f"An unexpected error occurred")
             return f"[FAILED TO LOAD {full_address}]"
 
+    @deprecated("There should only be the one way of reading files")
     @staticmethod
-    def read_file(file_path: str, number_lines: bool = False) -> str:
+    def read_file(file_path: str, number_lines: bool = False, user_id = "totally4real2uuid") -> str:
         """Read the content of a specified file.
 
-        :param file_path: The path of the file_name to read
+        :param file_path: The path of the file_name to read, including category folder prefix
         :param number_lines: Flag to determine if the content should be returned as numbered lines
         :return: The content of the file or an error message to inform the next LLM what happened
         """
-        full_path = os.path.join(FileManagement.file_data_directory, staging_index, file_path)
+        logging.warning("🚧🚧🚧 Will break if multiple users exist")
+        full_path = os.path.join(FileManagement.file_data_directory, user_id, file_path)
         logging.info(f"Loading file_name content from: {full_path}")
 
         if FileManagement.is_image_file(full_path):
@@ -213,15 +204,15 @@ class FileManagement:
 
 
     @staticmethod
-    def regex_refactor(target_string: str, replacement: str, file_name):
+    def regex_refactor(target_string: str, replacement: str, file_path):
         """Replaces every instance of the target with the replacement str
 
         :param target_string: The text to be replaced
         :param replacement: The text to replace the target string
-        :param file_name: The file path including category prefix
+        :param file_path: The file path including category prefix
         :raises ValueError: if the rewrite operation fails
         """
-        file_content = FileManagement.read_file(file_name)
+        file_content = FileManagement.read_file(file_path)
         modified_text = file_content.replace(target_string, replacement)
 
         if file_content == modified_text:
@@ -230,7 +221,7 @@ class FileManagement:
             logging.error(f"No matches found for the target string: {target_string}")
             raise ValueError(f"No matches found for the target string: {target_string}")
 
-        FileManagement.save_file(modified_text, file_name)
+        FileManagement.save_file(modified_text, file_path)
 
 
 if __name__ == '__main__':

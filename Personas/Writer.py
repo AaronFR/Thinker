@@ -26,19 +26,19 @@ class Writer(BasePersona):
 
         ErrorHandler.setup_logging()
 
-    def run_workflow(self, selected_workflow: str, initial_message: str, file_references: List[str] = None):
+    def run_workflow(self, user_id: str, selected_workflow: str, initial_message: str, file_references: List[str] = None):
         if selected_workflow in self.workflows.keys():
             if selected_workflow == "write":
-                self.write_workflow(initial_message)
+                self.write_workflow(user_id, initial_message)
 
-    def write_workflow(self, initial_message: str):
+    def write_workflow(self, user_id: str, initial_message: str):
         """Engage in a back-and-forth dialogue with itself, with the aim of writing a document."""
         executor = AiOrchestrator()
         file_name = executor.execute(
             ["Give just a filename (with extension) that should be worked on given the following prompt. No commentary"],
             [initial_message])
 
-        evaluation_files = FileManagement.list_staged_files()
+        evaluation_files = FileManagement.list_staged_files(user_id)
         if file_name in evaluation_files:
             file_name = executor.execute(
                 ["Given the context of the following prompt, should the writing be appended or should it overwrite "
@@ -63,7 +63,7 @@ class Writer(BasePersona):
 
         prompt_messages = [initial_message] + analyser_messages
         for iteration, message in enumerate(prompt_messages):
-            response = self.process_question(message)
+            response = self.process_question(user_id, message)
             logging.info("Iteration %d completed with response: %s", iteration, response)
 
             if iteration == 4:

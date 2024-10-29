@@ -3,8 +3,9 @@ import './styles/UserInputForm.css';
 import PropTypes from 'prop-types';
 
 import FileUploadButton from './FileUploadButton';
+import { prototyping_user_id } from '../utils/loginUtils'
 
-const flask_port = "http://localhost:5000";
+const FLASK_PORT = "http://localhost:5000";
 
 /**
  * UserInputForm Component
@@ -26,9 +27,9 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
   /**
    * Fetches the list of uploaded files from the backend API.
    */
-  const fetchUploadedFiles = async () => {
+  const fetchStagedFiles = async () => {
     try {
-      const response = await fetch(`${flask_port}/list_files`, {
+      const response = await fetch(`${FLASK_PORT}/list_staged_files?user_id=${prototyping_user_id}`, {
         method: "GET",
       });
 
@@ -50,10 +51,10 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
    * useEffect hook to fetch uploaded files on component mount and set up polling.
    */
   useEffect(() => {
-    fetchUploadedFiles();
+    fetchStagedFiles();
 
     const interval = setInterval(() => {
-      fetchUploadedFiles();
+      fetchStagedFiles();
     }, 5000); // Every 5 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
