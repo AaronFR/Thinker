@@ -8,7 +8,7 @@ MERGE (user)-[:HAS_CATEGORY]->(category)
 RETURN id(category) AS category_id
 """
 
-CREATE_USER_PROMPT_AND_CATEGORY_NODES = """
+CREATE_USER_PROMPT_NODES = """
 MERGE (user:USER)
 WITH user
 MATCH (category:CATEGORY {name: $category})<-[:HAS_CATEGORY]-(user)

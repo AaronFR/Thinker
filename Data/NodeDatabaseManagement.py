@@ -27,6 +27,25 @@ class NodeDatabaseManagement:
         :return: The category associated with the new user prompt node
         """
         time = int(datetime.now().timestamp())
+        category = self.categorise_prompt_input(user_prompt, llm_response, time)
+
+        parameters = {
+            "prompt": user_prompt,
+            "response": llm_response,
+            "time": time,
+            "category": category
+        }
+        user_prompt_id = self.neo4jDriver.execute_write(
+            CypherQueries.CREATE_USER_PROMPT_NODES,
+            parameters,
+            "user_prompt_id"
+        )
+
+        NodeDatabaseManagement.create_file_nodes_for_user_prompt(user_id, user_prompt_id, category)
+
+        return category
+
+    def categorise_prompt_input(self, user_prompt: str, llm_response: str, time: int):
         category_id = str(shortuuid.uuid())
 
         categories = self.list_categories()
@@ -36,7 +55,7 @@ class NodeDatabaseManagement:
             ["Given the following prompt-response pair, categorize the data with the most suitable single-word answer."
              "The categories provided are a backup option, to be used only if they are the most fitting: " + str(
                 categories) + "."
-             "If none of the categories are appropriate, feel free to generate a more suitable term."],
+                              "If none of the categories are appropriate, feel free to generate a more suitable term."],
             [categorisation_input],
             Constants.DETERMINE_CATEGORY_FUNCTION_SCHEMA
         )
@@ -54,21 +73,6 @@ class NodeDatabaseManagement:
                 parameters_for_new_category,
                 "user_prompt_id"
             )
-
-        parameters = {
-            "prompt": user_prompt,
-            "category_id": category_id,
-            "response": llm_response,
-            "time": time,
-            "category": category
-        }
-
-        user_prompt_id = self.neo4jDriver.execute_write(
-            CypherQueries.CREATE_USER_PROMPT_AND_CATEGORY_NODES,
-            parameters,
-            "user_prompt_id"
-        )
-        NodeDatabaseManagement.create_file_nodes_for_user_prompt(user_id, user_prompt_id, category)
 
         return category
 
