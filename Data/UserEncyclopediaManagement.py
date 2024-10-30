@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from typing import List, Dict, Any
 
 import yaml
@@ -21,13 +22,6 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
     """
 
     ENCYCLOPEDIA_NAME = "UserEncyclopedia"
-
-    instructions = (
-        "For the given prompt return an array of things we can now say we know about the user, "
-        "as in personal information, *based* on their prompt. "
-        "If a user asks for a question that would not benefit from knowing anything about them, don't look up anything"
-        "The terms should be as simple as possible, e.g., the actual word of that concept. "
-    )
 
     _instance = None
 
@@ -66,6 +60,8 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
 
     def add_to_encyclopedia(self, user_input: List[str]) -> None:
         """Review the input user_messages and determine if anything meaningful can be added to the user encyclopedia
+        ToDo: The parameters should be all in lowercase
+        ToDo: parameters should be plural by default
 
         :param user_input: The user input to analyse
         """
@@ -83,12 +79,40 @@ class UserEncyclopediaManagement(EncyclopediaManagementInterface):
         :return: A list of dictionaries containing extracted terms and their respective content.
         """
         executor = AiOrchestrator()
-        response = executor.execute_function(
-            [self.instructions],
-            user_input,
-            ADD_TO_ENCYCLOPEDIA_FUNCTION_SCHEMA
+
+        instructions = (
+            "For the given prompt, think through step by step, explaining your reasoning. "
+            "Identify and return an array of specific, concise items that describe personal information we can infer about the user, "
+            "based on their prompt. Only infer information if it seems beneficial to the user’s question or future questions. "
+            "node_name and parameter are ideally singular words, failing that they must have underscores not spaces - "
+            "you chosen name should also get to the root semantic concept rather than focus on specifics"
+            "Write it as <(your_selected_single_word_node_name) parameter=\"(your_selected_single_word_parameter_name)\" "
+            "content=\"(the content you want to note)\" />"
         )
-        return response.get('terms', [])
+        testing = executor.execute(
+            [instructions],
+            user_input,
+        )
+        parsed_terms = UserEncyclopediaManagement.parse_user_topic_tags(testing)
+        return parsed_terms
+
+    @staticmethod
+    def parse_user_topic_tags(input_text):
+        # Define a regular expression to capture node_name, parameter, and content values
+        pattern = r'<\s*(?P<node_name>\w+)\s+parameter\s*=\s*"(?P<parameter>[^"]+)"\s+content\s*=\s*"(?P<content>[^"]+)"\s*/?>'
+
+        matches = re.finditer(pattern, input_text)
+
+        tags = [
+            {
+                "node": match.group("node_name"),
+                "parameter": match.group("parameter"),
+                "content": match.group("content")
+            }
+            for match in matches
+        ]
+
+        return tags
 
     def process_terms(self, terms: List[Dict[str, Any]]) -> Dict[str, str]:
         """Processes new terms and prepares them for addition to the encyclopedia.
