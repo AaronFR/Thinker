@@ -6,6 +6,7 @@ from deprecated import deprecated
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.CategoryManagement import CategoryManagement
+from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement
 from Data.UserEncyclopediaManagement import UserEncyclopediaManagement
 from Personas.PersonaSpecification import PersonaConstants
@@ -89,13 +90,15 @@ class Organising:
         :param user_id: The file address friendly uuid of the user
         :return:
         """
+        config = Configuration.load_config()
         categoryManagement = CategoryManagement()
         category = categoryManagement.categorise_prompt_input(user_prompt, response_message)
         selected_category = Organising.node_db.create_user_prompt_node(user_id, category, user_prompt, response_message)
 
-        uem = UserEncyclopediaManagement()
-        terms = uem.extract_terms_from_input([user_prompt])
-        Organising.node_db.create_user_topic_nodes(terms, user_id)
+        if config['beta_features']['user_encyclopedia_enabled']:
+            terms = UserEncyclopediaManagement.extract_terms_from_input([user_prompt])
+            Organising.node_db.create_user_topic_nodes(terms, user_id)
+
         categoryManagement.stage_files(user_id, selected_category)
 
     @staticmethod

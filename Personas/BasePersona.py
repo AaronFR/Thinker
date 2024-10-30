@@ -40,12 +40,7 @@ class BasePersona:
         :param user_prompt: user input prompt
         :param user_prompt: additional file references paths, format <category_id>/<file_name_with_extension>
         """
-        config = Configuration.load_config()
         if Utility.is_valid_prompt(user_prompt):
-            if config['beta_features']['user_encyclopedia_enabled']:
-                user_encyclopedia_manager = UserEncyclopediaManagement()
-                user_encyclopedia_manager.add_to_encyclopedia([user_prompt])
-                
             return self.select_workflow(user_id, user_prompt, file_references)
         else:
             print("Invalid input. Please ask a clear and valid question.")
@@ -64,11 +59,6 @@ class BasePersona:
             elif user_input.lower() == 'history':
                 self.display_history()
             elif Utility.is_valid_prompt(user_input):
-
-                if config['beta_features']['user_encyclopedia_enabled']:
-                    user_encyclopedia_manager = UserEncyclopediaManagement()
-                    user_encyclopedia_manager.add_to_encyclopedia([user_input])
-                
                 self.select_workflow(user_input)
             else:
                 print("Invalid input. Please ask a clear and valid question.")

@@ -241,8 +241,8 @@ class NodeDatabaseManagement:
             CypherQueries.SEARCH_FOR_USER_TOPIC,
             parameters
         )
-        record = records[0]
-        if record:
+        if records & records[0]:
+            record = records[0]
             node_content = record["all_properties"]
 
             logging.info(f"Extracted content for {term} : {node_content}")

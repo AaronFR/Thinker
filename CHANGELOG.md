@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- 
+- UserEncylopedia.yaml and UserEncyclopedia References have been removed, user *topics* now being saved to the graph database
 
 ## [0.8.0] - 2024-10-18 - Front End and Database
 
