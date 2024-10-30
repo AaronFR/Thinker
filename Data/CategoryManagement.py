@@ -1,13 +1,13 @@
 
 import logging
 import os
+import re
 import shutil
 from typing import Optional
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement
-from Utilities import Constants
 
 
 class CategoryManagement:
@@ -31,21 +31,38 @@ class CategoryManagement:
         categories = self.node_db.list_categories()
         categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n" + \
                                "<response>" + llm_response + "</response>"
-        category_data = self.executor.execute_function(
-            ["Given the following prompt-response pair, categorize the data with the most suitable single-word answer."
-             "The categories provided are a backup option, to be used only if they are the most fitting: " + str(
-                categories) + "."
-                              "If none of the categories are appropriate, feel free to generate a more suitable term."],
-            [categorisation_input],
-            Constants.DETERMINE_CATEGORY_FUNCTION_SCHEMA
+
+        category_reasoning = self.executor.execute(
+            [
+                f"LIGHTLY suggested existing categories, you DONT need to follow: {str(categories)}"
+                "Given the following prompt-response pair, think through step by step, explaining your reasoning"
+                "and categorize the data with the most suitable single-word answer."
+                "Write it as <result=\"(your_selection)\""
+            ],
+            [categorisation_input]
         )
-        logging.info("category_data:", category_data)
-        category = category_data["category"]
+        logging.info(f"Category Reasoning: {category_reasoning}")
+        category = CategoryManagement.extract_example_text(category_reasoning)
 
         if category not in categories:
             self.node_db.create_category(category)
 
         return category
+
+    @staticmethod
+    def extract_example_text(input_string):
+        """
+        Extracts the text contained within the result element.
+
+        :param input_string: The string containing the result element.
+        :type input_string: str
+        :return: The text inside the result element or None if not found.
+        :rtype: str or None
+        """
+        match = re.search(r'<result="([^"]+)">', input_string)
+        if match:
+            return match.group(1)
+        return None
 
     def stage_files(self, user_id: str, category=None):
         """

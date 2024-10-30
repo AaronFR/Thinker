@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Renamed `/thoughts` -> `/FileData`
 - Files are now stored in uuid designated folders uniquely related to the user
+- Improved auto-categorisation
 
 ### Removed
 
