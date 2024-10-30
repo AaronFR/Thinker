@@ -4,20 +4,17 @@ from typing import List, Dict
 
 import shortuuid as shortuuid
 
-from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data import CypherQueries
 from Data.FileManagement import FileManagement
 from Data.Neo4jDriver import Neo4jDriver
-from Functionality.Organising import Organising
-from Utilities import Constants
+from Personas.PersonaSpecification import PersonaConstants
 
 
 class NodeDatabaseManagement:
     def __init__(self):
         self.neo4jDriver = Neo4jDriver()
-        self.executor = AiOrchestrator()
 
-    def create_user_prompt_node(self, user_id: str, user_prompt: str, llm_response: str) -> str:
+    def create_user_prompt_node(self, user_id: str, category: str, user_prompt: str, llm_response: str) -> str:
         """
         Saves a prompt - response pair as a USER_PROMPT in the neo4j database
         Categorising the prompt and staging any attached files under that category
@@ -27,7 +24,6 @@ class NodeDatabaseManagement:
         :return: The category associated with the new user prompt node
         """
         time = int(datetime.now().timestamp())
-        category = self.categorise_prompt_input(user_prompt, llm_response, time)
 
         parameters = {
             "prompt": user_prompt,
@@ -44,103 +40,6 @@ class NodeDatabaseManagement:
         NodeDatabaseManagement.create_file_nodes_for_user_prompt(user_id, user_prompt_id, category)
 
         return category
-
-    def create_user_topic_nodes(self, terms, user_id):
-        logging.info(f"Noted the following user topics : {terms}")
-
-        for term in terms:
-            parameters = {
-                "user_id": user_id,
-                "node_name": term.get('node').lower(),
-                "content": term.get('content')
-            }
-            user_topic_id = self.neo4jDriver.execute_write(
-                CypherQueries.format_create_user_topic_query(term.get('parameter')),
-                parameters
-            )
-
-    def search_for_user_topic_content(self, term, synonyms=None, user_id="totally4real2uuid"):
-        logging.info(f"Attempting search for the following term: {term}")
-        parameters = {
-            "user_id": user_id,
-            "node_name": term
-        }
-        records = self.neo4jDriver.execute_read(
-            CypherQueries.SEARCH_FOR_USER_TOPIC,
-            parameters
-        )
-        record = records[0]
-        if record:
-            node_content = record["all_properties"]
-
-            logging.info(f"Extracted content for {term} : {node_content}")
-            return node_content
-
-        return None
-
-    def categorise_prompt_input(self, user_prompt: str, llm_response: str, time: int):
-        category_id = str(shortuuid.uuid())
-
-        categories = self.list_categories()
-        categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n" + \
-                               "<response>" + llm_response + "</response>"
-        category_data = self.executor.execute_function(
-            ["Given the following prompt-response pair, categorize the data with the most suitable single-word answer."
-             "The categories provided are a backup option, to be used only if they are the most fitting: " + str(
-                categories) + "."
-                              "If none of the categories are appropriate, feel free to generate a more suitable term."],
-            [categorisation_input],
-            Constants.DETERMINE_CATEGORY_FUNCTION_SCHEMA
-        )
-        logging.info("category_data:", category_data)
-        category = category_data["category"]
-
-        if category not in categories:
-            logging.info(f"Creating new category [{category_id}]: {category}")
-            parameters_for_new_category = {
-                "category_name": category,
-                "category_id": category_id,
-            }
-            self.neo4jDriver.execute_write(
-                CypherQueries.CREATE_CATEGORY,
-                parameters_for_new_category,
-                "user_prompt_id"
-            )
-
-        return category
-
-    @staticmethod
-    def create_file_nodes_for_user_prompt(user_id: str, user_prompt_id: str, category: str) -> None:
-        file_names = FileManagement.list_staged_files(user_id)
-
-        for file_name in file_names:
-            NodeDatabaseManagement.create_file_node(user_prompt_id, category, file_name)
-
-    @staticmethod
-    def create_file_node(user_prompt_id: str, category: str, file_name: str) -> None:
-        """
-        Saves a prompt - response pair as a USER_PROMPT in the neo4j database
-        Categorising the prompt and staging any attached files under that category
-
-        :param user_prompt_id: create the file node attached to the following message
-        :param category: The name of the category the file belongs to
-        :file_name: the name of the file, including extension
-        """
-        time = int(datetime.now().timestamp())
-        content = FileManagement.read_file(file_name)
-        summary = Organising.summarise_content(content)
-
-        neo4j_driver = Neo4jDriver()
-        parameters = {
-            "category": category,
-            "user_prompt_id": user_prompt_id,
-            "name": file_name,
-            "time": time,
-            "summary": summary,
-            "structure": "PROTOTYPING"
-        }
-
-        neo4j_driver.execute_write(CypherQueries.CREATE_FILE_NODE, parameters)
 
     # Messages
 
@@ -177,6 +76,20 @@ class NodeDatabaseManagement:
 
     # Categories
 
+    def create_category(self, category_name: str):
+        category_id = str(shortuuid.uuid())
+        logging.info(f"Creating new category [{category_id}]: {category_name}")
+
+        parameters = {
+            "category_name": category_name,
+            "category_id": category_id
+        }
+        self.neo4jDriver.execute_write(
+            CypherQueries.CREATE_CATEGORY,
+            parameters,
+            "user_prompt_id"
+        )
+
     def get_category_id(self, category_name: str) -> int:
         """
         Retrieve all files linked to a particular category, newest first.
@@ -185,9 +98,9 @@ class NodeDatabaseManagement:
         :return: the uuid of that category node
         """
         parameters = {"category_name": category_name}
-
         records = self.neo4jDriver.execute_read(CypherQueries.GET_CATEGORY_ID, parameters)
         category_id = records[0]["category_id"]
+
         logging.info(f"Category id for {category_name}: {category_id}")
         return category_id
 
@@ -211,6 +124,44 @@ class NodeDatabaseManagement:
         return categories
 
     # Files
+
+    @staticmethod
+    def create_file_nodes_for_user_prompt(user_id: str, user_prompt_id: str, category: str) -> None:
+        file_names = FileManagement.list_staged_files(user_id)
+
+        for file_name in file_names:
+            NodeDatabaseManagement.create_file_node(user_prompt_id, category, file_name)
+
+    @staticmethod
+    def create_file_node(user_prompt_id: str, category: str, file_name: str) -> None:
+        """
+        Saves a prompt - response pair as a USER_PROMPT in the neo4j database
+        Categorising the prompt and staging any attached files under that category
+
+        :param user_prompt_id: create the file node attached to the following message
+        :param category: The name of the category the file belongs to
+        :file_name: the name of the file, including extension
+        """
+        time = int(datetime.now().timestamp())
+        content = FileManagement.read_file(file_name)
+        from AiOrchestration.AiOrchestrator import AiOrchestrator
+        executor = AiOrchestrator()
+        summary = executor.execute(
+            [PersonaConstants.SUMMARISER_SYSTEM_INSTRUCTIONS],
+            [content]
+        )
+
+        neo4j_driver = Neo4jDriver()
+        parameters = {
+            "category": category,
+            "user_prompt_id": user_prompt_id,
+            "name": file_name,
+            "time": time,
+            "summary": summary,
+            "structure": "PROTOTYPING"
+        }
+
+        neo4j_driver.execute_write(CypherQueries.CREATE_FILE_NODE, parameters)
 
     def get_file_by_id(self, file_id: int):
         """
@@ -263,3 +214,38 @@ class NodeDatabaseManagement:
         }
 
         self.neo4jDriver.execute_delete(CypherQueries.DELETE_FILE_BY_ID, parameters)
+
+    # User Topics
+
+    def create_user_topic_nodes(self, terms, user_id):
+        logging.info(f"Noted the following user topics : {terms}")
+
+        for term in terms:
+            parameters = {
+                "user_id": user_id,
+                "node_name": term.get('node').lower(),
+                "content": term.get('content')
+            }
+            user_topic_id = self.neo4jDriver.execute_write(
+                CypherQueries.format_create_user_topic_query(term.get('parameter')),
+                parameters
+            )
+
+    def search_for_user_topic_content(self, term, synonyms=None, user_id="totally4real2uuid"):
+        logging.info(f"Attempting search for the following term: {term}")
+        parameters = {
+            "user_id": user_id,
+            "node_name": term
+        }
+        records = self.neo4jDriver.execute_read(
+            CypherQueries.SEARCH_FOR_USER_TOPIC,
+            parameters
+        )
+        record = records[0]
+        if record:
+            node_content = record["all_properties"]
+
+            logging.info(f"Extracted content for {term} : {node_content}")
+            return node_content
+
+        return None

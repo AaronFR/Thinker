@@ -4,18 +4,16 @@ import os
 import shutil
 from typing import Optional
 
+from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement
+from Utilities import Constants
 
 
 class CategoryManagement:
     """
     Manages the automatic categorisation of uploaded files by the user and of files created by the system
     """
-
-    ENCYCLOPEDIA_EXT = ".yaml"
-    ENCYCLOPEDIA_NAME = "To Define"
-    instructions = "To Define"
 
     _instance = None
 
@@ -26,9 +24,28 @@ class CategoryManagement:
         return cls._instance
 
     def __init__(self):
-        """Initializes the CategoryManagement instance."""
-        self.file_data_directory = os.path.join(os.path.dirname(__file__), 'FileData')
-        self.data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
+        self.node_db = NodeDatabaseManagement()
+        self.executor = AiOrchestrator()
+
+    def categorise_prompt_input(self, user_prompt: str, llm_response: str):
+        categories = self.node_db.list_categories()
+        categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n" + \
+                               "<response>" + llm_response + "</response>"
+        category_data = self.executor.execute_function(
+            ["Given the following prompt-response pair, categorize the data with the most suitable single-word answer."
+             "The categories provided are a backup option, to be used only if they are the most fitting: " + str(
+                categories) + "."
+                              "If none of the categories are appropriate, feel free to generate a more suitable term."],
+            [categorisation_input],
+            Constants.DETERMINE_CATEGORY_FUNCTION_SCHEMA
+        )
+        logging.info("category_data:", category_data)
+        category = category_data["category"]
+
+        if category not in categories:
+            self.node_db.create_category(category)
+
+        return category
 
     def stage_files(self, user_id: str, category=None):
         """
@@ -64,8 +81,7 @@ class CategoryManagement:
         :param category_name: The name of the category associated with an existing category ID.
         :return: The category ID if found, otherwise None.
         """
-        node_db = NodeDatabaseManagement()
-        id = node_db.get_category_id(category_name)
+        id = self.node_db.get_category_id(category_name)
         self._add_new_category(id)
 
         logging.info(f"Id found for category [{id}] - {category_name}")

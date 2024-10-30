@@ -1,15 +1,21 @@
 import logging
 from typing import List, Tuple
 
+import celery as celery
 from deprecated import deprecated
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Data.CategoryManagement import CategoryManagement
+from Data.NodeDatabaseManagement import NodeDatabaseManagement
+from Data.UserEncyclopediaManagement import UserEncyclopediaManagement
 from Personas.PersonaSpecification import PersonaConstants
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
 from Data.FileManagement import FileManagement
 
 
 class Organising:
+
+    node_db = NodeDatabaseManagement()
 
     @deprecated(reason="ToDo adapt for node graph system")
     @staticmethod
@@ -60,6 +66,37 @@ class Organising:
         return f"""From the list of files, choose which files are expressively explicitly relevant to my prompt. 
         This could be one, many, or NO files. Be cautious about including files.
         files: {evaluation_files}"""
+
+    @staticmethod
+    def process_files(files):
+        file_references = []
+        if files:
+            for file in files:
+                file_with_category = Organising.node_db.get_file_by_id(file.get("id"))
+                if not file_with_category:
+                    continue
+                file_system_address = f"{file_with_category['category']}\\{file_with_category['name']}"
+                file_references.append(file_system_address)
+        return file_references
+
+    @staticmethod
+    def categorize_and_store_prompt(user_prompt, response_message, user_id):
+        """
+        ToDo: Look into celery and async processing
+
+        :param user_prompt: The given user prompt starting the evaluation process
+        :param response_message: The systems response
+        :param user_id: The file address friendly uuid of the user
+        :return:
+        """
+        categoryManagement = CategoryManagement()
+        category = categoryManagement.categorise_prompt_input(user_prompt, response_message)
+        selected_category = Organising.node_db.create_user_prompt_node(user_id, category, user_prompt, response_message)
+
+        uem = UserEncyclopediaManagement()
+        terms = uem.extract_terms_from_input([user_prompt])
+        Organising.node_db.create_user_topic_nodes(terms, user_id)
+        categoryManagement.stage_files(user_id, selected_category)
 
     @staticmethod
     def summarise_content(content: str):

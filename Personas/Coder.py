@@ -95,9 +95,12 @@ class Coder(BasePersona):
         logging.info(f"Referencing/Creating the following files: {files}")
 
         for file in files:
+            logging.info(f"File references: {file_references}")
             category = Path(file_references[0]).parts[0]
+
             file_path = Path(category).joinpath(file['file_name'])
             logging.info(f"🚧 Constructed file with category prefix: {file_path}")
+
             purpose = file['purpose']
             logging.info(f"Writing code to {file_path}, \nPurpose: {purpose}")
 

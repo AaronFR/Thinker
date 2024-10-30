@@ -17,6 +17,7 @@ from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement
 from Data.UserEncyclopediaManagement import UserEncyclopediaManagement
 from Functionality.Augmentation import Augmentation
+from Functionality.Organising import Organising
 from Personas.Coder import Coder
 from Data.Configuration import Configuration
 from Data.Pricing import Pricing
@@ -74,30 +75,14 @@ def process_message():
             user_prompt = user_prompt + "\nAdditional Q&A context: \n" + additional_qa
 
         files = data.get("files")
-        file_references = []
-        if files:
-            for file in files:
-                file_with_category = node_db.get_file_by_id(file.get("id"))
-                if not file_with_category:
-                    continue
-
-                file_system_address = f"{file_with_category['category']}\\{file_with_category['name']}"
-                file_references.append(file_system_address)
+        file_references = Organising.process_files(files)
 
         selected_persona = get_selected_persona(data) 
         response_message = selected_persona.query(user_id, user_prompt, file_references)
         logging.info("Response generated: %s", response_message)
 
         # ToDo: should be an ancillary side job, currently slows down recieving a response if the database doesn't respond quickly
-        selected_category = node_db.create_user_prompt_node(user_id, user_prompt, response_message)
-
-        uem = UserEncyclopediaManagement()
-        terms = uem.extract_terms_from_input([user_prompt])
-        node_db.create_user_topic_nodes(terms, user_id)
-
-
-        categoryManagement = CategoryManagement()
-        categoryManagement.stage_files(user_id, selected_category)
+        Organising.categorize_and_store_prompt(user_prompt, response_message, user_id)
 
         return jsonify({"message": response_message})
     
@@ -107,7 +92,6 @@ def process_message():
     except Exception as e:
         logging.exception("Failed to process message")
         return jsonify({"error": str(e)}), 500
-
 
 @app.route('/messages/<message_id>', methods=['DELETE'])
 def delete_message(message_id):
