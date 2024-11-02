@@ -34,7 +34,7 @@ MERGE (user:USER)
 WITH user
 MATCH (category:CATEGORY {name: $category})<-[:HAS_CATEGORY]-(user)
 CREATE (user_prompt:USER_PROMPT {prompt: $prompt, response: $response, time: $time})
-MERGE (user)-[:USES]->(category)
+MERGE (user)-[:HAS_CATEGORY]->(category)
 MERGE (user_prompt)-[:BELONGS_TO]->(category)
 RETURN id(user_prompt) AS user_prompt_id
 """
@@ -53,7 +53,7 @@ RETURN file
 
 # Messages
 GET_MESSAGES = """
-MATCH (user:USER)-[:USES]->(category:CATEGORY {name: $category_name})
+MATCH (user:USER)-[:HAS_CATEGORY]->(category:CATEGORY {name: $category_name})
     <-[:BELONGS_TO]-(user_prompt:USER_PROMPT)
 RETURN id(user_prompt) AS id, user_prompt.prompt AS prompt, user_prompt.response AS response, user_prompt.time AS time
 ORDER by user_prompt.time DESC
@@ -77,13 +77,13 @@ RETURN category.id AS category_id
 """
 
 LIST_CATEGORIES = """
-MATCH (user:USER)-[:USES]->(category:CATEGORY)
+MATCH (user:USER)-[:HAS_CATEGORY]->(category:CATEGORY)
 RETURN DISTINCT category.name as category_name
 ORDER by category_name
 """
 
 LIST_CATEGORIES_WITH_FILES = """
-MATCH (user:USER)-[:USES]->(category:CATEGORY)--(file:FILE)
+MATCH (user:USER)-[:HAS_CATEGORY]->(category:CATEGORY)--(file:FILE)
 RETURN DISTINCT category.name as category_name
 ORDER by category_name
 """
@@ -97,7 +97,7 @@ ORDER by file.time DESC
 """
 
 GET_FILES_FOR_CATEGORY = """
-MATCH (user:USER)-[:USES]->(category:CATEGORY {name: $category_name})
+MATCH (user:USER)-[:HAS_CATEGORY]->(category:CATEGORY {name: $category_name})
     <-[:BELONGS_TO]-(file:FILE)
 RETURN id(file) AS id, category.id AS category_id, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
 ORDER by file.time DESC
