@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - User can upload files for reference in their prompts
 - Users can (actually) select, unselect and view previously uploaded text files for reference in a new prompt
+- User context is saved and referenced allowing the application to remember details from prompt to prompt
 
 ### Changed
 
@@ -20,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- UserEncylopedia.yaml and UserEncyclopedia References have been removed, user *topics* now being saved to the graph database
+- UserEncylopedia.yaml and UserEncyclopedia References are no longer created, user *topics* now being saved to the graph database
 
 ## [0.8.0] - 2024-10-18 - Front End and Database
 

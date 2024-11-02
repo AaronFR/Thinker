@@ -241,11 +241,32 @@ class NodeDatabaseManagement:
             CypherQueries.SEARCH_FOR_USER_TOPIC,
             parameters
         )
-        if records & records[0]:
+        if records:
             record = records[0]
-            node_content = record["all_properties"]
+            if record:
+                node_content = record["all_properties"]
 
-            logging.info(f"Extracted content for {term} : {node_content}")
-            return node_content
+                logging.info(f"Extracted content for {term} : {node_content}")
+                return node_content
+
+        return None
+
+    def list_user_topics(self, user_id="totally4real2uuid"):
+        """
+        Returns the usernames of the USER TOPICs arranged newest first
+
+        :param user_id: the user_id to search by
+        :return:
+        """
+        parameters = {
+            "user_id": user_id
+        }
+        records = self.neo4jDriver.execute_read(
+            CypherQueries.SEARCH_FOR_ALL_USER_TOPICS,
+            parameters
+        )
+        if records:
+            names = [record['name'] for record in records]
+            return names
 
         return None

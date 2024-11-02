@@ -96,6 +96,8 @@ class Coder(BasePersona):
 
         for file in files:
             logging.info(f"File references: {file_references}")
+            # ToDo: if creating a new file, file_references will be an empty array as it should be
+            #  Code for writing files will be changed soon
             category = Path(file_references[0]).parts[0]
 
             file_path = Path(category).joinpath(file['file_name'])

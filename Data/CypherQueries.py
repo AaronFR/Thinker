@@ -29,6 +29,16 @@ MATCH (user_topic:USER_TOPIC {name: $node_name})
 RETURN properties(user_topic) AS all_properties
 """
 
+# newest first
+SEARCH_FOR_ALL_USER_TOPICS = """
+MATCH (user:USER {id: $user_id})
+WITH user
+MATCH (user_topic:USER_TOPIC)
+WITH user_topic
+ORDER BY id(user_topic) DESC
+RETURN user_topic.name AS name
+"""
+
 CREATE_USER_PROMPT_NODES = """
 MERGE (user:USER)
 WITH user

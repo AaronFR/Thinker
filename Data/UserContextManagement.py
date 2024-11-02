@@ -53,6 +53,7 @@ class UserContextManagement(EncyclopediaManagementInterface):
         logging.info(f"user topic reasoning : {user_topics_reasoning}")
 
         parsed_terms = UserContextManagement.parse_user_topic_tags(user_topics_reasoning)
+        logging.info(f"parsed terms : {parsed_terms}")
         return parsed_terms
 
     @staticmethod

@@ -101,7 +101,7 @@ class EncyclopediaManagementInterface:
             return "An error occurred while searching the encyclopedia."
 
     def extract_terms_from_encyclopedia(self, terms: List[dict[str, str]]) -> str:
-        """Extract terms from the encyclopedia or fetch them if not found.
+        """Search for a set of terms in the database
 
         :param terms: The terms to check in the encyclopedia.
         :return: A string representation of additional context extracted.
@@ -112,25 +112,19 @@ class EncyclopediaManagementInterface:
             try:
                 term_name = term['term'].lower().strip()
                 ndm = NodeDatabaseManagement()
-                content = ndm.search_for_user_topic_content(term_name)
+                user_topics = ndm.list_user_topics()
+
+                executor = AiOrchestrator()
+                selected_topic_raw = executor.execute(
+                    ["Given the list of topics I gave you, just return the most appropriate from the list"],
+                    [term.get("term") + " : " + term.get("specifics"), str(user_topics)]
+                )
+                selected_topic = selected_topic_raw.strip("'")
+
+                content = ndm.search_for_user_topic_content(selected_topic)
                 if content:
                     additional_context.append(content)
-                # redirected_term = self.redirects.get(term_name)
-                # if redirected_term:
-                #     term_name = redirected_term
-                #
-                # entry = self.encyclopedia.get(term_name)
-                # specifics = term.get('specifics', "Nothing specific")
-                #
-                # if entry:
-                #     entry = self.selectively_process_entry(term_name, specifics)
-                #     additional_context.append((term, entry))
-                # elif self.fetch_term_and_update(term_name):
-                #     entry = self.selectively_process_entry(term_name, specifics)
-                #     if entry:
-                #         additional_context.append((term, entry))
-                # else:
-                #     logging.error(f"Could not find or create term '{term_name}' after fetching from Wikipedia.")
+
             except Exception as e:
                 logging.exception(f"Error while trying to access {self.ENCYCLOPEDIA_NAME}: {term_name}", exc_info=e)
 
