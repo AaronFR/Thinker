@@ -8,7 +8,7 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.CategoryManagement import CategoryManagement
 from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement
-from Data.UserEncyclopediaManagement import UserEncyclopediaManagement
+from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification import PersonaConstants
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
 from Data.FileManagement import FileManagement
@@ -95,8 +95,8 @@ class Organising:
         category = categoryManagement.categorise_prompt_input(user_prompt, response_message)
         selected_category = Organising.node_db.create_user_prompt_node(user_id, category, user_prompt, response_message)
 
-        if config['beta_features']['user_encyclopedia_enabled']:
-            terms = UserEncyclopediaManagement.extract_terms_from_input([user_prompt])
+        if config['beta_features']['user_context_enabled']:
+            terms = UserContextManagement.extract_terms_from_input([user_prompt])
             Organising.node_db.create_user_topic_nodes(terms, user_id)
 
         categoryManagement.stage_files(user_id, selected_category)

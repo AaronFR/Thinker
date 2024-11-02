@@ -60,7 +60,7 @@ export function SettingsProvider({ children }) {
           darkMode: loadedConfig.interface.dark_mode ?? false,
           augmentedPromptsEnabled: loadedConfig.beta_features.augmented_prompts_enabled ?? false,
           questionUserPromptsEnabled: loadedConfig.beta_features.question_user_prompts_enabled ?? false,
-          userEncyclopediaEnabled: loadedConfig.beta_features.user_encyclopedia_enabled ?? false,
+          userEncyclopediaEnabled: loadedConfig.beta_features.user_context_enabled ?? false,
           encyclopediaEnabled: loadedConfig.beta_features.encyclopedia_enabled ?? false,
           multiFileProcessingEnabled: loadedConfig.beta_features.multi_file_processing_enabled ?? false,
         }));
@@ -86,7 +86,7 @@ export function SettingsProvider({ children }) {
       toggleDarkMode: () => toggleSetting('interface.dark_mode', 'darkMode'),
       toggleAugmentedPrompts: () => toggleSetting('beta_features.augmented_prompts_enabled', 'augmentedPromptsEnabled'),
       toggleQuestionUserPrompts: () => toggleSetting('beta_features.question_user_prompts_enabled', 'questionUserPromptsEnabled'),
-      toggleUserEncyclopedia: () => toggleSetting('beta_features.user_encyclopedia_enabled', 'userEncyclopediaEnabled'),
+      toggleUserEncyclopedia: () => toggleSetting('beta_features.user_context_enabled', 'userEncyclopediaEnabled'),
       toggleEncyclopedia: () => toggleSetting('beta_features.encyclopedia_enabled', 'encyclopediaEnabled'),
       toggleMultiFileProcessing: () => toggleSetting('beta_features.multi_file_processing_enabled', 'multiFileProcessingEnabled'),
     }}>

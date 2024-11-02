@@ -15,7 +15,7 @@ from werkzeug.utils import secure_filename
 from Data.CategoryManagement import CategoryManagement
 from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement
-from Data.UserEncyclopediaManagement import UserEncyclopediaManagement
+from Data.UserContextManagement import UserContextManagement
 from Functionality.Augmentation import Augmentation
 from Functionality.Organising import Organising
 from Personas.Coder import Coder

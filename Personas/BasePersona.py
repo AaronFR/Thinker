@@ -7,7 +7,7 @@ from Data.Configuration import Configuration
 
 from Data.EncyclopediaManagement import EncyclopediaManagement
 from Data.FileManagement import FileManagement
-from Data.UserEncyclopediaManagement import UserEncyclopediaManagement
+from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
@@ -133,8 +133,8 @@ class BasePersona:
             additional_context = encyclopedia_manager.search_encyclopedia(user_messages)
             system_messages.append(additional_context)
 
-        if config['beta_features']['user_encyclopedia_enabled']:
-            user_encyclopedia_manager = UserEncyclopediaManagement()
+        if config['beta_features']['user_context_enabled']:
+            user_encyclopedia_manager = UserContextManagement()
             user_context = user_encyclopedia_manager.search_encyclopedia(user_messages)
             system_messages.append(user_context)
 
