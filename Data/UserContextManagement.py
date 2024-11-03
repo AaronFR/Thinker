@@ -43,8 +43,9 @@ class UserContextManagement(EncyclopediaManagementInterface):
             "node_name and parameter are ideally singular words, failing that they must have underscores not spaces - "
             "you chosen name should also get to the root semantic concept rather than focus on specifics. "
             "Then, finally write the potential user topics as "
-            "<(your_selected_single_word_node_name) parameter=\"(your_selected_single_word_parameter_name)\" "
+            "<your_selected_single_word_node_name parameter=\"(your_selected_single_word_parameter_name)\" "
             "content=\"(the content you want to note)\" />"
+            "Required: tag name, parameter, content, all 3 must be included"
         )
         user_topics_reasoning = executor.execute(
             [instructions],
@@ -59,9 +60,13 @@ class UserContextManagement(EncyclopediaManagementInterface):
     @staticmethod
     def parse_user_topic_tags(input_text):
         # Define a regular expression to capture node_name, parameter, and content values
-        pattern = r'<\s*(?P<node_name>\w+)\s+parameter\s*=\s*"(?P<parameter>[^"]+)"\s+content\s*=\s*"(?P<content>[^"]+)"\s*/?>'
+        # pattern = r'<\s*(?P<node_name>\w+)\s+parameter\s*=\s*"(?P<parameter>[^"]+)"\s+content\s*=\s*"(?P<content>[^"]+)"\s*/?>'
+        pattern = r'<(?P<node_name>[a-zA-Z_]+)\s+parameter="(?P<parameter>[^"]+)"\s+content="(?P<content>[^"]+)"\s*/>'
 
-        matches = re.finditer(pattern, input_text)
+        matches = list(re.finditer(pattern, input_text))  # Convert to list for easy checking
+
+        if not matches:
+            logging.warning("No matches found.")
 
         tags = [
             {
@@ -92,5 +97,11 @@ class UserContextManagement(EncyclopediaManagementInterface):
 
 if __name__ == '__main__':
     encyclopediaManagement = UserContextManagement()
-    print(encyclopediaManagement.extract_terms_from_input(["My name is John James"]))
+    text = r"""
+    <user_name parameter="first_name" content="Johnn" />
+    <user_name parameter="last_name" content="James" />
+    <user_name parameter="gender" content="male" />
+    """
+    print(encyclopediaManagement.parse_user_topic_tags(text))
+    # print(encyclopediaManagement.extract_terms_from_input(["My name is John James"]))
     # print(encyclopediaManagement.find_terms_for_input(["Do you know what my name is?"]))

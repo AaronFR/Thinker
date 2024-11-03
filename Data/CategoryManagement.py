@@ -62,6 +62,8 @@ class CategoryManagement:
         match = re.search(r'<result="([^"]+)">', input_string)
         if match:
             return match.group(1)
+
+        logging.warning("Failure to categorise!")
         return None
 
     def stage_files(self, user_id: str, category=None):
