@@ -8,6 +8,7 @@ from Functionality.Coding import Coding
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import PersonaConstants, CoderSpecification
 from Personas.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
+from Utilities.ErrorHandler import ErrorHandler
 
 
 class Coder(BasePersona):
@@ -30,6 +31,8 @@ class Coder(BasePersona):
         self.instructions = CoderSpecification.CODER_INSTRUCTIONS
         self.configuration = CoderSpecification.load_configuration()
 
+        ErrorHandler.setup_logging()
+
     def run_workflow(self,
                      user_id: str,
                      selected_workflow: str,
@@ -49,6 +52,7 @@ class Coder(BasePersona):
 
         :param initial_message: The user's initial prompt.
         """
+        logging.info("chat workflow selected")
         analyser_messages = [
             initial_message
         ]

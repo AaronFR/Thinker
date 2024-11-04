@@ -10,7 +10,7 @@ from Personas.PersonaSpecification.EditorSpecification import REWRITE_EXECUTOR_S
     EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA, EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS, \
     EDITOR_LINE_REPLACEMENT_INSTRUCTIONS
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from AiOrchestration.ChatGptWrapper import ChatGptModel
+from AiOrchestration.ChatGptModel import ChatGptModel
 from Utilities.ExecutionLogs import ExecutionLogs
 from Data.FileManagement import FileManagement
 from Personas.PersonaSpecification import PersonaConstants

@@ -5,15 +5,11 @@ import os
 from typing import List, Dict
 
 from openai import OpenAI, OpenAIError
-from openai.types.chat import ChatCompletion
 
+from AiOrchestration.ChatGptModel import ChatGptModel
 from Utilities import Globals
-
-
-class ChatGptModel(enum.Enum):
-    """OpenAI API Models"""
-    CHAT_GPT_4_OMNI_MINI = "gpt-4o-mini"
-    CHAT_GPT_4_OMNI = "gpt-4o"
+from Utilities.ErrorHandler import ErrorHandler
+from Utilities.Utility import Utility
 
 
 class ChatGptRole(enum.Enum):
@@ -51,11 +47,14 @@ class ChatGptWrapper:
             cls._instance.cost_config = CostConfiguration()  # Load cost configurations
         return cls._instance
 
+    def __init__(self):
+        ErrorHandler.setup_logging()
+
     def get_open_ai_response(
             self,
             messages: List[Dict[str, str]],
             model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
-            rerun_count=1) -> str | List[str]:
+            rerun_count: int=1) -> str | List[str]:
         """Request a response from the OpenAI API.
 
         :param messages: The system and user messages to send to the ChatGpt client
@@ -68,7 +67,11 @@ class ChatGptWrapper:
             chat_completion = self.open_ai_client.chat.completions.create(
                 model=model.value, messages=messages, n=rerun_count
             )
-            self.calculate_prompt_cost(chat_completion, model)
+            self.calculate_prompt_cost(
+                chat_completion.usage.prompt_tokens,
+                chat_completion.usage.completion_tokens,
+                model
+            )
 
             responses = [choice.message.content for choice in chat_completion.choices]
             return responses[0] if rerun_count == 1 else responses or None
@@ -77,6 +80,59 @@ class ChatGptWrapper:
             raise
         except Exception as e:
             logging.exception(f"Unexpected error", exc_info=e)
+            raise
+
+    def get_open_ai_streaming_response(
+            self,
+            messages: List[Dict[str, str]],
+            model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str | List[str]:
+        """Request a response from the OpenAI API with streaming enabled and calculate cost at the end.
+
+        :param messages: The system and user messages to send to the ChatGPT client
+        :param model: the actual llm being called
+        :return: The content of the response from OpenAI or an error message to inform the next Executor
+        """
+        try:
+            logging.debug(f"Calling OpenAI API with messages: {messages}")
+            response_content = []
+
+            chat_completion = self.open_ai_client.chat.completions.create(
+                model=model.value,
+                messages=messages,
+                stream=True
+            )
+
+            for chunk in chat_completion:
+                delta = chunk.choices[0].delta
+                content = getattr(delta, 'content', None)
+
+                if content:
+                    response_content.append(content)
+                    yield {'content': content}
+
+                # ToDo: Check for user termination condition here
+                # if user_requested_stop():  # Placeholder for actual stop condition
+                #     user_terminated = True
+                #     break  # Exit the loop if user interrupts
+
+            yield {'stream_end': True}
+
+            # Combine all parts of the response for final cost calculation
+            full_response = ''.join(response_content)
+            final_message = [{"content": full_response}]
+            self.calculate_prompt_cost(
+                Utility.calculate_tokens_used(messages, model),
+                Utility.calculate_tokens_used(final_message, model),
+                model
+            )
+
+            return full_response
+
+        except OpenAIError as e:
+            logging.exception("OpenAI API error", exc_info=e)
+            raise
+        except Exception as e:
+            logging.exception("Unexpected error", exc_info=e)
             raise
 
     def get_open_ai_function_response(self,
@@ -99,7 +155,11 @@ class ChatGptWrapper:
                 function_call={"name": "executiveDirective"}
                 # ToDo:investigate more roles
             )
-            self.calculate_prompt_cost(chat_completion, model)
+            self.calculate_prompt_cost(
+                chat_completion.usage.prompt_tokens,
+                chat_completion.usage.completion_tokens,
+                model
+            )
 
             arguments = chat_completion.choices[0].message.function_call.arguments
             return json.loads(arguments) if arguments else {"error": "NO RESPONSE FROM OpenAI API"}
@@ -110,16 +170,14 @@ class ChatGptWrapper:
             logging.error(f"Unexpected error")
             raise
 
-    def calculate_prompt_cost(self, chat_completion: ChatCompletion, model: ChatGptModel):
+    def calculate_prompt_cost(self, input_tokens: int, output_tokens: int, model: ChatGptModel):
         """Calculates the estimated cost of a call to OpenAi ChatGpt Api
 
-        :param chat_completion: after the prompt has been processed
+        :param input_tokens: prompt tokens
+        :param output_tokens: response tokens from the openAi model
         :param model: the specific OpenAI model being used, the non Mini version is *very* expensive,
         and should be used rarely
         """
-        input_tokens = chat_completion.usage.prompt_tokens
-        output_tokens = chat_completion.usage.completion_tokens
-
         total_cost = (
             (input_tokens * self.cost_config.input_token_costs[model]) +
             (output_tokens * self.cost_config.output_token_costs[model])
@@ -140,7 +198,7 @@ if __name__ == '__main__':
     #         "role": ChatGptRole.USER.value, "content": """Which llm ai model is the best available at time of writing"""
     #     }  # there are no prizes for guessing the answer
     # ])
-    output = ChatGptWrapper.get_open_ai_response([
+    output = ChatGptWrapper.get_open_ai_streaming_response([
         {
             "role": ChatGptRole.USER.value, "content": "Describe Spain?",
         },
@@ -157,4 +215,4 @@ if __name__ == '__main__':
             "role": ChatGptRole.SYSTEM.value, "content": "You will answer responses in Portuguese"
         }
     ])
-    print(output)
+    logging.info(f"Output, {output}")

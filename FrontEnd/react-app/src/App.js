@@ -140,14 +140,6 @@ function App () {
           </aside>
 
           <main className="right-pane">
-            <OutputSection 
-              message={message} 
-              error={messageError} 
-              isProcessing={isProcessing} 
-            />
-
-            
-
             <PersonaSelector 
               selectedPersona={selectedPersona} 
               setSelectedPersona={setSelectedPersona} 
@@ -180,6 +172,12 @@ function App () {
               error={augmentedError}
               isAugmenting={isAugmenting}
               copyAugmentedPrompt={copyAugmentedPrompt}
+            />
+
+            <OutputSection 
+              message={message} 
+              error={messageError} 
+              isProcessing={isProcessing} 
             />
 
             <Navigation />

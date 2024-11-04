@@ -16,7 +16,7 @@ const OutputSection = ({ message, error = '', isProcessing }) => {
         />
       ) : (
         ""
-    )}
+      )}
     </>
   );
 };

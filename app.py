@@ -7,15 +7,17 @@ in JSON format through the `/api/message` endpoint.
 import logging
 import os
 
+import eventlet
+eventlet.monkey_patch()
+
 from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
+from flask_socketio import SocketIO, emit
 
 from werkzeug.utils import secure_filename
 
-from Data.CategoryManagement import CategoryManagement
 from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement
-from Data.UserContextManagement import UserContextManagement
 from Functionality.Augmentation import Augmentation
 from Functionality.Organising import Organising
 from Personas.Coder import Coder
@@ -27,6 +29,7 @@ logging.basicConfig(level=logging.DEBUG)
 # Instantiate the Flask application
 app = Flask(__name__)
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 ERROR_NO_PROMPT = "No prompt found"
 ERROR_NO_ID = "No user id found"
@@ -49,49 +52,52 @@ def get_messages(category_name):
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/message', methods=['POST'])
-def process_message():
+@socketio.on('start_stream')
+def process_message(data):
     """
     Accept a user prompt and process it through the selected persona.
-
-    :returns: A Flask Response object containing a JSON representation of the processed message.
     """
-    logging.info("process_message triggered")
+    logging.info(f"process_message triggered with data: {data}")
     node_db = NodeDatabaseManagement()
 
     try:
-        data = request.get_json()
         user_prompt = data.get("prompt")
         if user_prompt is None:
-            return jsonify({"error": ERROR_NO_PROMPT}), 400
+            emit('error', {"error": ERROR_NO_PROMPT})
+            return
 
         user_id = data.get("user_id")
         if user_id is None:
-            return jsonify({"error": ERROR_NO_ID}), 400
+            emit('error', {"error": ERROR_NO_ID})
+            return
 
-        # ToDo: additional_qa should be sent as an additional user message or system message (requires system redesign)
         additional_qa = data.get("additionalQA")
         if additional_qa:
-            user_prompt = user_prompt + "\nAdditional Q&A context: \n" + additional_qa
+            user_prompt = f"{user_prompt}\nAdditional Q&A context: \n{additional_qa}"
 
         files = data.get("files")
         file_references = Organising.process_files(files)
 
-        selected_persona = get_selected_persona(data) 
+        selected_persona = get_selected_persona(data)
         response_message = selected_persona.query(user_id, user_prompt, file_references)
         logging.info("Response generated: %s", response_message)
 
-        # ToDo: should be an ancillary side job, currently slows down recieving a response if the database doesn't respond quickly
-        Organising.categorize_and_store_prompt(user_prompt, response_message, user_id)
+        for chunk in response_message:
+            if 'content' in chunk:
+                emit('response', {'content': chunk['content']})
+            elif 'stream_end' in chunk:
+                emit('stream_end')
+                break  # Exit the loop after emitting 'stream_end
 
-        return jsonify({"message": response_message})
-    
+        logging.info(f"response message: {response_message}")
+
     except ValueError as ve:
         logging.error("Value error: %s", str(ve))
-        return jsonify({"error": str(ve)}), 400
+        emit('error', {"error": str(ve)})
     except Exception as e:
         logging.exception("Failed to process message")
-        return jsonify({"error": str(e)}), 500
+        emit('error', {"error": str(e)})
+
 
 @app.route('/messages/<message_id>', methods=['DELETE'])
 def delete_message(message_id):
@@ -362,5 +368,5 @@ def get_session_cost():
 
 if __name__ == '__main__':
     logging.info("Back end is running")
-    # Run the Flask application in debugging mode (only for development purposes)
-    app.run(debug=True)
+    # Correctly run the Flask application with SocketIO
+    socketio.run(app, debug=True)

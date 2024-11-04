@@ -2,7 +2,8 @@ import logging
 from pprint import pformat
 from typing import List, Dict
 
-from AiOrchestration.ChatGptWrapper import ChatGptModel, ChatGptWrapper, ChatGptRole
+from AiOrchestration.ChatGptWrapper import ChatGptWrapper, ChatGptRole
+from AiOrchestration.ChatGptModel import ChatGptModel
 from Utilities.ErrorHandler import ErrorHandler
 from Data.FileManagement import FileManagement
 from Utilities.Utility import Utility
@@ -29,7 +30,8 @@ class AiOrchestrator:
                 rerun_count: int = 1,
                 judgement_criteria: List[str] = None,
                 model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
-                assistant_messages: List[str] = None) -> str:
+                assistant_messages: List[str] = None,
+                streaming: bool = False) -> str:
         """Generate a response based on system and user prompts.
 
         This method constructs messages to be sent to the OpenAI API and retrieves a response.
@@ -46,18 +48,23 @@ class AiOrchestrator:
         messages = self.generate_messages(system_prompts, user_prompts, assistant_messages)
         logging.info(f"Executing LLM call with messages: \n{pformat(messages, width=500)}")
 
-        if rerun_count == 1:
-            response = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_response(messages, model))
+        if streaming:
+            logging.info("Executing streaming response")
+            response = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_streaming_response(messages, model))
         else:
-            responses = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_response(
-                messages,
-                model,
-                rerun_count=rerun_count)
-            )
-            logging.info(f"Messages({rerun_count}: \n" + pformat(responses, width=500))
+            logging.info("Executing non-streaming response")
+            if rerun_count == 1:
+                response = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_response(messages, model))
+            else:
+                responses = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_response(
+                    messages,
+                    model,
+                    rerun_count=rerun_count)
+                )
+                logging.info(f"Messages({rerun_count}: \n" + pformat(responses, width=500))
 
-            messages = self.generate_messages("", judgement_criteria, responses)
-            response = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_response(messages, model))
+                messages = self.generate_messages("", judgement_criteria, responses)
+                response = Utility.execute_with_retries(lambda: self.prompter.get_open_ai_response(messages, model))
 
         if not response:
             logging.error("No response from OpenAI API.")

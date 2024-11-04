@@ -147,7 +147,8 @@ class BasePersona:
             output = executor.execute(
                 system_messages,
                 user_messages,
-                assistant_messages=recent_history
+                assistant_messages=recent_history,
+                streaming=True
             )
             return output
         except Exception as e:

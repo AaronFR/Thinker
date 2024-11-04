@@ -5,7 +5,7 @@ from typing import List, Dict, Callable, Any
 
 import tiktoken
 from Utilities import Constants
-from AiOrchestration.ChatGptWrapper import ChatGptModel
+from AiOrchestration.ChatGptModel import ChatGptModel
 
 
 class Utility:
