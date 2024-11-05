@@ -4,6 +4,7 @@ Flask Backend Application
 This module sets up a Flask server to serve a simple development message
 in JSON format through the `/api/message` endpoint.
 """
+import json
 import logging
 import os
 
@@ -11,11 +12,12 @@ import eventlet
 eventlet.monkey_patch()
 
 from flask import Flask, jsonify, request
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 
 from werkzeug.utils import secure_filename
 
+from Data.CategoryManagement import CategoryManagement
 from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement
 from Functionality.Augmentation import Augmentation
@@ -75,19 +77,36 @@ def process_message(data):
         if additional_qa:
             user_prompt = f"{user_prompt}\nAdditional Q&A context: \n{additional_qa}"
 
+        tags = json.loads(data.get('tags', '{}'))
+        logging.info(f"Loading the following tags while processing the prompt: {tags}")
+
         files = data.get("files")
         file_references = Organising.process_files(files)
 
+        categoryManagement = CategoryManagement()
+        if tags.get("category"):
+            category = tags.get("category")
+        else:
+            category = categoryManagement.categorise_prompt_input(user_prompt)
+            tags["category"] = category
+
         selected_persona = get_selected_persona(data)
-        response_message = selected_persona.query(user_id, user_prompt, file_references)
+        response_message = selected_persona.query(user_id, user_prompt, file_references, tags)
         logging.info("Response generated: %s", response_message)
 
+        chunk_content = []
         for chunk in response_message:
             if 'content' in chunk:
-                emit('response', {'content': chunk['content']})
+                content = chunk['content']
+                chunk_content += content
+                emit('response', {'content': content})
             elif 'stream_end' in chunk:
                 emit('stream_end')
                 break  # Exit the loop after emitting 'stream_end
+
+        full_message = "".join(chunk_content)
+        # ToDo: should be an ancillary side job, currently slows down recieving a response if the database doesn't respond quickly
+        Organising.categorize_and_store_prompt(user_prompt, full_message, user_id, category)
 
         logging.info(f"response message: {response_message}")
 

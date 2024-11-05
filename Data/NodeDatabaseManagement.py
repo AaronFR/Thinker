@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import datetime
 from typing import List, Dict
 
@@ -37,7 +38,7 @@ class NodeDatabaseManagement:
             "user_prompt_id"
         )
 
-        NodeDatabaseManagement.create_file_nodes_for_user_prompt(user_id, user_prompt_id, category)
+        self.create_file_nodes_for_user_prompt(user_id, user_prompt_id, category)
 
         return category
 
@@ -90,7 +91,7 @@ class NodeDatabaseManagement:
             "user_prompt_id"
         )
 
-    def get_category_id(self, category_name: str) -> int:
+    def get_category_id(self, category_name: str) -> str:
         """
         Retrieve all files linked to a particular category, newest first.
 
@@ -125,43 +126,49 @@ class NodeDatabaseManagement:
 
     # Files
 
-    @staticmethod
-    def create_file_nodes_for_user_prompt(user_id: str, user_prompt_id: str, category: str) -> None:
+    def create_file_nodes_for_user_prompt(self, user_id: str, user_prompt_id: str, category: str) -> None:
         file_names = FileManagement.list_staged_files(user_id)
 
         for file_name in file_names:
-            NodeDatabaseManagement.create_file_node(user_prompt_id, category, file_name)
+            self.create_file_node(user_prompt_id, category, file_name)
 
-    @staticmethod
-    def create_file_node(user_prompt_id: str, category: str, file_name: str) -> None:
+    def create_file_node(self, user_prompt_id: str, category: str, file_name: str) -> None:
         """
         Saves a prompt - response pair as a USER_PROMPT in the neo4j database
         Categorising the prompt and staging any attached files under that category
 
+        ToDo: the usage of file_name/file_path/full_path is very convoluted and needs to be made systematic
+
         :param user_prompt_id: create the file node attached to the following message
         :param category: The name of the category the file belongs to
-        :file_name: the name of the file, including extension
+        :param file_name: the name of the file, including extension
         """
-        time = int(datetime.now().timestamp())
-        content = FileManagement.read_file(file_name)
-        from AiOrchestration.AiOrchestrator import AiOrchestrator
-        executor = AiOrchestrator()
-        summary = executor.execute(
-            [PersonaConstants.SUMMARISER_SYSTEM_INSTRUCTIONS],
-            [content]
-        )
+        try:
+            time = int(datetime.now().timestamp())
+            category_id = self.get_category_id(category)
+            file_path = os.path.join(category_id, file_name)
 
-        neo4j_driver = Neo4jDriver()
-        parameters = {
-            "category": category,
-            "user_prompt_id": user_prompt_id,
-            "name": file_name,
-            "time": time,
-            "summary": summary,
-            "structure": "PROTOTYPING"
-        }
+            content = FileManagement.read_file_full_address(file_path)
+            from AiOrchestration.AiOrchestrator import AiOrchestrator
+            executor = AiOrchestrator()
+            summary = executor.execute(
+                [PersonaConstants.SUMMARISER_SYSTEM_INSTRUCTIONS],
+                [content]
+            )
 
-        neo4j_driver.execute_write(CypherQueries.CREATE_FILE_NODE, parameters)
+            parameters = {
+                "category": category,
+                "user_prompt_id": user_prompt_id,
+                "name": file_name,
+                "time": time,
+                "summary": summary,
+                "structure": "PROTOTYPING"
+            }
+
+            logging.info(f"Creating file node: {category}/{file_name} against prompt [{user_prompt_id}]\nsummary: {summary}")
+            self.neo4jDriver.execute_write(CypherQueries.CREATE_FILE_NODE, parameters)
+        except Exception:
+            logging.exception("Failed to save file node")
 
     def get_file_by_id(self, file_id: int):
         """

@@ -1,9 +1,10 @@
 import logging
 from pathlib import Path
-from typing import List
+from typing import List, Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
+from Data.NodeDatabaseManagement import NodeDatabaseManagement
 from Functionality.Coding import Coding
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import PersonaConstants, CoderSpecification
@@ -31,22 +32,30 @@ class Coder(BasePersona):
         self.instructions = CoderSpecification.CODER_INSTRUCTIONS
         self.configuration = CoderSpecification.load_configuration()
 
+        self.node_db = NodeDatabaseManagement()
+
         ErrorHandler.setup_logging()
 
     def run_workflow(self,
                      user_id: str,
-                     selected_workflow: str,
                      initial_message: str,
-                     file_references: List[str] = None):
-        if selected_workflow in self.workflows.keys():
-            if selected_workflow == "chat":
-                return self.chat_workflow(user_id, initial_message, file_references)
-            if selected_workflow == "write":
-                return self.write_workflow(user_id, initial_message, file_references)
-            if selected_workflow == "write_tests":
-                return self.write_tests_workflow(user_id, initial_message, file_references)
+                     file_references: List[str] = None,
+                     tags: List[str] = None):
+        tags = tags or {}
 
-    def chat_workflow(self, user_id: str, initial_message: str, file_references: List[str] = None):
+        if tags.get("write"):
+            file_to_write = tags.get("write")
+            return self.write_workflow(user_id, initial_message, file_references, tags)
+        if tags.get("write_tests"):
+            return self.write_tests_workflow(user_id, initial_message, file_references, tags)
+
+        return self.chat_workflow(user_id, initial_message, file_references)
+
+    def chat_workflow(self,
+                      user_id: str,
+                      initial_message: str,
+                      file_references: List[str] = None,
+                      tags: List[str] = None):
         """
         Converses with the user
 
@@ -60,15 +69,19 @@ class Coder(BasePersona):
 
         try:
             for iteration, message in enumerate(prompt_messages):
-                response = self.process_question(user_id, message, file_references)
-                logging.info("Iteration %d completed with response: %s", iteration, response)
+                response = self.process_question(user_id, message, file_references, streaming=True)
+                logging.info("Iteration %d completed", iteration)
         
         except Exception as e:
             logging.exception("Error during writing workflow: %s", str(e), exc_info=e)
 
         return response
 
-    def write_workflow(self, user_id: str, initial_message: str, file_references: List[str] = None):
+    def write_workflow(self,
+                       user_id: str,
+                       initial_message: str,
+                       file_references: List[str] = None,
+                       tags: Dict[str, str] = None):
         """
         Writes the improved code to a specified file.
         ToDo in future a less rudimentary way of guessing the category for a new file will be required
@@ -78,47 +91,52 @@ class Coder(BasePersona):
         """
         executor = AiOrchestrator()
         config = Configuration.load_config()
-        if config['beta_features']['multi_file_processing_enabled']:
-            files = executor.execute_function(
-                ["Give just a filename (with extension) that should be worked on given the following prompt. "
-                 "No commentary."
-                 "If appropriate write multiple files, the ones at the top of the class hierarchy first/ on the top"],
-                [initial_message],
-                GENERATE_FILE_NAMES_FUNCTION_SCHEMA
-            )['files']
+        if tags.get("write"):
+            files = [{
+                "file_name": tags.get("write"),
+                "purpose": "create from scratch"
+            }]
         else:
-            files = executor.execute_function(
-                [
-                    "Give just a filename (with extension) that should be worked on given the following prompt. "
-                    "No commentary."
-                    "Select only one singular file alone."],
-                [initial_message],
-                GENERATE_FILE_NAMES_FUNCTION_SCHEMA
-            )['files']
+            if config['beta_features']['multi_file_processing_enabled']:
+                files = executor.execute_function(
+                    ["Give just a filename (with extension) that should be worked on given the following prompt. "
+                     "No commentary."
+                     "If appropriate write multiple files, the ones at the top of the class hierarchy first/ on the top"],
+                    [initial_message],
+                    GENERATE_FILE_NAMES_FUNCTION_SCHEMA
+                )['files']
+            else:
+                files = executor.execute_function(
+                    [
+                        "Give just a filename (with extension) that should be worked on given the following prompt. "
+                        "No commentary."
+                        "Select only one singular file alone."],
+                    [initial_message],
+                    GENERATE_FILE_NAMES_FUNCTION_SCHEMA
+                )['files']
 
         logging.info(f"Referencing/Creating the following files: {files}")
 
         for file in files:
+            file_name = file['file_name']
             logging.info(f"File references: {file_references}")
             # ToDo: if creating a new file, file_references will be an empty array as it should be
             #  Code for writing files will be changed soon
-            category = Path(file_references[0]).parts[0]
 
-            file_path = Path(category).joinpath(file['file_name'])
-            logging.info(f"🚧 Constructed file with category prefix: {file_path}")
+            file_path = Path(user_id).joinpath(file_name)  # user id acts as the staging area for new files
 
             purpose = file['purpose']
             logging.info(f"Writing code to {file_path}, \nPurpose: {purpose}")
 
-            if Coding.is_coding_file(file_path):
-                step_two = f"Write/Rewrite {file_path} based on your previous plan of action and the actual contents of"\
+            if Coding.is_coding_file(file_name):
+                step_two = f"Write/Rewrite {file_name} based on your previous plan of action and the actual contents of"\
                             "of this particular file,"\
                            f"focusing on fulfilling the <purpose>{purpose}</purpose> for this file. "\
                            "Making sure that the file imports as necessary, referencing the appropriate classes"\
                             "DO NOT OVERWRITE THIS FILE WITH A SUMMARY, do not include the contents of another file" \
                             "Unless explicitly requests, the files content must be preserved by default"
             else:
-                step_two = f"Write/Rewrite {file_path} based on your previous plan of action for this particular file,"\
+                step_two = f"Write/Rewrite {file_name} based on your previous plan of action for this particular file,"\
                            f"focusing on fulfilling the <purpose>{purpose}</purpose> for this file."\
                             "DO NOT OVERWRITE THIS FILE WITH A SUMMARY, do not include the contents of another file"\
                             "Unless explicitly requests, the files content must be preserved by default"
@@ -126,34 +144,45 @@ class Coder(BasePersona):
             logging.info(f"\n\n\n STEP TWO: {step_two}")
 
             analyser_messages = [
-                f"<user_prompt>{initial_message}</user_prompt>: to start with we will narrow our focus on {file_path} "
+                f"<user_prompt>{initial_message}</user_prompt>: to start with we will narrow our focus on {file_name} "
                 "and think through how to change it/write it so as to fulfil the user prompt, step by step, discussing"
                 " what we know, identify specifically what they want accomplished, goals and subgoals, "
-                f"and any existing flaws or defects WITHOUT writing any text or code for {file_path}. "
+                f"and any existing flaws or defects WITHOUT writing any text or code for {file_name}. "
                 "Just writing up a plan of action telling the llm to follow how to rewrite/write the file in line with "
                 "this plan and stating specifically that this plan is to be replaced with actual functioning file",
 
-                step_two
+                step_two,
+
+                "very quickly summarise what you just wrote and where you wrote it"
             ]
             prompt_messages = analyser_messages
 
             try:
                 for iteration, message in enumerate(prompt_messages, start=1):
-                    response = self.process_question(user_id, message, file_references)
-                    logging.info("Iteration %d completed with response: %s", iteration, response)
+                    if iteration == 1 or iteration == 2:
+                        response = self.process_question(user_id, message, file_references)
+                        logging.info("Iteration %d completed with response: %s", iteration, response)
 
-                    if iteration == len(prompt_messages):
+                    if iteration == 2:
                         Coding.write_to_file_task({
                             PersonaConstants.SAVE_TO: file_path,
                             PersonaConstants.INSTRUCTION: response
                         })
 
+                    if iteration == 3:
+                        response = self.process_question(user_id, message, file_references, streaming=True)
+                        logging.info("Iteration %d completed, streaming workflow completion summary", iteration)
+
             except Exception as e:
-                logging.error("Error during writing workflow: %s", str(e))
+                logging.exception("Error during writing workflow: %s", str(e))
 
         return response
 
-    def write_tests_workflow(self, user_id: str, initial_message: str, file_references: List[str] = None) -> None:
+    def write_tests_workflow(self,
+                             user_id: str,
+                             initial_message: str,
+                             file_references: List[str] = None,
+                             tags: List[str] = None) -> None:
         """
         Generates a test file for a specified file
 
@@ -172,21 +201,27 @@ class Coder(BasePersona):
             f"Write a test file for {file_name}, implementing the tests as we discussed, make sure each test has robust"
             "documentation explaining the tests purpose",
             f"Assess edge cases and boundary conditions in {file_name}, generating appropriate tests."
-            f"Present the final test cases in {file_name} and comment on coverage and areas needing additional tests."
+            f"Present the final test cases in {file_name} and comment on coverage and areas needing additional tests.",
+
+            "very quickly summarise the tests you just wrote and what specifically they aim to test"
         ]
         prompt_messages = test_prompt_messages
 
         try:
-            for iteration, message in enumerate(prompt_messages):
-                response = self.process_question(user_id, message, file_references)
-                logging.info("Test Workflow Iteration %d completed with response: %s", iteration, response)
+            for iteration, message in enumerate(prompt_messages, start=1):
+                if iteration == 1:
+                    response = self.process_question(user_id, message, file_references)
+                    logging.info("Test Workflow Iteration %d completed with response: %s", iteration, response)
 
-                # Save the response after the last message
-                if iteration == len(prompt_messages) - 1:
+                    # Save the tests
                     Coding.write_to_file_task({
                         PersonaConstants.SAVE_TO: file_name,
                         PersonaConstants.INSTRUCTION: response
                     })
+
+                if iteration == 2:
+                    response = self.process_question(user_id, message, file_references, streaming=True)
+                    logging.info("Test Workflow Iteration %d completed, streaming workflow completion summary")
 
         except Exception as e:
             logging.error("Error during writing tests workflow: %s", str(e))

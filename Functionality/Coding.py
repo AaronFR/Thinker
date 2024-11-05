@@ -1,10 +1,12 @@
 import enum
+import logging
 import os
 import py_compile
 import subprocess
 from typing import Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Utilities.ErrorHandler import ErrorHandler
 from Utilities.ExecutionLogs import ExecutionLogs
 from Data.FileManagement import FileManagement
 from Personas.PersonaSpecification import PersonaConstants
@@ -17,6 +19,9 @@ class Coding(enum.Enum):
         - WRITING: write new code file
     """
 
+    def __init__(self):
+        ErrorHandler.setup_logging()
+
     @staticmethod
     def write_to_file_task(task_parameters: Dict[str, object]):
         """
@@ -25,6 +30,7 @@ class Coding(enum.Enum):
 
         :param task_parameters: Dict with SAVE_TO and INSTRUCTION
         """
+        logging.info(f"Writing to file task initiated with the following parameters: {task_parameters}")
         executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
         output = executor.execute(
             ["Just write the code from the following input, strip out any code block designators, e.g. ```python...```"],

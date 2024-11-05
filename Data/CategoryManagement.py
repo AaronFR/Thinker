@@ -27,24 +27,39 @@ class CategoryManagement:
         self.node_db = NodeDatabaseManagement()
         self.executor = AiOrchestrator()
 
-    def categorise_prompt_input(self, user_prompt: str, llm_response: str):
+    def categorise_prompt_input(self, user_prompt: str, llm_response: str = None, creating: bool = True):
+        """
+
+        :param user_prompt: the input prompt string
+        :param llm_response: The optional llm response for additional context
+        :param creating: flag if a node or message is being prompted, if the category is just a suggestion new
+         categories should not be created in the database
+        :return: The name of the selected category
+        """
         categories = self.node_db.list_categories()
-        categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n" + \
-                               "<response>" + llm_response + "</response>"
+
+        if llm_response:
+            categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n" + \
+                                   "<response>" + llm_response + "</response>"
+            categorisation_instructions = f"LIGHTLY suggested existing categories, you DONT need to follow: {str(categories)}" + \
+                "Given the following prompt-response pair, think through step by step, explaining your reasoning" + \
+                "and categorize the data with the most suitable single-word answer." + \
+                "Write it as <result=\"(your_selection)\""
+        else:
+            categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n"
+            categorisation_instructions = f"LIGHTLY suggested existing categories, you DONT need to follow: {str(categories)}" + \
+                "Given the following prompt, think through step by step, explaining your reasoning" + \
+                "and categorize the data with the most suitable single-word answer." + \
+                "Write it as <result=\"(your_selection)\""
 
         category_reasoning = self.executor.execute(
-            [
-                f"LIGHTLY suggested existing categories, you DONT need to follow: {str(categories)}"
-                "Given the following prompt-response pair, think through step by step, explaining your reasoning"
-                "and categorize the data with the most suitable single-word answer."
-                "Write it as <result=\"(your_selection)\""
-            ],
+            [categorisation_instructions],
             [categorisation_input]
         )
         logging.info(f"Category Reasoning: {category_reasoning}")
         category = CategoryManagement.extract_example_text(category_reasoning)
 
-        if category not in categories:
+        if (category not in categories) & creating:
             self.node_db.create_category(category)
 
         return category

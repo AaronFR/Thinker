@@ -73,7 +73,7 @@ class FileManagement:
     def read_file_full_address(full_address: str, number_lines: bool = False) -> str:
         """Read the content of a specified file.
 
-        :param file_path: The path of the file_name to read, including category folder prefix
+        :param full_address: The file name to read, including category folder prefix
         :param number_lines: Flag to determine if the content should be returned as numbered lines
         :return: The content of the file or an error message to inform the next LLM what happened
         """
@@ -135,13 +135,14 @@ class FileManagement:
         :param file_path: The file name with extension prefixed by the category folder id
         :param overwrite: whether the file_name should be overwritten
         """
-        mode = "w" if overwrite or not os.path.exists(file_path) else "a"
+        data_path = os.path.join(FileManagement.file_data_directory, file_path)
+        mode = "w" if overwrite or not os.path.exists(data_path) else "a"
         try:
-            with open(file_path, mode, encoding=DEFAULT_ENCODING) as file:
+            with open(data_path, mode, encoding=DEFAULT_ENCODING) as file:
                 file.write(content)
-                logging.info(f"File {'overwritten' if overwrite else 'saved'}: {file_path}")
+                logging.info(f"File {'overwritten' if overwrite else 'saved'}: {data_path}")
         except Exception:
-            logging.exception(f"ERROR: could not save file_name: {file_path}")
+            logging.exception(f"ERROR: could not save file_name: {data_path}")
 
     @staticmethod
     def write_to_csv(file_name, dictionaries, fieldnames):

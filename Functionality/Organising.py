@@ -81,25 +81,31 @@ class Organising:
         return file_references
 
     @staticmethod
-    def categorize_and_store_prompt(user_prompt, response_message, user_id):
+    def categorize_and_store_prompt(user_prompt: str,
+                                    response_message:str,
+                                    user_id: str,
+                                    category: str = None):
         """
         ToDo: Look into celery and async processing
 
         :param user_prompt: The given user prompt starting the evaluation process
         :param response_message: The systems response
         :param user_id: The file address friendly uuid of the user
+        :param category: The category to register against the prompt node
         :return:
         """
         config = Configuration.load_config()
         categoryManagement = CategoryManagement()
-        category = categoryManagement.categorise_prompt_input(user_prompt, response_message)
-        selected_category = Organising.node_db.create_user_prompt_node(user_id, category, user_prompt, response_message)
+
+        if not category:
+            category = categoryManagement.categorise_prompt_input(user_prompt, response_message)
+        Organising.node_db.create_user_prompt_node(user_id, category, user_prompt, response_message)
 
         if config['beta_features']['user_context_enabled']:
             terms = UserContextManagement.extract_terms_from_input([user_prompt])
             Organising.node_db.create_user_topic_nodes(terms, user_id)
 
-        categoryManagement.stage_files(user_id, selected_category)
+        categoryManagement.stage_files(user_id, category)
 
     @staticmethod
     def summarise_content(content: str):

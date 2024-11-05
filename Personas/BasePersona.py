@@ -31,7 +31,7 @@ class BasePersona:
 
         ErrorHandler.setup_logging()
 
-    def query(self, user_id, user_prompt, file_references: List[str] = None):
+    def query(self, user_id, user_prompt, file_references: List[str] = None, tags: List[str] = None):
         """
         Handles a user prompt
 
@@ -41,9 +41,16 @@ class BasePersona:
         :param user_prompt: additional file references paths, format <category_id>/<file_name_with_extension>
         """
         if Utility.is_valid_prompt(user_prompt):
-            return self.select_workflow(user_id, user_prompt, file_references)
+            return self.run_workflow(user_id, user_prompt, file_references, tags)
         else:
             print("Invalid input. Please ask a clear and valid question.")
+
+    def chat_workflow(self,
+                      user_id: str,
+                      initial_message: str,
+                      file_references: List[str] = None,
+                      tags: List[str] = None):
+        raise NotImplementedError("Default workflow is to be implemented in specific persona")
 
     def query_user_for_input(self):
         """
@@ -97,8 +104,16 @@ class BasePersona:
                      file_references: List[str] = None):
         raise NotImplementedError("This method should be overridden by subclasses")
 
-    def process_question(self, user_id: str, question: str, file_references: List[str] = None):
-        """Process and store the user's question."""
+    def process_question(
+        self,
+        user_id: str,
+        question: str,
+        file_references: List[str] = None,
+        streaming: bool = False
+     ):
+        """Process and store the user's question.
+
+        :return response: stream"""
         file_content = []
         for file_reference in file_references:
             content = FileManagement.read_file_full_address(file_reference)
@@ -106,11 +121,16 @@ class BasePersona:
             file_content.append(content)
 
         input_messages = [question] + file_content
-        response = self.think(user_id, input_messages)
+        response = self.think(user_id, input_messages, streaming)
         self.history.append((question, response))
         return response
 
-    def think(self, user_id: str, user_messages: List[str]) -> str:
+    def think(
+        self,
+        user_id: str,
+        user_messages: List[str],
+        streaming: bool = False
+    ) -> str:
         """Process the input question and think through a response.
         ToDo: this will be called multiple times redundantly in a workflow, user_messages are small however and the
          context can change from step to step so its not a priority
@@ -118,7 +138,7 @@ class BasePersona:
         ToDo: How the application accesses and gives history to the llm will need to be optimised
 
         :param user_messages: List of existing user message
-        :return The generated response or error message
+        :return The generated response stream or an error message
         """
         logging.info("Processing user messages: %s", user_messages)
 
@@ -148,7 +168,7 @@ class BasePersona:
                 system_messages,
                 user_messages,
                 assistant_messages=recent_history,
-                streaming=True
+                streaming=streaming
             )
             return output
         except Exception as e:
