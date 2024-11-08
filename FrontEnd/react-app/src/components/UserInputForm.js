@@ -24,6 +24,7 @@ const FLASK_PORT = "http://localhost:5000";
  */
 const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessing, selectedFiles, setSelectedFiles, tags, setTags }) => {
   const [fetchError, setFetchError] = useState('');
+  const [uploadCompleted, setUploadCompleted] = useState(true)
 
   /**
    * Fetches the list of uploaded files from the backend API.
@@ -41,25 +42,26 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
       }
 
       const data = await response.json();
-      // setUploadedFiles(data.files);  // WIP, would replace with only staged
+      setSelectedFiles((prevFiles) => [
+        ...prevFiles,
+        ...data.files.map((fileName) => ({ name: fileName }))
+      ]);
     } catch (error) {
       setFetchError('Error fetching files.');
       console.error('Error fetching files:', error);
+    } finally {
+      setUploadCompleted(false)
     }
   };
 
   /**
-   * useEffect hook to fetch uploaded files on component mount and set up polling.
+   * useEffect hook to fetch uploaded files on succefful upload
    */
   useEffect(() => {
-    fetchStagedFiles();
-
-    const interval = setInterval(() => {
+    if (uploadCompleted){
       fetchStagedFiles();
-    }, 5000); // Every 5 seconds
-
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, []);
+    }
+  }, [uploadCompleted]);
 
   /**
    * Handles successful file uploads by updating the uploadedFiles state
@@ -69,9 +71,7 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
    */
   const handleUploadSuccess = (file) => {
     if (file) {
-      // Ensure the file object is properly structured and append to the selectedFiles array
-      // ToDo: This will need to be handled properly
-      setSelectedFiles((prevFiles) => [...prevFiles, { name: file.filename }]);
+      setUploadCompleted(true)
     }
   };
 
