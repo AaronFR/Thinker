@@ -53,7 +53,6 @@ const TagsManager = ({ tags, setTags }) => {
 
   return (
     <div className="tags-manager">
-      <p>Tags</p>
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <ul className="tags-list">
           {Object.entries(tags).map(([key, value]) => (
@@ -72,35 +71,31 @@ const TagsManager = ({ tags, setTags }) => {
         </ul>
         {isAdding && (
           <div className="add-tag-form">
-            <input
-              type="text"
-              placeholder="Field"
-              value={newField}
-              onChange={(e) => setNewField(e.target.value)}
-              onKeyDown={handleFieldKeyDown}
-              ref={fieldInputRef}
-              className="input-field"
-              aria-label="Tag Field"
-            />
-            <input
-              type="text"
-              placeholder="Value"
-              value={newValue}
-              onChange={(e) => setNewValue(e.target.value)}
-              onKeyDown={handleValueKeyDown}
-              ref={valueInputRef}
-              className="input-value"
-              aria-label="Tag Value"
-            />
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <input
+                type="text"
+                placeholder="Field"
+                value={newField}
+                onChange={(e) => setNewField(e.target.value)}
+                onKeyDown={handleFieldKeyDown}
+                ref={fieldInputRef}
+                className="input-field"
+                aria-label="Tag Field"
+              />
+              <input
+                type="text"
+                placeholder="Value"
+                value={newValue}
+                onChange={(e) => setNewValue(e.target.value)}
+                onKeyDown={handleValueKeyDown}
+                ref={valueInputRef}
+                className="input-value"
+                aria-label="Tag Value"
+              />
+            </div>
           </div>
         )}
-        <button onClick={handleExport} className="export-button" type="button">Export as JSON</button>
       </div>
-      {jsonOutput && (
-        <pre className="json-output">
-          {jsonOutput}
-        </pre>
-      )}
     </div>
   );
 };

@@ -1,26 +1,21 @@
 .tags-manager {
   width: 90%;
-  margin: 20px auto;
-  border: 1px solid #282828;
+  margin: 10px auto;
+  border: 1px solid #2828286d;
+  box-shadow: #111;
   color: #111;
-  padding: 20px;
-  border-radius: 5px;
-  background-color: #6e6e6e;
-}
-
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
+  border-radius: 15px;
+  background-color: #6e6e6e20;
 }
 
 .tags-list {
   list-style-type: none;
-  padding: 0;
   display: flex;
+  padding: 0;
+  margin: 0;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 10;
   max-height: 200px;
   overflow-y: auto;
 }
@@ -33,6 +28,8 @@ h2 {
 .tag-item {
   display: flex;
   align-items: center;
+  margin: 0px 1px;
+  font-size: var(--font-size-small-md);
   padding: 5px 10px;
   border: 1px solid #9aa2ea;
   border-radius: 15px;
@@ -53,14 +50,14 @@ h2 {
 
 .add-button,
 .export-button {
-  background-color: #007BFF;
+  background-color: #007bff65;
   display: block;
-  margin: 10px auto;
+  margin: 0px 10px;
   padding: 8px 16px;
   font-size: 20px;
   cursor: pointer;
   border: none;
-  border-radius: 4px;
+  border-radius: 25px;
 }
 
 .add-button {
@@ -74,27 +71,27 @@ h2 {
 }
 
 .add-tag-form {
-  display: flex;
+  display: flexbox;
+  width: 20%;
   flex-direction: column;
   align-items: center;
-  margin-top: 10px;
+  font-size: var(--font-size-small-md);
+  border: 1px solid #9aa2ea;
+  border-radius: 15px;
+  background-color: #636ed3;
 }
 
 .input-field,
 .input-value {
   width: 90%;
-  padding: 8px;
-  margin: 5px 0;
   box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid #472570;
+  padding: 7px 10px;
+  border-radius: 14px;
+  background-color: transparent;
 }
 
-.json-output {
-  background-color: #f4f4f4;
-  padding: 10px;
-  margin-top: 10px;
-  overflow-x: auto;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+input::placeholder {
+  color: #000000; /* Change this to your desired color */
+  opacity: 0.33; /* Optional: ensures full opacity for the color */
 }
