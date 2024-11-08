@@ -21,10 +21,23 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
   // Fetch categories on mount and when finished processing
   useEffect(() => {
     if (!isProcessing) {
+      // First fetch after 5 seconds
+      const firstTimeout = setTimeout(() => {
         fetchCategories();
+      }, 5000);
+  
+      // Second fetch after an additional 10 seconds (total of 15 seconds from prompt completion)
+      const secondTimeout = setTimeout(() => {
+        fetchCategories();
+      }, 15000);
+  
+      // Clear timeouts if the component unmounts or promptCompleted changes
+      return () => {
+        clearTimeout(firstTimeout);
+        clearTimeout(secondTimeout);
+      };
     }
-}, [isProcessing]);
-
+  }, [isProcessing]);
 
   function toTitleCase(string) {
     return string
