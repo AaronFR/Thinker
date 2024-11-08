@@ -77,15 +77,21 @@ def process_message(data):
         if additional_qa:
             user_prompt = f"{user_prompt}\nAdditional Q&A context: \n{additional_qa}"
 
-        tags = json.loads(data.get('tags', '{}'))
+        tags = data.get('tags', {})
+        if isinstance(tags, str):
+            tags = json.loads(tags)
+            if "tags" in tags:
+                tags = tags["tags"]
         logging.info(f"Loading the following tags while processing the prompt: {tags}")
 
         files = data.get("files")
         file_references = Organising.process_files(files)
 
         categoryManagement = CategoryManagement()
-        if tags.get("category"):
-            category = tags.get("category")
+        tag_category = tags.get("category")
+        if tag_category:
+            logging.info(f"tag specified category: {tag_category}")
+            category = tag_category
         else:
             category = categoryManagement.categorise_prompt_input(user_prompt)
             tags["category"] = category

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { prototyping_user_id } from '../utils/loginUtils';
 import { io } from 'socket.io-client';
 
-const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt) => {
+const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, tags) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -58,6 +58,7 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt) => {
           additionalQA: concatenatedQA,
           files: filesForPrompt,
           persona: selectedPersona,
+          tags: JSON.stringify({ tags })
         });
         console.log('Stream started');
       } else {

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import FileUploadButton from './FileUploadButton';
 import { prototyping_user_id } from '../utils/loginUtils'
+import TagsManager from './TagsManager';
 
 const FLASK_PORT = "http://localhost:5000";
 
@@ -21,7 +22,7 @@ const FLASK_PORT = "http://localhost:5000";
  * - isProcessing (boolean): Indicates if the form is in a processing state.
  * - selectedFiles (File): Currently selected file for upload.
  */
-const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessing, selectedFiles, setSelectedFiles }) => {
+const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessing, selectedFiles, setSelectedFiles, tags, setTags }) => {
   const [fetchError, setFetchError] = useState('');
 
   /**
@@ -128,6 +129,8 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
             {isProcessing ? 'Processing...' : 'Enter'}
           </button>
         </div>
+
+        <TagsManager tags={tags} setTags={setTags}/>
       </form>
     </div>
   );

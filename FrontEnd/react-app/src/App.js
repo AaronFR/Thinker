@@ -44,11 +44,16 @@ function App () {
     const [concatenatedQA, setConcatenatedQA] = useState('');
     const [resetResponsesTrigger, setResetResponsesTrigger] = useState(0);
 
+    // Tags Management
+    const [tags, setTags] = useState(
+      { example: "etc" }  // e.g. write: "example.txt" category: "example"
+    );
+
     // File Management
     const [selectedFiles, setSelectedFiles] = useState([]);
  
     // Custom hooks
-    const { message, setMessage, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(flask_port, concatenatedQA, selectedFiles);
+    const { message, setMessage, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(flask_port, concatenatedQA, selectedFiles, tags);
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt(flask_port);
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions(flask_port);
 
@@ -104,7 +109,6 @@ function App () {
       }
     };
 
-
     const copyAugmentedPrompt = () => {
       setUserInput(augmentedPrompt); // Copy augmentedPrompt into userInput
     };
@@ -154,6 +158,8 @@ function App () {
               isProcessing={isProcessing}
               selectedFiles={selectedFiles}
               setSelectedFiles={setSelectedFiles}
+              tags={tags}
+              setTags={setTags}
             />
             
             <SuggestedQuestions 
@@ -161,7 +167,7 @@ function App () {
               questionsForPrompt={questionsForPrompt}
               error={questionsError}
               isQuestioning={isQuestioning}
-              onFormsFilled={setFormsFilled} // Pass the state updater as callback
+              onFormsFilled={setFormsFilled}
               setConcatenatedQA={setConcatenatedQA}
               resetResponsesTrigger={resetResponsesTrigger}
             />

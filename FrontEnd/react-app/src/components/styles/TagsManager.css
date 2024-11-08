@@ -1,0 +1,100 @@
+.tags-manager {
+  width: 90%;
+  margin: 20px auto;
+  border: 1px solid #282828;
+  color: #111;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: #6e6e6e;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.tags-list {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.add-tag-item {
+  display: flex;
+  align-items: center;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  border: 1px solid #9aa2ea;
+  border-radius: 15px;
+  background-color: #636ed3;
+}
+
+.tag-item:last-child {
+  border-bottom: none;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.add-button,
+.export-button {
+  background-color: #007BFF;
+  display: block;
+  margin: 10px auto;
+  padding: 8px 16px;
+  font-size: 20px;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+}
+
+.add-button {
+  background-color: #007BFF;
+  color: white;
+}
+
+.export-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.add-tag-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.input-field,
+.input-value {
+  width: 90%;
+  padding: 8px;
+  margin: 5px 0;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.json-output {
+  background-color: #f4f4f4;
+  padding: 10px;
+  margin-top: 10px;
+  overflow-x: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
