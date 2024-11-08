@@ -213,3 +213,70 @@ After modifying user topic generation to reason step by step the same way catego
   - Location: Berkshire  
 
 Irrelevant : 6 / 19 => 31%
+
+## 3rd Set
+
+Mostly running "what is 2 + 2?" questions while testing
+
+- user_name 
+  - first_last: Carnie McCorn
+- user_location
+  - state: Iowa
+- user_context
+  - familiarity: You are seeking familiarity and personal connection in conversations.
+  - continuity: You are interested in establishing continuity in dialogue.
+- arithmetic
+  - addition: User is interested in basic arithmetic problems.
+- learning_language
+  - language: Dutch
+- interest_area
+  - area: Colloquialisms
+- cultural_context
+  - context: Netherlands
+- language_learning
+  - slang_words: 50 additional Dutch slang words can enhance your understanding and usage of informal Dutch language, enriching your cultural interaction and communication.
+- personal_interest
+  - interest: mathematics
+- personal_learning_stage
+  - level: beginner or intermediate
+- personal_skills
+  - skills: problem-solving
+- personal_context
+  - reason: May be performing calculations for academic purposes
+  - programming_language: Java
+  - interest: Interest in mathematics
+  - mathematical_concept: Pi Calculation
+  - algorithm_knowledge: Bailey-Borwein-Plouffe
+  - interest_level: High
+  - status: Possibly a student or someone studying mathematics
+- interest
+  - mathematics: The user has an interest in mathematical calculations.
+  - knowledge: The user is seeking knowledge and understanding.
+- need
+  - numerical_calculations: User may need assistance with numerical problems.
+- study
+  - exam_preparation: User might be studying for a math-related exam.
+- skill
+  - arithmetic: The user likely has basic arithmetic skills.
+- math_context
+  - interest: user is interested in mathematics or calculations
+- interest_in_math
+  - interest: User is engaged with mathematical calculations.
+- learning_environment
+  - setting: User might be in an educational or academic setting.
+- inquiry_for_knowledge
+  - curiosity: User appears to seek clarity or knowledge regarding number calculations.
+- slang_terms
+  - slang_list: <Dutch slang terms I didn't read one of which is probably VERY insulting> 
+- coding_interest
+  - Programming_Language: C
+- precision_focus
+  - Calculation_Requirement: High accuracy for pi
+- background_interest
+  - Field: Mathematics or Science
+- user_interest
+  - style_preference: informal
+  - language_interest: Dutch
+  - slang_focus: insults
+
+Irrelevant 7 / 25 => 28%

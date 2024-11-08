@@ -74,10 +74,13 @@ To refine the system's architecture and enhance its capabilities and efficiency,
 
 - **Persona Configuration**: Left to the user as much as possible.
 
+- **Internet access**: Adding internet access for workflows based on context, including the ability to expand the
+ encyclopedia with web-sourced data.
+
 - **Graph Database Implementation**: A lot of work was put into creating functionality which now needs to be done with a 
  graph based methodology
-  - general knowledge
-  - user knowledge
+  - general knowledge (? Internet search will have to be implemented first to see the exact utility..)
+  - ~~user knowledge~~
   - configuration (changes)
   - Connecting relevant messages to the current prompt -> chain of messages displayed on the main section
   - sub-categories (possibly)
@@ -89,11 +92,6 @@ To refine the system's architecture and enhance its capabilities and efficiency,
  actually write its own tests automatically to full standard.
   - Long due that specific "integration" user tests where created to test that the system can satisfactorily answer the user,
    avoid hallucinations, provide scores of high value, asses performance against tests and benchmarks etc.
-
-- **Internet access**: Adding internet access for workflows based on context, including the ability to expand the
- encyclopedia with web-sourced data.
-
-- **Attributes**: Summaries and simple summaries to be stored as attributes against files
 
 - **Expand Workflows**: More workflows for more use-cases, improving on the quality of existing workflows.
   - **Modular Workflows**: In write_workflow for coder there's always a step for improving code quality/

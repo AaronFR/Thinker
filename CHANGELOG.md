@@ -9,9 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 
+
+### Changed
+
+- 
+
+### Removed
+
+- 
+
+
+## [0.8.1] - 2024-11-08 - File Selection and Streaming
+
+### Added
+
 - User can upload files for reference in their prompts
 - Users can (actually) select, unselect and view previously uploaded text files for reference in a new prompt
 - User context is saved and referenced allowing the application to remember details from prompt to prompt
+- Responses are now streamed as soon as they start generating, reducing wait times before *a* response
 - Users can tag prompts e.g. "write": "example.txt" will trigger a write workflow, "category" can be user defined
 
 ### Changed
