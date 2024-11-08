@@ -55,7 +55,7 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
   };
 
   /**
-   * useEffect hook to fetch uploaded files on succefful upload
+   * useEffect hook to fetch uploaded files
    */
   useEffect(() => {
     if (uploadCompleted){

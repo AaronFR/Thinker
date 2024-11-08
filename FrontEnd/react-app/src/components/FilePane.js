@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import FileItem from './FileItem';
+import { withLoadingOpacity } from '../utils/textUtils';
 
 const flask_port = "http://localhost:5000";
 
@@ -138,7 +139,7 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
   };
 
   return (
-    <div className="files-container" style={{ opacity: isProcessing ? 0.5 : 1 }}>
+    <div className="files-container" style={withLoadingOpacity(isProcessing)}>
       <h2>Files</h2>
       <section className="category-list">
         {categories.length > 0 ? (

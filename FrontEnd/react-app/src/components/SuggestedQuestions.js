@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import DOMPurify from 'dompurify';
 import PropTypes from 'prop-types';
 import { marked } from 'marked';
+
+import { MarkdownRenderer, withLoadingOpacity } from '../utils/textUtils';
 
 import './styles/SuggestedQuestions.css';
 
@@ -44,7 +45,7 @@ const SuggestedQuestions = ({
 
   if (error) {
     return (
-      <div className="markdown-questions-for-prompt" style={{ opacity: isQuestioning ? 0.5 : 1 }}>
+      <div className="markdown-questions-for-prompt" style={withLoadingOpacity(isQuestioning)}>
         <div className="error-message">{error}</div>
       </div>
     );
@@ -53,7 +54,7 @@ const SuggestedQuestions = ({
   // Display loading message if questions are not yet available
   if (!questionsForPrompt) {
     return (
-      <div style={{ opacity: isQuestioning ? 0.5 : 1 }}>
+      <div style={withLoadingOpacity(isQuestioning)}>
         {isQuestioning ? "..." : ""}
       </div>
     );
@@ -123,15 +124,14 @@ const SuggestedQuestions = ({
   };
 
   return (
-    <div className="markdown-questions-for-prompt" style={{ opacity: isQuestioning ? 0.5 : 1 }}>
+    <div className="markdown-questions-for-prompt">
       <ol className="questions-list">
         {questions.map((question, index) => (
           <li key={index} className="question-item">
-            <div
+            <MarkdownRenderer 
+              markdownText={question}
               className="question-text"
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(marked.parseInline(question)),
-              }}
+              isLoading={isQuestioning}
             />
 
             <form className="response-form">

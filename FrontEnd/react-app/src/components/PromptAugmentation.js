@@ -1,6 +1,6 @@
 import React from 'react';
-import DOMPurify from 'dompurify';
-import { marked } from 'marked';
+import { MarkdownRenderer } from '../utils/textUtils';
+
 import './styles/PromptAugmentation.css';
 
 const PromptAugmentation = ({ augmentedPromptsEnabled, augmentedPrompt, error="", isAugmenting, copyAugmentedPrompt }) => {
@@ -8,21 +8,11 @@ const PromptAugmentation = ({ augmentedPromptsEnabled, augmentedPrompt, error=""
 
   return (
     <div className="augmented-container">
-      <div 
-        className="augmented-content"
-        style={{ opacity: isAugmenting ? 0.5 : 1 }}
-      >
-        {augmentedPrompt ? (
-          <div
-            className="markdown-augmented"
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(error ? error : marked(augmentedPrompt)),
-            }}
-          />
-        ) : (
-          isAugmenting ? '...' : ""
-        )}
-      </div>
+      <MarkdownRenderer 
+        markdownText={error ? error : augmentedPrompt} 
+        className="markdown-augmented" 
+        isLoading={isAugmenting}
+      />
       {augmentedPrompt && (
         <button 
           className="augment-button" 

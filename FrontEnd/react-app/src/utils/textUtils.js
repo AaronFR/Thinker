@@ -33,3 +33,27 @@ export const shortenAndMarkupText = (text, maxLength = 160) => {
   const markedShortened = marked(shortenedText);
   return DOMPurify.sanitize(markedShortened);
 };
+
+/**
+   * Renders the standard markedown text format with an opacity filter while the operation is being reloaded
+   * If no text is present no element will be rendered
+   * 
+   * @param {string} markdownText - The text to shorten and format
+   * @param {string} className - The given CSS class name
+   * @param {function} isLoading - The function to determine if opacity should be lowered while being reloaded
+   */
+export const MarkdownRenderer = ({ markdownText, className = "", isLoading = false }) => (
+  <>
+    {markdownText ? (
+      <div 
+        className={className} 
+        style={{ opacity: isLoading ? 0.5 : 1 }}
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(markdownText || "")) }}
+      />) : (
+        ""
+      )
+    }
+  </>
+);
+
+export const withLoadingOpacity = (isLoading) => ({ opacity: isLoading ? 0.5 : 1 });

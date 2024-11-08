@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import MessageItem from './MessageItem';
+import { withLoadingOpacity } from '../utils/textUtils';
 
 import './styles/MessageHistory.css';
 
@@ -151,7 +152,7 @@ const MessageHistory = ({ isProcessing }) => {
   };
 
   return (
-    <div className="message-history-container" style={{ opacity: isProcessing ? 0.5 : 1 }}>
+    <div className="message-history-container" style={withLoadingOpacity(isProcessing)}>
       <h2>Messages</h2>
       <section className="category-list">
         {categories.length > 0 ? (

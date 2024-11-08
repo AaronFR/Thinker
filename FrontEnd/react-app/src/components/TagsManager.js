@@ -7,7 +7,6 @@ const TagsManager = ({ tags, setTags }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [newField, setNewField] = useState('');
   const [newValue, setNewValue] = useState('');
-  const [jsonOutput, setJsonOutput] = useState('');
 
   const fieldInputRef = useRef(null);
   const valueInputRef = useRef(null);
@@ -45,10 +44,6 @@ const TagsManager = ({ tags, setTags }) => {
     const updatedTags = { ...tags };
     delete updatedTags[key];
     setTags(updatedTags);
-  };
-
-  const handleExport = () => {
-    setJsonOutput(JSON.stringify(tags, null, 2));
   };
 
   return (

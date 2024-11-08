@@ -1,23 +1,16 @@
 import React from 'react';
-import DOMPurify from 'dompurify';
-import { marked } from 'marked';
+
+import { MarkdownRenderer } from '../utils/textUtils';
+
 import './styles/OutputSection.css';
 
 const OutputSection = ({ message, error = '', isProcessing }) => {
   return (
-    <>
-      {message ? (
-        <div
-          style={{ opacity: isProcessing ? 0.5 : 1 }}
-          className="markdown-output"
-          dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(error ? error : marked(message)),
-          }}
-        />
-      ) : (
-        ""
-      )}
-    </>
+    <MarkdownRenderer
+      markdownText={error ? error : message}
+      className="markdown-output"
+      isLoading={isProcessing}
+    />
   );
 };
 

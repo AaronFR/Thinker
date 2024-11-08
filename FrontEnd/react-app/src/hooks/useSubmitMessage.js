@@ -70,7 +70,7 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, tags) => {
     }
   }
 
-  return { message, setMessage, totalCost, error, isProcessing, handleSubmit };
+  return { message, totalCost, error, isProcessing, handleSubmit };
 };
 
 export default useSubmitMessage;
