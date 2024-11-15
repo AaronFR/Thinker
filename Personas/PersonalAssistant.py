@@ -30,17 +30,16 @@ class PersonalAssistant(BasePersona):
         self.configuration = PaSpecification.load_configuration()
 
     def run_workflow(self,
-                     user_id: str,
                      selected_workflow: str,
                      initial_message: str,
                      file_references: List[str] = None):
         if selected_workflow in self.workflows.keys():
             if selected_workflow == "chat":
-                self.chat_workflow(user_id, initial_message)
+                self.chat_workflow(initial_message)
             if selected_workflow == "write":
-                self.write_workflow(user_id, initial_message)
+                self.write_workflow(initial_message)
 
-    def chat_workflow(self, user_id: str, initial_message: str):
+    def chat_workflow(self, initial_message: str):
         """
         Converses with the user
 
@@ -53,13 +52,13 @@ class PersonalAssistant(BasePersona):
 
         try:
             for iteration, message in enumerate(prompt_messages):
-                response = self.process_question(user_id, message)
+                response = self.process_question(message)
                 logging.info("Iteration %d completed with response: %s", iteration, response)
 
         except Exception as e:
             logging.error("Error during writing workflow: %s", str(e))
 
-    def write_workflow(self, user_id: str, initial_message: str):
+    def write_workflow(self, initial_message: str):
         """
         Writes the response to a give user request
 
@@ -88,7 +87,7 @@ class PersonalAssistant(BasePersona):
 
             try:
                 for iteration, message in enumerate(prompt_messages, start=1):
-                    response = self.process_question(user_id, message)
+                    response = self.process_question(message)
                     logging.info("Iteration %d completed with response: %s", iteration, response)
 
                     if iteration == len(prompt_messages):

@@ -9,13 +9,14 @@ from Data import CypherQueries
 from Data.FileManagement import FileManagement
 from Data.Neo4jDriver import Neo4jDriver
 from Personas.PersonaSpecification import PersonaConstants
+from Utilities.UserContext import get_user_context
 
 
 class NodeDatabaseManagement:
     def __init__(self):
         self.neo4jDriver = Neo4jDriver()
 
-    def create_user_prompt_node(self, user_id: str, category: str, user_prompt: str, llm_response: str) -> str:
+    def create_user_prompt_node(self, category: str, user_prompt: str, llm_response: str) -> str:
         """
         Saves a prompt - response pair as a USER_PROMPT in the neo4j database
         Categorising the prompt and staging any attached files under that category
@@ -38,7 +39,7 @@ class NodeDatabaseManagement:
             "user_prompt_id"
         )
 
-        self.create_file_nodes_for_user_prompt(user_id, user_prompt_id, category)
+        self.create_file_nodes_for_user_prompt(user_prompt_id, category)
 
         return category
 
@@ -126,8 +127,8 @@ class NodeDatabaseManagement:
 
     # Files
 
-    def create_file_nodes_for_user_prompt(self, user_id: str, user_prompt_id: str, category: str) -> None:
-        file_names = FileManagement.list_staged_files(user_id)
+    def create_file_nodes_for_user_prompt(self, user_prompt_id: str, category: str) -> None:
+        file_names = FileManagement.list_staged_files()
 
         for file_name in file_names:
             self.create_file_node(user_prompt_id, category, file_name)
@@ -224,12 +225,12 @@ class NodeDatabaseManagement:
 
     # User Topics
 
-    def create_user_topic_nodes(self, terms, user_id):
+    def create_user_topic_nodes(self, terms):
         logging.info(f"Noted the following user topics : {terms}")
 
         for term in terms:
             parameters = {
-                "user_id": user_id,
+                "user_id": get_user_context(),
                 "node_name": term.get('node').lower(),
                 "content": term.get('content')
             }
@@ -238,10 +239,10 @@ class NodeDatabaseManagement:
                 parameters
             )
 
-    def search_for_user_topic_content(self, term, synonyms=None, user_id="totally4real2uuid"):
+    def search_for_user_topic_content(self, term, synonyms=None):
         logging.info(f"Attempting search for the following term: {term}")
         parameters = {
-            "user_id": user_id,
+            "user_id": get_user_context(),
             "node_name": term
         }
         records = self.neo4jDriver.execute_read(
@@ -258,15 +259,14 @@ class NodeDatabaseManagement:
 
         return None
 
-    def list_user_topics(self, user_id="totally4real2uuid"):
+    def list_user_topics(self):
         """
         Returns the usernames of the USER TOPICs arranged newest first
 
-        :param user_id: the user_id to search by
         :return:
         """
         parameters = {
-            "user_id": user_id
+            "user_id": get_user_context()
         }
         records = self.neo4jDriver.execute_read(
             CypherQueries.SEARCH_FOR_ALL_USER_TOPICS,

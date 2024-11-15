@@ -10,6 +10,7 @@ from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import PersonaConstants, CoderSpecification
 from Personas.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
 from Utilities.ErrorHandler import ErrorHandler
+from Utilities.UserContext import get_user_context
 
 
 class Coder(BasePersona):
@@ -37,7 +38,6 @@ class Coder(BasePersona):
         ErrorHandler.setup_logging()
 
     def run_workflow(self,
-                     user_id: str,
                      initial_message: str,
                      file_references: List[str] = None,
                      tags: List[str] = None):
@@ -45,14 +45,13 @@ class Coder(BasePersona):
 
         if tags.get("write"):
             file_to_write = tags.get("write")
-            return self.write_workflow(user_id, initial_message, file_references, tags)
+            return self.write_workflow(initial_message, file_references, tags)
         if tags.get("write_tests"):
-            return self.write_tests_workflow(user_id, initial_message, file_references, tags)
+            return self.write_tests_workflow(initial_message, file_references, tags)
 
-        return self.chat_workflow(user_id, initial_message, file_references)
+        return self.chat_workflow(initial_message, file_references)
 
     def chat_workflow(self,
-                      user_id: str,
                       initial_message: str,
                       file_references: List[str] = None,
                       tags: List[str] = None):
@@ -69,7 +68,7 @@ class Coder(BasePersona):
 
         try:
             for iteration, message in enumerate(prompt_messages):
-                response = self.process_question(user_id, message, file_references, streaming=True)
+                response = self.process_question(message, file_references, streaming=True)
                 logging.info("Iteration %d completed", iteration)
         
         except Exception as e:
@@ -78,7 +77,6 @@ class Coder(BasePersona):
         return response
 
     def write_workflow(self,
-                       user_id: str,
                        initial_message: str,
                        file_references: List[str] = None,
                        tags: Dict[str, str] = None):
@@ -123,6 +121,7 @@ class Coder(BasePersona):
             # ToDo: if creating a new file, file_references will be an empty array as it should be
             #  Code for writing files will be changed soon
 
+            user_id = get_user_context()
             file_path = Path(user_id).joinpath(file_name)  # user id acts as the staging area for new files
 
             purpose = file['purpose']
@@ -160,7 +159,7 @@ class Coder(BasePersona):
             try:
                 for iteration, message in enumerate(prompt_messages, start=1):
                     if iteration == 1 or iteration == 2:
-                        response = self.process_question(user_id, message, file_references)
+                        response = self.process_question(message, file_references)
                         logging.info("Iteration %d completed with response: %s", iteration, response)
 
                     if iteration == 2:
@@ -170,7 +169,7 @@ class Coder(BasePersona):
                         })
 
                     if iteration == 3:
-                        response = self.process_question(user_id, message, file_references, streaming=True)
+                        response = self.process_question(message, file_references, streaming=True)
                         logging.info("Iteration %d completed, streaming workflow completion summary", iteration)
 
             except Exception as e:
@@ -179,7 +178,6 @@ class Coder(BasePersona):
         return response
 
     def write_tests_workflow(self,
-                             user_id: str,
                              initial_message: str,
                              file_references: List[str] = None,
                              tags: List[str] = None) -> None:
@@ -210,7 +208,7 @@ class Coder(BasePersona):
         try:
             for iteration, message in enumerate(prompt_messages, start=1):
                 if iteration == 1:
-                    response = self.process_question(user_id, message, file_references)
+                    response = self.process_question(message, file_references)
                     logging.info("Test Workflow Iteration %d completed with response: %s", iteration, response)
 
                     # Save the tests
@@ -220,7 +218,7 @@ class Coder(BasePersona):
                     })
 
                 if iteration == 2:
-                    response = self.process_question(user_id, message, file_references, streaming=True)
+                    response = self.process_question(message, file_references, streaming=True)
                     logging.info("Test Workflow Iteration %d completed, streaming workflow completion summary")
 
         except Exception as e:

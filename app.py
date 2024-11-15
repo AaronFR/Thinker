@@ -12,6 +12,7 @@ import eventlet
 eventlet.monkey_patch()
 
 from flask import Flask, jsonify, request
+from contextvars import ContextVar
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 
@@ -25,6 +26,7 @@ from Functionality.Organising import Organising
 from Personas.Coder import Coder
 from Data.Configuration import Configuration
 from Data.Pricing import Pricing
+from Utilities.UserContext import set_user_context, get_user_context
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -69,6 +71,8 @@ def process_message(data):
             return
 
         user_id = data.get("user_id")
+        set_user_context(user_id)
+        logging.info(f"Set user context: {get_user_context()}")
         if user_id is None:
             emit('error', {"error": ERROR_NO_ID})
             return
@@ -97,7 +101,7 @@ def process_message(data):
             tags["category"] = category
 
         selected_persona = get_selected_persona(data)
-        response_message = selected_persona.query(user_id, user_prompt, file_references, tags)
+        response_message = selected_persona.query(user_prompt, file_references, tags)
         logging.info("Response generated: %s", response_message)
 
         chunk_content = []
@@ -112,7 +116,7 @@ def process_message(data):
 
         full_message = "".join(chunk_content)
         # ToDo: should be an ancillary side job, currently slows down recieving a response if the database doesn't respond quickly
-        Organising.categorize_and_store_prompt(user_prompt, full_message, user_id, category)
+        Organising.categorize_and_store_prompt(user_prompt, full_message, category)
 
         logging.info(f"response message: {response_message}")
 

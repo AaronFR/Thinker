@@ -10,6 +10,7 @@ from Data.FileManagement import FileManagement
 from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
 from Utilities.ErrorHandler import ErrorHandler
+from Utilities.UserContext import get_user_context
 from Utilities.Utility import Utility
 
 
@@ -31,7 +32,7 @@ class BasePersona:
 
         ErrorHandler.setup_logging()
 
-    def query(self, user_id, user_prompt, file_references: List[str] = None, tags: List[str] = None):
+    def query(self, user_prompt, file_references: List[str] = None, tags: List[str] = None):
         """
         Handles a user prompt
 
@@ -41,12 +42,11 @@ class BasePersona:
         :param user_prompt: additional file references paths, format <category_id>/<file_name_with_extension>
         """
         if Utility.is_valid_prompt(user_prompt):
-            return self.run_workflow(user_id, user_prompt, file_references, tags)
+            return self.run_workflow(user_prompt, file_references, tags)
         else:
             print("Invalid input. Please ask a clear and valid question.")
 
     def chat_workflow(self,
-                      user_id: str,
                       initial_message: str,
                       file_references: List[str] = None,
                       tags: List[str] = None):
@@ -81,7 +81,7 @@ class BasePersona:
         for i, (question, response) in enumerate(self.history):
             print(f"{i + 1}: Q: {question}\n    A: {response}")
 
-    def select_workflow(self, user_id: str, initial_message: str, file_references: List[str] = None):
+    def select_workflow(self, initial_message: str, file_references: List[str] = None):
         """Determine and run the appropriate workflow based on the user's query"""
         executor = AiOrchestrator()
         output = executor.execute_function(
@@ -95,10 +95,9 @@ class BasePersona:
         selected_workflow = output['selection']
 
         logging.info(f"Selected workflow: {selected_workflow}")
-        return self.run_workflow(user_id, selected_workflow, initial_message, file_references)
+        return self.run_workflow(selected_workflow, initial_message, file_references)
 
     def run_workflow(self,
-                     user_id: str,
                      selected_workflow: str,
                      initial_message: str,
                      file_references: List[str] = None):
@@ -106,7 +105,6 @@ class BasePersona:
 
     def process_question(
         self,
-        user_id: str,
         question: str,
         file_references: List[str] = None,
         streaming: bool = False
@@ -121,13 +119,12 @@ class BasePersona:
             file_content.append(content)
 
         input_messages = [question] + file_content
-        response = self.think(user_id, input_messages, streaming)
+        response = self.think(input_messages, streaming)
         self.history.append((question, response))
         return response
 
     def think(
         self,
-        user_id: str,
         user_messages: List[str],
         streaming: bool = False
     ) -> str:
@@ -142,7 +139,7 @@ class BasePersona:
         """
         logging.info("Processing user messages: %s", user_messages)
 
-        staged_files = FileManagement.list_staged_files(user_id)
+        staged_files = FileManagement.list_staged_files()
         executor = AiOrchestrator(staged_files)
         config = Configuration.load_config()
 

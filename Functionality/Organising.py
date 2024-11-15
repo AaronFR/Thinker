@@ -20,7 +20,7 @@ class Organising:
 
     @deprecated(reason="ToDo adapt for node graph system")
     @staticmethod
-    def get_relevant_files(user_id: str, input: List[str]) -> List[str]:
+    def get_relevant_files(input: List[str]) -> List[str]:
         """Retrieves relevant files based on the input question.
 
         ToDo Optimisation, including a quick check to filter if a question should *even* be referencing other files and
@@ -30,7 +30,7 @@ class Organising:
         :return A list of selected file names that are deemed relevant to the input questions
         """
         logging.info("GET_RELEVANT_FILES triggered")
-        evaluation_files = FileManagement.list_staged_files(user_id)  # needs to be changed to find files from ALL categories
+        evaluation_files = FileManagement.list_staged_files()  # needs to be changed to find files from ALL categories
         if not evaluation_files:
             logging.warning("No evaluation files found.")
             return []
@@ -49,7 +49,7 @@ class Organising:
 
             logging.info(f"Selected: {selected_files}, \nfrom: {evaluation_files}")
 
-            selected_files = FileManagement.list_staged_files(user_id)  # defaulting to grabbing staged files
+            selected_files = FileManagement.list_staged_files()  # defaulting to grabbing staged files
             logging.info(f"Selected files: {selected_files}")
             return selected_files
         except Exception as e:
@@ -82,15 +82,13 @@ class Organising:
 
     @staticmethod
     def categorize_and_store_prompt(user_prompt: str,
-                                    response_message:str,
-                                    user_id: str,
+                                    response_message: str,
                                     category: str = None):
         """
         ToDo: Look into celery and async processing
 
         :param user_prompt: The given user prompt starting the evaluation process
         :param response_message: The systems response
-        :param user_id: The file address friendly uuid of the user
         :param category: The category to register against the prompt node
         :return:
         """
@@ -99,13 +97,13 @@ class Organising:
 
         if not category:
             category = categoryManagement.categorise_prompt_input(user_prompt, response_message)
-        Organising.node_db.create_user_prompt_node(user_id, category, user_prompt, response_message)
+        Organising.node_db.create_user_prompt_node(category, user_prompt, response_message)
 
         if config['beta_features']['user_context_enabled']:
             terms = UserContextManagement.extract_terms_from_input([user_prompt])
-            Organising.node_db.create_user_topic_nodes(terms, user_id)
+            Organising.node_db.create_user_topic_nodes(terms)
 
-        categoryManagement.stage_files(user_id, category)
+        categoryManagement.stage_files(category)
 
     @staticmethod
     def summarise_content(content: str):

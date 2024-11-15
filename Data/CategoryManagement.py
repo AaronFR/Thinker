@@ -8,6 +8,7 @@ from typing import Optional
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement
+from Utilities.UserContext import get_user_context
 
 
 class CategoryManagement:
@@ -81,17 +82,16 @@ class CategoryManagement:
         logging.warning("Failure to categorise!")
         return None
 
-    def stage_files(self, user_id: str, category=None):
+    def stage_files(self, category=None):
         """
         Stages files into a specific category based on user prompt.
 
         This method retrieves files from the staging area, summarises them, and categorises them
         according to their content with the help of an AI orchestrator.
 
-        :param user_id: The user-provided id
         :param category: If defined the system will categorise the staged files with the given category, otherwise a category will be generated
         """
-        files = FileManagement.list_staged_files(user_id)
+        files = FileManagement.list_staged_files()
         logging.info(f"Staged files: {files}")
 
         id = self._return_id_for_category(category)
@@ -101,6 +101,8 @@ class CategoryManagement:
             return
 
         try:
+            user_id = get_user_context()
+
             for file in files:
                 staged_file_path = os.path.join(FileManagement.file_data_directory, user_id, file)
                 new_file_path = os.path.join(FileManagement.file_data_directory, str(id), file)

@@ -10,6 +10,7 @@ from deprecated.classic import deprecated
 from Utilities import Constants
 from Utilities.Constants import DEFAULT_ENCODING
 from Utilities.ErrorHandler import ErrorHandler
+from Utilities.UserContext import get_user_context
 
 
 class MyDumper(yaml.Dumper):
@@ -37,13 +38,13 @@ class FileManagement:
         ErrorHandler.setup_logging()
 
     @staticmethod
-    def list_staged_files(user_id: str) -> List[str]:
+    def list_staged_files() -> List[str]:
         """List all files in
         ToDo: should leave files tagged meta alone, as soon as we start tagging meta files...
 
-        :parameter user_id: user_id reference used as a file staging directory
         :return: A list of file_name names in the directory
         """
+        user_id = get_user_context()
         staging_directory = os.path.join(FileManagement.file_data_directory, user_id)
         try:
             entries = os.listdir(staging_directory)
@@ -99,14 +100,14 @@ class FileManagement:
 
     @deprecated("There should only be the one way of reading files")
     @staticmethod
-    def read_file(file_path: str, number_lines: bool = False, user_id = "totally4real2uuid") -> str:
+    def read_file(file_path: str, number_lines: bool = False) -> str:
         """Read the content of a specified file.
 
         :param file_path: The path of the file_name to read, including category folder prefix
         :param number_lines: Flag to determine if the content should be returned as numbered lines
         :return: The content of the file or an error message to inform the next LLM what happened
         """
-        logging.warning("🚧🚧🚧 Will break if multiple users exist")
+        user_id = get_user_context()
         full_path = os.path.join(FileManagement.file_data_directory, user_id, file_path)
         logging.info(f"Loading file_name content from: {full_path}")
 

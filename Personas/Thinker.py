@@ -19,12 +19,12 @@ class Thinker(BasePersona):
         self.instructions = "Just think through the question, step by step, prioritizing the most recent user prompt."
         self.configuration = CoderSpecification.load_configuration()  # ToDo: These should be added to their own config file
 
-    def run_workflow(self, user_id: str, selected_workflow: str, initial_message: str):
+    def run_workflow(self, selected_workflow: str, initial_message: str):
         if selected_workflow in self.workflows.keys():
             if selected_workflow == "write":
-                self.write_workflow(user_id, initial_message)
+                self.write_workflow(initial_message)
 
-    def write_workflow(self, user_id: str, initial_message: str):
+    def write_workflow(self, initial_message: str):
         """Engage in a back-and-forth dialogue with itself"""
         executor = AiOrchestrator()
         file_name = executor.execute(
@@ -40,7 +40,7 @@ class Thinker(BasePersona):
 
         prompt_messages = [initial_message] + analyser_messages
         for iteration, message in enumerate(prompt_messages):
-            response = self.process_question(user_id, message)
+            response = self.process_question(message)
             logging.info("Iteration %d completed with response: %s", iteration, response)
 
             if iteration == 4:
