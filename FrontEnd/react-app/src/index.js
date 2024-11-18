@@ -15,20 +15,10 @@ function RootApp() {
 
   useEffect(() => {
     const validateSession = async () => {
-      const token = localStorage.getItem("jwt_token");
-
-      if (!token) {
-        setIsAuthenticated(false);
-        return;
-      }
-
       try {
         const response = await fetch(`${flask_port}/auth/validate`, {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+            method: "GET",
+            credentials: "include", // Include cookies in the request
         });
 
         setIsAuthenticated(response.ok);

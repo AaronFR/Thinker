@@ -3,7 +3,7 @@ import './styles/UserInputForm.css';
 import PropTypes from 'prop-types';
 
 import FileUploadButton from './FileUploadButton';
-import { prototyping_user_id } from '../utils/loginUtils'
+import { prototyping_user_id } from '../utils/authUtils'
 import TagsManager from './TagsManager';
 
 const FLASK_PORT = "http://localhost:5000";

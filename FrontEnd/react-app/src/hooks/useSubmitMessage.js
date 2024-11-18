@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { prototyping_user_id } from '../utils/loginUtils';
+import { prototyping_user_id } from '../utils/authUtils';
 import { io } from 'socket.io-client';
 
 const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, tags) => {

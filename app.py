@@ -7,13 +7,15 @@ in JSON format through the `/api/message` endpoint.
 import json
 import logging
 import os
+from datetime import timedelta
 
 import eventlet
 eventlet.monkey_patch()
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, create_access_token, decode_token, jwt_required, get_jwt
+from flask_jwt_extended import JWTManager, create_access_token, decode_token, jwt_required, get_jwt, get_jwt_identity, \
+    verify_jwt_in_request, set_access_cookies, unset_jwt_cookies
 from flask_socketio import SocketIO, emit
 from functools import wraps
 
@@ -34,8 +36,13 @@ logging.basicConfig(level=logging.DEBUG)
 # Instantiate the Flask application
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY")
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=15)  # Access token expires in 15 minutes
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)     # Refresh token expires in 7 days
+app.config['JWT_TOKEN_LOCATION'] = ['cookies']
+app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+
 jwt = JWTManager(app)
-CORS(app)
+CORS(app, supports_credentials=True)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 ERROR_NO_PROMPT = "No prompt found"
@@ -59,8 +66,12 @@ def register():
     registered = node_db.create_user(user_id)
     if registered:
         logging.info("Successfully registered new user")
-        token = create_access_token(identity=user_id)
-        return jsonify({"access_token": token}), 200
+        access_token = create_access_token(identity=user_id)
+
+        # Use set_access_cookies to set both access_token and csrf_access_token cookies
+        response = make_response(jsonify({"message": "Login successful"}))
+        set_access_cookies(response, access_token)
+        return response
     else:
         logging.error("Failed to register new user!")
         return jsonify({"Failure": "Failed to register user"}), 500
@@ -78,22 +89,66 @@ def login_required(fn):
 
 
 @app.route('/auth/validate', methods=['GET'])
-@login_required
 def validate_session():
-    return jsonify({"status": "valid"})
+    try:
+        # Retrieve the JWT from the cookies
+        token = request.cookies.get("access_token_cookie")
+        if not token:
+            logging.info("No access_token cookie found")
+            return jsonify({"status": "invalid", "error": "No token provided"}), 401
+
+        user_id = decode_jwt(token)
+        if not user_id:
+            return jsonify({"status": "invalid", "error": "Invalid token"}), 401
+
+        logging.debug(f"Decoded user_id: {user_id}")
+        return jsonify({"status": "valid", "user_id": user_id}), 200
+    except Exception as e:
+        logging.exception("Error validating token")
+        return jsonify({"status": "invalid", "error": "Unexpected error"}), 500
+
+
+def decode_jwt(token):
+    """
+    Decode and validate the JWT token.
+    """
+    try:
+        decoded_token = decode_token(token)
+        user_id = decoded_token.get("sub")  # 'sub' is typically used for user_id
+        return user_id
+    except Exception as e:
+        logging.error(f"JWT validation error: {e}")
+        return None
+
 
 BLACKLIST = set()  # ToDo: Will need to be more robust
 
+
 @app.route('/logout', methods=['POST'])
-@jwt_required()
 def logout():
-    jti = get_jwt()["jti"]  # Get the JWT's unique identifier
-    BLACKLIST.add(jti)
-    return jsonify({"message": "Successfully logged out"}), 200
+    try:
+        logging.info("Validating JWT for logout")
+        verify_jwt_in_request(locations=["cookies"])  # Manually verify the JWT
+    except Exception as e:
+        logging.exception("JWT validation failed")
+        return jsonify({"error": "JWT validation failed"}), 401
+
+    response = make_response(jsonify({"message": "Successfully logged out"}))
+    unset_jwt_cookies(response)
+    return response
+
 
 @jwt.token_in_blocklist_loader
 def check_if_token_in_blacklist(jwt_header, jwt_payload):
     return jwt_payload["jti"] in BLACKLIST
+
+
+@app.route('/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh():
+    identity = get_jwt_identity()
+    access_token = create_access_token(identity=identity)
+    return jsonify({"access_token": access_token}), 200
 
 
 # Messages

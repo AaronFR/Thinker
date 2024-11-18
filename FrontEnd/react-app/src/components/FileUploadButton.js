@@ -2,7 +2,7 @@ import React, { useReducer, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import ProgressBar from './ProgressBar';
-import { prototyping_user_id } from '../utils/loginUtils'
+import { prototyping_user_id } from '../utils/authUtils'
 
 import './styles/FileUploadButton.css';
 

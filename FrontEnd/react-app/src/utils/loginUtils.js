@@ -1,1 +1,0 @@
-export const prototyping_user_id = "totally4real2uuid";
