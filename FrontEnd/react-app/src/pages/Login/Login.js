@@ -14,6 +14,11 @@ export function Login() {
             });
 
             if (response.ok) {
+                const data = await response.json();
+                const token = data.access_token;
+
+                localStorage.setItem("jwt_token", token)
+
                 alert('User registered successfully!');
             } else {
                 alert('Failed to register user.');
@@ -23,7 +28,28 @@ export function Login() {
             alert('An error occurred during registration.');
             console.error('Error registering user:', error);
         }
-    };
+    }; 
+
+    const handleLogout = async () => {
+        const token = localStorage.getItem("jwt_token");
+
+    if (token) {
+        try {
+            await fetch(`${flask_port}/logout`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+        } catch (error) {
+            console.error("Error logging out:", error);
+        }
+    }
+
+        localStorage.removeItem("jwt_token");
+        window.location.href = "/login"
+    }
 
     return (
         <div className="register-container">
@@ -34,6 +60,7 @@ export function Login() {
             
             <h2>Register</h2>
             <button onClick={handleRegister}>Register</button>
+            <button onClick={handleLogout}>Logout</button>
         </div>
     );
 }

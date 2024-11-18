@@ -12,9 +12,10 @@ import eventlet
 eventlet.monkey_patch()
 
 from flask import Flask, jsonify, request
-from contextvars import ContextVar
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager, create_access_token, decode_token, jwt_required, get_jwt
 from flask_socketio import SocketIO, emit
+from functools import wraps
 
 from werkzeug.utils import secure_filename
 
@@ -32,6 +33,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Instantiate the Flask application
 app = Flask(__name__)
+app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY")
+jwt = JWTManager(app)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
@@ -56,10 +59,43 @@ def register():
     registered = node_db.create_user(user_id)
     if registered:
         logging.info("Successfully registered new user")
-        return jsonify({"Success": user_id}), 200
+        token = create_access_token(identity=user_id)
+        return jsonify({"access_token": token}), 200
     else:
         logging.error("Failed to register new user!")
         return jsonify({"Failure": "Failed to register user"}), 500
+
+
+def login_required(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        user_id = get_user_context()  # Retrieve user_id from ContextVar
+        user_id = "totally4real2uuid"  # disable when ready
+        if not user_id:
+            return jsonify({"message": "Authorization required"}), 401
+        return fn(*args, **kwargs)
+    return wrapper
+
+
+@app.route('/auth/validate', methods=['GET'])
+@login_required
+def validate_session():
+    return jsonify({"status": "valid"})
+
+BLACKLIST = set()  # ToDo: Will need to be more robust
+
+@app.route('/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    jti = get_jwt()["jti"]  # Get the JWT's unique identifier
+    BLACKLIST.add(jti)
+    return jsonify({"message": "Successfully logged out"}), 200
+
+@jwt.token_in_blocklist_loader
+def check_if_token_in_blacklist(jwt_header, jwt_payload):
+    return jwt_payload["jti"] in BLACKLIST
+
+
 # Messages
 
 
