@@ -1,6 +1,6 @@
 
 CREATE_CATEGORY = """
-MERGE (user:USER)
+MATCH (user:USER)
 WITH user
 MERGE (category:CATEGORY {name: $category_name})
 ON CREATE SET category.id = $category_id
@@ -9,7 +9,7 @@ RETURN id(category) AS category_id
 """
 
 CREATE_USER_TOPIC = """
-MERGE (user:USER {{id: $user_id}})
+MATCH (user:USER {{id: $user_id}})
 WITH user
 MERGE (user_topic:USER_TOPIC {{name: $node_name}})
 SET user_topic.{parameter} = $content
@@ -40,7 +40,7 @@ RETURN user_topic.name AS name
 """
 
 CREATE_USER_PROMPT_NODES = """
-MERGE (user:USER)
+MATCH (user:USER)
 WITH user
 MATCH (category:CATEGORY {name: $category})<-[:HAS_CATEGORY]-(user)
 CREATE (user_prompt:USER_PROMPT {prompt: $prompt, response: $response, time: $time})
@@ -50,7 +50,7 @@ RETURN id(user_prompt) AS user_prompt_id
 """
 
 CREATE_FILE_NODE = """
-MERGE (user:USER)
+MATCH (user:USER)
 MERGE (category:CATEGORY {name: $category})
 WITH user, category
 MATCH (user_prompt:USER_PROMPT)
