@@ -1,4 +1,9 @@
 
+CREATE_USER = """
+MERGE (user:USER {id: $user_id})
+RETURN user.id
+"""
+
 CREATE_CATEGORY = """
 MATCH (user:USER)
 WITH user

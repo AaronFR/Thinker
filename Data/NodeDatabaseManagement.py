@@ -16,6 +16,23 @@ class NodeDatabaseManagement:
     def __init__(self):
         self.neo4jDriver = Neo4jDriver()
 
+    # User
+
+    def create_user(self, user_id):
+        parameters = {
+            "user_id": user_id,
+        }
+        returned_user_id = self.neo4jDriver.execute_write(
+            CypherQueries.CREATE_USER,
+            parameters
+        )
+
+        if user_id:
+            return True
+        return False
+
+    # Messages
+
     def create_user_prompt_node(self, category: str, user_prompt: str, llm_response: str) -> str:
         """
         Saves a prompt - response pair as a USER_PROMPT in the neo4j database
@@ -43,7 +60,7 @@ class NodeDatabaseManagement:
 
         return category
 
-    # Messages
+
 
     def get_messages_by_category(self, category_name: str) -> List[Dict]:
         """

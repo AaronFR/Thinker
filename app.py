@@ -40,6 +40,26 @@ ERROR_NO_ID = "No user id found"
 FILES_PATH = os.path.join(os.path.dirname(__file__), 'Data/FileData')
 
 
+# Authorisation
+
+@app.route('/register', methods=['POST'])
+def register():
+    """
+    ToDo: Add in user warnings or at least logging if a method fails to find a user in the db, failing a query
+
+    :return:
+    """
+    node_db = NodeDatabaseManagement()
+    user_id = "totally4real2uuid"
+
+    logging.info("Registering new user")
+    registered = node_db.create_user(user_id)
+    if registered:
+        logging.info("Successfully registered new user")
+        return jsonify({"Success": user_id}), 200
+    else:
+        logging.error("Failed to register new user!")
+        return jsonify({"Failure": "Failed to register user"}), 500
 # Messages
 
 

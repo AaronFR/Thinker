@@ -14,6 +14,13 @@ class Neo4jDriver:
         self.driver.close()
 
     def execute_write(self, query, parameters=None, field=None):
+        """
+
+        :param query: The actual cypher query itself
+        :param parameters: The associated parameters required to execute the cypher query
+        :param field: ToDo ?
+        :return:
+        """
         with self.driver.session() as session:
             return session.write_transaction(
                 lambda tx: self._extract_field(tx.run(query, parameters), field)
