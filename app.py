@@ -7,6 +7,7 @@ in JSON format through the `/api/message` endpoint.
 import json
 import logging
 import os
+import time
 from datetime import timedelta
 
 import eventlet
@@ -220,13 +221,32 @@ def refresh():
         return jsonify({"error": "Refresh token missing"}), 401
 
     try:
-        user_id = decode_token(refresh_token)["sub"]
-        access_token = create_access_token(identity=user_id)
+        # Validate and decode the refresh token
+        decoded_token = decode_token(refresh_token)
+        user_id = decoded_token["sub"]
 
-        response = make_response(jsonify({"message": "Token refreshed"}))
-        response.set_cookie( "access_token", access_token, httponly=True, secure=True, samesite="Strict")
+        # Check for token expiration (optional, depending on decode_token implementation)
+        if "exp" in decoded_token and decoded_token["exp"] < time.time():
+            return jsonify({"error": "Refresh token expired"}), 401
+
+        # Issue new tokens
+        new_access_token = create_access_token(identity=user_id)
+        new_refresh_token = create_refresh_token(identity=user_id)
+
+        # Create response with new tokens
+        response = make_response(jsonify({
+            "message": "Token refreshed",
+            ACCESS_TOKEN_COOKIE: new_access_token
+        }))
+
+        # Set cookies with secure flags
+        response.set_cookie(ACCESS_TOKEN_COOKIE, new_access_token, httponly=True, secure=True)
+        response.set_cookie(REFRESH_TOKEN_COOKIE, new_refresh_token, httponly=True, secure=True, samesite="Strict")
+
         return response
+
     except Exception as e:
+        logging.error(f"Refresh token error: {e}")
         return jsonify({"error": "Invalid refresh token"}), 401
 
 
@@ -247,7 +267,6 @@ def get_messages(category_name):
         return jsonify({"error": str(e)}), 500
 
 
-
 @socketio.on('start_stream')
 @login_required
 def process_message(data):
@@ -263,13 +282,6 @@ def process_message(data):
         user_prompt = data.get("prompt")
         if user_prompt is None:
             emit('error', {"error": ERROR_NO_PROMPT})
-            return
-
-        user_id = data.get("user_id")
-        set_user_context(user_id)
-        logging.info(f"Set user context: {get_user_context()}")
-        if user_id is None:
-            emit('error', {"error": ERROR_NO_ID})
             return
 
         additional_qa = data.get("additionalQA")

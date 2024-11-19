@@ -1,3 +1,5 @@
+const flask_port = "http://localhost:5000";
+
 export const csrfFetch = async (url, options = {}) => {
   // ToDo: maybe beneficial to combine csrfFetch and apiFetch?
   
@@ -40,7 +42,7 @@ export const apiFetch = async (url, options = {}) => {
       console.log("Access token expired, attempting refresh...");
       
       // Attempt to refresh the token
-      const refreshResponse = await fetch('/refresh', {
+      const refreshResponse = await fetch(flask_port + '/refresh', {
           method: 'POST',
           credentials: 'include', // Include cookies for refresh
       });
