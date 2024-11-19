@@ -225,6 +225,16 @@ class FileManagement:
 
         FileManagement.save_file(modified_text, file_path)
 
+    @staticmethod
+    def add_new_user_file_folder(user_id: int) -> None:
+        """
+        Creates a new file staging folder for the new user
+
+        :param user_id: The new folder id to create
+        """
+        new_directory = os.path.join(FileManagement.file_data_directory, str(user_id))
+        os.makedirs(new_directory, exist_ok=True)
+
 
 if __name__ == '__main__':
     numbered_lines = FileManagement.read_file("Writing.py", number_lines=True)

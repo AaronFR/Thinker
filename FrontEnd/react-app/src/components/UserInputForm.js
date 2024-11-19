@@ -3,8 +3,8 @@ import './styles/UserInputForm.css';
 import PropTypes from 'prop-types';
 
 import FileUploadButton from './FileUploadButton';
-import { prototyping_user_id } from '../utils/authUtils'
 import TagsManager from './TagsManager';
+import { apiFetch } from '../utils/authUtils';
 
 const FLASK_PORT = "http://localhost:5000";
 
@@ -31,8 +31,9 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
    */
   const fetchStagedFiles = async () => {
     try {
-      const response = await fetch(`${FLASK_PORT}/list_staged_files?user_id=${prototyping_user_id}`, {
+      const response = await apiFetch(`${FLASK_PORT}/list_staged_files`, {
         method: "GET",
+        credentials: "include"
       });
 
       if (!response.ok) {

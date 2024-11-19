@@ -18,7 +18,7 @@ class Neo4jDriver:
 
         :param query: The actual cypher query itself
         :param parameters: The associated parameters required to execute the cypher query
-        :param field: ToDo ?
+        :param field: Optional field to RETURN
         :return:
         """
         with self.driver.session() as session:

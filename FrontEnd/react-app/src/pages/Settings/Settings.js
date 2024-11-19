@@ -12,6 +12,7 @@ const fetchConfig = async () => {
     const response = await fetch(`${flaskPort}/data/config`, {
       method: 'GET',
       headers: { "Content-Type": 'application/json' },
+      credentials: "include"
     });
     if (response.ok) {
       const loadedConfig = await response.json();
@@ -32,6 +33,7 @@ const saveConfig = async (field, value) => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ field, value }),
+      credentials: "include"
     });
   } catch (error) {
     console.error('Error saving config:', error);

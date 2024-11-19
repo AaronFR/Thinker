@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Settings, { SettingsProvider } from './pages/Settings/Settings';
 import Pricing from './pages/Pricing/Pricing';
 import Login from './pages/Login/Login';
+import { apiFetch } from "./utils/authUtils";
 
 const flask_port = "http://localhost:5000";
 
@@ -16,7 +17,7 @@ function RootApp() {
   useEffect(() => {
     const validateSession = async () => {
       try {
-        const response = await fetch(`${flask_port}/auth/validate`, {
+        const response = await apiFetch(`${flask_port}/auth/validate`, {
             method: "GET",
             credentials: "include", // Include cookies in the request
         });

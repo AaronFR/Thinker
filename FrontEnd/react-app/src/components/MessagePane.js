@@ -5,6 +5,7 @@ import MessageItem from './MessageItem';
 import { withLoadingOpacity } from '../utils/textUtils';
 
 import './styles/MessageHistory.css';
+import { apiFetch } from '../utils/authUtils';
 
 const flask_port= "http://localhost:5000"
 
@@ -68,11 +69,12 @@ const MessageHistory = ({ isProcessing }) => {
    * @returns {Promise<void>}
    */
   const fetchCategories = async () => {
-    const response = await fetch(`${flask_port}/categories`, {
+    const response = await apiFetch(`${flask_port}/categories`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
-      }
+      },
+      credentials: "include"
     });
 
     if (!response.ok) {
@@ -100,11 +102,12 @@ const MessageHistory = ({ isProcessing }) => {
   const fetchMessagesByCategory = async (categoryName, categoryId) => {
     try {
       console.log(categoryName.toLowerCase())
-      const response = await fetch(`${flask_port}/messages/${categoryName.toLowerCase()}`, {
+      const response = await apiFetch(`${flask_port}/messages/${categoryName.toLowerCase()}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
-        }
+        },
+        credentials: "include"
       })
 
       if (!response.ok) {

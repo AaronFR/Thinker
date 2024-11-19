@@ -10,12 +10,16 @@ import os
 from datetime import timedelta
 
 import eventlet
+import shortuuid
+
+from Utilities.Encryption import hash_password, check_password
+
 eventlet.monkey_patch()
 
 from flask import Flask, jsonify, request, make_response
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, create_access_token, decode_token, jwt_required, get_jwt, get_jwt_identity, \
-    verify_jwt_in_request, set_access_cookies, unset_jwt_cookies
+from flask_jwt_extended import JWTManager, create_access_token, decode_token, jwt_required, get_jwt_identity, \
+    set_access_cookies, unset_jwt_cookies, create_refresh_token
 from flask_socketio import SocketIO, emit
 from functools import wraps
 
@@ -40,6 +44,7 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=15)  # Access token e
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)     # Refresh token expires in 7 days
 app.config['JWT_TOKEN_LOCATION'] = ['cookies']
 app.config['JWT_COOKIE_CSRF_PROTECT'] = True
+app.config['ENV'] = "development"
 
 jwt = JWTManager(app)
 CORS(app, supports_credentials=True)
@@ -48,6 +53,10 @@ socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 ERROR_NO_PROMPT = "No prompt found"
 ERROR_NO_ID = "No user id found"
 FILES_PATH = os.path.join(os.path.dirname(__file__), 'Data/FileData')
+ACCESS_TOKEN_COOKIE = "access_token_cookie"
+REFRESH_TOKEN_COOKIE = "refresh_token"
+
+# ToDo: NodeDatabaseManagement should be instantiated at the class level if possible
 
 
 # Authorisation
@@ -59,40 +68,75 @@ def register():
 
     :return:
     """
+    data = request.json
+
+    email = data.get('email')
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    password_hash = hash_password(data.get('password'))
+    if not data.get('password'):
+        return jsonify({"error": "Password is required"}), 400
+
     node_db = NodeDatabaseManagement()
-    user_id = "totally4real2uuid"
+    user_id = str(shortuuid.uuid())
+
+    if node_db.user_exists(email):
+        logging.warning(f"Registration failed: User with email {email} already exists.")
+        return jsonify({"error": "User with this email already exists"}), 409
 
     logging.info("Registering new user")
-    registered = node_db.create_user(user_id)
+    registered = node_db.create_user(user_id, email, password_hash)
     if registered:
         logging.info("Successfully registered new user")
         access_token = create_access_token(identity=user_id)
+        refresh_token = create_refresh_token(identity=user_id)
 
-        # Use set_access_cookies to set both access_token and csrf_access_token cookies
-        response = make_response(jsonify({"message": "Login successful"}))
-        set_access_cookies(response, access_token)
+        response = make_response(jsonify({"message": "User registration successful"}))
+        response.set_cookie(ACCESS_TOKEN_COOKIE, access_token, httponly=True, secure=True)
+        response.set_cookie(REFRESH_TOKEN_COOKIE, refresh_token, httponly=True, secure=True, samesite="Strict")
         return response
     else:
         logging.error("Failed to register new user!")
         return jsonify({"Failure": "Failed to register user"}), 500
 
 
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    email = data.get("email")
+    if not email:
+        return jsonify({"error": "Email is required"}), 400
+
+    node_db = NodeDatabaseManagement()
+    user_id = node_db.find_user_by_email(email)
+    if not user_id:
+        return jsonify({"error": "This email is not present in our systems"}), 400
+
+    password = data.get("password")
+    if not password:
+        return jsonify({"error": "Password is required"}), 400
+    password_hash = node_db.get_user_password_hash(user_id)
+    if not check_password(password, password_hash):
+        return jsonify({"error": "Incorrect password"}), 400
+
+    try:
+        access_token = create_access_token(identity=user_id)
+        refresh_token = create_refresh_token(identity=user_id)
+
+        response = make_response(jsonify({"message": "Login successful"}))
+        response.set_cookie(ACCESS_TOKEN_COOKIE, access_token, httponly=True, secure=True)
+        response.set_cookie(REFRESH_TOKEN_COOKIE, refresh_token, httponly=True, secure=True, samesite="Strict")
+        return response
+    except Exception as e:
+        return jsonify({"error": "Failed to login"}), 401
+
+
 def login_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        user_id = get_user_context()  # Retrieve user_id from ContextVar
-        user_id = "totally4real2uuid"  # disable when ready
-        if not user_id:
-            return jsonify({"message": "Authorization required"}), 401
-        return fn(*args, **kwargs)
-    return wrapper
-
-
-@app.route('/auth/validate', methods=['GET'])
-def validate_session():
-    try:
         # Retrieve the JWT from the cookies
-        token = request.cookies.get("access_token_cookie")
+        token = request.cookies.get(ACCESS_TOKEN_COOKIE)
         if not token:
             logging.info("No access_token cookie found")
             return jsonify({"status": "invalid", "error": "No token provided"}), 401
@@ -100,6 +144,29 @@ def validate_session():
         user_id = decode_jwt(token)
         if not user_id:
             return jsonify({"status": "invalid", "error": "Invalid token"}), 401
+        set_user_context(user_id)
+
+        logging.debug(f"Decoded user_id: {user_id}")
+
+        # Proceed with the request
+        return fn(*args, **kwargs)
+
+    return wrapper
+
+
+@app.route('/auth/validate', methods=['GET'])
+def validate_session():
+    try:
+        # Retrieve the JWT from the cookies
+        token = request.cookies.get(ACCESS_TOKEN_COOKIE)
+        if not token:
+            logging.info("No access_token cookie found")
+            return jsonify({"status": "invalid", "error": "No token provided"}), 401
+
+        user_id = decode_jwt(token)
+        if not user_id:
+            return jsonify({"status": "invalid", "error": "Invalid token"}), 401
+        set_user_context(user_id)
 
         logging.debug(f"Decoded user_id: {user_id}")
         return jsonify({"status": "valid", "user_id": user_id}), 200
@@ -128,7 +195,10 @@ BLACKLIST = set()  # ToDo: Will need to be more robust
 def logout():
     try:
         logging.info("Validating JWT for logout")
-        verify_jwt_in_request(locations=["cookies"])  # Manually verify the JWT
+        token = request.cookies.get(ACCESS_TOKEN_COOKIE)
+        if not token:
+            logging.info("No access_token cookie found")
+            return jsonify({"status": "invalid", "error": "No token provided"}), 401
     except Exception as e:
         logging.exception("JWT validation failed")
         return jsonify({"error": "JWT validation failed"}), 401
@@ -144,17 +214,27 @@ def check_if_token_in_blacklist(jwt_header, jwt_payload):
 
 
 @app.route('/refresh', methods=['POST'])
-@jwt_required(refresh=True)
 def refresh():
-    identity = get_jwt_identity()
-    access_token = create_access_token(identity=identity)
-    return jsonify({"access_token": access_token}), 200
+    refresh_token = request.cookies.get("refresh_token")
+    if not refresh_token:
+        return jsonify({"error": "Refresh token missing"}), 401
+
+    try:
+        user_id = decode_token(refresh_token)["sub"]
+        access_token = create_access_token(identity=user_id)
+
+        response = make_response(jsonify({"message": "Token refreshed"}))
+        response.set_cookie( "access_token", access_token, httponly=True, secure=True, samesite="Strict")
+        return response
+    except Exception as e:
+        return jsonify({"error": "Invalid refresh token"}), 401
 
 
 # Messages
 
 
 @app.route('/messages/<category_name>', methods=['GET'])
+@login_required
 def get_messages(category_name):
     try:
         category_name = category_name.lower()
@@ -167,10 +247,14 @@ def get_messages(category_name):
         return jsonify({"error": str(e)}), 500
 
 
+
 @socketio.on('start_stream')
+@login_required
 def process_message(data):
     """
     Accept a user prompt and process it through the selected persona.
+    ToDo: refresh tokens on streams are a bit difficult. Implement if its possible in the final version if its possible
+     to not hit a regular automatically-refreshing request
     """
     logging.info(f"process_message triggered with data: {data}")
     node_db = NodeDatabaseManagement()
@@ -256,6 +340,7 @@ def delete_message(message_id):
 
 
 @app.route('/categories', methods=['GET'])
+@login_required
 def list_categories():
     try:
         node_db = NodeDatabaseManagement()
@@ -307,14 +392,10 @@ def get_file_content(file_category, file_name):
 def list_files():
     """
     Lists the staged files for the user on prompt submission
-    ToDo: The user id and user id staging folder will need to be created on account creation
 
     :return:
     """
-    user_id = request.args.get('user_id')
-    if not user_id:
-        return jsonify({'message': 'User ID is required.'}), 400
-
+    user_id = get_user_context()
     user_folder = os.path.join(FILES_PATH, user_id)
 
     try:
@@ -329,6 +410,7 @@ def list_files():
 
 
 @app.route('/file', methods=['POST'])
+@login_required
 def upload_file():
     """
     Accept a user file and try uploading it for future reference.
@@ -340,13 +422,10 @@ def upload_file():
     file = request.files['file']
     if file.filename == '':
         return jsonify({'message': 'No selected file.'}), 400
-
-    user_id = request.form.get('user_id')
-    if not user_id:
-        return jsonify({'message': 'User ID is required'}), 400
-
     # Secure the filename to prevent directory traversal attacks
     filename = secure_filename(file.filename)
+
+    user_id = get_user_context()
     staged_file_path = os.path.join(FILES_PATH, user_id, filename)
 
     try:
@@ -358,6 +437,7 @@ def upload_file():
 
 
 @app.route('/file/<file_id>', methods=['DELETE'])
+@login_required
 def delete_file(file_id):
     try:
         node_db = NodeDatabaseManagement()
@@ -385,6 +465,7 @@ def get_selected_persona(data):
 
 
 @app.route('/augmentation/augment_prompt', methods=['POST'])
+@login_required
 def augment_user_prompt():
     """
     Accept a user prompt and augment it in line with prompt engineering standards.
@@ -415,6 +496,7 @@ def augment_user_prompt():
 
 
 @app.route('/augmentation/question_prompt', methods=['POST'])
+@login_required
 def question_user_prompt():
     """
     Accept a user prompt and generates a list of questions that *may* improve the llm's response
@@ -445,6 +527,7 @@ def question_user_prompt():
 
 
 @app.route('/data/config', methods=['GET'])
+@login_required
 def load_config():
     """
     Load the configuration from the YAML file and return it as a JSON response.
@@ -464,6 +547,7 @@ def load_config():
 
 
 @app.route('/data/config', methods=['POST'])
+@login_required
 def update_config():
     """
     Load the configuration from the YAML file and return it as a JSON response.
@@ -496,6 +580,7 @@ def update_config():
 
 
 @app.route('/pricing/session', methods=['GET'])
+@login_required
 def get_session_cost():
     try:
         logging.info("Extracting current session cost")

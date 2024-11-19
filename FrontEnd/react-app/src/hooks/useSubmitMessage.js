@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { prototyping_user_id } from '../utils/authUtils';
 import { io } from 'socket.io-client';
 
 const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, tags) => {
@@ -11,7 +10,9 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, tags) => {
 
   // Initialize WebSocket connection only when the component mounts
   useEffect(() => {
-    const socket = io(flaskPort); // Connect to the Flask-SocketIO server
+    const socket = io(flaskPort, {
+      withCredentials: true
+    });
     socketRef.current = socket;
 
     socket.on('connect', () => {
@@ -50,11 +51,9 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, tags) => {
     setTotalCost(null);  // Reset cost for new request
 
     try {
-      // Emit the data to start streaming on the backend
       if (socketRef.current && socketRef.current.connected) {
         socketRef.current.emit('start_stream', {
           prompt: userInput,
-          user_id: prototyping_user_id,
           additionalQA: concatenatedQA,
           files: filesForPrompt,
           persona: selectedPersona,

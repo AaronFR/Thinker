@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { apiFetch } from '../utils/authUtils';
 
 const useAugmentedPrompt = (flaskPort) => {
   const [augmentedPrompt, setAugmentedPrompt] = useState('');
@@ -10,12 +11,13 @@ const useAugmentedPrompt = (flaskPort) => {
     setError(null);
 
     try {
-      const response = await fetch(`${flaskPort}/augmentation/augment_prompt`, {
+      const response = await apiFetch(`${flaskPort}/augmentation/augment_prompt`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ user_prompt: input })
+        body: JSON.stringify({ user_prompt: input }),
+        credentials: "include"
       });
   
       if (!response.ok) {

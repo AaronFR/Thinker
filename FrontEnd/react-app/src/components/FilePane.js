@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import FileItem from './FileItem';
 import { withLoadingOpacity } from '../utils/textUtils';
+import { apiFetch } from '../utils/authUtils';
 
 const flask_port = "http://localhost:5000";
 
@@ -50,11 +51,12 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
  
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${flask_port}/categories_with_files`, {
+      const response = await apiFetch(`${flask_port}/categories_with_files`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
-        }
+        },
+        credentials: "include"
       });
 
       if (!response.ok) {
@@ -103,11 +105,12 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
 
   const fetchFilesByCategory = async (categoryName, categoryId) => {
     try {
-      const response = await fetch(`${flask_port}/files/${categoryName.toLowerCase()}`, {
+      const response = await apiFetch(`${flask_port}/files/${categoryName.toLowerCase()}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
-        }
+        },
+        credentials: "include"
       });
 
       if (!response.ok) {

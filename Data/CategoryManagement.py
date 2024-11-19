@@ -127,7 +127,7 @@ class CategoryManagement:
     @staticmethod
     def _add_new_category(id: int) -> None:
         """
-        Fetches the redirects for a given page and appends them to a specified CSV file.
+        Creates the folder to store files against a given category
 
         :param id: The new folder id to create
         """
