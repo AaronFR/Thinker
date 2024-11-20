@@ -40,6 +40,7 @@ const MessageItem = ({ msg, onDelete }) => {
     try {
       const response = await fetch(`${FLASK_PORT}/messages/${msg.id}`, {
         method: 'DELETE',
+        credentials: "include",
       });
 
       if (!response.ok) {

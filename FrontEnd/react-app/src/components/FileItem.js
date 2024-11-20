@@ -32,6 +32,7 @@ const FileItem = ({ file, onDelete, onSelect }) => {
       try {
         const response = await fetch(`${FLASK_PORT}/file/${file.category_id}/${file.name}`, {
           method: 'GET',
+          credentials: "include"
         });
 
         if (!response.ok) {
@@ -60,6 +61,7 @@ const FileItem = ({ file, onDelete, onSelect }) => {
       try {
         const response = await fetch(`${FLASK_PORT}/file/${file.id}`, {
           method: 'DELETE',
+          credentials: "include"
         });
 
         if (!response.ok) {

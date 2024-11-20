@@ -13,6 +13,10 @@ from Utilities.UserContext import get_user_context
 
 
 class NodeDatabaseManagement:
+    """
+    ToDo: should be made into a singleton
+
+    """
     def __init__(self):
         self.neo4jDriver = Neo4jDriver()
 
