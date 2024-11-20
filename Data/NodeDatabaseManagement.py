@@ -95,6 +95,33 @@ class NodeDatabaseManagement:
 
     # Messages
 
+    def get_message_by_id(self, message_id) -> Dict[str, str]:
+        """
+        Saves a prompt - response pair as a USER_PROMPT in the neo4j database
+        Categorising the prompt and staging any attached files under that category
+
+        :param message_id: The uuid of the message
+        :return: The category associated with the new user prompt node
+        """
+        parameters = {
+            "user_id": get_user_context(),
+            "message_id": message_id,
+        }
+        records = self.neo4jDriver.execute_read(
+            CypherQueries.GET_MESSAGE,
+            parameters
+        )
+
+        record = records[0]
+        message = {
+            "id": record["id"],
+            "prompt": record["prompt"],
+            "response": record["response"],
+            "time": record["time"]
+        }
+
+        return message
+
     def create_user_prompt_node(self, category: str, user_prompt: str, llm_response: str) -> str:
         """
         Saves a prompt - response pair as a USER_PROMPT in the neo4j database
@@ -108,6 +135,7 @@ class NodeDatabaseManagement:
 
         parameters = {
             "user_id": get_user_context(),
+            "message_id": str(shortuuid.uuid()),
             "prompt": user_prompt,
             "response": llm_response,
             "time": time,
@@ -152,6 +180,7 @@ class NodeDatabaseManagement:
         """
         message_id = int(message_id)
         parameters = {
+            "user_id": get_user_context(),
             "message_id": message_id,
         }
 

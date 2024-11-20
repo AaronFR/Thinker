@@ -12,7 +12,7 @@
 
 ## About
 
-'The Thinker' is orientated towards bringing more complex continuous and iterative agentic workflows to the average everyday
+'The Thinker' is orientated towards bringing more complex, continuous and iterative agentic workflows to the average everyday
 user, filling the middle ground between simple LLM wrapper applications and advanced Enterprise-orientated AI products.
 
 A powerful, general purpose AI application

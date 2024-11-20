@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Staged files remain staged persistently
+- Users can manually select one or more messages as context for a prompt
 
 ### Changed
 

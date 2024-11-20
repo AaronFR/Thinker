@@ -4,7 +4,6 @@ import logging
 from flask_socketio import emit
 
 from Data.CategoryManagement import CategoryManagement
-from Data.NodeDatabaseManagement import NodeDatabaseManagement
 from Functionality.Organising import Organising
 from Personas.Coder import Coder
 from Utilities.auth_utils import login_required
@@ -18,11 +17,10 @@ def init_process_message_ws(socketio):
     def process_message(data):
         """
         Accept a user prompt and process it through the selected persona.
-        ToDo: refresh tokens on streams are a bit difficult. Implement if its possible in the final version if its possible
+        ToDo: refresh tokens on streams are a bit difficult. Implement if its possible in the release
          to not hit a regular automatically-refreshing request
         """
         logging.info(f"process_message triggered with data: {data}")
-        node_db = NodeDatabaseManagement()
 
         try:
             user_prompt = data.get("prompt")
@@ -44,17 +42,20 @@ def init_process_message_ws(socketio):
             files = data.get("files")
             file_references = Organising.process_files(files)
 
-            categoryManagement = CategoryManagement()
+            messages = data.get("messages")
+            selected_message_ids = [message["id"] for message in messages]
+
+            category_management = CategoryManagement()
             tag_category = tags.get("category")
             if tag_category:
                 logging.info(f"tag specified category: {tag_category}")
                 category = tag_category
             else:
-                category = categoryManagement.categorise_prompt_input(user_prompt)
+                category = category_management.categorise_prompt_input(user_prompt)
                 tags["category"] = category
 
             selected_persona = get_selected_persona(data)
-            response_message = selected_persona.query(user_prompt, file_references, tags)
+            response_message = selected_persona.query(user_prompt, file_references, selected_message_ids, tags)
             logging.info("Response generated: %s", response_message)
 
             chunk_content = []
@@ -68,7 +69,7 @@ def init_process_message_ws(socketio):
                     break  # Exit the loop after emitting 'stream_end
 
             full_message = "".join(chunk_content)
-            # ToDo: should be an ancillary side job, currently slows down recieving a response if the database doesn't respond quickly
+            # ToDo: should be an ancillary side job, currently slows down receiving a response if the database doesn't respond quickly
             Organising.categorize_and_store_prompt(user_prompt, full_message, category)
 
             logging.info(f"response message: {response_message}")

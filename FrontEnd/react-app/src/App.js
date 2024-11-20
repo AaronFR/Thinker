@@ -51,9 +51,12 @@ function App () {
 
     // File Management
     const [selectedFiles, setSelectedFiles] = useState([]);
+
+    // Message management
+    const [selectedMessages, setSelectedMessages] = useState([])
  
     // Custom hooks
-    const { message, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(flask_port, concatenatedQA, selectedFiles, tags);
+    const { message, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(flask_port, concatenatedQA, selectedFiles, selectedMessages, tags);
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt(flask_port);
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions(flask_port);
 
@@ -125,11 +128,26 @@ function App () {
           // If the file is already selected, filter it out
           return prevFiles.filter((f) => f.name !== file.name);
         } else {
-          // Otherwise, add new the new fille to the list of selectedFiles
+          // Otherwise, add new the new file to the list of selectedFiles
           return [...prevFiles, file];
         }
       });
     };
+
+    const handleMessageSelect = (message) => {
+      setSelectedMessages((prevMessages) => {
+        // ToDo: should filter by id not prompt, but uploaded files aren't setup for that yet
+        if (prevMessages.some((f) => f.prompt === message.prompt)) {
+          // If the message is already selected, filter it out
+          return prevMessages.filter((f) => f.prompt !== message.prompt);
+        } else {
+          // Otherwise, add new the new message to the list of selectedMessages
+          return [...prevMessages, message];
+        }
+        
+      });
+    };
+
 
     return (
         <div className="app-container">
@@ -140,6 +158,7 @@ function App () {
             />
             <MessagePane 
               isProcessing={isProcessing}
+              onMessageSelect={handleMessageSelect}
             />
           </aside>
 
@@ -158,6 +177,8 @@ function App () {
               isProcessing={isProcessing}
               selectedFiles={selectedFiles}
               setSelectedFiles={setSelectedFiles}
+              selectedMessages={selectedMessages}
+              setSelectedMessages={setSelectedMessages}
               tags={tags}
               setTags={setTags}
             />

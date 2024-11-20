@@ -14,7 +14,7 @@ const FLASK_PORT = "http://localhost:5000";
  * - msg (Object): The message object containing id, prompt, response, and time.
  * - onDelete (Function): Callback function to handle message deletion.
  */
-const MessageItem = ({ msg, onDelete }) => {
+const MessageItem = ({ msg, onDelete, onSelect }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
@@ -56,9 +56,24 @@ const MessageItem = ({ msg, onDelete }) => {
     }
   };
 
+  /**
+   * Handles the selection of the message.
+   */
+  const handleSelect = () => {
+    onSelect(msg);
+  };
+
   return (
-    <div className="message-item" onClick={toggleExpansion} style={{ cursor: 'pointer' }}>
-      <div className="message-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div 
+      className="message-item"
+      onClick={handleSelect}
+      style={{ cursor: 'pointer' }}
+    >
+      <div 
+        className="message-header"
+        onClick={toggleExpansion}
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+      >
         <p><strong>Prompt:</strong> {isExpanded ? msg.prompt : shortenText(msg.prompt)}</p>
       </div>
       
@@ -89,7 +104,7 @@ const MessageItem = ({ msg, onDelete }) => {
 
 MessageItem.propTypes = {
   msg: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     prompt: PropTypes.string.isRequired,
     response: PropTypes.string.isRequired,
     time: PropTypes.number.isRequired,

@@ -22,7 +22,18 @@ const FLASK_PORT = "http://localhost:5000";
  * - isProcessing (boolean): Indicates if the form is in a processing state.
  * - selectedFiles (File): Currently selected file for upload.
  */
-const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessing, selectedFiles, setSelectedFiles, tags, setTags }) => {
+const UserInputForm = ({
+  handleSubmit,
+  handleInputChange,
+  userInput,
+  isProcessing,
+  selectedFiles,
+  setSelectedFiles,
+  selectedMessages,
+  setSelectedMessages,
+  tags,
+  setTags
+}) => {
   const [fetchError, setFetchError] = useState('');
   const [uploadCompleted, setUploadCompleted] = useState(true)
 
@@ -78,7 +89,20 @@ const UserInputForm = ({ handleSubmit, handleInputChange, userInput, isProcessin
 
   return (
     <div>
-      {/* Display Uploaded Files */}
+      {/* Display Selected Messages */}
+      <div style={{ marginBottom: '20px' }}>
+        {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
+        {selectedMessages.length === 0 && !fetchError}
+        <ul style={{ listStyleType: 'none', padding: 0 }}>
+          {selectedMessages.map((message, index) => (
+            <li key={index} style={{ padding: '5px 0' }}>
+              <span role="img" aria-label="message">✉</span> {message.prompt}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Display Selected Files */}
       <div style={{ marginBottom: '20px' }}>
         {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
         {selectedFiles.length === 0 && !fetchError}

@@ -68,10 +68,10 @@ CREATE_USER_PROMPT_NODES = """
 MATCH (user:USER {id: $user_id})
 WITH user
 MATCH (category:CATEGORY {name: $category})<-[:HAS_CATEGORY]-(user)
-CREATE (user_prompt:USER_PROMPT {prompt: $prompt, response: $response, time: $time})
+CREATE (user_prompt:USER_PROMPT {id: $message_id, prompt: $prompt, response: $response, time: $time})
 MERGE (user)-[:HAS_CATEGORY]->(category)
 MERGE (user_prompt)-[:BELONGS_TO]->(category)
-RETURN id(user_prompt) AS user_prompt_id
+RETURN user_prompt
 """
 
 CREATE_FILE_NODE = """
@@ -87,15 +87,21 @@ RETURN file
 """
 
 # Messages
+GET_MESSAGE = """
+MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)
+    <-[:BELONGS_TO]-(user_prompt:USER_PROMPT {id: $message_id})
+RETURN user_prompt.id AS id, user_prompt.prompt AS prompt, user_prompt.response AS response, user_prompt.time AS time
+"""
+
 GET_MESSAGES = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY {name: $category_name})
     <-[:BELONGS_TO]-(user_prompt:USER_PROMPT)
-RETURN id(user_prompt) AS id, user_prompt.prompt AS prompt, user_prompt.response AS response, user_prompt.time AS time
+RETURN user_prompt.id AS id, user_prompt.prompt AS prompt, user_prompt.response AS response, user_prompt.time AS time
 ORDER by user_prompt.time DESC
 """
 
 DELETE_MESSAGE_AND_POSSIBLY_CATEGORY = """
-MATCH (message:USER_PROMPT)-[:BELONGS_TO]->(category:CATEGORY)
+MATCH (message:USER_PROMPT)-[:BELONGS_TO]->(category:CATEGORY)<-[:HAS_CATEGORY]-(user:USER {id: $user_id})
 WHERE id(message) = $message_id
 DETACH DELETE message
 WITH category

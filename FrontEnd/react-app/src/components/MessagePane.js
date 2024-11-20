@@ -18,7 +18,7 @@ const flask_port= "http://localhost:5000"
  * Props:
  * - isProcessing (boolean): Indicates if the app is currently processing data.
  */
-const MessageHistory = ({ isProcessing }) => {
+const MessageHistory = ({ isProcessing, onMessageSelect }) => {
   const [categories, setCategories] = useState([])
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
 
@@ -180,7 +180,8 @@ const MessageHistory = ({ isProcessing }) => {
                       <MessageItem
                         key={msg.id} 
                         msg={msg} 
-                        onDelete={() => handleDeleteMessage(category.id, msg.id)} 
+                        onDelete={() => handleDeleteMessage(category.id, msg.id)}
+                        onSelect={onMessageSelect}
                       />
                     ))
                   )}

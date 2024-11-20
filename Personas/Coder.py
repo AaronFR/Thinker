@@ -40,25 +40,30 @@ class Coder(BasePersona):
     def run_workflow(self,
                      initial_message: str,
                      file_references: List[str] = None,
+                     selected_message_ids: List[str] = None,
                      tags: List[str] = None):
         tags = tags or {}
 
         if tags.get("write"):
             file_to_write = tags.get("write")
-            return self.write_workflow(initial_message, file_references, tags)
+            return self.write_workflow(initial_message, file_references, selected_message_ids, tags)
         if tags.get("write_tests"):
-            return self.write_tests_workflow(initial_message, file_references, tags)
+            return self.write_tests_workflow(initial_message, file_references, selected_message_ids, tags)
 
-        return self.chat_workflow(initial_message, file_references)
+        return self.chat_workflow(initial_message, file_references, selected_message_ids, tags)
 
     def chat_workflow(self,
                       initial_message: str,
                       file_references: List[str] = None,
+                      selected_message_ids: List[str] = None,
                       tags: List[str] = None):
         """
         Converses with the user
 
         :param initial_message: The user's initial prompt.
+        :param file_references:
+        :param selected_message_ids:
+        :param tags:
         """
         logging.info("chat workflow selected")
         analyser_messages = [
@@ -68,7 +73,7 @@ class Coder(BasePersona):
 
         try:
             for iteration, message in enumerate(prompt_messages):
-                response = self.process_question(message, file_references, streaming=True)
+                response = self.process_question(message, file_references, selected_message_ids, streaming=True)
                 logging.info("Iteration %d completed", iteration)
         
         except Exception as e:
@@ -79,6 +84,7 @@ class Coder(BasePersona):
     def write_workflow(self,
                        initial_message: str,
                        file_references: List[str] = None,
+                       selected_message_ids: List[str] = None,
                        tags: Dict[str, str] = None):
         """
         Writes the improved code to a specified file.
@@ -169,7 +175,7 @@ class Coder(BasePersona):
                         })
 
                     if iteration == 3:
-                        response = self.process_question(message, file_references, streaming=True)
+                        response = self.process_question(message, file_references, selected_message_ids, streaming=True)
                         logging.info("Iteration %d completed, streaming workflow completion summary", iteration)
 
             except Exception as e:
@@ -180,6 +186,7 @@ class Coder(BasePersona):
     def write_tests_workflow(self,
                              initial_message: str,
                              file_references: List[str] = None,
+                             selected_message_ids: List[str] = None,
                              tags: List[str] = None) -> None:
         """
         Generates a test file for a specified file
@@ -218,7 +225,7 @@ class Coder(BasePersona):
                     })
 
                 if iteration == 2:
-                    response = self.process_question(message, file_references, streaming=True)
+                    response = self.process_question(message, file_references, selected_message_ids, streaming=True)
                     logging.info("Test Workflow Iteration %d completed, streaming workflow completion summary")
 
         except Exception as e:

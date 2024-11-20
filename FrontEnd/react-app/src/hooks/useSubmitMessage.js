@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
-const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, tags) => {
+const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMessages, tags) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -56,6 +56,7 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, tags) => {
           prompt: userInput,
           additionalQA: concatenatedQA,
           files: filesForPrompt,
+          messages: selectedMessages, // its comidic to send the full message back, to send the id, to get the full message - just send the id
           persona: selectedPersona,
           tags: JSON.stringify({ tags })
         });

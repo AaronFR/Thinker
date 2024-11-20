@@ -7,6 +7,7 @@ from Data.Configuration import Configuration
 
 from Data.EncyclopediaManagement import EncyclopediaManagement
 from Data.FileManagement import FileManagement
+from Data.NodeDatabaseManagement import NodeDatabaseManagement
 from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
 from Utilities.ErrorHandler import ErrorHandler
@@ -32,23 +33,30 @@ class BasePersona:
 
         ErrorHandler.setup_logging()
 
-    def query(self, user_prompt, file_references: List[str] = None, tags: List[str] = None):
+    def query(self,
+              user_prompt: str,
+              file_references: List[str] = None,
+              selected_message_ids: List[str] = None,
+              tags: List[str] = None):
         """
         Handles a user prompt
 
         ToDo adding to the user_encyclopedia needs to be influenced by context category
 
         :param user_prompt: user input prompt
-        :param user_prompt: additional file references paths, format <category_id>/<file_name_with_extension>
+        :param file_references: additional file references paths, format <category_id>/<file_name_with_extension>
+        :param selected_message_ids: the uuids of previous selected relevant messages to review
+        :param tags: additional information for prompting, e.g. if and where to write a file
         """
         if Utility.is_valid_prompt(user_prompt):
-            return self.run_workflow(user_prompt, file_references, tags)
+            return self.run_workflow(user_prompt, file_references, selected_message_ids, tags)
         else:
             print("Invalid input. Please ask a clear and valid question.")
 
     def chat_workflow(self,
                       initial_message: str,
                       file_references: List[str] = None,
+                      selected_message_ids: List[str] = None,
                       tags: List[str] = None):
         raise NotImplementedError("Default workflow is to be implemented in specific persona")
 
@@ -100,13 +108,15 @@ class BasePersona:
     def run_workflow(self,
                      selected_workflow: str,
                      initial_message: str,
-                     file_references: List[str] = None):
+                     file_references: List[str] = None,
+                     selected_message_ids: List[str] = None):
         raise NotImplementedError("This method should be overridden by subclasses")
 
     def process_question(
         self,
         question: str,
         file_references: List[str] = None,
+        selected_message_ids: List[str] = None,
         streaming: bool = False
      ):
         """Process and store the user's question.
@@ -118,14 +128,25 @@ class BasePersona:
             logging.info(f"Extracting file content [{file_reference}]: {content}")
             file_content.append(content)
 
+        ndm = NodeDatabaseManagement()
+
+        messages = []
+        if selected_message_ids:
+            for message_id in selected_message_ids:
+                message = ndm.get_message_by_id(message_id)
+                content = message["prompt"] + " : \n\n" + message["response"]
+                messages.append(content)
+        logging.info(f"Message content: {messages}")
+
         input_messages = [question] + file_content
-        response = self.think(input_messages, streaming)
+        response = self.think(input_messages, messages, streaming)
         self.history.append((question, response))
         return response
 
     def think(
         self,
         user_messages: List[str],
+        previous_messages: List[str] = None,
         streaming: bool = False
     ) -> str:
         """Process the input question and think through a response.
@@ -135,6 +156,7 @@ class BasePersona:
         ToDo: How the application accesses and gives history to the llm will need to be optimised
 
         :param user_messages: List of existing user message
+        :param previous_messages: prior messages selected as context for this prompt
         :return The generated response stream or an error message
         """
         logging.info("Processing user messages: %s", user_messages)
@@ -160,6 +182,8 @@ class BasePersona:
         else:
             recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
 
+        recent_history.extend(previous_messages)
+
         try:
             output = executor.execute(
                 system_messages,
@@ -172,7 +196,7 @@ class BasePersona:
             logging.exception("An error occurred while thinking: %s", e)
             return f"An error occurred while processing: {e}"
 
-    def detect_relevant_history(self, user_messages: List[str]):
+    def detect_relevant_history(self, user_messages: List[str]) -> List[str]:
         """
         Uses an ai call to actually determine which prompt - response pairs to send on
 
