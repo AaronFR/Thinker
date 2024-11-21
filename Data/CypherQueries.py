@@ -80,7 +80,7 @@ MERGE (category:CATEGORY {name: $category})
 WITH user, category
 MATCH (user_prompt:USER_PROMPT)
 WHERE user_prompt.id = $user_prompt_id
-CREATE (file:FILE {name: $name, time: $time, summary: $summary, structure: $structure})
+CREATE (file:FILE {name: $name, time: $time, summary: $summary, structure: $structure, version: 1})
 MERGE (file)-[:ORIGINATES_FROM]->(user_prompt)
 MERGE (file)-[:BELONGS_TO]->(category)
 RETURN file
