@@ -26,6 +26,7 @@ BLACKLIST = set()  # ToDo: Will need to be more robust
 def register():
     """
     ToDo: Add in user warnings or at least logging if a method fails to find a user in the db, failing a query
+    ToDo: Prevent multiple registrations at once
 
     :return: a valid response including access and refresh JWT cookies
     """

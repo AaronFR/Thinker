@@ -30,7 +30,7 @@ WITH user
 MERGE (category:CATEGORY {name: $category_name})
 ON CREATE SET category.id = $category_id
 MERGE (user)-[:HAS_CATEGORY]->(category)
-RETURN id(category) AS category_id
+RETURN category.id AS category_id
 """
 
 CREATE_USER_TOPIC = """
@@ -71,7 +71,7 @@ MATCH (category:CATEGORY {name: $category})<-[:HAS_CATEGORY]-(user)
 CREATE (user_prompt:USER_PROMPT {id: $message_id, prompt: $prompt, response: $response, time: $time})
 MERGE (user)-[:HAS_CATEGORY]->(category)
 MERGE (user_prompt)-[:BELONGS_TO]->(category)
-RETURN user_prompt
+RETURN user_prompt.id AS user_prompt_id
 """
 
 CREATE_FILE_NODE = """
@@ -79,7 +79,7 @@ MATCH (user:USER {id: $user_id})
 MERGE (category:CATEGORY {name: $category})
 WITH user, category
 MATCH (user_prompt:USER_PROMPT)
-WHERE id(user_prompt) = $user_prompt_id
+WHERE user_prompt.id = $user_prompt_id
 CREATE (file:FILE {name: $name, time: $time, summary: $summary, structure: $structure})
 MERGE (file)-[:ORIGINATES_FROM]->(user_prompt)
 MERGE (file)-[:BELONGS_TO]->(category)
@@ -102,7 +102,7 @@ ORDER by user_prompt.time DESC
 
 DELETE_MESSAGE_AND_POSSIBLY_CATEGORY = """
 MATCH (message:USER_PROMPT)-[:BELONGS_TO]->(category:CATEGORY)<-[:HAS_CATEGORY]-(user:USER {id: $user_id})
-WHERE id(message) = $message_id
+WHERE message.id = $message_id
 DETACH DELETE message
 WITH category
 OPTIONAL MATCH (category)<-[:BELONGS_TO]-(remaining_messages:USER_PROMPT)
@@ -130,6 +130,8 @@ ORDER by category_name
 """
 
 # Files
+# ToDo: files shouldn't bother having a id, their name and category folder is their identifier
+
 GET_FILE_BY_ID = """
 MATCH (category:CATEGORY)--(file:FILE)
 WHERE id(file) = $file_id

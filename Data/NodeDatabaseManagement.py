@@ -97,11 +97,10 @@ class NodeDatabaseManagement:
 
     def get_message_by_id(self, message_id) -> Dict[str, str]:
         """
-        Saves a prompt - response pair as a USER_PROMPT in the neo4j database
-        Categorising the prompt and staging any attached files under that category
+        Retrieves a message by its uuid
 
         :param message_id: The uuid of the message
-        :return: The category associated with the new user prompt node
+        :return: The details of the message node
         """
         parameters = {
             "user_id": get_user_context(),
@@ -194,7 +193,7 @@ class NodeDatabaseManagement:
 
         parameters = {
             "user_id": get_user_context(),
-            "category_name": category_name,
+            "category_name": category_name.lower(),
             "category_id": category_id
         }
         self.neo4jDriver.execute_write(
@@ -251,8 +250,7 @@ class NodeDatabaseManagement:
 
     def create_file_node(self, user_prompt_id: str, category: str, file_name: str) -> None:
         """
-        Saves a prompt - response pair as a USER_PROMPT in the neo4j database
-        Categorising the prompt and staging any attached files under that category
+        Saves a file node representing the files content, its category and its version number
 
         ToDo: the usage of file_name/file_path/full_path is very convoluted and needs to be made systematic
 
@@ -268,6 +266,7 @@ class NodeDatabaseManagement:
             content = FileManagement.read_file_full_address(file_path)
             from AiOrchestration.AiOrchestrator import AiOrchestrator
             executor = AiOrchestrator()
+            #ToDo: Summarises previous content if it exists when writing files
             summary = executor.execute(
                 [PersonaConstants.SUMMARISER_SYSTEM_INSTRUCTIONS],
                 [content]
