@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 
 from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement
+from Utilities.Routing import fetch_entity
 from Utilities.UserContext import get_user_context
 from Utilities.auth_utils import login_required
 
@@ -15,28 +16,17 @@ FILES_PATH = os.path.join(os.path.dirname(__file__), '../../Data/FileData')
 
 @files_bp.route('/files/<category_name>', methods=['GET'])
 def get_files(category_name):
-    try:
-        category_name = category_name.lower()
-        node_db = NodeDatabaseManagement()
-        files_list = node_db.get_files_by_category(category_name)
-
-        return jsonify({"files": files_list}), 200
-    except Exception as e:
-        logging.exception(f"Failed to get messages for category, {category_name}")
-        return jsonify({"error": str(e)}), 500
+    category_name = category_name.lower()
+    node_db = NodeDatabaseManagement()
+    return fetch_entity(node_db.get_files_by_category(category_name), "files")
 
 
 @files_bp.route('/file/<file_category>/<file_name>', methods=['GET'])
 def get_file_content(file_category, file_name):
-    try:
-        full_path = str(file_category) + "/" + file_name
-        content = FileManagement.read_file_full_address(full_path)
+    full_path = str(file_category) + "/" + file_name
 
-        logging.info(f"File node {file_category}/{file_name} content extracted")
-        return jsonify({"content": content}), 200
-    except Exception as e:
-        logging.exception(f"Failed to get content for {file_category}/{file_name}")
-        return jsonify({"error": str(e)}), 500
+    logging.info(f"File node {file_category}/{file_name} content extracted")
+    return fetch_entity(FileManagement.read_file_full_address(full_path), "content")
 
 
 @files_bp.route('/list_staged_files', methods=['GET'])
@@ -49,15 +39,10 @@ def list_files():
     user_id = get_user_context()
     user_folder = os.path.join(FILES_PATH, user_id)
 
-    try:
-        if os.path.exists(user_folder):
-            files = os.listdir(user_folder)
-            return jsonify({'files': files}), 200
-        else:
-            return jsonify({'message': 'User folder not found.'}), 404
-    except Exception as e:
-        print(f"Error listing files for user {user_id}: {e}")
-        return jsonify({'message': 'Failed to retrieve files.'}), 500
+    if not os.path.exists(user_folder):
+        return jsonify({'message': 'User folder not found.'}), 404
+
+    return fetch_entity(os.listdir(user_folder), "files")
 
 
 @files_bp.route('/file', methods=['POST'])

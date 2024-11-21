@@ -184,6 +184,7 @@ class NodeDatabaseManagement:
         }
 
         self.neo4jDriver.execute_delete(CypherQueries.DELETE_MESSAGE_AND_POSSIBLY_CATEGORY, parameters)
+        logging.info(f"User prompt node {message_id} deleted")
 
     # Categories
 

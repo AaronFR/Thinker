@@ -73,6 +73,7 @@ class FileManagement:
     @staticmethod
     def read_file_full_address(full_address: str, number_lines: bool = False) -> str:
         """Read the content of a specified file.
+        ToDo: A retry needs to be added if a file is not detected after upload
 
         :param full_address: The file name to read, including category folder prefix
         :param number_lines: Flag to determine if the content should be returned as numbered lines

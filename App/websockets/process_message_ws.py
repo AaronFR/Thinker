@@ -17,8 +17,12 @@ def init_process_message_ws(socketio):
     def process_message(data):
         """
         Accept a user prompt and process it through the selected persona.
+
         ToDo: refresh tokens on streams are a bit difficult. Implement if its possible in the release
          to not hit a regular automatically-refreshing request
+
+        :param data: A dictionary containing the user prompt and additional parameters.
+        :raises ValueError: If the prompt or persona is invalid.
         """
         logging.info(f"process_message triggered with data: {data}")
 

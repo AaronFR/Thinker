@@ -11,7 +11,6 @@ from Data.NodeDatabaseManagement import NodeDatabaseManagement
 from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
 from Utilities.ErrorHandler import ErrorHandler
-from Utilities.UserContext import get_user_context
 from Utilities.Utility import Utility
 
 
