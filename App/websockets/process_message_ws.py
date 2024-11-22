@@ -7,8 +7,16 @@ from Data.CategoryManagement import CategoryManagement
 from Functionality.Organising import Organising
 from Personas.Coder import Coder
 from Utilities.AuthUtils import login_required
+from Utilities.Routing import parse_and_validate_data
 
 ERROR_NO_PROMPT = "No prompt found"
+PROCESS_MESSAGE_SCHEMA = {
+    "prompt": {"required": True},
+    "additionalQA": {"required": False, "default": None},
+    "tags": {"required": False, "default": {}, "type": dict},
+    "files": {"required": False, "default": [], "type": list},
+    "messages": {"required": False, "default": [], "type": list},
+}
 
 
 def init_process_message_ws(socketio):
@@ -27,39 +35,26 @@ def init_process_message_ws(socketio):
         logging.info(f"process_message triggered with data: {data}")
 
         try:
-            user_prompt = data.get("prompt")
-            if user_prompt is None:
-                emit('error', {"error": ERROR_NO_PROMPT})
-                return
+            parsed_data = parse_and_validate_data(data, PROCESS_MESSAGE_SCHEMA)
 
-            additional_qa = data.get("additionalQA")
-            if additional_qa:
-                user_prompt = f"{user_prompt}\nAdditional Q&A context: \n{additional_qa}"
+            user_prompt = parsed_data["prompt"]
+            if parsed_data["additionalQA"]:
+                user_prompt += f"\nAdditional Q&A context: \n{parsed_data['additionalQA']}"
 
-            tags = data.get('tags', {})
-            if isinstance(tags, str):
-                tags = json.loads(tags)
-                if "tags" in tags:
-                    tags = tags["tags"]
-            logging.info(f"Loading the following tags while processing the prompt: {tags}")
+            tags = parsed_data["tags"]
 
-            files = data.get("files")
+            files = parsed_data["files"]
+            messages = parsed_data["messages"]
+
             file_references = Organising.process_files(files)
-
-            messages = data.get("messages")
-            selected_message_ids = [message["id"] for message in messages]
-
-            category_management = CategoryManagement()
-            tag_category = tags.get("category")
-            if tag_category:
-                logging.info(f"tag specified category: {tag_category}")
-                category = tag_category
-            else:
-                category = category_management.categorise_prompt_input(user_prompt)
-                tags["category"] = category
-
+            category = CategoryManagement().determine_category(user_prompt, tags.get("category"))
             selected_persona = get_selected_persona(data)
-            response_message = selected_persona.query(user_prompt, file_references, selected_message_ids, tags)
+            response_message = selected_persona.query(
+                user_prompt,
+                file_references,
+                [message["id"] for message in messages],
+                tags
+            )
             logging.info("Response generated: %s", response_message)
 
             chunk_content = []
