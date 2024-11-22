@@ -93,7 +93,7 @@ class Organising:
         config = Configuration.load_config()
 
         if not category:
-            category = CategoryManagement().categorise_prompt_input(user_prompt, response_message)
+            category = CategoryManagement.categorise_prompt_input(user_prompt, response_message)
         else:
             category = CategoryManagement.possibly_create_category(category)
         nodeDB().create_user_prompt_node(category, user_prompt, response_message)

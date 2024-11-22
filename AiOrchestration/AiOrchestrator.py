@@ -16,6 +16,7 @@ class AiOrchestrator:
 
     def __init__(self, input_files: List[str] = None):
         """Initializes a llm wrapper instance that can make call to a given model (currently only OpenAi models).
+        ToDo: if you remove input files, other classes that use the executor no longer have to be singletons
 
         :param input_files: A list of file names that users provide for analysis or reference in generating responses
         """

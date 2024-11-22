@@ -47,7 +47,7 @@ def init_process_message_ws(socketio):
             messages = parsed_data["messages"]
 
             file_references = Organising.process_files(files)
-            category = CategoryManagement().determine_category(user_prompt, tags.get("category"))
+            category = CategoryManagement.determine_category(user_prompt, tags.get("category"))
             selected_persona = get_selected_persona(data)
             response_message = selected_persona.query(
                 user_prompt,

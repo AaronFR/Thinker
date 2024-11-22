@@ -27,7 +27,8 @@ class CategoryManagement:
     def __init__(self):
         self.executor = AiOrchestrator()
 
-    def categorise_prompt_input(self, user_prompt: str, llm_response: str = None, creating: bool = True):
+    @staticmethod
+    def categorise_prompt_input(user_prompt: str, llm_response: str = None, creating: bool = True):
         """
 
         :param user_prompt: the input prompt string
@@ -52,7 +53,7 @@ class CategoryManagement:
                 "and categorize the data with the most suitable single-word answer." + \
                 "Write it as <result=\"(your_selection)\""
 
-        category_reasoning = self.executor.execute(
+        category_reasoning = CategoryManagement().executor.execute(
             [categorisation_instructions],
             [categorisation_input]
         )
@@ -92,7 +93,8 @@ class CategoryManagement:
         logging.warning("Failure to categorise!")
         return None
 
-    def stage_files(self, category=None):
+    @staticmethod
+    def stage_files(category: str = None):
         """
         Stages files into a specific category based on user prompt.
 
@@ -104,8 +106,8 @@ class CategoryManagement:
         files = FileManagement.list_staged_files()
         logging.info(f"Staged files: {files}")
 
-        id = self._return_id_for_category(category)
-        logging.info(f"Category selected: [{id}] - {category}")
+        category_id = CategoryManagement._return_id_for_category(category)
+        logging.info(f"Category selected: [{category_id}] - {category}")
 
         if not files:
             return
@@ -115,33 +117,34 @@ class CategoryManagement:
 
             for file in files:
                 staged_file_path = os.path.join(FileManagement.file_data_directory, user_id, file)
-                new_file_path = os.path.join(FileManagement.file_data_directory, str(id), file)
+                new_file_path = os.path.join(FileManagement.file_data_directory, str(category_id), file)
                 shutil.move(staged_file_path, new_file_path)
-                logging.info(f"{file} moved to {id}")
+                logging.info(f"{file} moved to {category_id}")
         except Exception:
-            logging.exception(f"ERROR: Failed to move all files: {files} to folder: {id} .")
+            logging.exception(f"ERROR: Failed to move all files: {files} to folder: {category_id} .")
 
-    def _return_id_for_category(self, category_name: str) -> Optional[str]:
+    @staticmethod
+    def _return_id_for_category(category_name: str) -> Optional[str]:
         """Retrieves the ID for the specified category, creating a new category if necessary.
 
         :param category_name: The name of the category associated with an existing category ID.
         :return: The category ID if found, otherwise None.
         """
-        id = nodeDB().get_category_id(category_name)
-        self._add_new_category(id)
+        category_id = nodeDB().get_category_id(category_name)
+        CategoryManagement._add_new_category(category_id)
 
-        logging.info(f"Id found for category [{id}] - {category_name}")
+        logging.info(f"Id found for category [{category_id}] - {category_name}")
 
-        return id
+        return category_id
 
     @staticmethod
-    def _add_new_category(id: int) -> None:
+    def _add_new_category(category_id: str) -> None:
         """
         Creates the folder to store files against a given category
 
-        :param id: The new folder id to create
+        :param category_id: The new folder category id to create
         """
-        new_directory = os.path.join(FileManagement.file_data_directory, str(id))
+        new_directory = os.path.join(FileManagement.file_data_directory, category_id)
         os.makedirs(new_directory, exist_ok=True)  # Create new folder for the given id
 
     @staticmethod
@@ -154,7 +157,7 @@ class CategoryManagement:
         :return: The determined category.
         """
         if not tag_category:
-            category = CategoryManagement().categorise_prompt_input(user_prompt)
+            category = CategoryManagement.categorise_prompt_input(user_prompt)
             logging.info(f"Prompt categorised: {category}")
             return category
 
@@ -162,5 +165,4 @@ class CategoryManagement:
 
 
 if __name__ == '__main__':
-    category_management = CategoryManagement()
-    category_management.stage_files("Put this file in Notes please")
+    CategoryManagement.stage_files("Put this file in Notes please")
