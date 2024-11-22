@@ -4,7 +4,6 @@ from typing import List, Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
-from Data.NodeDatabaseManagement import NodeDatabaseManagement
 from Functionality.Coding import Coding
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import PersonaConstants, CoderSpecification
@@ -32,8 +31,6 @@ class Coder(BasePersona):
         }
         self.instructions = CoderSpecification.CODER_INSTRUCTIONS
         self.configuration = CoderSpecification.load_configuration()
-
-        self.node_db = NodeDatabaseManagement()
 
         ErrorHandler.setup_logging()
 

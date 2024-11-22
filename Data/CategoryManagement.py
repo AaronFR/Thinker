@@ -7,7 +7,7 @@ from typing import Optional
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.FileManagement import FileManagement
-from Data.NodeDatabaseManagement import NodeDatabaseManagement
+from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.UserContext import get_user_context
 
 
@@ -25,7 +25,6 @@ class CategoryManagement:
         return cls._instance
 
     def __init__(self):
-        self.node_db = NodeDatabaseManagement()
         self.executor = AiOrchestrator()
 
     def categorise_prompt_input(self, user_prompt: str, llm_response: str = None, creating: bool = True):
@@ -37,7 +36,7 @@ class CategoryManagement:
          categories should not be created in the database
         :return: The name of the selected category
         """
-        categories = self.node_db.list_categories()
+        categories = nodeDB().list_categories()
 
         if llm_response:
             categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n" + \
@@ -61,7 +60,7 @@ class CategoryManagement:
         category = CategoryManagement.extract_example_text(category_reasoning)
 
         if (category not in categories) & creating:
-            self.node_db.create_category(category)
+            nodeDB().create_category(category)
 
         return category
 
@@ -117,7 +116,7 @@ class CategoryManagement:
         :param category_name: The name of the category associated with an existing category ID.
         :return: The category ID if found, otherwise None.
         """
-        id = self.node_db.get_category_id(category_name)
+        id = nodeDB().get_category_id(category_name)
         self._add_new_category(id)
 
         logging.info(f"Id found for category [{id}] - {category_name}")

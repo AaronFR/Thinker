@@ -1,7 +1,7 @@
 from Utilities import Globals
 
 
-class Pricing():
+class Pricing:
 
     @staticmethod
     def get_session_cost():

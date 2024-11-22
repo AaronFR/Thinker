@@ -2,7 +2,7 @@ import logging
 
 import shortuuid
 from flask import Blueprint
-from Data.NodeDatabaseManagement import NodeDatabaseManagement
+from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.UserContext import set_user_context
 import time
 
@@ -40,15 +40,14 @@ def register():
     if not data.get('password'):
         return jsonify({"error": "Password is required"}), 400
 
-    node_db = NodeDatabaseManagement()
     user_id = str(shortuuid.uuid())
 
-    if node_db.user_exists(email):
+    if nodeDB().user_exists(email):
         logging.warning(f"Registration failed: User with email {email} already exists.")
         return jsonify({"error": "User with this email already exists"}), 409
 
     logging.info("Registering new user")
-    registered = node_db.create_user(user_id, email, password_hash)
+    registered = nodeDB().create_user(user_id, email, password_hash)
     if registered:
         logging.info("Successfully registered new user")
         access_token = create_access_token(identity=user_id)
@@ -70,15 +69,14 @@ def login():
     if not email:
         return jsonify({"error": "Email is required"}), 400
 
-    node_db = NodeDatabaseManagement()
-    user_id = node_db.find_user_by_email(email)
+    user_id = nodeDB().find_user_by_email(email)
     if not user_id:
         return jsonify({"error": "This email is not present in our systems"}), 400
 
     password = data.get("password")
     if not password:
         return jsonify({"error": "Password is required"}), 400
-    password_hash = node_db.get_user_password_hash(user_id)
+    password_hash = nodeDB().get_user_password_hash(user_id)
     if not check_password(password, password_hash):
         return jsonify({"error": "Incorrect password"}), 400
 

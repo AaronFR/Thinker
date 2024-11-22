@@ -6,7 +6,7 @@ import pandas as pd
 import yaml
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Data.NodeDatabaseManagement import NodeDatabaseManagement
+from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Personas.PersonaSpecification.PersonaConstants import SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
 from Utilities.Constants import DEFAULT_ENCODING
 
@@ -111,8 +111,7 @@ class EncyclopediaManagementInterface:
         for term in terms:
             try:
                 term_name = term['term'].lower().strip()
-                ndm = NodeDatabaseManagement()
-                user_topics = ndm.list_user_topics()
+                user_topics = nodeDB().list_user_topics()
 
                 executor = AiOrchestrator()
                 selected_topic_raw = executor.execute(
@@ -121,7 +120,7 @@ class EncyclopediaManagementInterface:
                 )
                 selected_topic = selected_topic_raw.strip("'")
 
-                content = ndm.search_for_user_topic_content(selected_topic)
+                content = nodeDB().search_for_user_topic_content(selected_topic)
                 if content:
                     additional_context.append(content)
 

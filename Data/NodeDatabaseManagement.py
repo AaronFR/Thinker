@@ -14,11 +14,22 @@ from Utilities.UserContext import get_user_context
 
 class NodeDatabaseManagement:
     """
-    ToDo: should be made into a singleton
-
+    Singleton class for managing interactions with the Neo4j database.
     """
+
+    _instance = None
+    _lock = threading.Lock()
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            with cls._lock:  # Ensure thread-safety during instance creation
+                if not cls._instance:  # Double-check to avoid race conditions
+                    cls._instance = super(NodeDatabaseManagement, cls).__new__(cls)
+        return cls._instance
+
     def __init__(self):
-        self.neo4jDriver = Neo4jDriver()
+        if not hasattr(self, "neo4jDriver"):  # Prevent reinitialization
+            self.neo4jDriver = Neo4jDriver()
 
     # User
 
@@ -170,14 +181,13 @@ class NodeDatabaseManagement:
              "time": record["time"]} for record in records]
         return messages_list
 
-    def delete_message_by_id(self, message_id: int) -> None:
+    def delete_message_by_id(self, message_id: str) -> None:
         """
         Deletes a specific message (isolated USER_PROMPT node) by its id.
         If the CATEGORY the message is associated with has no more messages, it deletes the CATEGORY node as well.
 
-        :param message_id: ID of the message to be deleted (Neo4j internal id or custom id)
+        :param message_id: UUID of the message to be deleted
         """
-        message_id = int(message_id)
         parameters = {
             "user_id": get_user_context(),
             "message_id": message_id,

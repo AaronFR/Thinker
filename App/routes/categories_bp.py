@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from Data.NodeDatabaseManagement import NodeDatabaseManagement
+from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.Routing import fetch_entity
 from Utilities.auth_utils import login_required
 
@@ -14,8 +14,7 @@ def list_categories():
     :return: A JSON response containing the list of categories.
     :raises: JSON response with error message on failure.
     """
-    node_db = NodeDatabaseManagement()
-    return fetch_entity(node_db.list_categories(), "categories")
+    return fetch_entity(nodeDB().list_categories(), "categories")
 
 
 @categories_bp.route('/categories_with_files', methods=['GET'])
@@ -26,5 +25,4 @@ def list_categories_with_files():
     :return: A JSON response containing the list of categories with files.
     :raises: JSON response with error message on failure.
     """
-    node_db = NodeDatabaseManagement()
-    return fetch_entity(node_db.list_categories_with_files(), "categories")
+    return fetch_entity(nodeDB().list_categories_with_files(), "categories")

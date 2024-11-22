@@ -5,7 +5,7 @@ from flask import Blueprint, jsonify, request
 from werkzeug.utils import secure_filename
 
 from Data.FileManagement import FileManagement
-from Data.NodeDatabaseManagement import NodeDatabaseManagement
+from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.Routing import fetch_entity
 from Utilities.UserContext import get_user_context
 from Utilities.auth_utils import login_required
@@ -17,8 +17,7 @@ FILES_PATH = os.path.join(os.path.dirname(__file__), '../../Data/FileData')
 @files_bp.route('/files/<category_name>', methods=['GET'])
 def get_files(category_name):
     category_name = category_name.lower()
-    node_db = NodeDatabaseManagement()
-    return fetch_entity(node_db.get_files_by_category(category_name), "files")
+    return fetch_entity(nodeDB().get_files_by_category(category_name), "files")
 
 
 @files_bp.route('/file/<file_category>/<file_name>', methods=['GET'])
@@ -76,8 +75,7 @@ def upload_file():
 @login_required
 def delete_file(file_id):
     try:
-        node_db = NodeDatabaseManagement()
-        node_db.delete_file_by_id(file_id)
+        nodeDB().delete_file_by_id(file_id)
 
         logging.info(f"File node {file_id} deleted")
         return jsonify({"message": f"File {file_id} deleted successfully"}), 200

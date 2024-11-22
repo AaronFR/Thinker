@@ -7,7 +7,7 @@ from deprecated import deprecated
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.CategoryManagement import CategoryManagement
 from Data.Configuration import Configuration
-from Data.NodeDatabaseManagement import NodeDatabaseManagement
+from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification import PersonaConstants
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
@@ -15,8 +15,6 @@ from Data.FileManagement import FileManagement
 
 
 class Organising:
-
-    node_db = NodeDatabaseManagement()
 
     @deprecated(reason="ToDo adapt for node graph system")
     @staticmethod
@@ -73,7 +71,7 @@ class Organising:
         file_references = []
         if files:
             for file in files:
-                file_with_category = Organising.node_db.get_file_by_id(file.get("id"))
+                file_with_category = nodeDB().get_file_by_id(file.get("id"))
                 if not file_with_category:
                     continue
                 file_system_address = f"{file_with_category['category']}\\{file_with_category['name']}"
@@ -97,11 +95,11 @@ class Organising:
 
         if not category:
             category = categoryManagement.categorise_prompt_input(user_prompt, response_message)
-        Organising.node_db.create_user_prompt_node(category, user_prompt, response_message)
+        nodeDB().create_user_prompt_node(category, user_prompt, response_message)
 
         if config['beta_features']['user_context_enabled']:
             terms = UserContextManagement.extract_terms_from_input([user_prompt])
-            Organising.node_db.create_user_topic_nodes(terms)
+            nodeDB().create_user_topic_nodes(terms)
 
         categoryManagement.stage_files(category)
 

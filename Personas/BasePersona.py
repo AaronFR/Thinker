@@ -7,7 +7,7 @@ from Data.Configuration import Configuration
 
 from Data.EncyclopediaManagement import EncyclopediaManagement
 from Data.FileManagement import FileManagement
-from Data.NodeDatabaseManagement import NodeDatabaseManagement
+from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
 from Utilities.ErrorHandler import ErrorHandler
@@ -127,12 +127,10 @@ class BasePersona:
             logging.info(f"Extracting file content [{file_reference}]: {content}")
             file_content.append(content)
 
-        ndm = NodeDatabaseManagement()
-
         messages = []
         if selected_message_ids:
             for message_id in selected_message_ids:
-                message = ndm.get_message_by_id(message_id)
+                message = nodeDB().get_message_by_id(message_id)
                 content = message["prompt"] + " : \n\n" + message["response"]
                 messages.append(content)
         logging.info(f"Message content: {messages}")
@@ -156,6 +154,8 @@ class BasePersona:
 
         :param user_messages: List of existing user message
         :param previous_messages: prior messages selected as context for this prompt
+        :param streaming: whether this 'thought' is to be streamed or not, for the final stage in a workflow
+         for presenting information quickly to the user
         :return The generated response stream or an error message
         """
         logging.info("Processing user messages: %s", user_messages)
