@@ -91,17 +91,18 @@ class Organising:
         :return:
         """
         config = Configuration.load_config()
-        categoryManagement = CategoryManagement()
 
         if not category:
-            category = categoryManagement.categorise_prompt_input(user_prompt, response_message)
+            category = CategoryManagement().categorise_prompt_input(user_prompt, response_message)
+        else:
+            category = CategoryManagement.possibly_create_category(category)
         nodeDB().create_user_prompt_node(category, user_prompt, response_message)
 
         if config['beta_features']['user_context_enabled']:
             terms = UserContextManagement.extract_terms_from_input([user_prompt])
             nodeDB().create_user_topic_nodes(terms)
 
-        categoryManagement.stage_files(category)
+        CategoryManagement.stage_files(category)
 
     @staticmethod
     def summarise_content(content: str):

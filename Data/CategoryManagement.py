@@ -59,7 +59,18 @@ class CategoryManagement:
         logging.info(f"Category Reasoning: {category_reasoning}")
         category = CategoryManagement.extract_example_text(category_reasoning)
 
-        if (category not in categories) & creating:
+        return CategoryManagement.possibly_create_category(category)
+
+    @staticmethod
+    def possibly_create_category(category):
+        """
+        If it doesn't already exist in the node database
+
+        :param category: The category to possibly be added to the node database
+        :return: Category
+        """
+        categories = nodeDB().list_categories()
+        if (category not in categories):
             nodeDB().create_category(category)
 
         return category
@@ -132,6 +143,22 @@ class CategoryManagement:
         """
         new_directory = os.path.join(FileManagement.file_data_directory, str(id))
         os.makedirs(new_directory, exist_ok=True)  # Create new folder for the given id
+
+    @staticmethod
+    def determine_category(user_prompt, tag_category=None):
+        """
+        Determine the category for the user prompt.
+
+        :param user_prompt: The user's input prompt.
+        :param tag_category: The optional tag_category from the front end
+        :return: The determined category.
+        """
+        if not tag_category:
+            category = CategoryManagement().categorise_prompt_input(user_prompt)
+            logging.info(f"Prompt categorised: {category}")
+            return category
+
+        return tag_category
 
 
 if __name__ == '__main__':

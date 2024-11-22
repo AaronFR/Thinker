@@ -36,6 +36,12 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
       setIsProcessing(false);
     });
 
+    socket.on('error', () => {
+      // ToDo: Somne variety of "error encountered" graphic
+      console.log('Processing encountered an error');
+      setIsProcessing(false);
+    });
+
     return () => {
       // Clean up the WebSocket connection when the component unmounts
       if (socketRef.current) {
@@ -56,9 +62,9 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
           prompt: userInput,
           additionalQA: concatenatedQA,
           files: filesForPrompt,
-          messages: selectedMessages, // its comidic to send the full message back, to send the id, to get the full message - just send the id
+          messages: selectedMessages, // its comidic to the full node representation, to send the id, to get the full message - just send the id
           persona: selectedPersona,
-          tags: JSON.stringify({ tags })
+          tags: tags
         });
         console.log('Stream started');
       } else {
