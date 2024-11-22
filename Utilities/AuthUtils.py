@@ -1,4 +1,5 @@
 import logging
+
 from functools import wraps
 from flask import request, jsonify
 from flask_jwt_extended import decode_token

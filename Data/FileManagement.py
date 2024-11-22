@@ -1,10 +1,10 @@
 import csv
 import os
 import logging
+import yaml
+
 from mimetypes import guess_type
 from typing import List, Dict
-
-import yaml
 from deprecated.classic import deprecated
 
 from Utilities import Constants

@@ -1,10 +1,10 @@
 import ast
 import logging
+
 from typing import List, Tuple
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
-
 from Data.EncyclopediaManagement import EncyclopediaManagement
 from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB

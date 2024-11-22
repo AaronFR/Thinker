@@ -1,7 +1,8 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint
+
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.Routing import fetch_entity
-from Utilities.auth_utils import login_required
+from Utilities.AuthUtils import login_required
 
 categories_bp = Blueprint('categories', __name__)
 

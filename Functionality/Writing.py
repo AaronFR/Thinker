@@ -1,19 +1,21 @@
 import enum
 import logging
-from typing import Dict, List
 
+from typing import Dict, List
 from typing_extensions import deprecated
 
 import Personas.PersonaSpecification.WriterSpecification
-from Utilities import Constants
-from Personas.PersonaSpecification.EditorSpecification import REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS, \
-    EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA, EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS, \
-    EDITOR_LINE_REPLACEMENT_INSTRUCTIONS
+
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
-from Utilities.ExecutionLogs import ExecutionLogs
 from Data.FileManagement import FileManagement
 from Personas.PersonaSpecification import PersonaConstants
+from Personas.PersonaSpecification.EditorSpecification import REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS, \
+    EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA, EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS
+from Utilities import Constants
+from Utilities.ExecutionLogs import ExecutionLogs
+
+
 
 
 class Writing(enum.Enum):

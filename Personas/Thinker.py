@@ -5,6 +5,7 @@ from Functionality.Writing import Writing
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import PersonaConstants, CoderSpecification
 
+
 class Thinker(BasePersona):
     """
     Thinker persona to facilitate conversational interactions

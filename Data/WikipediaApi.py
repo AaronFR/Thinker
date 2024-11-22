@@ -1,10 +1,10 @@
 import logging
-import os
-from typing import Dict, Optional, List
-
-import requests
 import regex as re
+import requests
 import wikipediaapi
+import os
+
+from typing import Dict, Optional, List
 
 from Data.FileManagement import FileManagement
 

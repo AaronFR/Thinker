@@ -2,9 +2,9 @@ import logging
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Functionality.Writing import Writing
+from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import PersonaConstants, EditorSpecification
 from Utilities.ErrorHandler import ErrorHandler
-from Personas.BasePersona import BasePersona
 
 
 class Editor(BasePersona):

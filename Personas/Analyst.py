@@ -1,15 +1,16 @@
 import os
 import re
+
 from pprint import pformat
 from typing import List
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Utilities import Globals
-from Utilities.ExecutionLogs import ExecutionLogs
-from Utilities.ErrorHandler import ErrorHandler
 from Data.FileManagement import FileManagement
 from Personas.PersonaSpecification import PersonaConstants, AnalystSpecification
 from Personas.BasePersona import BasePersona
+from Utilities import Globals
+from Utilities.ExecutionLogs import ExecutionLogs
+from Utilities.ErrorHandler import ErrorHandler
 
 
 class Analyst(BasePersona):

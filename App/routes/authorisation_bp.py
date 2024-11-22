@@ -1,18 +1,16 @@
 import logging
 
 import shortuuid
-from flask import Blueprint
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
-from Utilities.UserContext import set_user_context
 import time
+
+from flask import Blueprint, jsonify, request, make_response
+from flask_jwt_extended import create_access_token, decode_token, unset_jwt_cookies, create_refresh_token
 
 from App import jwt
 from Utilities.Encryption import hash_password, check_password
-
-from flask import jsonify, request, make_response
-from flask_jwt_extended import create_access_token, decode_token, unset_jwt_cookies, create_refresh_token
-
-from Utilities.auth_utils import decode_jwt
+from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Utilities.UserContext import set_user_context
+from Utilities.AuthUtils import decode_jwt
 
 authorisation_bp = Blueprint('auth', __name__)
 

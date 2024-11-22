@@ -6,7 +6,7 @@ from flask_socketio import emit
 from Data.CategoryManagement import CategoryManagement
 from Functionality.Organising import Organising
 from Personas.Coder import Coder
-from Utilities.auth_utils import login_required
+from Utilities.AuthUtils import login_required
 
 ERROR_NO_PROMPT = "No prompt found"
 

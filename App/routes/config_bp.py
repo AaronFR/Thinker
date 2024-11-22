@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, request
 
 from Data.Configuration import Configuration
 from Utilities.Routing import fetch_entity
-from Utilities.auth_utils import login_required
+from Utilities.AuthUtils import login_required
 
 config_bp = Blueprint('config', __name__)
 

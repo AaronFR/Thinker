@@ -6,9 +6,10 @@ from werkzeug.utils import secure_filename
 
 from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Utilities.AuthUtils import login_required
 from Utilities.Routing import fetch_entity
 from Utilities.UserContext import get_user_context
-from Utilities.auth_utils import login_required
+
 
 files_bp = Blueprint('files', __name__)
 FILES_PATH = os.path.join(os.path.dirname(__file__), '../../Data/FileData')

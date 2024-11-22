@@ -1,9 +1,10 @@
 import logging
+import threading
 import os
+import shortuuid
+
 from datetime import datetime
 from typing import List, Dict
-
-import shortuuid as shortuuid
 
 from Data import CypherQueries
 from Data.FileManagement import FileManagement
@@ -15,6 +16,9 @@ from Utilities.UserContext import get_user_context
 class NodeDatabaseManagement:
     """
     Singleton class for managing interactions with the Neo4j database.
+
+    It's tempting to split this class up, however neo4jDriver has a notable time to connect, however this may be
+    negligible in a frequently used server
     """
 
     _instance = None

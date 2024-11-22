@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify
 
 from Data.Pricing import Pricing
 from Utilities.Routing import fetch_entity
-from Utilities.auth_utils import login_required
+from Utilities.AuthUtils import login_required
 
 pricing_bp = Blueprint('pricing', __name__)
 

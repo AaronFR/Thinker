@@ -3,7 +3,7 @@ import logging
 from flask import Blueprint, jsonify, request
 
 from Functionality.Augmentation import Augmentation
-from Utilities.auth_utils import login_required
+from Utilities.AuthUtils import login_required
 
 augmentation_bp = Blueprint('augmentation', __name__)
 

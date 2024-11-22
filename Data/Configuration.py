@@ -1,7 +1,7 @@
 import os
-from typing import Mapping
-
 import yaml
+
+from typing import Mapping
 
 
 class Configuration:

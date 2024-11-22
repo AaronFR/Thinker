@@ -1,11 +1,12 @@
 import os
 
-from Utilities.ExecutionLogs import ExecutionLogs
-from Utilities.ErrorHandler import ErrorHandler
 from Personas.PersonaSpecification.PersonaConstants import ANALYST, WRITER, EDITOR
 from Personas.Analyst import Analyst
 from Personas.Editor import Editor
 from Personas.Writer import Writer
+
+from Utilities.ExecutionLogs import ExecutionLogs
+from Utilities.ErrorHandler import ErrorHandler
 
 
 class PersonaSystem:
