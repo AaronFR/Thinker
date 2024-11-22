@@ -3,10 +3,15 @@ import logging
 from flask import Blueprint, jsonify, request
 
 from Data.Configuration import Configuration
-from Utilities.Routing import fetch_entity
+from Utilities.Routing import fetch_entity, parse_and_validate_data
 from Utilities.AuthUtils import login_required
 
 config_bp = Blueprint('config', __name__)
+
+UPDATE_CONFIG_SCHEMA = {
+    "field": {"required": True, "type": str},
+    "value": {"required": True, "type": str},
+}
 
 
 @config_bp.route('/data/config', methods=['GET'])
@@ -40,13 +45,9 @@ def update_config():
     """
     logging.info("trying to update config")
     data = request.json
-    if not data:
-        return jsonify({'error': 'No JSON data received'}), 400
-
-    field = data.get('field')
-    value = data.get('value')
-    if not field or value is None:
-        return jsonify({'error': 'Field and value are required'}), 400
+    parsed_data = parse_and_validate_data(data, UPDATE_CONFIG_SCHEMA)
+    field = parsed_data.get('field')
+    value = parsed_data.get('value')
 
     Configuration.update_config_field(field, value)
     return fetch_entity(f"Config - {field}: {value} updated successfully", "message")

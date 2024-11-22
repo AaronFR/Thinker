@@ -9,6 +9,7 @@ from flask_jwt_extended import create_access_token, decode_token, unset_jwt_cook
 from App import jwt
 from Utilities.Encryption import hash_password, check_password
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Utilities.Routing import parse_and_validate_data
 from Utilities.UserContext import set_user_context
 from Utilities.AuthUtils import decode_jwt
 
@@ -18,6 +19,15 @@ ERROR_NO_ID = "No user id found"
 ACCESS_TOKEN_COOKIE = "access_token_cookie"
 REFRESH_TOKEN_COOKIE = "refresh_token"
 BLACKLIST = set()  # ToDo: Will need to be more robust
+
+REGISTER_USER_SCHEMA = {
+    "email": {"required": True, "type": str},
+    "password": {"required": True, "type": str},
+}
+LOGIN_USER_SCHEMA = {
+    "email": {"required": True, "type": str},
+    "password": {"required": True, "type": str},
+}
 
 
 @authorisation_bp.route('/register', methods=['POST'])
@@ -29,14 +39,11 @@ def register():
     :return: a valid response including access and refresh JWT cookies
     """
     data = request.json
+    parsed_data = parse_and_validate_data(data, REGISTER_USER_SCHEMA)
 
-    email = data.get('email')
-    if not email:
-        return jsonify({"error": "Email is required"}), 400
+    email = parsed_data.get('email')
 
-    password_hash = hash_password(data.get('password'))
-    if not data.get('password'):
-        return jsonify({"error": "Password is required"}), 400
+    password_hash = hash_password(parsed_data.get('password'))
 
     user_id = str(shortuuid.uuid())
 
@@ -63,17 +70,14 @@ def register():
 @authorisation_bp.route('/login', methods=['POST'])
 def login():
     data = request.json
-    email = data.get("email")
-    if not email:
-        return jsonify({"error": "Email is required"}), 400
+    parsed_data = parse_and_validate_data(data, REGISTER_USER_SCHEMA)
 
+    email = parsed_data.get("email")
     user_id = nodeDB().find_user_by_email(email)
     if not user_id:
         return jsonify({"error": "This email is not present in our systems"}), 400
 
-    password = data.get("password")
-    if not password:
-        return jsonify({"error": "Password is required"}), 400
+    password = parsed_data.get("password")
     password_hash = nodeDB().get_user_password_hash(user_id)
     if not check_password(password, password_hash):
         return jsonify({"error": "Incorrect password"}), 400

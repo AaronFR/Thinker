@@ -4,8 +4,16 @@ from flask import Blueprint, jsonify, request
 
 from Functionality.Augmentation import Augmentation
 from Utilities.AuthUtils import login_required
+from Utilities.Routing import parse_and_validate_data
 
 augmentation_bp = Blueprint('augmentation', __name__)
+
+AUGMENT_PROMPT_SCHEMA = {
+    "user_prompt": {"required": True, "type": str},
+}
+QUESTION_PROMPT_SCHEMA = {
+    "user_prompt": {"required": True, "type": str},
+}
 
 
 @augmentation_bp.route('/augmentation/augment_prompt', methods=['POST'])
@@ -20,11 +28,10 @@ def augment_user_prompt():
 
     try:
         data = request.get_json()
-        logging.debug(f"Processing augmented prompt, data: {data}")
+        parsed_data = parse_and_validate_data(data, AUGMENT_PROMPT_SCHEMA)
 
-        user_prompt = data.get("user_prompt")
-        if user_prompt is None:
-            return jsonify({"error": "No user prompt provided"}), 400
+        logging.debug(f"Processing augmented prompt, data: {parsed_data}")
+        user_prompt = parsed_data.get("user_prompt")
 
         augmented_response = Augmentation.augment_prompt(user_prompt)
         logging.info(f"Augmented response: \n{augmented_response}")
@@ -51,12 +58,10 @@ def question_user_prompt():
 
     try:
         data = request.get_json()
-        logging.debug(f"Generating questions against user prompt, data: {data}")
+        parsed_data = parse_and_validate_data(data, QUESTION_PROMPT_SCHEMA)
+        user_prompt = parsed_data.get("user_prompt")
 
-        user_prompt = data.get("user_prompt")
-        if user_prompt is None:
-            return jsonify({"error": "No user prompt provided"}), 400
-
+        logging.debug(f"Generating questions against user prompt, data: {parsed_data}")
         questions_for_prompt = Augmentation.question_user_prompt(user_prompt)
         logging.info(f"questions for user prompt: \n{questions_for_prompt}")
 
