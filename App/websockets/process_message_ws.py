@@ -1,4 +1,3 @@
-import json
 import logging
 
 from flask_socketio import emit
@@ -6,7 +5,7 @@ from flask_socketio import emit
 from Data.CategoryManagement import CategoryManagement
 from Functionality.Organising import Organising
 from Personas.Coder import Coder
-from Utilities.AuthUtils import login_required
+from Utilities.AuthUtils import login_required_ws
 from Utilities.Routing import parse_and_validate_data
 
 ERROR_NO_PROMPT = "No prompt found"
@@ -21,7 +20,7 @@ PROCESS_MESSAGE_SCHEMA = {
 
 def init_process_message_ws(socketio):
     @socketio.on('start_stream')
-    @login_required
+    @login_required_ws
     def process_message(data):
         """
         Accept a user prompt and process it through the selected persona.

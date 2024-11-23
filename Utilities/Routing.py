@@ -33,7 +33,7 @@ def parse_and_validate_data(data, schema):
                        "tags": {"required": False, "default": {}, "type": dict},
                        "files": {"required": False, "default": [], "type": list},
                    }
-    :return isWebsocket: changes the function to emit "error" events for websockets
+    :return is_websocket: changes the function to emit "error" events for websockets
     :return: A dictionary of validated and parsed values.
     :raises ValueError: If a required field is missing or validation fails.
     """

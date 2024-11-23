@@ -51,7 +51,7 @@ def register():
         logging.warning(f"Registration failed: User with email {email} already exists.")
         return jsonify({"error": "User with this email already exists"}), 409
 
-    logging.info("Registering new user")
+    logging.info(f"Registering new user {user_id}")
     registered = nodeDB().create_user(user_id, email, password_hash)
     if registered:
         logging.info("Successfully registered new user")

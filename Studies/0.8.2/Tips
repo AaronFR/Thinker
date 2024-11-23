@@ -7,3 +7,6 @@ Tips
  in loops forever if its solution doesn't work or clashes with other pieces of code. If you ask instead "I am trying to create an X"
  how are X's typically created? How do they approach problem Y specifically?" This can avoid these types of clashes and provide
  a well rounded solution from the get go.
+- On the theme of looping forever, remember AI does not think, it got stuck looping the same stuff WHEN exposed to the logs
+ when trying to write a solution for refreshing tokens on a websocket connection. It got caught up and biased by the idea of
+ doing things a specific way instead of adapting to the information provided and changing track.
