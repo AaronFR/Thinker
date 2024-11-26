@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import List, Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from AiOrchestration.ChatGptModel import ChatGptModel, find_enum_value
 from Data.Configuration import Configuration
 from Functionality.Coding import Coding
 from Personas.BasePersona import BasePersona
@@ -53,24 +54,31 @@ class Coder(BasePersona):
                       initial_message: str,
                       file_references: List[str] = None,
                       selected_message_ids: List[str] = None,
-                      tags: List[str] = None):
+                      tags: Dict[str, str] = None):
         """
         Converses with the user
 
         :param initial_message: The user's initial prompt.
         :param file_references:
         :param selected_message_ids:
-        :param tags:
+        :param tags: Including category and model. If no model is supplied a default will be chosen
         """
         logging.info("chat workflow selected")
         analyser_messages = [
             initial_message
         ]
         prompt_messages = analyser_messages
+        model = find_enum_value(tags.get("model"))
 
         try:
             for iteration, message in enumerate(prompt_messages):
-                response = self.process_question(message, file_references, selected_message_ids, streaming=True)
+                response = self.process_question(
+                    message,
+                    file_references,
+                    selected_message_ids,
+                    streaming=True,
+                    model=model
+                )
                 logging.info("Iteration %d completed", iteration)
         
         except Exception as e:
@@ -92,6 +100,9 @@ class Coder(BasePersona):
         """
         executor = AiOrchestrator()
         config = Configuration.load_config()
+
+        model = find_enum_value(tags.get("model"))
+
         if tags.get("write"):
             files = [{
                 "file_name": tags.get("write"),
@@ -161,11 +172,14 @@ class Coder(BasePersona):
 
             try:
                 for iteration, message in enumerate(prompt_messages, start=1):
-                    if iteration == 1 or iteration == 2:
+                    if iteration == 1:
                         response = self.process_question(message, file_references)
                         logging.info("Iteration %d completed with response: %s", iteration, response)
 
                     if iteration == 2:
+                        response = self.process_question(message, file_references, model=model)
+                        logging.info("Iteration %d completed with response: %s", iteration, response)
+
                         Coding.write_to_file_task({
                             PersonaConstants.SAVE_TO: file_path,
                             PersonaConstants.INSTRUCTION: response
@@ -184,7 +198,7 @@ class Coder(BasePersona):
                              initial_message: str,
                              file_references: List[str] = None,
                              selected_message_ids: List[str] = None,
-                             tags: List[str] = None) -> None:
+                             tags: Dict[str, str] = None) -> None:
         """
         Generates a test file for a specified file
 

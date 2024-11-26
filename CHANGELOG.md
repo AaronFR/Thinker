@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Staged files remain staged persistently
 - User registration and login. User authentication
 - Users can manually select one or more messages as context for a prompt
+- Users can select which model they want to use (any model they want, as long as it's an OpenAi model)
 
 ### Changed
 

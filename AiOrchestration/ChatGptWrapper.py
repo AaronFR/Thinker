@@ -115,7 +115,6 @@ class ChatGptWrapper:
                 #     user_terminated = True
                 #     break  # Exit the loop if user interrupts
 
-
             # Combine all parts of the response for final cost calculation
             full_response = ''.join(response_content)
             final_message = [{"content": full_response}]
@@ -186,7 +185,7 @@ class ChatGptWrapper:
         Globals.current_request_cost += total_cost
 
         logging.info(
-            f"Request cost - Input tokens: {input_tokens}, Output tokens: {output_tokens}, "
+            f"Request cost [{model}] - Input tokens: {input_tokens}, Output tokens: {output_tokens}, "
             f"Total cost: ${total_cost:.4f}"
         )
 

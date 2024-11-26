@@ -46,7 +46,7 @@ function App () {
 
     // Tags Management
     const [tags, setTags] = useState(
-      { example: "etc" }  // e.g. write: "example.txt" category: "example"
+      { model: "gpt-4o-mini" }  // e.g. write: "example.txt" category: "example"
     );
 
     // File Management

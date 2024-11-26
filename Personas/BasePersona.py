@@ -4,6 +4,7 @@ import logging
 from typing import List, Tuple
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Configuration import Configuration
 from Data.EncyclopediaManagement import EncyclopediaManagement
 from Data.FileManagement import FileManagement
@@ -116,7 +117,8 @@ class BasePersona:
         question: str,
         file_references: List[str] = None,
         selected_message_ids: List[str] = None,
-        streaming: bool = False
+        streaming: bool = False,
+        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
      ):
         """Process and store the user's question.
 
@@ -136,7 +138,7 @@ class BasePersona:
         logging.info(f"Message content: {messages}")
 
         input_messages = [question] + file_content
-        response = self.think(input_messages, messages, streaming)
+        response = self.think(input_messages, messages, streaming, model)
         self.history.append((question, response))
         return response
 
@@ -144,7 +146,8 @@ class BasePersona:
         self,
         user_messages: List[str],
         previous_messages: List[str] = None,
-        streaming: bool = False
+        streaming: bool = False,
+        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
     ) -> str:
         """Process the input question and think through a response.
         ToDo: this will be called multiple times redundantly in a workflow, user_messages are small however and the
@@ -187,6 +190,7 @@ class BasePersona:
             output = executor.execute(
                 system_messages,
                 user_messages,
+                model=model,
                 assistant_messages=recent_history,
                 streaming=streaming
             )
