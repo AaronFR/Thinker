@@ -115,7 +115,6 @@ class ChatGptWrapper:
                 #     user_terminated = True
                 #     break  # Exit the loop if user interrupts
 
-            yield {'stream_end': True}
 
             # Combine all parts of the response for final cost calculation
             full_response = ''.join(response_content)
@@ -125,6 +124,8 @@ class ChatGptWrapper:
                 Utility.calculate_tokens_used(final_message, model),
                 model
             )
+
+            yield {'stream_end': True}
 
             return full_response
 
