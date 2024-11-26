@@ -10,3 +10,4 @@ Tips
 - On the theme of looping forever, remember AI does not think, it got stuck looping the same stuff WHEN exposed to the logs
  when trying to write a solution for refreshing tokens on a websocket connection. It got caught up and biased by the idea of
  doing things a specific way instead of adapting to the information provided and changing track.
+- 01 models have a bad habit of trying to 'codify' every problem they're given. Something to lean into for the coder persona, rectify and manage for everything else.
