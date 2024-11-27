@@ -9,17 +9,18 @@ from Utilities.Utility import Utility
 
 
 def generate_messages(
-        system_prompts: List[str] | str,
-        user_prompts: List[str],
-        assistant_messages: List[str] = None,
-        input_files: List[str] = None,
-        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
+    system_prompts: List[str] | str,
+    user_prompts: List[str],
+    assistant_messages: List[str] = None,
+    input_files: List[str] = None,
+    model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
 ) -> List[Dict[str, str]]:
     """Generates the list of messages by composing user and system prompts.
 
     :param system_prompts: Messages providing contextual guidance to the LLM
     :param user_prompts: User prompts representing instructions
     :param assistant_messages: History of the current interaction
+    :param input_files: selected file paths as reference for the prompt
     :param model: The selected model
     :return: List of formatted messages for LLM processing
     """
@@ -37,15 +38,16 @@ def generate_messages(
 
 
 def build_role_messages(
-        input_files: List[str],
-        system_prompts: List[str],
-        user_prompts: List[str],
-        assistant_messages: List[str] = None,
-        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
+    input_files: List[str],
+    system_prompts: List[str],
+    user_prompts: List[str],
+    assistant_messages: List[str] = None,
+    model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
 ) -> List[Dict[str, str]]:
     """Creates a list of messages to be handled by the ChatGpt API, the most important messages is the very last
     'latest' message in the list
 
+    :param input_files: selected file paths as reference for the prompt
     :param system_prompts: list of instructions to be saved as system info
     :param user_prompts: primary initial instruction and other supplied material
     :param assistant_messages: messages which represent the prior course of the conversation
@@ -55,30 +57,29 @@ def build_role_messages(
     """
     role_messages = []
     if assistant_messages:
-        role_messages.extend({
-                                 "role": ChatGptRole.ASSISTANT.value,
-                                 "content": prompt
-                             } for prompt in assistant_messages)
+        role_messages.extend(
+            _format_message(ChatGptRole.ASSISTANT, prompt) for prompt in assistant_messages)
 
     logging.info(f"Number of input files: {input_files}")
     for file in input_files:
         try:
             content = FileManagement.read_file(file)
-            role_messages.append({"role": ChatGptRole.USER.value, "content": f"<{file}>{content}</{file}>"})
+            role_messages.append(
+                _format_message(ChatGptRole.USER, f"<{file}>{content}</{file}>"))
         except FileNotFoundError:
             logging.error(f"File not found: {file}. Please ensure the file exists.")
-            role_messages.append({"role": ChatGptRole.SYSTEM.value, "content": f"File not found: {file}"})
+            role_messages.append(
+                _format_message(ChatGptRole.SYSTEM, f"File not found: {file}"))
         except Exception as e:
             logging.error(f"Error reading file {file}: {e}")
             role_messages.append(
-                {"role": ChatGptRole.SYSTEM.value, "content": f"Error reading file {file}. Exception: {e}"}
-            )
+                _format_message(ChatGptRole.SYSTEM, f"Error reading file {file}. Exception: {e}"))
 
     role_messages += [
-                         {"role": ChatGptRole.SYSTEM.value, "content": prompt} for prompt in system_prompts
-                     ] + [
-                         {"role": ChatGptRole.USER.value, "content": prompt} for prompt in user_prompts
-                     ]
+         _format_message(ChatGptRole.SYSTEM, prompt) for prompt in system_prompts
+     ] + [
+         _format_message(ChatGptRole.USER, prompt) for prompt in user_prompts
+     ]
 
     if model == ChatGptModel.CHAT_GPT_O1_MINI or model == ChatGptModel.CHAT_GPT_O1_PREVIEW:
         role_messages = _handle_o1_model_messages(role_messages)
@@ -86,6 +87,11 @@ def build_role_messages(
     logging.info(f"Generated role messages - [{model}] : {role_messages}")
 
     return role_messages
+
+
+def _format_message(role: ChatGptRole, content: str) -> Dict[str, str]:
+    """Format a message for OpenAI API."""
+    return {"role": role.value, "content": content}
 
 
 def _handle_o1_model_messages(role_messages: List[Dict[str, str]]):
