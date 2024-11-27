@@ -33,17 +33,24 @@ def handle_errors(debug_logging: bool = False, raise_errors: bool = False):
     return decorator
 
 
-def return_for_error(return_object: Union[object, Callable]):
+def return_for_error(return_object: Union[object, Callable], debug_logging: bool = False):
     """
     Returns a specified object if an error is encountered
 
     :param return_object: A static object to return in case of any general error, or a dynamic function for use in
      extracting specific parts of the user message for example
+    :param debug_logging: whether the decorated function and its arguments should be logged before and after execution
     """
     def decorator(method):
         @functools.wraps(method)
         def wrapper(*args, **kwargs):
             try:
+                if debug_logging:
+                    logging.debug(f"Executing {method.__name__} with args={args}, kwargs={kwargs}")
+                    result = method(*args, **kwargs)
+                    logging.debug(f"{method.__name__} executed successfully, outputting: {result}")
+                    return result
+
                 return method(*args, **kwargs)
             except Exception as e:
                 logging.exception(f"Error in {method.__name__}: {e}", exc_info=e)
