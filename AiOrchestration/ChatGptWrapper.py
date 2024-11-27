@@ -4,10 +4,11 @@ import logging
 import os
 from typing import List, Dict
 
-from openai import OpenAI, OpenAIError
+from openai import OpenAI
 
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Utilities import Globals
+from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
 
@@ -41,6 +42,7 @@ class CostConfiguration:
             ChatGptModel.CHAT_GPT_O1_PREVIEW: 0.00006,  # $/t
         }.items()}
 
+
 class ChatGptWrapper:
 
     _instance = None
@@ -56,11 +58,12 @@ class ChatGptWrapper:
     def __init__(self):
         ErrorHandler.setup_logging()
 
+    @handle_errors(debug_logging=True, raise_errors=True)
     def get_open_ai_response(
             self,
             messages: List[Dict[str, str]],
             model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
-            rerun_count: int=1) -> str | List[str]:
+            rerun_count: int = 1) -> str | List[str]:
         """Request a response from the OpenAI API.
 
         :param messages: The system and user messages to send to the ChatGpt client
@@ -68,26 +71,19 @@ class ChatGptWrapper:
         :param rerun_count: number of times to rerun the prompt
         :return: The content of the response from OpenAI or an error message to inform the next Executor
         """
-        try:
-            logging.debug(f"Calling OpenAI API with messages: {messages}")
-            chat_completion = self.open_ai_client.chat.completions.create(
-                model=model.value, messages=messages, n=rerun_count
-            )
-            self.calculate_prompt_cost(
-                chat_completion.usage.prompt_tokens,
-                chat_completion.usage.completion_tokens,
-                model
-            )
+        chat_completion = self.open_ai_client.chat.completions.create(
+            model=model.value, messages=messages, n=rerun_count
+        )
+        self.calculate_prompt_cost(
+            chat_completion.usage.prompt_tokens,
+            chat_completion.usage.completion_tokens,
+            model
+        )
 
-            responses = [choice.message.content for choice in chat_completion.choices]
-            return responses[0] if rerun_count == 1 else responses or None
-        except OpenAIError as e:
-            logging.exception(f"OpenAI API error", exc_info=e)
-            raise
-        except Exception as e:
-            logging.exception(f"Unexpected error", exc_info=e)
-            raise
+        responses = [choice.message.content for choice in chat_completion.choices]
+        return responses[0] if rerun_count == 1 else responses or None
 
+    @handle_errors(debug_logging=True, raise_errors=True)
     def get_open_ai_streaming_response(
             self,
             messages: List[Dict[str, str]],
@@ -98,49 +94,41 @@ class ChatGptWrapper:
         :param model: the actual llm being called
         :return: The content of the response from OpenAI or an error message to inform the next Executor
         """
-        try:
-            logging.debug(f"Calling OpenAI API with messages: {messages}")
-            response_content = []
+        response_content = []
 
-            chat_completion = self.open_ai_client.chat.completions.create(
-                model=model.value,
-                messages=messages,
-                stream=True
-            )
+        chat_completion = self.open_ai_client.chat.completions.create(
+            model=model.value,
+            messages=messages,
+            stream=True
+        )
 
-            for chunk in chat_completion:
-                delta = chunk.choices[0].delta
-                content = getattr(delta, 'content', None)
+        for chunk in chat_completion:
+            delta = chunk.choices[0].delta
+            content = getattr(delta, 'content', None)
 
-                if content:
-                    response_content.append(content)
-                    yield {'content': content}
+            if content:
+                response_content.append(content)
+                yield {'content': content}
 
-                # ToDo: Check for user termination condition here
-                # if user_requested_stop():  # Placeholder for actual stop condition
-                #     user_terminated = True
-                #     break  # Exit the loop if user interrupts
+            # ToDo: Check for user termination condition here
+            # if user_requested_stop():  # Placeholder for actual stop condition
+            #     user_terminated = True
+            #     break  # Exit the loop if user interrupts
 
-            # Combine all parts of the response for final cost calculation
-            full_response = ''.join(response_content)
-            final_message = [{"content": full_response}]
-            self.calculate_prompt_cost(
-                Utility.calculate_tokens_used(messages, model),
-                Utility.calculate_tokens_used(final_message, model),
-                model
-            )
+        # Combine all parts of the response for final cost calculation
+        full_response = ''.join(response_content)
+        final_message = [{"content": full_response}]
+        self.calculate_prompt_cost(
+            Utility.calculate_tokens_used(messages, model),
+            Utility.calculate_tokens_used(final_message, model),
+            model
+        )
 
-            yield {'stream_end': True}
+        yield {'stream_end': True}
 
-            return full_response
+        return full_response
 
-        except OpenAIError as e:
-            logging.exception("OpenAI API error", exc_info=e)
-            raise
-        except Exception as e:
-            logging.exception("Unexpected error", exc_info=e)
-            raise
-
+    @handle_errors(debug_logging=True, raise_errors=True)
     def get_open_ai_function_response(self,
                                       messages: List[Dict[str, str]],
                                       function_schema,
@@ -154,29 +142,21 @@ class ChatGptWrapper:
         """
         if model == ChatGptModel.CHAT_GPT_O1_MINI or model == ChatGptModel.CHAT_GPT_O1_PREVIEW:
             raise Exception("O1 models do not support function calls!")
-        try:
-            logging.debug(f"Calling OpenAI API with messages: {messages}")
-            chat_completion = self.open_ai_client.chat.completions.create(
-                model=model.value,
-                messages=messages,
-                functions=function_schema,
-                function_call={"name": "executiveDirective"}
-                # ToDo:investigate more roles
-            )
-            self.calculate_prompt_cost(
-                chat_completion.usage.prompt_tokens,
-                chat_completion.usage.completion_tokens,
-                model
-            )
+        chat_completion = self.open_ai_client.chat.completions.create(
+            model=model.value,
+            messages=messages,
+            functions=function_schema,
+            function_call={"name": "executiveDirective"}
+            # ToDo:investigate more roles
+        )
+        self.calculate_prompt_cost(
+            chat_completion.usage.prompt_tokens,
+            chat_completion.usage.completion_tokens,
+            model
+        )
 
-            arguments = chat_completion.choices[0].message.function_call.arguments
-            return json.loads(arguments) if arguments else {"error": "NO RESPONSE FROM OpenAI API"}
-        except OpenAIError:
-            logging.error(f"OpenAI API error:")
-            raise
-        except Exception:
-            logging.error(f"Unexpected error")
-            raise
+        arguments = chat_completion.choices[0].message.function_call.arguments
+        return json.loads(arguments) if arguments else {"error": "NO RESPONSE FROM OpenAI API"}
 
     def calculate_prompt_cost(self, input_tokens: int, output_tokens: int, model: ChatGptModel):
         """Calculates the estimated cost of a call to OpenAi ChatGpt Api

@@ -12,12 +12,14 @@ from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification import PersonaConstants
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
 from Data.FileManagement import FileManagement
+from Utilities.Decorators import return_for_error
 
 
 class Organising:
 
     @deprecated(reason="ToDo adapt for node graph system")
     @staticmethod
+    @return_for_error([])
     def get_relevant_files(input: List[str]) -> List[str]:
         """Retrieves relevant files based on the input question.
 
@@ -37,22 +39,18 @@ class Organising:
         summaries = Organising.get_files_with_summary()
 
         executor = AiOrchestrator()
-        try:
-            output = executor.execute_function(
-                [Organising._build_file_query_prompt(summaries)],
-                input,
-                SELECT_FILES_FUNCTION_SCHEMA
-            )
-            selected_files = output.get('files', [])
+        output = executor.execute_function(
+            [Organising._build_file_query_prompt(summaries)],
+            input,
+            SELECT_FILES_FUNCTION_SCHEMA
+        )
+        selected_files = output.get('files', [])
 
-            logging.info(f"Selected: {selected_files}, \nfrom: {evaluation_files}")
+        logging.info(f"Selected: {selected_files}, \nfrom: {evaluation_files}")
 
-            selected_files = FileManagement.list_staged_files()  # defaulting to grabbing staged files
-            logging.info(f"Selected files: {selected_files}")
-            return selected_files
-        except Exception as e:
-            logging.exception("Error retrieving relevant files", e)
-            return []
+        selected_files = FileManagement.list_staged_files()  # defaulting to grabbing staged files
+        logging.info(f"Selected files: {selected_files}")
+        return selected_files
 
     @deprecated()
     @staticmethod

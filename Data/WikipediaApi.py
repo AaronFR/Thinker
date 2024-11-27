@@ -7,6 +7,7 @@ import os
 from typing import Dict, Optional, List
 
 from Data.FileManagement import FileManagement
+from Utilities.Decorators import handle_errors
 
 data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
 
@@ -76,7 +77,7 @@ def _build_page_dict(page) -> Dict[str, object]:
 
     return page_dict
 
-
+@handle_errors
 def _get_wikipedia_infobox(term: str) -> Optional[str]:
     """
     Fetches the infobox for the specified Wikipedia term.
@@ -96,24 +97,20 @@ def _get_wikipedia_infobox(term: str) -> Optional[str]:
         'rvslots': 'main'
     }
 
-    try:
-        response = requests.get(url, params=params)
-        response.raise_for_status()
-        data = response.json()
+    response = requests.get(url, params=params)
+    response.raise_for_status()
+    data = response.json()
 
-        page = data['query']['pages'][0]
-        if 'revisions' in page:
-            content = page['revisions'][0]['slots']['main']['content']
-            infobox = _get_infobox(content)
-            if infobox:
-                return _clean_infobox(infobox)
-            else:
-                return None
+    page = data['query']['pages'][0]
+    if 'revisions' in page:
+        content = page['revisions'][0]['slots']['main']['content']
+        infobox = _get_infobox(content)
+        if infobox:
+            return _clean_infobox(infobox)
         else:
-            logging.info(f"Page '{term}' does not contain an infobox.")
             return None
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching infobox for '{term}': {e}")
+    else:
+        logging.info(f"Page '{term}' does not contain an infobox.")
         return None
 
 
@@ -244,6 +241,7 @@ def _add_new_redirects(term: str, redirect_file: str) -> None:
         logging.info(f"No redirects found for {term}.")
 
 
+@handle_errors
 def _get_redirects(term: str) -> List[str]:
     """
     Uses the MediaWiki API to fetch the redirect history for the specified Wikipedia page.
@@ -261,18 +259,14 @@ def _get_redirects(term: str) -> List[str]:
         'bllimit': 'max'  # Maximum number of redirects
     }
 
-    try:
-        response = requests.get(url, params=params)
-        response.raise_for_status()  # Raise an error for bad responses
-        data = response.json()
+    response = requests.get(url, params=params)
+    response.raise_for_status()  # Raise an error for bad responses
+    data = response.json()
 
-        redirects = []
-        if 'query' in data and 'backlinks' in data['query']:
-            redirects = [link['title'] for link in data['query']['backlinks']]
-        return redirects
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Failed to fetch redirects for '{term}': {e}")
-        return []
+    redirects = []
+    if 'query' in data and 'backlinks' in data['query']:
+        redirects = [link['title'] for link in data['query']['backlinks']]
+    return redirects
 
 
 if __name__ == "__main__":

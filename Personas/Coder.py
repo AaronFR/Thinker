@@ -40,6 +40,15 @@ class Coder(BasePersona):
                      file_references: List[str] = None,
                      selected_message_ids: List[str] = None,
                      tags: List[str] = None):
+        """
+        Determines and executes the appropriate workflow based on user input and tags.
+
+        :param initial_message: The user's initial message or prompt.
+        :param file_references: List of file paths referenced in the workflow.
+        :param selected_message_ids: UUIDs of previously selected messages for context.
+        :param tags: Additional tags to influence workflow selection.
+        :return: The last response message from the executed workflow.
+        """
         tags = tags or {}
 
         if tags.get("write"):

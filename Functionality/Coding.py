@@ -6,6 +6,7 @@ import subprocess
 from typing import Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Utilities.Decorators import return_for_error
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.ExecutionLogs import ExecutionLogs
 from Data.FileManagement import FileManagement
@@ -52,23 +53,24 @@ class Coding(enum.Enum):
         return extension in coding_extensions
 
     @staticmethod
+    @return_for_error(lambda e: f"Syntax error: {getattr(e, 'msg', 'Unknown error')}")
     def check_syntax(file_path: str) -> bool | str:
         """
         ToDo: implement
         ToDo: Assuming that script is written in python
 
         :param file_path: including category, file name and extension
-        :returns: whether or not the coding file successfully complies and if it doesn't a message explaining
+        :returns: whether the coding file successfully complies and if it doesn't a message explaining
          why not
         """
         script_path = os.path.join(FileManagement.file_data_directory, file_path)
-        try:
-            py_compile.compile(script_path, doraise=True)
-            return True
-        except py_compile.PyCompileError as e:
-            return f"Syntax error: {e.msg}"
+
+        py_compile.compile(script_path, doraise=True)
+        return True
 
     @staticmethod
+    @return_for_error(
+        lambda e: f"Error running the script: {getattr(e, 'stderr', 'No error output')}")
     def run_generated_script(file_path: str) -> str:
         """
         ToDo: implement + add method to check IF a script should be run
@@ -77,11 +79,8 @@ class Coding(enum.Enum):
         :returns: the output of the script or -if an error is encountered the error message
         """
         script_path = os.path.join(FileManagement.file_data_directory, file_path)
-        try:
-            result = subprocess.run(['python', script_path], capture_output=True, text=True, check=True)
-            return f"Script Output:\n{result.stdout}"
-        except subprocess.CalledProcessError as e:
-            return f"Error running the script:\n{e.stderr}"
+        result = subprocess.run(['python', script_path], capture_output=True, text=True, check=True)
+        return f"Script Output:\n{result.stdout}"
 
 
 if __name__ == '__main__':

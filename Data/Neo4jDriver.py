@@ -3,6 +3,8 @@ import os
 
 from neo4j import GraphDatabase, basic_auth
 
+from Utilities.Decorators import handle_errors
+
 
 class Neo4jDriver:
     def __init__(self):
@@ -13,6 +15,7 @@ class Neo4jDriver:
     def close(self):
         self.driver.close()
 
+    @handle_errors(debug_logging=True)
     def execute_write(self, query, parameters=None, field=None):
         """
 
@@ -44,16 +47,14 @@ class Neo4jDriver:
 
         return None
 
+    @handle_errors()
     def execute_read(self, query, parameters=None):
         with self.driver.session() as session:
             return session.read_transaction(lambda tx: list(tx.run(query, parameters)))
 
+    @handle_errors(debug_logging=True, raise_errors=True)
     def execute_delete(self, query, parameters=None):
         with self.driver.session() as session:
-            try:
-                session.write_transaction(lambda tx: tx.run(query, parameters))
-                logging.info(f"Successfully executed delete operation: {query} with params: {parameters}")
-            except Exception as e:
-                logging.error(f"Failed to execute write operation: {e}")
-                raise
+            session.write_transaction(lambda tx: tx.run(query, parameters))
+            logging.info(f"Successfully executed delete operation: {query} with params: {parameters}")
 

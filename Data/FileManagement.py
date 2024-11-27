@@ -9,6 +9,7 @@ from deprecated.classic import deprecated
 
 from Utilities import Constants
 from Utilities.Constants import DEFAULT_ENCODING
+from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.UserContext import get_user_context
 
@@ -130,6 +131,7 @@ class FileManagement:
             return f"[FAILED TO LOAD {file_path}]"
 
     @staticmethod
+    @handle_errors(raise_errors=True)
     def save_file(content: str, file_path, overwrite=False):
         """Saves the response content to a file_name.
 
@@ -139,12 +141,9 @@ class FileManagement:
         """
         data_path = os.path.join(FileManagement.file_data_directory, file_path)
         mode = "w" if overwrite or not os.path.exists(data_path) else "a"
-        try:
-            with open(data_path, mode, encoding=DEFAULT_ENCODING) as file:
-                file.write(content)
-                logging.info(f"File {'overwritten' if overwrite else 'saved'}: {data_path}")
-        except Exception:
-            logging.exception(f"ERROR: could not save file_name: {data_path}")
+        with open(data_path, mode, encoding=DEFAULT_ENCODING) as file:
+            file.write(content)
+            logging.info(f"File {'overwritten' if overwrite else 'saved'}: {data_path}")
 
     @staticmethod
     def write_to_csv(file_name, dictionaries, fieldnames):
@@ -169,6 +168,7 @@ class FileManagement:
                 logging.error("Error: Data is not a list of dictionaries!")
 
     @staticmethod
+    @handle_errors(raise_errors=True)
     def write_to_yaml(data: Dict[str, object], yaml_path: str, overwrite=False) -> None:
         """
         Writes the combined page data to a YAML file.
@@ -177,12 +177,9 @@ class FileManagement:
         :param yaml_path: The path where the YAML file will be saved.
         :param overwrite: Determines if the yaml should be replaced or meerly appended to
         """
-        try:
-            mode = "w" if overwrite or not os.path.exists(yaml_path) else "a"
-            with open(yaml_path, mode, encoding=DEFAULT_ENCODING) as yaml_file:
-                yaml.dump(data, yaml_file, default_flow_style=False, Dumper=MyDumper, allow_unicode=True)
-        except Exception as e:
-            logging.error(f"Failed to write to YAML file: {e}")
+        mode = "w" if overwrite or not os.path.exists(yaml_path) else "a"
+        with open(yaml_path, mode, encoding=DEFAULT_ENCODING) as yaml_file:
+            yaml.dump(data, yaml_file, default_flow_style=False, Dumper=MyDumper, allow_unicode=True)
 
     @staticmethod
     def load_yaml(yaml_path: str) -> Dict[str, object]:

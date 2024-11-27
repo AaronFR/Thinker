@@ -9,6 +9,7 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Personas.PersonaSpecification.PersonaConstants import SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
 from Utilities.Constants import DEFAULT_ENCODING
+from Utilities.Decorators import handle_errors
 
 
 class EncyclopediaManagementInterface:
@@ -53,29 +54,20 @@ class EncyclopediaManagementInterface:
         logging.info("Encyclopedia and redirects loaded successfully")
 
     @staticmethod
+    @handle_errors(raise_errors=True)
     def _load_yaml_file(filepath: str) -> Dict[str, str]:
         """Load a YAML file and return its content."""
-        try:
-            with open(filepath, 'r', encoding=DEFAULT_ENCODING) as file:
-                return yaml.safe_load(file) or {}
-
-        except yaml.YAMLError as yml_err:
-            logging.error("YAML error while loading encyclopedia data: %s", yml_err)
-        except Exception as e:
-            logging.exception("Error loading encyclopedia data", exc_info=e)
+        with open(filepath, 'r', encoding=DEFAULT_ENCODING) as file:
+            return yaml.safe_load(file) or {}
 
     @staticmethod
+    @handle_errors(raise_errors=True)
     def _load_redirects(filepath: str) -> Dict[str, str]:
         """Load redirect terms from a CSV file and return them as a dictionary."""
-        try:
-            redirects_df = pd.read_csv(filepath, header=None, names=['redirect_term', 'target_term'])
-            return redirects_df.set_index('redirect_term')['target_term'].to_dict()
+        redirects_df = pd.read_csv(filepath, header=None, names=['redirect_term', 'target_term'])
+        return redirects_df.set_index('redirect_term')['target_term'].to_dict()
 
-        except pd.errors.EmptyDataError:
-            logging.error("CSV file is empty: %s", filepath)
-        except Exception as e:
-            logging.exception("Error loading user encyclopedia data: %s", exc_info=e)
-
+    @handle_errors(raise_errors=True)
     def search_encyclopedia(self, user_messages: List[str]) -> str:
         """Searches the encyclopedia for terms derived from user messages.
 
@@ -83,22 +75,15 @@ class EncyclopediaManagementInterface:
         :return: A string representation of the additional context found.
         """
         executor = AiOrchestrator()
-        try:
-            output = executor.execute_function(
-                [self.instructions],
-                user_messages,
-                SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
-            )
-            terms = output['terms']
-            logging.info(f"terms to search for in {self.ENCYCLOPEDIA_NAME}: {terms}")
+        output = executor.execute_function(
+            [self.instructions],
+            user_messages,
+            SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
+        )
+        terms = output['terms']
+        logging.info(f"terms to search for in {self.ENCYCLOPEDIA_NAME}: {terms}")
 
-            return self.extract_terms_from_encyclopedia(terms)
-        except KeyError:
-            logging.exception(f"Output error: expected 'terms' key missing in the response. Actual: {output}")
-            return "An error occurred while retrieving user information."
-        except Exception:
-            logging.error(f"failed to process terms: {output}")
-            return "An error occurred while searching the encyclopedia."
+        return self.extract_terms_from_encyclopedia(terms)
 
     def extract_terms_from_encyclopedia(self, terms: List[dict[str, str]]) -> str:
         """Search for a set of terms in the database
