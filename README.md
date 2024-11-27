@@ -21,7 +21,8 @@ A powerful, general purpose AI application
 
 The primary objective of this project is to create an intelligent system that improves upon the quality of responses given
 by the base model,
-utilising multiple LLM calls to be able to iterate and evaluate prompts with quality and if requested quantity.
+utilising multiple LLM calls to be able to iterate and evaluate prompts with quality and scaling to any arbitrary size of 
+request.
 
 - Automate Problem-Solving: To provide a system that can evaluate and generate solutions for various tasks without
  extensive manual intervention.
@@ -39,6 +40,8 @@ utilising multiple LLM calls to be able to iterate and evaluate prompts with qua
 - **Inability to bring things together**: The thinker uses multiple files to determines different types of context for the prompt
  changing this to a more unified (graph) database, could improve program coherency and contextual awareness while reducing
  costs and simplifying outputs.
+- **Polish**: As of yet there is still a lot of work to do to make every interaction with the UI tolerable and pleasant, 
+ in particular showing messages and *especially* folders takes far to long/manual refreshes
 
 ## Features
 
@@ -63,37 +66,12 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 To refine the system's architecture and enhance its capabilities and efficiency, several key features are intended for implementation:
 
-- **4o and o1-mini**: Option in settings dependent on the workflow/persona
-
-- **Files**: ~~upload files to work on@ and for future reference, visible attached to categorise and user prompts~~
-  - Undo changes to files
-
-- **Micro thoughts**: Generated even while the prompt is being written. Question -> answer
-  - ~~Generate list of questions in regard to prompt, if appropriate ask user~~, otherwise pull from memory.
-  - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
-
-- **Persona Configuration**: Left to the user as much as possible.
-
-- **Internet access**: Adding internet access for workflows based on context, including the ability to expand the
- encyclopedia with web-sourced data.
-
-- **Graph Database Implementation**: A lot of work was put into creating functionality which now needs to be done with a 
- graph based methodology
-  - general knowledge (? Internet search will have to be implemented first to see the exact utility..)
-  - ~~user knowledge~~
-  - configuration (changes)
-  - Connecting relevant messages to the current prompt -> chain of messages displayed on the main section
-  - sub-categories (possibly)
-
-- **User Configuration Profile**: Profiles the user can easily select from the prompt screen and are clearly visible, e.g
- "expensive request", "private mode", "work", "humorous mode", etc so the user can quickly swap out configuration as they want
-
-- **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can
- actually write its own tests automatically to full standard.
-  - Long due that specific "integration" user tests where created to test that the system can satisfactorily answer the user,
-   avoid hallucinations, provide scores of high value, asses performance against tests and benchmarks etc.
-
 - **Expand Workflows**: More workflows for more use-cases, improving on the quality of existing workflows.
+  - **Display workflows**: Workflows should actually be displayed to the user as they are processed step by step.
+
+  - **Flexible workflows**: Workflows shouldn't really be 'hardcoded', they should be defined from a common format likely
+    JSON, this would allow workflow to be flexible and easily modified, copied and extended by the user.
+
   - **Modular Workflows**: In write_workflow for coder there's always a step for improving code quality/
     writing documentation this should actually be a switch depending on the context.
     Many workflows should consist of switch logic that allows for intelligent processing of a given request without needless details.
@@ -110,7 +88,36 @@ To refine the system's architecture and enhance its capabilities and efficiency,
    But why does that need to be a limitation? If we let it connect to tools that help it simulate the world while it ""thinks"" in words
    we can have the best of both worlds. Unlocking a lot of capability/accuracy.
 
+- **Payment System**: Top up system for updating balance, log files for each individual cost incurred.
+
 - **Programmes**: schedules and programs written on the fly for use by the user, customisable code base.
+
+- **Micro thoughts**: Generated even while the prompt is being written. Question -> answer
+  - ~~Generate list of questions in regard to prompt, if appropriate ask user~~, otherwise pull from memory.
+  - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
+
+- **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can
+ actually write its own tests automatically to full standard.
+  - Long due that specific "integration" user tests where created to test that the system can satisfactorily answer the user,
+   avoid hallucinations, provide scores of high value, asses performance against tests and benchmarks etc.
+
+- **Internet access**: Adding internet access for workflows based on context, including the ability to expand the
+ encyclopedia with web-sourced data.
+
+- **User Configuration Profile**: Profiles the user can easily select from the prompt screen and are clearly visible, e.g
+ "expensive request", "private mode", "work", "humorous mode", etc so the user can quickly swap out configuration as they want
+
+- **Persona Configuration**: Left to the user as much as possible.
+
+- **Undo Changes Files**: e.g. to files
+
+- **Graph Database Implementation**: A lot of work was put into creating functionality which now needs to be done with a 
+ graph based methodology
+  - general knowledge (? Internet search will have to be implemented first to see the exact utility..)
+  - ~~user knowledge~~
+  - configuration (changes)
+  - Connecting relevant messages to the current prompt -> chain of messages displayed on the main section
+  - sub-categories (possibly)
 
 - **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.
 
