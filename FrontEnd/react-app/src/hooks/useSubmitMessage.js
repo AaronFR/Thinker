@@ -4,7 +4,7 @@ import { apiFetch } from '../utils/authUtils';
 
 const flask_port = "http://localhost:5000";
 
-const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMessages, tags) => {
+const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMessages, tags, setWorkflow) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -44,6 +44,11 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
         setIsProcessing(false);
         reject(new Error('WebSocket connection failed'));
       });
+
+      socket.on('send_workflow', (data) => {
+        console.log("Receiving workflow schema", data.workflow)
+        setWorkflow(data.workflow)
+      })
 
       socket.on('stream_end', () => {
         console.log('Stream has ended');

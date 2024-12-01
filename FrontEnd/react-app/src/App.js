@@ -10,6 +10,7 @@ import PromptAugmentation from './components/PromptAugmentation';
 import PersonaSelector from './components/PersonaSelector';
 import UserInputForm from './components/UserInputForm';
 import SuggestedQuestions from './components/SuggestedQuestions';
+import Workflow from './components/Workflow';
 import Navigation from './components/Navigation';
 
 import useSubmitMessage from './hooks/useSubmitMessage';
@@ -54,9 +55,12 @@ function App () {
 
     // Message management
     const [selectedMessages, setSelectedMessages] = useState([])
+
+    // Workflow display
+    const [workflow, setWorkflow] = useState()
  
     // Custom hooks
-    const { message, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(flask_port, concatenatedQA, selectedFiles, selectedMessages, tags);
+    const { message, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(flask_port, concatenatedQA, selectedFiles, selectedMessages, tags, setWorkflow);
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt(flask_port);
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions(flask_port);
 
@@ -199,6 +203,10 @@ function App () {
               error={augmentedError}
               isAugmenting={isAugmenting}
               copyAugmentedPrompt={copyAugmentedPrompt}
+            />
+
+            <Workflow
+              workflowData={workflow}
             />
 
             <OutputSection 

@@ -2,6 +2,8 @@ import logging
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
+from flask_socketio import emit
+
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import find_enum_value
 from Data.Configuration import Configuration
@@ -11,6 +13,7 @@ from Personas.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES
 from Utilities.Decorators import return_for_error
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.UserContext import get_user_context
+from Workflows.Workflows import TEST_WORKFLOW
 
 
 class WorkflowManager:
@@ -51,6 +54,8 @@ class WorkflowManager:
         :return: The result of the workflow execution.
         :raises ValueError: If the workflow does not exist.
         """
+        emit("send_workflow", {"workflow": TEST_WORKFLOW})
+
         if name not in self.workflows:
             logging.error(f"Workflow '{name}' not found.")
             raise ValueError(f"Workflow {name} not found.")

@@ -1,0 +1,56 @@
+.workflow {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.workflow h1 {
+  font-size: 1.8em;
+  margin-bottom: 10px;
+}
+.workflow p {
+  margin: 5px 0;
+}
+
+.steps {
+  margin-top: 20px;
+}
+.steps h2 {
+  font-size: 1.5em;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.step {
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.step.pending {
+  border-left: 5px solid #ffc107;
+  background-color: #fffaf0;
+}
+.step.in-progress {
+  border-left: 5px solid #17a2b8;
+  background-color: #f0faff;
+  box-shadow: 0 0 10px rgba(23, 162, 184, 0.2);
+}
+.step.finished {
+  border-left: 5px solid #28a745;
+  background-color: #f0fff4;
+}
+.step h3 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+.step p {
+  margin: 5px 0;
+}
+.step ul {
+  margin-top: 10px;
+  padding-left: 20px;
+}
