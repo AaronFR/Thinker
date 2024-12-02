@@ -66,6 +66,8 @@ code {
   --color-settings-bg: rgba(255, 255, 255, 0.1);
   --shadow-focus-size: 0.625em;
   --color-text-shadow: rgba(0, 0, 0, 0.3);
+  --color-status-pending: #767676;
+  --color-status-in-progress: #b89317;
 
   /* Font Sizes */
   --font-size-base: 16px;

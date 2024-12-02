@@ -66,9 +66,9 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 To refine the system's architecture and enhance its capabilities and efficiency, several key features are intended for implementation:
 
-- **Expand Workflows**: More workflows for more use-cases, improving on the quality of existing workflows.
-  - **Display workflows**: Workflows should actually be displayed to the user as they are processed step by step.
+- **Auto-select messages**: After a message the option exists to automatically select that one for the next prompt.
 
+- **Expand Workflows**: More workflows for more use-cases, improving on the quality of existing workflows.
   - **Flexible workflows**: Workflows shouldn't really be 'hardcoded', they should be defined from a common format likely
     JSON, this would allow workflow to be flexible and easily modified, copied and extended by the user.
 
@@ -109,7 +109,8 @@ To refine the system's architecture and enhance its capabilities and efficiency,
 
 - **User Configuration Profile**: Profiles the user can easily select from the prompt screen and are clearly visible, e.g
  "expensive request", "private mode", "work", "humorous mode", etc so the user can quickly swap out configuration as they want
-
+  - e.g. I would prefer if coder displayed all code changes as 'before and after' rather than the entire file, additionally I prefer if
+   if it aims to implement the feature I'm asking for with the *minimum* amount of changes to the existing functionality.
 - **Persona Configuration**: Left to the user as much as possible.
 
 - **Undo Changes Files**: e.g. to files

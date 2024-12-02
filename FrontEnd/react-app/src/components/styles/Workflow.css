@@ -1,63 +1,191 @@
+/* Workflow.css - Enhanced and Integrated with index.css Standards */
+
+/* Workflow Container */
 .workflow {
-  font-family: Arial, sans-serif;
-  margin: 20px;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: var(--font-family-base);
+  margin: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--box-shadow);
+  transition: box-shadow var(--transition-duration-fast) ease-in-out, background-color var(--transition-duration-fast) ease-in-out;
+  background: var(--color-background);
 }
+body.dark-mode .workflow{
+  background: var(--color-background-dark);
+}
+
+/* Workflow Status States */
 .workflow.pending {
-  border-left: 5px solid #767676;
+  border-left: 5px solid var(--color-border-secondary);
 }
 .workflow.in-progress {
-  border-left: 5px solid #b89317;
+  border-left: 5px solid var(--color-status-in-progress);
   box-shadow: 0 0 10px rgba(23, 162, 184, 0.2);
 }
 .workflow.finished {
-  border-left: 5px solid #18a8d4;
+  border-left: 5px solid var(--color-border-active);
+  box-shadow: var(--box-shadow-deep);
 }
+
+/* Workflow Headers */
 .workflow h1 {
-  font-size: 1.8em;
-  margin-bottom: 10px;
+  font-size: var(--font-size-large);
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-dark);
 }
 .workflow p {
-  margin: 5px 0;
+  margin: var(--spacing-xs) 0;
+  color: var(--color-text);
 }
 
+/* Steps Section */
 .steps {
-  margin-top: 20px;
-}
-.steps h2 {
-  font-size: 1.5em;
-  margin-bottom: 15px;
-  color: #333;
+  margin-top: var(--spacing-lg);
 }
 
-.step {
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 6px;
-  border: 1px solid #ddd;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+.steps h2 {
+  font-size: var(--font-size-medium);
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-dark);
 }
+
+/* Individual Step */
+.step {
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-border-secondary);
+  transition: background-color var(--transition-duration-fast) ease, box-shadow var(--transition-duration-fast) ease;
+  background-color: var(--color-white);
+}
+body.dark-mode .step{
+  background: var(--color-background-dark);
+}
+
+/* Step statuses */
 .step.pending {
-  border-left: 5px solid #767676;
+  border-left: 5px solid var(--color-border-secondary);
 }
 .step.in-progress {
-  border-left: 5px solid #b89317;
+  border-left: 5px solid var(--color-status-in-progress);
   box-shadow: 0 0 10px rgba(23, 162, 184, 0.2);
 }
 .step.finished {
-  border-left: 5px solid #18a8d4;
+  border-left: 5px solid var(--color-border-active);
+  box-shadow: var(--box-shadow-deep);
 }
+
+.step:hover {
+  background-color: var(--color-secondary-bg);
+  box-shadow: var(--box-shadow-augmented);
+}
+
+/* Step Headers and Content */
 .step h3 {
-  font-size: 1.2em;
-  margin-bottom: 10px;
+  font-size: var(--font-size-medium);
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text-dark);
 }
 .step p {
-  margin: 5px 0;
+  margin: var(--spacing-xs) 0;
+  color: var(--color-text);
 }
 .step ul {
-  margin-top: 10px;
-  padding-left: 20px;
+  margin-top: var(--spacing-xs);
+  padding-left: var(--spacing-sm);
+  color: var(--color-text-muted);
+}
+
+/* Status Indicator */
+.status {
+  flex: 1;
+  text-align: right;
+  font-size: var(--font-size-small);
+}
+.status.pending {
+  color: var(--color-status-pending)
+}
+.status.in-progress {
+  color: var(--color-status-in-progress);
+}
+.status.finished {
+  color: var(--color-border-active);
+}
+
+/* Workflow Details */
+.workflow-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+}
+body.dark-mode .workflow-details{
+  border-bottom: 1px solid var(--color-border-secondary);
+}
+
+.workflow-name {
+  flex: 2;
+  font-size: var(--font-size-large);
+  color: var(--color-text);
+}
+
+.workflow-id {
+  flex: 1;
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+}
+
+/* Step Details */
+.step-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs);
+  border-bottom: 1px solid var(--color-border-secondary);
+}
+
+.step-index {
+  flex: 1;
+  font-size: var(--font-size-small);
+  color: var(--color-text);
+}
+
+.module {
+  flex: 2;
+  text-align: center;
+  font-size: var(--font-size-small);
+  color: var(--color-text);
+}
+
+/* Parameters */
+.parameters {
+  display: block;
+  margin-top: var(--spacing-sm);
+  text-align: left;
+  padding-left: var(--spacing-sm);
+  padding-bottom: var(--spacing-xs);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-small-lg);
+}
+body.dark-mode .parameters{
+  color: var(--color-text);
+}
+
+
+
+/* Additional Animations */
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+  }
+  to {
+      opacity: 1;
+  }
+}
+
+.workflow,
+.step {
+  animation: fadeIn var(--animation-duration) ease-in-out;
 }
