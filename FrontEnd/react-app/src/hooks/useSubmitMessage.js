@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
+
 import { apiFetch } from '../utils/authUtils';
 
-const flask_port = "http://localhost:5000";
+const FLASK_PORT = "http://localhost:5000";
 
 const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMessages, tags, workflow, setWorkflow) => {
   const [message, setMessage] = useState('');
@@ -22,7 +23,9 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
   const updateQueueRef = useRef([]);
   const isProcessingQueueRef = useRef(false); // Flag to prevent multiple concurrent queue processing
 
-  // Update workflowRef whenever workflow state changes
+  /**
+   * Update workflowRef whenever workflow state changes.
+   */
   useEffect(() => {
     workflowRef.current = workflow;
   }, [workflow]);
@@ -45,19 +48,26 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
         }
 
         const updatedWorkflow = { ...prevWorkflow };
-        const stepIndex = updateData.step - 1; // workflows are 1-indexed
-        const newStatus = updateData.status;
-
-        if (updatedWorkflow.steps[stepIndex]) {
-          updatedWorkflow.steps[stepIndex] = {
-            ...updatedWorkflow.steps[stepIndex],
-            status: newStatus
-          };
-          console.log("Updated workflow step:", updatedWorkflow.steps[stepIndex]);
+        if (updateData.type === 'status') {
+          // Update the overall workflow status
+          updatedWorkflow.status = updateData.status;
+          console.log("Updated workflow status:", updatedWorkflow.status);
           return updatedWorkflow;
         } else {
-          console.error(`Invalid workflow step index: ${stepIndex}`);
-          return prevWorkflow;
+          const stepIndex = updateData.step - 1; // workflows are 1-indexed
+          const newStatus = updateData.status;
+
+          if (updatedWorkflow.steps[stepIndex]) {
+            updatedWorkflow.steps[stepIndex] = {
+              ...updatedWorkflow.steps[stepIndex],
+              status: newStatus
+            };
+            console.log("Updated workflow step:", updatedWorkflow.steps[stepIndex]);
+            return updatedWorkflow;
+          } else {
+            console.error(`Invalid workflow step index: ${stepIndex}`);
+            return prevWorkflow;
+          }
         }
       });
     }
@@ -85,13 +95,13 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
       });
 
       socket.on('connect_error', () => {
-        console.log('WebSocket connect error');
-        setError('WebSocket connection failed. Please try again later.');
+        console.log('WebSocket connection error');
+        setError('Unable to establish a WebSocket connection. Please check your network and try again.');
         setIsProcessing(false);
         reject(new Error('WebSocket connection failed'));
       });
 
-      // Handle 'send_workflow' event
+      // Workflows
       socket.on('send_workflow', (data) => {
         console.log("Receiving workflow schema", data.workflow);
         setWorkflow(data.workflow);
@@ -99,10 +109,15 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
         processUpdateQueue();
       });
 
-      // Handle 'update_workflow' event
       socket.on('update_workflow', (data) => {
-        console.log("🍏 Receiving workflow update", data);
-        console.log("🍏🍏 Current workflow:", workflowRef.current);
+        console.log("Received workflow status update", data);
+        updateQueueRef.current.push({ type: 'status', status: data.status });
+        processUpdateQueue();
+    });
+
+      socket.on('update_workflow_step', (data) => {
+        console.log("Receiving workflow step update", data);
+        console.log("Current workflow:", workflowRef.current);
 
         if (!workflowRef.current || !workflowRef.current.steps) {
           console.log("Workflow not ready, queuing update:", data);
@@ -124,7 +139,7 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
         if (data.error === 'token_expired' && !isRefreshingRef.current) {
           isRefreshingRef.current = true;
           try {
-            const refreshResponse = await apiFetch(flask_port + '/refresh', { method: 'POST' });
+            const refreshResponse = await apiFetch(FLASK_PORT + '/refresh', { method: 'POST' });
             if (refreshResponse.ok) {
               console.log('Token refreshed successfully');
               socketRef.current.disconnect();
@@ -164,14 +179,21 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
 
     return () => {
       if (socketRef.current) {
+        socketRef.current.off('connect');
+        socketRef.current.off('response');
+        socketRef.current.off('connect_error');
+        socketRef.current.off('send_workflow');
+        socketRef.current.off('update_workflow');
+        socketRef.current.off('update_workflow_step');
+        socketRef.current.off('stream_end');
+        socketRef.current.off('error');
         socketRef.current.disconnect();
       }
     };
   }, [initializeSocket]);
 
   // Function to handle message submission
-  const handleSubmit = useCallback(
-    async (userInput, selectedPersona) => {
+  const handleSubmit = useCallback(async (userInput, selectedPersona) => {
       userInputRef.current = userInput;
       selectedPersonaRef.current = selectedPersona;
 

@@ -3,11 +3,10 @@ import React from "react";
 import './styles/Workflow.css'
 
 const Workflow = ({ workflowData }) => {
-  if (!workflowData) {
-    return <div>Testing</div>;
-  }
+  if (!workflowData) {return null}
+
   return (
-    <div className="workflow">
+    <div className={`workflow ${workflowData.status}`}>
       <h1>{workflowData.workflow_name} (v{workflowData.version})</h1>
       <p>Workflow ID: {workflowData.workflow_id}</p>
       <p>Status: {workflowData.status}</p>

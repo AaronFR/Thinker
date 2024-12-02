@@ -125,6 +125,8 @@ class ChatGptWrapper:
         )
 
         yield {'stream_end': True}
+        # ToDo: ideally workflow_step_finished events should be sent here
+        #  Could change the prior event to 'Streaming' and this new one to complete
 
         return full_response
 

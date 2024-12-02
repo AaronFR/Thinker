@@ -14,6 +14,8 @@ from Utilities.Decorators import return_for_error
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.UserContext import get_user_context
 
+UPDATE_WORKFLOW_STEP = "update_workflow_step"
+
 
 class WorkflowManager:
     """
@@ -57,6 +59,7 @@ class WorkflowManager:
             logging.error(f"Workflow '{name}' not found.")
             raise ValueError(f"Workflow {name} not found.")
         logging.info(f"Executing workflow '{name}'.")
+        emit("update_workflow", {"status": "in-progress"})
         return self.workflows[name](*args, **kwargs)
 
     @return_for_error("An error occurred during the chat workflow.", debug_logging=True)
@@ -87,7 +90,7 @@ class WorkflowManager:
         model = find_enum_value(tags.get("model"))
 
         for iteration, message in enumerate(prompt_messages, start=1):
-            emit("update_workflow", {"step": iteration, "status": "in-progress"})
+            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
             response = process_question(
                 message,
                 file_references,
@@ -95,7 +98,7 @@ class WorkflowManager:
                 streaming=True,
                 model=model
             )
-            emit("update_workflow", {"step": iteration, "status": "finished"})
+            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
             logging.info("Iteration %d completed", iteration)
 
         return response
@@ -185,7 +188,7 @@ class WorkflowManager:
             prompt_messages = analyser_messages
 
             for iteration, message in enumerate(prompt_messages, start=1):
-                emit("update_workflow", {"step": iteration, "status": "in-progress"})
+                emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
 
                 if iteration == 1:
                     response = process_question(
@@ -216,7 +219,7 @@ class WorkflowManager:
                     )
                     logging.info("Iteration %d completed, streaming workflow completion summary", iteration)
 
-                emit("update_workflow", {"step": iteration, "status": "finished"})
+                emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
 
         return response
 
@@ -263,7 +266,7 @@ class WorkflowManager:
         prompt_messages = test_prompt_messages
 
         for iteration, message in enumerate(prompt_messages, start=1):
-            emit("update_workflow", {"step": iteration, "status": "in-progress"})
+            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
 
             if iteration == 1:
                 response = process_question(
@@ -288,6 +291,6 @@ class WorkflowManager:
                 )
                 logging.info("Test Workflow Iteration %d completed, streaming workflow completion summary", iteration)
 
-            emit("update_workflow", {"step": iteration, "status": "finished"})
+            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
 
         return response

@@ -22,8 +22,6 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
   const [categories, setCategories] = useState([])
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
 
-  const abridgedTextLength = 160
-
   /**
    * Toggles the expansion of a category.
    * If the category is already expanded, it collapses it.

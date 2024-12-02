@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { apiFetch } from '../utils/authUtils';
 
+/*
+ * Suggests releveant questions to the user to help provide additional beneficial context in their prompt
+ * ToDo: Needs to be informed of reference file and message content
+ */
 const useSuggestedQuestions = (flaskPort) => {
   const [questionsForPrompt, setQuestionsForPrompt] = useState('');
   const [isQuestioning, setIsQuestioning] = useState(false);

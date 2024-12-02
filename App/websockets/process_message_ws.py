@@ -64,6 +64,7 @@ def init_process_message_ws(socketio):
                     emit('response', {'content': content})
                 elif 'stream_end' in chunk:
                     emit('stream_end')
+                    emit("update_workflow", {"status": "finished"})
                     break  # Exit the loop after emitting 'stream_end
 
             full_message = "".join(chunk_content)

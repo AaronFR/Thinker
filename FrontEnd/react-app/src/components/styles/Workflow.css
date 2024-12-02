@@ -6,6 +6,16 @@
   border: 1px solid #ddd;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+.workflow.pending {
+  border-left: 5px solid #767676;
+}
+.workflow.in-progress {
+  border-left: 5px solid #b89317;
+  box-shadow: 0 0 10px rgba(23, 162, 184, 0.2);
+}
+.workflow.finished {
+  border-left: 5px solid #18a8d4;
+}
 .workflow h1 {
   font-size: 1.8em;
   margin-bottom: 10px;
