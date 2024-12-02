@@ -15,9 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Users can select which model they want to use (any model they want, as long as it's an OpenAi model)
 - Workflow progress is shown visually to the user
 
+
 ### Changed
 
-- 
+- Responses now highlight code appropriately
+  - Can copy code sections
 
 ### Removed
 

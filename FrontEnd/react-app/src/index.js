@@ -9,6 +9,8 @@ import Pricing from './pages/Pricing/Pricing';
 import Login from './pages/Login/Login';
 import { apiFetch } from "./utils/authUtils";
 
+import 'highlight.js/styles/atom-one-dark.css';
+
 const flask_port = "http://localhost:5000";
 
 function RootApp() {

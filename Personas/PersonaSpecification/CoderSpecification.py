@@ -13,6 +13,7 @@ def load_configuration() -> str:
     indentation: {config['code_style']['indentation']}
     line length: {config['code_style']['line_length']}
     imports_order: {config['code_style']['imports_order']}
+    Please write your code inside code blocks with language identifiers
     """
 
 
