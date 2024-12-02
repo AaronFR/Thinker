@@ -201,6 +201,7 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
       setIsProcessing(true);
       setMessage(''); // Clear previous messages
       setTotalCost(null); // Reset cost for new request
+      setWorkflow(null); // Clear the previous workflow diagram
 
       console.log('Storing pending submit:', { userInput, selectedPersona });
       pendingSubmitRef.current = { userInput, selectedPersona };
