@@ -4,7 +4,7 @@ import { apiFetch } from '../utils/authUtils';
 
 const flask_port = "http://localhost:5000";
 
-const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMessages, tags, setWorkflow) => {
+const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMessages, tags, workflow, setWorkflow) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -16,8 +16,54 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
   const userInputRef = useRef('');
   const selectedPersonaRef = useRef(null);
 
-  // Ref to store the pending submit request
   const pendingSubmitRef = useRef(null);
+  const workflowRef = useRef(workflow);
+
+  const updateQueueRef = useRef([]);
+  const isProcessingQueueRef = useRef(false); // Flag to prevent multiple concurrent queue processing
+
+  // Update workflowRef whenever workflow state changes
+  useEffect(() => {
+    workflowRef.current = workflow;
+  }, [workflow]);
+
+  const processUpdateQueue = useCallback(() => {
+    if (isProcessingQueueRef.current) return; // Prevent re-entrancy
+    if (!workflowRef.current) return; // Ensure workflow is set
+
+    isProcessingQueueRef.current = true;
+
+    while (updateQueueRef.current.length > 0) {
+      const updateData = updateQueueRef.current.shift(); // Dequeue the first update
+
+      console.log("Processing queued workflow update:", updateData);
+
+      setWorkflow((prevWorkflow) => {
+        if (!prevWorkflow || !prevWorkflow.steps) {
+          console.error("Workflow is null or malformed. Cannot process the update.");
+          return prevWorkflow;
+        }
+
+        const updatedWorkflow = { ...prevWorkflow };
+        const stepIndex = updateData.step - 1; // workflows are 1-indexed
+        const newStatus = updateData.status;
+
+        if (updatedWorkflow.steps[stepIndex]) {
+          updatedWorkflow.steps[stepIndex] = {
+            ...updatedWorkflow.steps[stepIndex],
+            status: newStatus
+          };
+          console.log("Updated workflow step:", updatedWorkflow.steps[stepIndex]);
+          return updatedWorkflow;
+        } else {
+          console.error(`Invalid workflow step index: ${stepIndex}`);
+          return prevWorkflow;
+        }
+      });
+    }
+
+    isProcessingQueueRef.current = false;
+  }, []);
 
   // Function to initialize the socket connection
   const initializeSocket = useCallback(() => {
@@ -45,10 +91,28 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
         reject(new Error('WebSocket connection failed'));
       });
 
+      // Handle 'send_workflow' event
       socket.on('send_workflow', (data) => {
-        console.log("Receiving workflow schema", data.workflow)
-        setWorkflow(data.workflow)
-      })
+        console.log("Receiving workflow schema", data.workflow);
+        setWorkflow(data.workflow);
+        // After setting the workflow, process any queued updates
+        processUpdateQueue();
+      });
+
+      // Handle 'update_workflow' event
+      socket.on('update_workflow', (data) => {
+        console.log("🍏 Receiving workflow update", data);
+        console.log("🍏🍏 Current workflow:", workflowRef.current);
+
+        if (!workflowRef.current || !workflowRef.current.steps) {
+          console.log("Workflow not ready, queuing update:", data);
+          updateQueueRef.current.push(data);
+        } else {
+          // Enqueue the update and process the queue
+          updateQueueRef.current.push(data);
+          processUpdateQueue();
+        }
+      });
 
       socket.on('stream_end', () => {
         console.log('Stream has ended');
@@ -90,7 +154,7 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
         }
       });
     });
-  }, [flaskPort]);
+  }, [flaskPort, processUpdateQueue]);
 
   // Initialize the socket connection when the component mounts
   useEffect(() => {

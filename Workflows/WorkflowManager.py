@@ -13,7 +13,6 @@ from Personas.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES
 from Utilities.Decorators import return_for_error
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.UserContext import get_user_context
-from Workflows.Workflows import TEST_WORKFLOW
 
 
 class WorkflowManager:
@@ -54,8 +53,6 @@ class WorkflowManager:
         :return: The result of the workflow execution.
         :raises ValueError: If the workflow does not exist.
         """
-        emit("send_workflow", {"workflow": TEST_WORKFLOW})
-
         if name not in self.workflows:
             logging.error(f"Workflow '{name}' not found.")
             raise ValueError(f"Workflow {name} not found.")
@@ -90,6 +87,7 @@ class WorkflowManager:
         model = find_enum_value(tags.get("model"))
 
         for iteration, message in enumerate(prompt_messages, start=1):
+            emit("update_workflow", {"step": iteration, "status": "in-progress"})
             response = process_question(
                 message,
                 file_references,
@@ -97,6 +95,7 @@ class WorkflowManager:
                 streaming=True,
                 model=model
             )
+            emit("update_workflow", {"step": iteration, "status": "finished"})
             logging.info("Iteration %d completed", iteration)
 
         return response
@@ -186,6 +185,8 @@ class WorkflowManager:
             prompt_messages = analyser_messages
 
             for iteration, message in enumerate(prompt_messages, start=1):
+                emit("update_workflow", {"step": iteration, "status": "in-progress"})
+
                 if iteration == 1:
                     response = process_question(
                         message,
@@ -214,6 +215,8 @@ class WorkflowManager:
                         streaming=True
                     )
                     logging.info("Iteration %d completed, streaming workflow completion summary", iteration)
+
+                emit("update_workflow", {"step": iteration, "status": "finished"})
 
         return response
 
@@ -260,6 +263,8 @@ class WorkflowManager:
         prompt_messages = test_prompt_messages
 
         for iteration, message in enumerate(prompt_messages, start=1):
+            emit("update_workflow", {"step": iteration, "status": "in-progress"})
+
             if iteration == 1:
                 response = process_question(
                     message,
@@ -282,5 +287,7 @@ class WorkflowManager:
                     model=model
                 )
                 logging.info("Test Workflow Iteration %d completed, streaming workflow completion summary", iteration)
+
+            emit("update_workflow", {"step": iteration, "status": "finished"})
 
         return response

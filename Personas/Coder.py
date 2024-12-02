@@ -1,9 +1,13 @@
 import logging
 from typing import List
+
+from flask_socketio import emit
+
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import CoderSpecification
 from Utilities.ErrorHandler import ErrorHandler
 from Workflows.WorkflowManager import WorkflowManager
+from Workflows.Workflows import WRITE_WORKFLOW, WRITE_TESTS_WORKFLOW, CHAT_WORKFLOW
 
 
 class Coder(BasePersona):
@@ -42,6 +46,7 @@ class Coder(BasePersona):
         tags = tags or {}
 
         if tags.get("write"):
+            emit("send_workflow", {"workflow": WRITE_WORKFLOW})
             return self.workflow_manager.execute_workflow(
                 "write",
                 self.process_question,
@@ -51,6 +56,7 @@ class Coder(BasePersona):
                 tags
             )
         if tags.get("write_tests"):
+            emit("send_workflow", {"workflow": WRITE_TESTS_WORKFLOW})
             return self.workflow_manager.execute_workflow(
                 "write_tests",
                 self.process_question,
@@ -60,6 +66,7 @@ class Coder(BasePersona):
                 tags
             )
 
+        emit("send_workflow", {"workflow": CHAT_WORKFLOW})
         return self.workflow_manager.execute_workflow(
             "chat",
             self.process_question,

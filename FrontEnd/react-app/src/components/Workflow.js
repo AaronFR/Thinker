@@ -3,7 +3,6 @@ import React from "react";
 import './styles/Workflow.css'
 
 const Workflow = ({ workflowData }) => {
-  console.log(workflowData);
   if (!workflowData) {
     return <div>Testing</div>;
   }
@@ -15,7 +14,7 @@ const Workflow = ({ workflowData }) => {
       <div className="steps">
         <h2>Steps:</h2>
         {workflowData.steps.map((step) => (
-          <div key={step.step_id} className="step">
+          <div key={step.step_id} className={`step ${step.status}`}>
             <h3>Step {step.step_id}</h3>
             <p>
               <strong>Module:</strong> {step.module}
@@ -30,13 +29,11 @@ const Workflow = ({ workflowData }) => {
             {step.parameters && (
               <div>
                 <h4>Parameters:</h4>
-                <ul>
-                  {Object.entries(step.parameters).map(([key, value]) => (
-                    <div>
-                      {key}: {value}
-                    </div>
-                  ))}
-                </ul>
+                {Object.entries(step.parameters).map(([key, value]) => (
+                  <div>
+                    {key}: {value}
+                  </div>
+                ))}
               </div>
             )}
             {step.response && Object.keys(step.response).length > 0 && (

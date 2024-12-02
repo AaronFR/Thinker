@@ -31,17 +31,14 @@
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 .step.pending {
-  border-left: 5px solid #ffc107;
-  background-color: #fffaf0;
+  border-left: 5px solid #767676;
 }
 .step.in-progress {
-  border-left: 5px solid #17a2b8;
-  background-color: #f0faff;
+  border-left: 5px solid #b89317;
   box-shadow: 0 0 10px rgba(23, 162, 184, 0.2);
 }
 .step.finished {
-  border-left: 5px solid #28a745;
-  background-color: #f0fff4;
+  border-left: 5px solid #18a8d4;
 }
 .step h3 {
   font-size: 1.2em;
