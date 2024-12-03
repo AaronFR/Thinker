@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
+
 import debounce from 'lodash.debounce';
 
 import { SettingsContext } from './pages/Settings/Settings';
@@ -145,13 +146,10 @@ function App () {
     const handleMessageSelect = (message) => {
       setSelectedMessages((prevMessages) => {
         // ToDo: should filter by id not prompt, but uploaded files aren't setup for that yet
-        if (prevMessages.some((f) => f.prompt === message.prompt)) {
-          // If the message is already selected, filter it out
-          return prevMessages.filter((f) => f.prompt !== message.prompt);
-        } else {
-          // Otherwise, add new the new message to the list of selectedMessages
-          return [...prevMessages, message];
-        }
+        const messageExists = prevMessages.some((f) => f.prompt === message.prompt);
+           return messageExists 
+               ? prevMessages.filter((f) => f.prompt !== message.prompt)
+               : [...prevMessages, message];
         
       });
     };
