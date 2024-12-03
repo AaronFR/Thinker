@@ -118,6 +118,10 @@ function App () {
 
     const copyAugmentedPrompt = () => {
       setUserInput(augmentedPrompt); // Copy augmentedPrompt into userInput
+      if (questionUserPromptsEnabled && !formsFilled) {
+        generateQuestionsForPrompt(augmentedPrompt); // Retrigger questions for prompt
+        setResetResponsesTrigger(prev => prev + 1);
+      }
     };
 
     // Clean up the typing timer when the component unmounts
