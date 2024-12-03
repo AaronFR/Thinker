@@ -10,7 +10,7 @@ config_bp = Blueprint('config', __name__)
 
 UPDATE_CONFIG_SCHEMA = {
     "field": {"required": True, "type": str},
-    "value": {"required": True, "type": str},
+    "value": {"required": True, "type": object},
 }
 
 
