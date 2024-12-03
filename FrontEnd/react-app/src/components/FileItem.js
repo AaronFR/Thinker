@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { shortenText, markedFull } from '../utils/textUtils';
+import { shortenText, markedFull, CodeHighlighter } from '../utils/textUtils';
 
 const FLASK_PORT = "http://localhost:5000";
 
@@ -9,6 +9,8 @@ const FLASK_PORT = "http://localhost:5000";
  * FileItem Component
  * 
  * Displays an individual file with options to expand/collapse, select, and delete.
+ * ToDo: A method of automatic code detection/blocking code needs to be added, 
+ * responses will have code blocks input files (and saved files eventually) won't
  * 
  * Props:
  * - file (Object): The file object containing id, name, summary, content, category_id, and time.
@@ -110,9 +112,11 @@ const FileItem = ({ file, onDelete, onSelect }) => {
             ) : error ? (
               <span style={{ color: 'red' }}>{error}</span>
             ) : (
-              <span 
-                dangerouslySetInnerHTML={{ __html: markedFull(content) }}
-              />
+              <div className="markdown-output">
+                <CodeHighlighter>
+                  {content}
+                </CodeHighlighter>
+              </div>
             )}
           </p>
           {/* Add more file details if necessary */}

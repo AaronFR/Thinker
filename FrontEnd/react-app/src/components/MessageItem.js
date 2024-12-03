@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { shortenText, markedFull, shortenAndMarkupText } from '../utils/textUtils';
+import { shortenText, CodeHighlighter } from '../utils/textUtils';
 
 const FLASK_PORT = "http://localhost:5000";
 
@@ -78,10 +78,12 @@ const MessageItem = ({ msg, onDelete, onSelect }) => {
       </div>
       
       <div className="message-response">
-        <p><strong>Response:</strong> 
-          <span 
-            dangerouslySetInnerHTML={{ __html: isExpanded ? markedFull(msg.response) : shortenAndMarkupText(msg.response) }}
-          />
+        <p><strong>Response:</strong>
+          <div className="markdown-output">
+            <CodeHighlighter>
+              {isExpanded ? msg.response : shortenText(msg.response)}
+            </CodeHighlighter>
+          </div>
         </p>
       </div>
 
