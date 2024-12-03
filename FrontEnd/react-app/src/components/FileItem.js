@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import PropTypes from 'prop-types';
 
-import { shortenText, markedFull, CodeHighlighter } from '../utils/textUtils';
+import { shortenText, markedFull, MarkdownRenderer, CodeHighlighter } from '../utils/textUtils';
 
 const FLASK_PORT = "http://localhost:5000";
 
@@ -11,6 +11,7 @@ const FLASK_PORT = "http://localhost:5000";
  * Displays an individual file with options to expand/collapse, select, and delete.
  * ToDo: A method of automatic code detection/blocking code needs to be added, 
  * responses will have code blocks input files (and saved files eventually) won't
+ * If the file is say a python file you can just automatically add the code block when its to be displayed to the user
  * 
  * Props:
  * - file (Object): The file object containing id, name, summary, content, category_id, and time.
@@ -102,22 +103,20 @@ const FileItem = ({ file, onDelete, onSelect }) => {
       {isExpanded && (
         <div className="file-details" style={{ padding: '10px 0' }}>
           <p><strong>Description:</strong> 
-            <span 
-              dangerouslySetInnerHTML={{ __html: markedFull(file.summary || 'No description available.') }}
-            />
+            <MarkdownRenderer>
+              { file.summary || 'No description available.' }
+            </MarkdownRenderer>
           </p>
           <p><strong>Content:</strong> 
-            {isLoading ? (
-              <span>Loading content...</span>
-            ) : error ? (
-              <span style={{ color: 'red' }}>{error}</span>
-            ) : (
-              <div className="markdown-output">
-                <CodeHighlighter>
-                  {content}
-                </CodeHighlighter>
-              </div>
-            )}
+          {isLoading && <span>Loading content...</span>}
+          {!isLoading && error && <span className="error">{error}</span>}
+          {!isLoading && !error && (
+            <div className="markdown-output">
+              <CodeHighlighter>
+                {content}
+              </CodeHighlighter>
+            </div>
+          )}
           </p>
           {/* Add more file details if necessary */}
         </div>

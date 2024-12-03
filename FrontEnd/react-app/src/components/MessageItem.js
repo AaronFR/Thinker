@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import PropTypes from 'prop-types';
 
 import { shortenText, CodeHighlighter } from '../utils/textUtils';
@@ -111,6 +111,7 @@ MessageItem.propTypes = {
     response: PropTypes.string.isRequired,
     time: PropTypes.number.isRequired,
   }).isRequired,
+  onSelect: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
 };
 

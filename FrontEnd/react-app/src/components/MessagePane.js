@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import MessageItem from './MessageItem';
+import { apiFetch } from '../utils/authUtils';
 import { withLoadingOpacity } from '../utils/textUtils';
 
-import './styles/MessageHistory.css';
-import { apiFetch } from '../utils/authUtils';
+import MessageItem from './MessageItem';
 
-const flask_port= "http://localhost:5000"
+import './styles/MessageHistory.css';
+
+const FLASK_PORT= "http://localhost:5000"
 
 /**
  * MessageHistory Component
@@ -67,7 +68,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
    * @returns {Promise<void>}
    */
   const fetchCategories = async () => {
-    const response = await apiFetch(`${flask_port}/categories`, {
+    const response = await apiFetch(`${FLASK_PORT}/categories`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json"
@@ -100,7 +101,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
   const fetchMessagesByCategory = async (categoryName, categoryId) => {
     try {
       console.log(categoryName.toLowerCase())
-      const response = await apiFetch(`${flask_port}/messages/${categoryName.toLowerCase()}`, {
+      const response = await apiFetch(`${FLASK_PORT}/messages/${categoryName.toLowerCase()}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -159,18 +160,19 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
         {categories.length > 0 ? (
           categories.map((category) => (
             <div key={category.id} className="category-item">
-              <header 
-                className="category-title" 
+              <header
+                className="category-title"
                 onClick={() => toggleCategory(category.id, category.name)}
                 tabIndex={0}
                 role="button"
                 onKeyPress={(e) => { if (e.key === 'Enter') toggleCategory(category.id, category.name); }}
                 aria-expanded={expandedCategoryId === category.id}
+                aria-controls={`category-${category.id}`}
               >
                 {category.name}
               </header>
               {expandedCategoryId === category.id && (
-                <div className="message-list">
+                <div id={`category-${category.id}`} className="message-list">
                   {category.messages.length === 0 ? (
                     <p>Loading messages...</p>
                   ) : (

@@ -12,9 +12,10 @@ const flask_port = "http://localhost:5000";
  * Displays a list of file categories and their respective files.
  * Allows users to expand/collapse categories, view file details, select files, and delete files.
  * 
- * Props:
- * - onFileSelect (function): Callback function to handle file selection.
- * - isProcessing (boolean): Indicates if the app is currently processing data.
+ * :param onFileSelect: Callback function to handle file selection.
+ * :type onFileSelect: function
+ * :param isProcessing: Indicates if the app is currently processing data.
+ * :type isProcessing: bool
  */
 const FilePane = ({ onFileSelect, isProcessing }) => {
   const [categories, setCategories] = useState([]);
