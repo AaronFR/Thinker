@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
-import { csrfFetch } from '../../utils/authUtils'
-import './Login.css'
+import { csrfFetch } from '../../utils/authUtils';
 
-const flask_port = "http://localhost:5000";
+import './Login.css';
+
+
+const FLASK_PORT = "http://localhost:5000";
 
 export function Login() {
     const [isLoginMode, setIsLoginMode] = useState(true); // Toggles between Login and Register
@@ -14,16 +16,33 @@ export function Login() {
         setIsLoginMode(!isLoginMode)
     }
 
-    const handleLogin = async () => {
+    /**
+     * Sends a POST request to the specified endpoint with the provided data.
+     *
+     * :param {string} endpoint: The API endpoint to send the request to.
+     * :param {Object} data: The payload to include in the request body.
+     * :returns {Promise<Response>} The fetch response.
+     */
+    const postRequest = async (endpoint, data) => {
         try {
-            const response = await csrfFetch(`${flask_port}/login`, {
+            const response = await csrfFetch(`${FLASK_PORT}/${endpoint}`, {
                 method: 'POST',
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify(data),
             });
+            return response;
+        } catch (error) {
+            console.error(`Error in postRequest to ${endpoint}:`, error);
+            throw error;
+        }
+    };
+
+    const handleLogin = async () => {
+        try {
+            const response = await postRequest('login', { email, password });
 
             if (response.ok) {
                 alert('Login successful!');
@@ -34,20 +53,12 @@ export function Login() {
             }
         } catch (error) {
             alert('An error occurred during login.');
-            console.error('Error logging in:', error);
         }
     };
 
     const handleRegister = async () => {
         try {
-            const response = await fetch(`${flask_port}/register`, {
-                method: 'POST',
-                credentials: "include", // Ensure cookies are sent/received
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, password }),
-            });
+            const response = await postRequest('register', { email, password });
 
             if (response.ok) {
                 alert('User registered successfully!');
@@ -58,13 +69,15 @@ export function Login() {
             }
         } catch (error) {
             alert('An error occurred during registration.');
-            console.error('Error registering user:', error);
         }
     };
     
-    const handleLogout = async () => {
+    /**
+     * Handles user logout by sending a POST request to the logout endpoint.
+     */
+    const handleLogout = useCallback(async () => {
         try {
-            const response = await csrfFetch(`${flask_port}/logout`, {
+            const response = await csrfFetch(`${FLASK_PORT}/logout`, {
                 method: "POST",
             });
     
@@ -77,7 +90,7 @@ export function Login() {
         } catch (error) {
             console.error("Error logging out:", error);
         }
-    };
+    });
 
     return (
         <div className="auth-container">
@@ -103,8 +116,9 @@ export function Login() {
 
             <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
                 <div className="form-group">
-                    <label>Email:</label>
+                    <label htmlFor="email">Email:</label>
                     <input 
+                        id="email"
                         type="email" 
                         value={email} 
                         onChange={(e) => setEmail(e.target.value)} 
@@ -113,8 +127,9 @@ export function Login() {
                 </div>
 
                 <div className="form-group">
-                    <label>Password:</label>
+                    <label htmlFor="password">Password:</label>
                     <input 
+                        id="password"
                         type="password" 
                         value={password} 
                         onChange={(e) => setPassword(e.target.value)} 
@@ -128,6 +143,7 @@ export function Login() {
                     {isLoginMode ? 'Login' : 'Register'}
                 </button>
             </form>
+
 
             <button onClick={handleLogout} className="logout-button">Logout</button>
         </div>
