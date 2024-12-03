@@ -51,6 +51,7 @@ export function Login() {
 
             if (response.ok) {
                 alert('User registered successfully!');
+                window.location.href = "/";
             } else {
                 alert('Failed to register user.');
                 console.error('Register request failed with status:', response.status);
