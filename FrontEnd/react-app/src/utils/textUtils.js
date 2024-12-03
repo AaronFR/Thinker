@@ -2,6 +2,7 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import React, { useEffect, useRef } from 'react';
 import hljs from 'highlight.js';
+import he from 'he';
 
 /**
  * Shortens the provided text to the specified length and appends ellipsis if necessary.
@@ -83,6 +84,7 @@ const CopyCodeButton = ({ code }) => {
  * and processes non-code text with Markdown formatting.
  * 
  * ToDo: User customisation setting for specific hjls style sheets
+ *  - light mode should set to 'github.css' for one
  *
  * @param {string} children - The markdown text containing code blocks and regular text.
  */
@@ -114,21 +116,23 @@ export const CodeHighlighter = ({ children }) => {
       // Push the text before the code block
       if (lastIndex < index) {
         const text = children.substring(lastIndex, index);
-        // Convert markdown to HTML and sanitize
-        const html = DOMPurify.sanitize(marked(text));
+        const html = DOMPurify.sanitize(marked(text)); // Convert markdown to HTML and sanitize
         parts.push(<div key={`text-${index}`} dangerouslySetInnerHTML={{ __html: html }} />);
       }
+
+      // Decode HTML entities in code blocks to prevent malformed highlighting
+      const decodedCode = he.decode(code);
 
       // Push the highlighted code block
       parts.push(
         <div key={`code-container-${index}`} style={{ position: 'relative' }}>
-          <CopyCodeButton code={code} />
+          <CopyCodeButton code={decodedCode} />
           <pre>
             <code
               ref={(el) => (codeRefs.current[codeBlockIndex] = el)}
               className={lang ? `language-${lang}` : ''}
             >
-              {code}
+              {decodedCode}
             </code>
           </pre>
         </div>
@@ -150,6 +154,7 @@ export const CodeHighlighter = ({ children }) => {
 
   return <div>{renderContent()}</div>;
 };
+
 
 
 export const withLoadingOpacity = (isLoading) => ({ opacity: isLoading ? 0.5 : 1 });
