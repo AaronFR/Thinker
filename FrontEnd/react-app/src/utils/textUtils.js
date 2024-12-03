@@ -83,10 +83,11 @@ const CopyCodeButton = ({ code }) => {
  * Detects code blocks in the children prop, applies syntax highlighting to them,
  * and processes non-code text with Markdown formatting.
  * 
- * ToDo: User customisation setting for specific hjls style sheets
- *  - light mode should set to 'github.css' for one
+ * ToDo: User customization setting for specific hljs stylesheets
+ *  - Light mode should set to 'github.css' for one
  *
- * @param {string} children - The markdown text containing code blocks and regular text.
+ * @param {object} props - The component props.
+ * @param {string} props.children - The markdown text containing code blocks and regular text.
  */
 export const CodeHighlighter = ({ children }) => {
   const codeRefs = useRef([]);
@@ -102,6 +103,9 @@ export const CodeHighlighter = ({ children }) => {
 
   // Function to process and render code blocks
   const renderContent = () => {
+    // Reset codeRefs.current to empty array for the new render
+    codeRefs.current = [];
+
     // Simple regex to detect code blocks in Markdown format
     const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
     const parts = [];
@@ -112,47 +116,45 @@ export const CodeHighlighter = ({ children }) => {
     while ((match = codeBlockRegex.exec(children)) !== null) {
       const [fullMatch, lang, code] = match;
       const index = match.index;
-
-      // Push the text before the code block
-      if (lastIndex < index) {
+    
+      if (lastIndex < index) { // Push previous text segments
         const text = children.substring(lastIndex, index);
-        const html = DOMPurify.sanitize(marked(text)); // Convert markdown to HTML and sanitize
+        const html = DOMPurify.sanitize(marked(text));
         parts.push(<div key={`text-${index}`} dangerouslySetInnerHTML={{ __html: html }} />);
       }
-
-      // Decode HTML entities in code blocks to prevent malformed highlighting
-      const decodedCode = he.decode(code);
-
-      // Push the highlighted code block
-      parts.push(
+    
+      const decodedCode = he.decode(code); // Decode HTML entities
+    
+      parts.push( // Push highlighted code block
         <div key={`code-container-${index}`} style={{ position: 'relative' }}>
           <CopyCodeButton code={decodedCode} />
           <pre>
             <code
-              ref={(el) => (codeRefs.current[codeBlockIndex] = el)}
-              className={lang ? `language-${lang}` : ''}
+              ref={(el) => {
+                if (el) codeRefs.current.push(el); // Push ref instead of assigning by index
+              }}
+              className={lang ? `language-${lang} hljs` : ''}
             >
               {decodedCode}
             </code>
           </pre>
         </div>
       );
-
-      codeBlockIndex += 1;
+    
       lastIndex = index + fullMatch.length;
     }
 
-    // Process and push the remaining text after the last code block
-    if (lastIndex < children.length) {
+  // Add the remaining content after the last code block
+  if (lastIndex < children.length) {
       const text = children.substring(lastIndex);
       const html = DOMPurify.sanitize(marked(text));
       parts.push(<div key={`text-end`} dangerouslySetInnerHTML={{ __html: html }} />);
-    }
+  }
 
-    return parts;
-  };
+  return parts;
+};
 
-  return <div>{renderContent()}</div>;
+return <div>{renderContent()}</div>;
 };
 
 
