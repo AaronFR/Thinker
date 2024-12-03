@@ -13,3 +13,9 @@ pricing_bp = Blueprint('pricing', __name__)
 @login_required
 def get_session_cost():
     return fetch_entity(Pricing.get_session_cost(), "cost")
+
+
+@pricing_bp.route('/pricing/balance', methods=['GET'])
+@login_required
+def get_user_balance():
+    return fetch_entity(Pricing.get_user_balance(), "balance")

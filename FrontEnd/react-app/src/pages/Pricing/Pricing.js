@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+import { apiFetch } from '../../utils/authUtils';
 
-const flask_port= "http://localhost:5000"
+
+const FLASK_PORT= "http://localhost:5000"
 
 function FormatPrice(price) {
     const scale = 100
@@ -16,12 +18,40 @@ function FormatPrice(price) {
 }
 
 export function Pricing() {
+    const [balance, setBalance] = useState(0.0)
     const [sessionCost, setSessionCost] = useState(0.0)
+
+    useEffect(() => {
+        const loadBalance = async () => {
+            try {
+                const response = await apiFetch(FLASK_PORT + '/pricing/balance', {
+                    method: 'GET',
+                    headers: {
+                      "Content-Type": "application/json"
+                    },
+                    credentials: "include"
+                })
+
+                if (response.ok) {
+                    const balanceData = await response.json();
+                    if (balanceData && balanceData.balance) {
+                        setBalance(balanceData.balance)
+                    }
+                } else {
+                    console.error('Failed to load user balance', response)
+                }
+            } catch (error) {
+                console.error('Error retrieiving user balance:', error)
+            }
+        }
+
+        loadBalance();
+    })
 
     useEffect(() => {
         const loadSessionCost  = async () => {
             try {
-                const response = await fetch(flask_port + '/pricing/session', {
+                const response = await apiFetch(FLASK_PORT + '/pricing/session', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -52,7 +82,8 @@ export function Pricing() {
           <Link to="/settings" className="link">Settings</Link>
         </nav>
         
-        <h2>Session cost: {FormatPrice(sessionCost)}</h2>
+        <h2>Balance: {FormatPrice(balance)}</h2>
+        <h3>Current session: {FormatPrice(sessionCost)}</h3>
       </div>
     );
   }

@@ -412,3 +412,24 @@ class NodeDatabaseManagement:
             return names
 
         return None
+
+    # Pricing
+
+    def get_user_balance(self):
+        """
+        Returns the hashed password for a given user id
+
+        :return: Their hashed password
+        """
+        parameters = {
+            "user_id": get_user_context()
+        }
+        records = self.neo4jDriver.execute_read(
+            CypherQueries.GET_USER_BALANCE,
+            parameters
+        )
+
+        if len(records) > 1:
+            logging.error(f"Database Catastrophe: Multiple users for a user id! [{get_user_context()}]!")
+
+        return records[0]["balance"]

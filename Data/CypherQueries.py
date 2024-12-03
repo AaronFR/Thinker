@@ -20,7 +20,7 @@ RETURN user.password_hash as password_hash
 
 CREATE_USER = """
 MERGE (user:USER {id: $user_id})
-ON CREATE SET user.email = $email, user.password_hash = $password_hash
+ON CREATE SET user.email = $email, user.password_hash = $password_hash, user.balance = 0
 RETURN user.id
 """
 
@@ -150,4 +150,10 @@ DELETE_FILE_BY_ID = """
 MATCH (file:FILE)-[:BELONGS_TO]->(category:CATEGORY)<-[:HAS_CATEGORY]-(user:USER)
 WHERE id(file) = $file_id AND user.id = $user_id
 DETACH DELETE file
+"""
+
+# Pricing
+GET_USER_BALANCE = """
+MATCH (user:USER {id: $user_id})
+RETURN user.balance as balance
 """

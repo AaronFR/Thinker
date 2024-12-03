@@ -2,7 +2,6 @@ import React, { useReducer, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import ProgressBar from './ProgressBar';
-import { apiFetch } from '../utils/authUtils';
 
 import './styles/FileUploadButton.css';
 
