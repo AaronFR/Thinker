@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Responses now highlight code appropriately
   - Can copy code sections
+- user config files unique for each user
 
 ### Removed
 

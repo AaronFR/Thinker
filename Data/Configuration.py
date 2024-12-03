@@ -3,9 +3,13 @@ import yaml
 
 from typing import Mapping
 
+from Utilities.UserContext import get_user_context
+
+DATA_PATH = os.path.join(os.path.dirname(__file__), 'DataStores')
+USER_CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'UserConfigs')
+
 
 class Configuration:
-    data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
 
     @staticmethod
     def deep_merge(dict1, dict2):
@@ -19,16 +23,18 @@ class Configuration:
 
     @staticmethod
     def load_config(yaml_file="Config.yaml"):
-        """Loads the configuration from a YAML file and extracts values.
+        """
+        Loads the configuration from the baseline YAML file then merging the users config on top
+        extracting the combined values.
 
         :param yaml_file: The path to the YAML file
         :returns dict: A dictionary containing the extracted configuration values
         """
-        config_path = os.path.join(Configuration.data_path, yaml_file)
+        config_path = os.path.join(DATA_PATH, yaml_file)
         with open(config_path, 'r') as file:
             config = yaml.safe_load(file)
 
-        user_config_path = os.path.join(Configuration.data_path, 'UserConfig.yaml')
+        user_config_path = os.path.join(USER_CONFIG_PATH, get_user_context() + ".yaml")
         with open(user_config_path, 'r') as file:
             user_config = yaml.safe_load(file)
 
@@ -39,15 +45,16 @@ class Configuration:
 
     @staticmethod
     def update_config_field(field_path, value, yaml_file="UserConfig.yaml"):
-        """Updates a particular field in the users YAML configuration file.
-        For first time changes, the config file will be created automatically
+        """
+        Updates a particular field in the users YAML configuration file.
+        For first time changes, a new user config file will be created automatically
 
         :param field_path: The dot-separated path to the field to update (e.g., 'interface.dark_mode')
         :param value: The value to set for the specified field
         :param yaml_file: The path to the YAML file
         :returns: None
         """
-        config_path = os.path.join(Configuration.data_path, yaml_file)
+        config_path = os.path.join(USER_CONFIG_PATH, get_user_context() + ".yaml")
 
         if os.path.exists(config_path):
             with open(config_path, 'r') as file:
