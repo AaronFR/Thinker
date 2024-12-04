@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { marked } from 'marked';
 
 import { MarkdownRenderer, withLoadingOpacity } from '../utils/textUtils';
+import ExpandableElement from '../utils/expandableElement';
 
 import './styles/SuggestedQuestions.css';
 
@@ -123,8 +124,16 @@ const SuggestedQuestions = ({
       .join('\n');
   };
 
-  return (
-    <div className="markdown-questions-for-prompt">
+  const minContent = (
+    <MarkdownRenderer 
+      markdownText={"Questions and Answers +"} 
+      className="question-text" 
+      isLoading={isQuestioning}
+    />
+  );
+
+  const maxContent = (
+    <>
       <ol className="questions-list">
         {questions.map((question, index) => (
           <li key={index} className="question-item">
@@ -146,6 +155,17 @@ const SuggestedQuestions = ({
           </li>
         ))}
       </ol>
+    </>
+  );
+
+  return (
+    <div className="markdown-questions-for-prompt">
+        <ExpandableElement
+            minContent={minContent}
+            maxContent={maxContent}
+            initiallyExpanded={true}
+            toggleButtonLabel=""
+        />
     </div>
   );
 };

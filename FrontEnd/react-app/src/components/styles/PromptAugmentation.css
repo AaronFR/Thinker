@@ -1,4 +1,5 @@
 .augmented-container {
+  position: relative; /* Enable positioning for the child elements */
   display: flex;
   align-items: center; /* Vertically centers the items */
   justify-content: center; /* Horizontally centers the items */
