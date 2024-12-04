@@ -11,6 +11,7 @@ from Utilities import Globals
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
+from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 
 
 class ChatGptRole(enum.Enum):
@@ -168,11 +169,16 @@ class ChatGptWrapper:
         :param model: the specific OpenAI model being used, the non Mini version is *very* expensive,
         and should be used rarely
         """
-        total_cost = (
-            (input_tokens * self.cost_config.input_token_costs[model]) +
-            (output_tokens * self.cost_config.output_token_costs[model])
-        )
+        input_cost = input_tokens * self.cost_config.input_token_costs[model]
+        output_cost = output_tokens * self.cost_config.output_token_costs[model]
+        total_cost = (input_cost + output_cost)
         Globals.current_request_cost += total_cost
+
+        NodeDB().create_receipt(
+            input_cost,
+            output_cost,
+            model.value
+        )
 
         logging.info(
             f"Request cost [{model}] - Input tokens: {input_tokens}, Output tokens: {output_tokens}, "

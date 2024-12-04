@@ -156,4 +156,16 @@ DETACH DELETE file
 GET_USER_BALANCE = """
 MATCH (user:USER {id: $user_id})
 RETURN user.balance as balance
+CREATE_RECEIPT = """
+CREATE (receipt:RECEIPT { input_costs: $input_costs, output_costs: $output_costs, mode: $mode })
+WITH receipt
+MATCH (user:USER {id: $user_id})
+CREATE (receipt)-[:BELONGS_TO]->(user)
+WITH receipt
+OPTIONAL MATCH (prompt:USER_PROMPT {id: $message_id})
+FOREACH(_ IN CASE WHEN prompt IS NOT NULL THEN [1] ELSE [] END |
+    CREATE (prompt)-[:ASSOCIATES_WITH]->(receipt)
+)
+RETURN receipt
 """
+

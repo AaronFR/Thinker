@@ -18,6 +18,7 @@ from Utilities.Contexts import get_message_context
 class NodeDatabaseManagement:
     """
     Singleton class for managing interactions with the Neo4j database.
+    ToDo: each method should try catch for errors
 
     It's tempting to split this class up, however neo4jDriver has a notable time to connect, however this may be
     negligible in a frequently used server
@@ -435,3 +436,22 @@ class NodeDatabaseManagement:
             logging.error(f"Database Catastrophe: Multiple users for a user id! [{get_user_context()}]!")
 
         return records[0]["balance"]
+
+    def create_receipt(self, input_costs, output_costs, mode):
+        """
+        Creates a receipt representing a transaction cost to the user
+
+        :return: Their hashed password
+        """
+        logging.info(f"Logging receipt: {input_costs}, {output_costs}, {mode}, {get_user_context()}, {get_message_context()}")
+        parameters = {
+            "user_id": get_user_context(),
+            "message_id": get_message_context(),
+            "input_costs": input_costs,
+            "output_costs": output_costs,
+            "mode": mode
+        }
+        results = self.neo4jDriver.execute_write(
+            CypherQueries.CREATE_RECEIPT,
+            parameters
+        )
