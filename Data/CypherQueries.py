@@ -156,6 +156,13 @@ DETACH DELETE file
 GET_USER_BALANCE = """
 MATCH (user:USER {id: $user_id})
 RETURN user.balance as balance
+"""
+
+UPDATE_USER_BALANCE = """
+MATCH (user:USER {id: $user_id})
+SET user.balance = user.balance + $sum
+"""
+
 CREATE_RECEIPT = """
 CREATE (receipt:RECEIPT { input_costs: $input_costs, output_costs: $output_costs, mode: $mode })
 WITH receipt

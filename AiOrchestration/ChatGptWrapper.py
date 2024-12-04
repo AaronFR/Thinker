@@ -180,6 +180,8 @@ class ChatGptWrapper:
             model.value
         )
 
+        NodeDB().deduct_from_user_balance(total_cost)
+
         logging.info(
             f"Request cost [{model}] - Input tokens: {input_tokens}, Output tokens: {output_tokens}, "
             f"Total cost: ${total_cost:.4f}"

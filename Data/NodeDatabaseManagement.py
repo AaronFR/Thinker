@@ -437,6 +437,30 @@ class NodeDatabaseManagement:
 
         return records[0]["balance"]
 
+    def deduct_from_user_balance(self, sum: float):
+        """
+        Making it *very* obvious
+
+        :param sum: positive amount to deduct from the balance
+        """
+        self.update_user_balance(-sum)
+
+    def update_user_balance(self, sum: float):
+        """
+        Returns the hashed password for a given user id
+
+        :param sum: positive for an amount to add to the users balance. DON'T GET THE F###ING SIGN WRONG
+        :return: Their hashed password
+        """
+        parameters = {
+            "user_id": get_user_context(),
+            "sum": sum
+        }
+        self.neo4jDriver.execute_write(
+            CypherQueries.UPDATE_USER_BALANCE,
+            parameters
+        )
+
     def create_receipt(self, input_costs, output_costs, mode):
         """
         Creates a receipt representing a transaction cost to the user
