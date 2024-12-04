@@ -30,6 +30,7 @@ class CategoryManagement:
     @staticmethod
     def categorise_prompt_input(user_prompt: str, llm_response: str = None, creating: bool = True):
         """
+        ToDo: reject categories with a / in them, will confuse routing
 
         :param user_prompt: the input prompt string
         :param llm_response: The optional llm response for additional context

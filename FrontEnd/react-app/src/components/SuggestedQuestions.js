@@ -69,18 +69,24 @@ const SuggestedQuestions = ({
    * @returns {Array<string>} - An array of question strings.
    */
   const parseQuestions = (markdownText) => {
-
-    // Parse the markdown to extract list items
     const tokens = marked.lexer(questionsForPrompt);
-    let questions = [];
+    if (tokens) {
+      let questions = [];
 
-    tokens.forEach((token) => {
-      if (token.type === 'list') {
-        questions = token.items.map((item) => item.text);
-      }
-    });
+      tokens.forEach((token) => {
+        if (token.type !== 'list') {
+          questions.push(token.text);
+        }
+        if (token.type === 'list') {
+          questions = token.items.map((item) => item.text);
+        }
+      });
 
-    return questions;
+      return questions;
+    } else {
+      return [questionsForPrompt]
+    }
+    
   }
 
   const questions = parseQuestions(questionsForPrompt);
@@ -115,8 +121,7 @@ const SuggestedQuestions = ({
    * @returns {string} - Concatenated Q&A string.
    */
   const concatenateQA = (questionsList, answers) => {
-    return questionsList
-      .map((question, index) => {
+    return questionsList.map((question, index) => {
         const answer = answers[index] ? answers[index].trim() : "";
         return answer ? `${question}: ${answer}` : null
       })
