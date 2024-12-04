@@ -8,7 +8,7 @@ import jwt as pyjwt
 
 
 from App import jwt
-from Utilities.UserContext import set_user_context
+from Utilities.Contexts import set_user_context
 
 ACCESS_TOKEN_COOKIE = "access_token_cookie"
 REFRESH_TOKEN_COOKIE = "refresh_token"

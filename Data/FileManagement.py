@@ -11,7 +11,7 @@ from Utilities import Constants
 from Utilities.Constants import DEFAULT_ENCODING
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
-from Utilities.UserContext import get_user_context
+from Utilities.Contexts import get_user_context
 
 
 class MyDumper(yaml.Dumper):

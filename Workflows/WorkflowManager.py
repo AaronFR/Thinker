@@ -12,7 +12,7 @@ from Personas.PersonaSpecification import PersonaConstants
 from Personas.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
 from Utilities.Decorators import return_for_error
 from Utilities.ErrorHandler import ErrorHandler
-from Utilities.UserContext import get_user_context
+from Utilities.Contexts import get_user_context
 
 UPDATE_WORKFLOW_STEP = "update_workflow_step"
 

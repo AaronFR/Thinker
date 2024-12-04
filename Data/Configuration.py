@@ -3,7 +3,7 @@ import yaml
 
 from typing import Mapping
 
-from Utilities.UserContext import get_user_context
+from Utilities.Contexts import get_user_context
 
 DATA_PATH = os.path.join(os.path.dirname(__file__), 'DataStores')
 USER_CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'UserConfigs')

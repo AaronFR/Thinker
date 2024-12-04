@@ -8,7 +8,7 @@ from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.AuthUtils import login_required
 from Utilities.Routing import fetch_entity
-from Utilities.UserContext import get_user_context
+from Utilities.Contexts import get_user_context
 
 
 files_bp = Blueprint('files', __name__)

@@ -10,7 +10,9 @@ from Data import CypherQueries
 from Data.FileManagement import FileManagement
 from Data.Neo4jDriver import Neo4jDriver
 from Personas.PersonaSpecification import PersonaConstants
-from Utilities.UserContext import get_user_context
+from Utilities.Contexts import get_user_context
+
+from Utilities.Contexts import get_message_context
 
 
 class NodeDatabaseManagement:
@@ -149,7 +151,7 @@ class NodeDatabaseManagement:
 
         parameters = {
             "user_id": get_user_context(),
-            "message_id": str(shortuuid.uuid()),
+            "message_id": get_message_context(),
             "prompt": user_prompt,
             "response": llm_response,
             "time": time,

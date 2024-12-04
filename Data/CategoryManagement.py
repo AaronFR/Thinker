@@ -8,7 +8,7 @@ from typing import Optional
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
-from Utilities.UserContext import get_user_context
+from Utilities.Contexts import get_user_context
 
 
 class CategoryManagement:

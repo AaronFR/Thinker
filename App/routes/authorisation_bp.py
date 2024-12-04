@@ -10,7 +10,7 @@ from App import jwt
 from Utilities.Encryption import hash_password, check_password
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.Routing import parse_and_validate_data
-from Utilities.UserContext import set_user_context
+from Utilities.Contexts import set_user_context
 from Utilities.AuthUtils import decode_jwt
 
 authorisation_bp = Blueprint('auth', __name__)
