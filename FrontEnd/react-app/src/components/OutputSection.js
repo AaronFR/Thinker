@@ -36,6 +36,8 @@ const handleIncompleteMessage = (message) => {
 }
 
 const OutputSection = ({ message, error = '', isProcessing }) => {
+  if (!message && !error && !isProcessing) return null
+
   return (
     <div className="markdown-output">
       <CodeHighlighter>
