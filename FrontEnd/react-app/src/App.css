@@ -5,6 +5,7 @@
   font-size: var(--font-size-base);
   display: flex;
   height: 100vh;
+  overflow-y: visible;
   color: var(--color-text);
   padding: var(--spacing-md);
   margin: 0 auto;
@@ -83,6 +84,7 @@ body.dark-mode .link {
 /* Smooth scroll behavior for a more polished navigation */
 html {
   scroll-behavior: smooth;
+  overflow-y: hidden;
 }
 
 /* Left Pane */
@@ -91,8 +93,8 @@ html {
   background-color: var(--color-left-pane-bg);
   padding: var(--spacing-xs);
   border-right: 0.0625em solid var(--color-border);
+  overflow-y: auto;
 }
-
 body.dark-mode .left-pane {
   background: var(--color-background-dark);
   color: var(--color-text-light);
@@ -107,9 +109,56 @@ body.dark-mode .left-pane {
   background-color: var(--color-right-pane-bg);
   overflow-y: auto;
 }
-
 body.dark-mode .right-pane {
   background: var(--color-background-dark);
   color: var(--color-text-light);
   transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* Scrolling */
+
+/* Right Pane */
+.right-pane::-webkit-scrollbar {
+  width: 12px; /* Set the width of the scrollbar */
+}
+
+.right-pane::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the scrollbar track */
+  border-radius: 10px; /* Roundness of the scrollbar track */
+}
+body.dark-mode .right-pane::-webkit-scrollbar-track {
+  background: #161616; /* Color of the scrollbar track */
+  border-radius: 10px; /* Roundness of the scrollbar track */
+}
+
+.right-pane::-webkit-scrollbar-thumb {
+  background: #888; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Roundness of the scrollbar thumb */
+}
+
+.right-pane::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color of the scrollbar thumb on hover */
+}
+
+/* Left Pane */
+.left-pane::-webkit-scrollbar {
+  width: 12px; /* Set the width of the scrollbar */
+}
+
+.left-pane::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color of the scrollbar track */
+  border-radius: 10px; /* Roundness of the scrollbar track */
+}
+body.dark-mode .left-pane::-webkit-scrollbar-track {
+  background: #161616; /* Color of the scrollbar track */
+  border-radius: 10px; /* Roundness of the scrollbar track */
+}
+
+.left-pane::-webkit-scrollbar-thumb {
+  background: #888; /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Roundness of the scrollbar thumb */
+}
+
+.left-pane::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color of the scrollbar thumb on hover */
 }
