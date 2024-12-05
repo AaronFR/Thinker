@@ -96,6 +96,13 @@ export const CodeHighlighter = ({ children }) => {
     // Highlight each code block
     codeRefs.current.forEach((codeEl) => {
       if (codeEl) {
+        if (codeEl.dataset.highlighted) {
+          // Un-set the highlighted attribute -if a streamed code block needs to be re-rendered
+          delete codeEl.dataset.highlighted;
+        }
+        const code = codeEl.textContent;
+        const sanitizedCode = DOMPurify.sanitize(code);
+        codeEl.innerHTML = sanitizedCode;
         hljs.highlightElement(codeEl);
       }
     });
