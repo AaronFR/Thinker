@@ -41,6 +41,8 @@ export const shortenAndMarkupText = (text, maxLength = 160) => {
    * Renders the standard markedown text format with an opacity filter while the operation is being reloaded
    * If no text is present no element will be rendered
    * 
+   * ToDo: Custom rendering for markdown elements e.g. lists headings titles..
+   * 
    * @param {string} markdownText - The text to shorten and format
    * @param {string} className - The given CSS class name
    * @param {function} isLoading - The function to determine if opacity should be lowered while being reloaded
@@ -85,6 +87,7 @@ const CopyCodeButton = ({ code }) => {
  * 
  * ToDo: User customization setting for specific hljs stylesheets
  *  - Light mode should set to 'github.css' for one
+ * ToDo: can't render arrow's? => becomes =&gt
  *
  * @param {object} props - The component props.
  * @param {string} props.children - The markdown text containing code blocks and regular text.

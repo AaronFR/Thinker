@@ -37,7 +37,7 @@ request.
 ## Current Limitations
 
 - **Limited workflows**: Currently the Thinker can create code classes, test classes and write general reports for a given topic.
-- **Inability to bring things together**: The thinker uses multiple files to determines different types of context for the prompt
+- **Inability to bring things together**: The thinker uses multiple files to determine different types of context for the prompt
  changing this to a more unified (graph) database, could improve program coherency and contextual awareness while reducing
  costs and simplifying outputs.
 - **Polish**: As of yet there is still a lot of work to do to make every interaction with the UI tolerable and pleasant, 
@@ -67,6 +67,8 @@ The project's architecture is designed with modularity in mind, allowing for the
 To refine the system's architecture and enhance its capabilities and efficiency, several key features are intended for implementation:
 
 - **Auto-select messages**: After a message the option exists to automatically select that one for the next prompt.
+  - **prompt-chains**: instead of storing individual prompts store chains, first prompt to final in one set, simplifies organisation and reduces visual
+   clutter
 
 - **Expand Workflows**: More workflows for more use-cases, improving on the quality of existing workflows.
   - **Flexible workflows**: Workflows shouldn't really be 'hardcoded', they should be defined from a common format likely
@@ -75,6 +77,10 @@ To refine the system's architecture and enhance its capabilities and efficiency,
   - **Modular Workflows**: In write_workflow for coder there's always a step for improving code quality/
     writing documentation this should actually be a switch depending on the context.
     Many workflows should consist of switch logic that allows for intelligent processing of a given request without needless details.
+
+  - **'Boss' Personas**: Large tasks should be enabled by 'boss' personas, e.g. a 'Coder' persona can write and update a file,
+     but a 'Team Lead' persona could manage several coder's to improve or write an entire application. 
+     (These types of arbitrarily large tasks are the **central** point of this whole project)
   
   - **Workflow Feedback**: The coder module can and should actually check that its code works and try and improve upon itself if it doesn't.
    even if it can only try a fixed number of times and worst case scenario explains to the user that its solution is invalid
@@ -88,9 +94,10 @@ To refine the system's architecture and enhance its capabilities and efficiency,
    But why does that need to be a limitation? If we let it connect to tools that help it simulate the world while it ""thinks"" in words
    we can have the best of both worlds. Unlocking a lot of capability/accuracy.
 
-- **Payment System**: Top up system for updating balance, log files for each individual cost incurred.
 
-- **Best of X**: Let users run multiple prompts in parrallel and have the system automatically select/pick and choice to create a superior answer
+- **Payment System**: Top up system for updating balance(awaiting stripe integration), ~~log files for each individual cost incurred~~.
+
+- **Best of X**: Let users run multiple prompts in parallel and have the system automatically select/pick and choice to create a superior answer
   - Can be customised on preference: Should the other attempts be identical or optimise for different qualities entirely, returning a balanced approach.
 
 - **Programmes**: schedules and programs written on the fly for use by the user, customisable code base.
@@ -98,6 +105,16 @@ To refine the system's architecture and enhance its capabilities and efficiency,
 - **Micro thoughts**: Generated even while the prompt is being written. Question -> answer
   - ~~Generate list of questions in regard to prompt, if appropriate ask user~~, otherwise pull from memory.
   - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
+
+- **QOL**:
+  - variable side-bar size
+  - files and messages should display in the large main section not tucked into the corner
+  - categories should be listed according to date of their latest massage
+  - tags should have autocomplete: for the field and then value if appropriate
+  - messages and files show when they are selected, categories holding selected files are also visually identified
+  - Can deselect a message or file from the main view area rather than their item
+  - (optional) automatic category colourisation
+  - its hard to select a file vs expanding it for review (solved if that means the same thing though..)
 
 - **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can
  actually write its own tests automatically to full standard.

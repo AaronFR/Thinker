@@ -94,6 +94,7 @@ const SuggestedQuestions = ({
   /**
    * Handles changes in the response textareas.
    * Updates the responses state and concatenates Q&A.
+   * ToDo: Sometimes resets even if a question is filled
    * 
    * @param {number} index - The index of the question.
    * @param {string} value - The user's response.
@@ -104,6 +105,7 @@ const SuggestedQuestions = ({
 
       // Determine if any textarea has content
       const anyFilled = Object.values(newResponses).some((val) => val.trim() !== "");
+      console.log("TEMP", anyFilled)
       onFormsFilled(anyFilled); // Notify parent component
 
       const concatenatedQA = concatenateQA(questions, newResponses);
