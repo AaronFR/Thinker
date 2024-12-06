@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { apiFetch } from '../../utils/authUtils';
+import TransactionForm from '../../components/TransactionForm';
 
 
 const FLASK_PORT= "http://localhost:5000"
@@ -20,58 +21,56 @@ function FormatPrice(price) {
 export function Pricing() {
     const [balance, setBalance] = useState(0.0)
     const [sessionCost, setSessionCost] = useState(0.0)
+    const [attemptedTopUp, setAttemptedTopUp] = useState(0.0)
 
-    useEffect(() => {
-        const loadBalance = async () => {
-            try {
-                const response = await apiFetch(FLASK_PORT + '/pricing/balance', {
-                    method: 'GET',
-                    headers: {
-                      "Content-Type": "application/json"
-                    },
-                    credentials: "include"
-                })
+    const loadBalance = async () => {
+        try {
+            const response = await apiFetch(FLASK_PORT + '/pricing/balance', {
+                method: 'GET',
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                credentials: "include"
+            })
 
-                if (response.ok) {
-                    const balanceData = await response.json();
-                    if (balanceData && balanceData.balance) {
-                        setBalance(balanceData.balance)
-                    }
-                } else {
-                    console.error('Failed to load user balance', response)
+            if (response.ok) {
+                const balanceData = await response.json();
+                if (balanceData && balanceData.balance) {
+                    setBalance(balanceData.balance)
                 }
-            } catch (error) {
-                console.error('Error retrieiving user balance:', error)
+            } else {
+                console.error('Failed to load user balance', response)
             }
+        } catch (error) {
+            console.error('Error retrieiving user balance:', error)
         }
+    }
 
-        loadBalance();
-    })
+    const loadSessionCost  = async () => {
+        try {
+            const response = await apiFetch(FLASK_PORT + '/pricing/session', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: "include",
+            });
+
+            if (response.ok) {
+                const priceData = await response.json();
+                if (priceData && priceData.cost) {
+                    setSessionCost(priceData.cost);
+                }
+            } else {
+                console.error('Failed to load session price');
+            }
+        } catch (error) {
+            console.error('Error retrieving session cost:', error);
+        }
+    };
 
     useEffect(() => {
-        const loadSessionCost  = async () => {
-            try {
-                const response = await apiFetch(FLASK_PORT + '/pricing/session', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: "include",
-                });
-
-                if (response.ok) {
-                    const priceData = await response.json();
-                    if (priceData && priceData.cost) {
-                        setSessionCost(priceData.cost);
-                    }
-                } else {
-                    console.error('Failed to load session price');
-                }
-            } catch (error) {
-                console.error('Error retrieving session cost:', error);
-            }
-        };
-        
+        loadBalance();
         loadSessionCost();
     }, []);
 
@@ -84,6 +83,8 @@ export function Pricing() {
         
         <h2>Balance: {FormatPrice(balance)}</h2>
         <h3>Current session: {FormatPrice(sessionCost)}</h3>
+
+        <TransactionForm />
       </div>
     );
   }
