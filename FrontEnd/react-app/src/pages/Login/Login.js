@@ -1,11 +1,9 @@
 import React, { useState, useCallback } from 'react';
 
-import { csrfFetch } from '../../utils/authUtils';
+import { handleLogin, handleRegister, handleLogout } from '../../utils/loginUtils';
 
 import './Login.css';
 
-
-const FLASK_PORT = "http://localhost:5000";
 
 export function Login() {
     const [isLoginMode, setIsLoginMode] = useState(true); // Toggles between Login and Register
@@ -16,81 +14,13 @@ export function Login() {
         setIsLoginMode(!isLoginMode)
     }
 
-    /**
-     * Sends a POST request to the specified endpoint with the provided data.
-     *
-     * :param {string} endpoint: The API endpoint to send the request to.
-     * :param {Object} data: The payload to include in the request body.
-     * :returns {Promise<Response>} The fetch response.
-     */
-    const postRequest = async (endpoint, data) => {
-        try {
-            const response = await csrfFetch(`${FLASK_PORT}/${endpoint}`, {
-                method: 'POST',
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
-            return response;
-        } catch (error) {
-            console.error(`Error in postRequest to ${endpoint}:`, error);
-            throw error;
+    const handleButtonClick = () => {
+        if (isLoginMode) {
+            handleLogin(email, password);
+        } else {
+            handleRegister(email, password);
         }
     };
-
-    const handleLogin = async () => {
-        try {
-            const response = await postRequest('login', { email, password });
-
-            if (response.ok) {
-                alert('Login successful!');
-                window.location.href = "/";
-            } else {
-                alert('Failed to login.');
-                console.error('Login request failed with status:', response.status);
-            }
-        } catch (error) {
-            alert('An error occurred during login.');
-        }
-    };
-
-    const handleRegister = async () => {
-        try {
-            const response = await postRequest('register', { email, password });
-
-            if (response.ok) {
-                alert('User registered successfully!');
-                window.location.href = "/";
-            } else {
-                alert('Failed to register user.');
-                console.error('Register request failed with status:', response.status);
-            }
-        } catch (error) {
-            alert('An error occurred during registration.');
-        }
-    };
-    
-    /**
-     * Handles user logout by sending a POST request to the logout endpoint.
-     */
-    const handleLogout = useCallback(async () => {
-        try {
-            const response = await csrfFetch(`${FLASK_PORT}/logout`, {
-                method: "POST",
-            });
-    
-            if (response.ok) {
-                alert('Logout successful!');
-                window.location.href = "/login";
-            } else {
-                console.error("Logout failed");
-            }
-        } catch (error) {
-            console.error("Error logging out:", error);
-        }
-    });
 
     return (
         <div className="auth-container">
@@ -139,7 +69,7 @@ export function Login() {
 
                 <button 
                     type="button" 
-                    onClick={isLoginMode ? handleLogin : handleRegister}>
+                    onClick={handleButtonClick}>
                     {isLoginMode ? 'Login' : 'Register'}
                 </button>
             </form>
