@@ -1,15 +1,17 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import './Settings.css';
 
+import { handleLogout } from '../../utils/loginUtils';
 
-const flaskPort= "http://localhost:5000"
+import './Settings.css';   
+
+const FLASK_PORT = "http://localhost:5000"
 
 export const SettingsContext = createContext();
 
 const fetchConfig = async () => {
   try {
-    const response = await fetch(`${flaskPort}/data/config`, {
+    const response = await fetch(`${FLASK_PORT}/data/config`, {
       method: 'GET',
       headers: { "Content-Type": 'application/json' },
       credentials: "include"
@@ -29,7 +31,7 @@ const fetchConfig = async () => {
 
 const saveConfig = async (field, value) => {
   try {
-    await fetch(`${flaskPort}/data/config`, {
+    await fetch(`${FLASK_PORT}/data/config`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ field, value }),
@@ -132,6 +134,8 @@ export function Settings() {
         <Link to="/pricing" className="link">Pricing</Link>
       </nav>
 
+      
+
       <h2 className="settings-heading">User Interface</h2>
       {uiOptions.map(({ label, value, onChange }, index) => (
         <label key={index} className="settings-label">
@@ -147,6 +151,8 @@ export function Settings() {
           {label}
         </label>
       ))}
+
+      <button onClick={handleLogout} className="logout-button">Logout</button>
     </div>
   );
 }
