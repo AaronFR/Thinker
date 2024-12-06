@@ -11,13 +11,11 @@ from Utilities.Encryption import hash_password, check_password
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.Routing import parse_and_validate_data
 from Utilities.Contexts import set_user_context
-from Utilities.AuthUtils import decode_jwt, login_required
+from Utilities.AuthUtils import decode_jwt, login_required, ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE
 
 authorisation_bp = Blueprint('auth', __name__)
 
 ERROR_NO_ID = "No user id found"
-ACCESS_TOKEN_COOKIE = "access_token_cookie"
-REFRESH_TOKEN_COOKIE = "refresh_token_cookie"
 BLACKLIST = set()  # ToDo: Will need to be more robust
 
 REGISTER_USER_SCHEMA = {
@@ -140,7 +138,7 @@ def check_if_token_in_blacklist(jwt_header, jwt_payload):
 
 @authorisation_bp.route('/refresh', methods=['POST'])
 def refresh():
-    refresh_token = request.cookies.get("refresh_token")
+    refresh_token = request.cookies.get(REFRESH_TOKEN_COOKIE)
     if not refresh_token:
         return jsonify({"error": "Refresh token missing"}), 401
 

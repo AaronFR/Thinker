@@ -6,12 +6,10 @@ from flask_jwt_extended import decode_token
 from flask_socketio import emit, disconnect
 import jwt as pyjwt
 
-
-from App import jwt
 from Utilities.Contexts import set_user_context
 
 ACCESS_TOKEN_COOKIE = "access_token_cookie"
-REFRESH_TOKEN_COOKIE = "refresh_token"
+REFRESH_TOKEN_COOKIE = "refresh_token_cookie"
 
 
 def login_required(fn):
