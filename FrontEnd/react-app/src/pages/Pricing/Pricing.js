@@ -4,8 +4,7 @@ import { Link } from 'react-router-dom';
 import { apiFetch } from '../../utils/authUtils';
 import TransactionForm from '../../components/TransactionForm';
 
-
-const FLASK_PORT= "http://localhost:5000"
+const FLASK_PORT = "http://localhost:5000"
 
 function FormatPrice(price) {
     const scale = 100
@@ -19,9 +18,8 @@ function FormatPrice(price) {
 }
 
 export function Pricing() {
-    const [balance, setBalance] = useState(0.0)
-    const [sessionCost, setSessionCost] = useState(0.0)
-    const [attemptedTopUp, setAttemptedTopUp] = useState(0.0)
+    const [balance, setBalance] = useState(0.0);
+    const [sessionCost, setSessionCost] = useState(0.0);
 
     const loadBalance = async () => {
         try {
@@ -31,22 +29,22 @@ export function Pricing() {
                   "Content-Type": "application/json"
                 },
                 credentials: "include"
-            })
+            });
 
             if (response.ok) {
                 const balanceData = await response.json();
                 if (balanceData && balanceData.balance) {
-                    setBalance(balanceData.balance)
+                    setBalance(balanceData.balance);
                 }
             } else {
-                console.error('Failed to load user balance', response)
+                console.error('Failed to load user balance', response);
             }
         } catch (error) {
-            console.error('Error retrieiving user balance:', error)
+            console.error('Error retrieving user balance:', error);
         }
     }
 
-    const loadSessionCost  = async () => {
+    const loadSessionCost = async () => {
         try {
             const response = await apiFetch(FLASK_PORT + '/pricing/session', {
                 method: 'GET',
@@ -75,18 +73,19 @@ export function Pricing() {
     }, []);
 
     return (
-      <div className="settings-container">
-        <nav className="settings-nav">
-          <Link to="/" className="link">Home</Link>
-          <Link to="/settings" className="link">Settings</Link>
-        </nav>
-        
-        <h2>Balance: {FormatPrice(balance)}</h2>
-        <h3>Current session: {FormatPrice(sessionCost)}</h3>
+        <div className="settings-container">
+            <nav className="settings-nav">
+                <Link to="/" className="link">Home</Link>
+                <Link to="/settings" className="link">Settings</Link>
+            </nav>
 
-        <TransactionForm />
-      </div>
+            <h2>Balance: {FormatPrice(balance)}</h2>
+            <h3>Current session: {FormatPrice(sessionCost)}</h3>
+
+            {/* Pass loadBalance as a prop to TransactionForm */}
+            <TransactionForm onSuccess={loadBalance} />
+        </div>
     );
-  }
-  
-  export default Pricing;
+}
+
+export default Pricing;

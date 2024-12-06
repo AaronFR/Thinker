@@ -1,18 +1,9 @@
 import React, { useState } from 'react';
 import { apiFetch } from '../utils/authUtils';
 
-/**
- * Constants for API endpoints.
- */
 const FLASK_PORT = "http://localhost:5000"
 
-/**
- * Component for handling transactions.
- *
- * This component provides a simple form for users to input an amount they want to top up.
- * It currently logs an action for transaction attempts instead of connecting to Stripe.
- */
-const TransactionForm = () => {
+const TransactionForm = ({ onSuccess }) => {
     const [amount, setAmount] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -30,11 +21,6 @@ const TransactionForm = () => {
         return !isNaN(floatValue) && floatValue > 0 && regex.test(value);
     };
 
-    /**
-     * Handles the submission of the form.
-     *
-     * @param {Event} event - The event object.
-     */
     const attemptTransaction = async (event) => {
         event.preventDefault();
         setError('');
@@ -66,6 +52,9 @@ const TransactionForm = () => {
 
             setSuccess('Your balance has been successfully updated.');
             setAmount('');
+
+            // Call onSuccess to refresh the balance
+            onSuccess();
         } catch (error) {
             console.error('Error topping up user balance:', error);
             setError('There was an issue processing your transaction. Please try again.');
@@ -81,7 +70,6 @@ const TransactionForm = () => {
      */
     const handleAmountChange = (e) => {
         const value = e.target.value;
-        // Allow only numbers with up to two decimal places
         if (/^\d*\.?\d{0,2}$/.test(value)) {
             setAmount(value);
         }

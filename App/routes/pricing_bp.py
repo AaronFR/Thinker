@@ -35,6 +35,7 @@ def add_to_user_balance():
     """
     logging.info("Attempting to top up user balance")
     data = request.json
+    data['sum'] = float(data.get('sum'))
     parsed_data = parse_and_validate_data(data, TOP_UP_USER_BALANCE_SCHEMA)
 
     sum = parsed_data.get('sum')
