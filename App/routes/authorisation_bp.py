@@ -11,7 +11,7 @@ from Utilities.Encryption import hash_password, check_password
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.Routing import parse_and_validate_data
 from Utilities.Contexts import set_user_context
-from Utilities.AuthUtils import decode_jwt
+from Utilities.AuthUtils import decode_jwt, login_required
 
 authorisation_bp = Blueprint('auth', __name__)
 
@@ -116,6 +116,7 @@ def validate_session():
 
 
 @authorisation_bp.route('/logout', methods=['POST'])
+@login_required
 def logout():
     try:
         logging.info("Validating JWT for logout")
