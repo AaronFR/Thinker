@@ -5,6 +5,7 @@
   font-size: var(--font-size-base);
   display: flex;
   height: 100vh;
+  flex-direction: row;
   overflow-y: visible;
   color: var(--color-text);
   padding: var(--spacing-md);
@@ -89,11 +90,13 @@ html {
 
 /* Left Pane */
 .left-pane {
-  width: 33%;
   background-color: var(--color-left-pane-bg);
   padding: var(--spacing-xs);
   border-right: 0.0625em solid var(--color-border);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  height: 100%; /* Ensure full height */
 }
 body.dark-mode .left-pane {
   background: var(--color-background-dark);
@@ -104,10 +107,12 @@ body.dark-mode .left-pane {
 
 /* Right Pane */
 .right-pane {
-  width: 64%;
   padding: var(--spacing-md);
   background-color: var(--color-right-pane-bg);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  height: 100%; /* Ensure full height */
 }
 body.dark-mode .right-pane {
   background: var(--color-background-dark);

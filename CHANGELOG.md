@@ -14,7 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Users can manually select one or more messages as context for a prompt
 - Users can select which model they want to use (any model they want, as long as it's an OpenAi model)
 - Workflow progress is shown visually to the user
-
+- Left pane (files and message select) and Right pane (prompts) can be resized dynamically against one another
+   .e.g. for reading a file or message properly.
 
 ### Changed
 

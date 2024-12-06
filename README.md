@@ -107,8 +107,7 @@ To refine the system's architecture and enhance its capabilities and efficiency,
   - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
 
 - **QOL**:
-  - variable side-bar size
-  - files and messages should display in the large main section not tucked into the corner
+  - files and messages should display in the large main section not tucked into the corner(?)
   - categories should be listed according to date of their latest massage
   - tags should have autocomplete: for the field and then value if appropriate
   - messages and files show when they are selected, categories holding selected files are also visually identified

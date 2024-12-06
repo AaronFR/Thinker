@@ -4,6 +4,7 @@ import debounce from 'lodash.debounce';
 
 import { SettingsContext } from './pages/Settings/Settings';
 
+import ResizablePane from './components/resizeablePane';
 import FilePane from './components/FilePane'
 import MessagePane from './components/MessagePane';
 import OutputSection from './components/OutputSection';
@@ -156,8 +157,9 @@ function App () {
 
 
     return (
-        <div className="app-container">
-          <aside className="left-pane">
+      <div className="app-container">
+        <ResizablePane>
+          <div className="left-pane">
             <FilePane 
               onFileSelect={handleFileSelect}
               isProcessing={isProcessing}
@@ -166,15 +168,15 @@ function App () {
               isProcessing={isProcessing}
               onMessageSelect={handleMessageSelect}
             />
-          </aside>
-
-          <main className="right-pane">
+          </div>
+        
+          <div className="right-pane">
             <PersonaSelector 
               selectedPersona={selectedPersona} 
               setSelectedPersona={setSelectedPersona} 
               autoDetectedPersona={autoDetectedPersona}
             />
-
+    
             {/* ToDo: Should expand out on hover */}
             <UserInputForm 
               handleSubmit={handleFormSubmit}
@@ -198,7 +200,7 @@ function App () {
               setConcatenatedQA={setConcatenatedQA}
               resetResponsesTrigger={resetResponsesTrigger}
             />
-
+    
             <PromptAugmentation 
               augmentedPromptsEnabled={augmentedPromptsEnabled}
               augmentedPrompt={augmentedPrompt}
@@ -206,20 +208,21 @@ function App () {
               isAugmenting={isAugmenting}
               copyAugmentedPrompt={copyAugmentedPrompt}
             />
-
+    
             <Workflow
               workflowData={workflow}
             />
-
+    
             <OutputSection 
               message={message} 
               error={messageError} 
               isProcessing={isProcessing} 
             />
-
+    
             <Navigation />
-          </main>
-        </div>
+          </div>
+        </ResizablePane>
+      </div>
     );
 };
 

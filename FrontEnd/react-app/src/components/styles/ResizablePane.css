@@ -1,0 +1,41 @@
+/* ResizablePane.css */
+
+.resizable-container {
+  position: relative;
+  height: 100%;
+}
+
+
+.resizer {
+  width: 5px;
+  cursor: col-resize;
+  background-color: #ddd;
+  transition: background-color 0.2s;
+  /* Make the resizer take the full height of the container */
+  height: 100%;
+  /* Position the resizer between the panes */
+    /* No need for absolute positioning since it's within a flex container */
+    /* Ensure it's clickable */
+  user-select: none;
+}
+
+.resizer:hover,
+.resizer.resizing {
+  background-color: #aaa;
+}
+
+/* Optional: Change cursor during resizing */
+.resizing {
+  cursor: col-resize;
+}
+
+/* Optional: Add visual indicators */
+.resizer::before {
+  content: '';
+  display: block;
+  height: 30%;
+  margin: auto;
+  width: 2px;
+  background-color: #888;
+  border-radius: 1px;
+}
