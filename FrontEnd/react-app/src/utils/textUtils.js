@@ -87,7 +87,8 @@ const CopyCodeButton = ({ code }) => {
  * 
  * ToDo: User customization setting for specific hljs stylesheets
  *  - Light mode should set to 'github.css' for one
- * ToDo: can't render arrow's? => becomes =&gt
+ * ToDo: You would want to ensure scripts can't be run through code elements
+ * ToDo utilise isSupported in DomPurify to affect if this is allowed or not
  *
  * @param {object} props - The component props.
  * @param {string} props.children - The markdown text containing code blocks and regular text.
@@ -104,8 +105,7 @@ export const CodeHighlighter = ({ children }) => {
           delete codeEl.dataset.highlighted;
         }
         const code = codeEl.textContent;
-        const sanitizedCode = DOMPurify.sanitize(code);
-        codeEl.textContent = sanitizedCode;
+        codeEl.innerHTML = code;
         hljs.highlightElement(codeEl);
       }
     });
@@ -121,7 +121,6 @@ export const CodeHighlighter = ({ children }) => {
     const parts = [];
     let lastIndex = 0;
     let match;
-    let codeBlockIndex = 0;
 
     while ((match = codeBlockRegex.exec(children)) !== null) {
       const [fullMatch, lang, code] = match;
@@ -133,12 +132,11 @@ export const CodeHighlighter = ({ children }) => {
         parts.push(<div key={`text-${index}`} dangerouslySetInnerHTML={{ __html: html }} />);
       }
     
-      const decodedCode = he.decode(code); // Decode HTML entities
-      const sanitizedCode = DOMPurify.sanitize(decodedCode);
+      const encodedCode = he.encode(code);
     
       parts.push( // Push highlighted code block
         <div key={`code-container-${index}`} style={{ position: 'relative' }}>
-          <CopyCodeButton code={decodedCode} />
+          <CopyCodeButton code={encodedCode} />
           <pre>
             <code
               ref={(el) => {
@@ -146,7 +144,7 @@ export const CodeHighlighter = ({ children }) => {
               }}
               className={lang ? `language-${lang} hljs` : ''}
             >
-              {sanitizedCode}
+              {encodedCode}
             </code>
           </pre>
         </div>
