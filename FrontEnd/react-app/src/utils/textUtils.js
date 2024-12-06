@@ -102,7 +102,7 @@ export const CodeHighlighter = ({ children }) => {
         }
         const code = codeEl.textContent;
         const sanitizedCode = DOMPurify.sanitize(code);
-        codeEl.innerHTML = sanitizedCode;
+        codeEl.textContent = sanitizedCode;
         hljs.highlightElement(codeEl);
       }
     });
@@ -131,6 +131,7 @@ export const CodeHighlighter = ({ children }) => {
       }
     
       const decodedCode = he.decode(code); // Decode HTML entities
+      const sanitizedCode = DOMPurify.sanitize(decodedCode);
     
       parts.push( // Push highlighted code block
         <div key={`code-container-${index}`} style={{ position: 'relative' }}>
@@ -142,7 +143,7 @@ export const CodeHighlighter = ({ children }) => {
               }}
               className={lang ? `language-${lang} hljs` : ''}
             >
-              {decodedCode}
+              {sanitizedCode}
             </code>
           </pre>
         </div>
