@@ -17,7 +17,7 @@ authorisation_bp = Blueprint('auth', __name__)
 
 ERROR_NO_ID = "No user id found"
 ACCESS_TOKEN_COOKIE = "access_token_cookie"
-REFRESH_TOKEN_COOKIE = "refresh_token"
+REFRESH_TOKEN_COOKIE = "refresh_token_cookie"
 BLACKLIST = set()  # ToDo: Will need to be more robust
 
 REGISTER_USER_SCHEMA = {
