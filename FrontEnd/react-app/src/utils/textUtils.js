@@ -1,6 +1,6 @@
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import hljs from 'highlight.js';
 import he from 'he';
 
@@ -61,23 +61,73 @@ export const MarkdownRenderer = ({ markdownText, className = "", isLoading = fal
   </>
 );
 
+/**
+ * Renders a button that copies the code text to the clipboard.
+ *
+ * :param code: The code text to be copied.
+ */
 const CopyCodeButton = ({ code }) => {
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-    } catch (err) {
-      console.error('Failed to copy code:', err);
-    }
+      try {
+          await navigator.clipboard.writeText(code);
+      } catch (err) {
+          console.error('Failed to copy code:', err);
+      }
   };
 
   return (
-    <>
-      <button onClick={handleCopy} style={{ position: 'absolute', top: 8, right: 8 }}>
-        📋
-      </button>
-    </>
+    <button 
+      onClick={handleCopy} 
+      style={{ position: 'absolute', top: 8, right: 8 }}
+      aria-label="Copy code to clipboard"
+    >
+      📋
+    </button>
   );
 };
+
+/**
+ * CodeBlock component for rendering highlighted code with a copy button.
+ *
+ * :param lang: The language of the code block.
+ * :param code: The actual code to highlight.
+ * :param index: The index for unique key generation.
+ */
+const CodeBlock = ({ lang, code, index }) => {
+  const codeRef = useRef();
+
+  useEffect(() => {
+      if (codeRef.current.dataset.highlighted) {
+        // Un-set the highlighted attribute -if a streamed code block needs to be re-rendered
+        delete codeRef.current.dataset.highlighted;
+      }
+      hljs.highlightElement(codeRef.current);
+  }, [code]);
+
+  const escapedCode = he.encode(code); // for neutering potentially maliscious code before render
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <CopyCodeButton code={code} />
+      <pre>
+        <code 
+          ref={codeRef} 
+          className={lang ? `language-${lang} hljs` : ''}
+          dangerouslySetInnerHTML={{ __html: escapedCode }}
+        />
+      </pre>
+    </div>
+  );
+};
+
+/**
+ * Renders a standard text block.
+ *
+ * :param text: The text to render as HTML.
+ */
+const TextBlock = ({ text }) => (
+  <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(text)) }} />
+);
 
 /**
  * CodeHighlighter Component
@@ -94,76 +144,37 @@ const CopyCodeButton = ({ code }) => {
  * @param {string} props.children - The markdown text containing code blocks and regular text.
  */
 export const CodeHighlighter = ({ children }) => {
-  const codeRefs = useRef([]);
-
-  useEffect(() => {
-    // Highlight each code block
-    codeRefs.current.forEach((codeEl) => {
-      if (codeEl) {
-        if (codeEl.dataset.highlighted) {
-          // Un-set the highlighted attribute -if a streamed code block needs to be re-rendered
-          delete codeEl.dataset.highlighted;
-        }
-        const code = codeEl.textContent;
-        codeEl.innerHTML = code;
-        hljs.highlightElement(codeEl);
-      }
-    });
-  }, [children]);
-
-  // Function to process and render code blocks
-  const renderContent = () => {
-    // Reset codeRefs.current to empty array for the new render
-    codeRefs.current = [];
-
-    // Simple regex to detect code blocks in Markdown format
-    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
-    const parts = [];
+  const parts = useMemo(() => {
+    const elements = [];
     let lastIndex = 0;
     let match;
-
+    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
     while ((match = codeBlockRegex.exec(children)) !== null) {
       const [fullMatch, lang, code] = match;
       const index = match.index;
-    
-      if (lastIndex < index) { // Push previous text segments
-        const text = children.substring(lastIndex, index);
-        const html = DOMPurify.sanitize(marked(text));
-        parts.push(<div key={`text-${index}`} dangerouslySetInnerHTML={{ __html: html }} />);
-      }
-    
-      const encodedCode = he.encode(code);
-    
-      parts.push( // Push highlighted code block
-        <div key={`code-container-${index}`} style={{ position: 'relative' }}>
-          <CopyCodeButton code={code} />
-          <pre>
-            <code
-              ref={(el) => {
-                if (el) codeRefs.current.push(el); // Push ref instead of assigning by index
-              }}
-              className={lang ? `language-${lang} hljs` : ''}
-            >
-              {encodedCode}
-            </code>
-          </pre>
-        </div>
-      );
-    
-      lastIndex = index + fullMatch.length;
-    }
 
-  // Add the remaining content after the last code block
-  if (lastIndex < children.length) {
-      const text = children.substring(lastIndex);
-      const html = DOMPurify.sanitize(marked(text));
-      parts.push(<div key={`text-end`} dangerouslySetInnerHTML={{ __html: html }} />);
+      // Handle previous text segments
+      if (lastIndex < index) {
+          const text = children.substring(lastIndex, index);
+          elements.push(<TextBlock key={`text-${lastIndex}`} text={text} />);
+      }
+
+      // Handle code block
+      elements.push(<CodeBlock key={`code-${lastIndex}`} lang={lang} code={code} index={lastIndex} />);
+      
+      lastIndex = index + fullMatch.length;
   }
 
-  return parts;
-};
+  // Add any remaining text after the last code block
+  if (lastIndex < children.length) {
+      const text = children.substring(lastIndex);
+      elements.push(<TextBlock key={`text-end`} text={text} />);
+  }
 
-return <div>{renderContent()}</div>;
+  return elements;
+}, [children]);
+
+return <div>{parts}</div>;
 };
 
 
