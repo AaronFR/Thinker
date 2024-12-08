@@ -136,7 +136,7 @@ export const CodeHighlighter = ({ children }) => {
     
       parts.push( // Push highlighted code block
         <div key={`code-container-${index}`} style={{ position: 'relative' }}>
-          <CopyCodeButton code={encodedCode} />
+          <CopyCodeButton code={code} />
           <pre>
             <code
               ref={(el) => {
