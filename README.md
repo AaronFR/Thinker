@@ -107,13 +107,12 @@ To refine the system's architecture and enhance its capabilities and efficiency,
   - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
 
 - **QOL**:
-  - files and messages should display in the large main section not tucked into the corner(?)
   - categories should be listed according to date of their latest massage
-  - tags should have autocomplete: for the field and then value if appropriate
   - messages and files show when they are selected, categories holding selected files are also visually identified
   - Can deselect a message or file from the main view area rather than their item
   - (optional) automatic category colourisation
   - its hard to select a file vs expanding it for review (solved if that means the same thing though..)
+  - ~~files and messages should display in the large main section not tucked into the corner~~
 
 - **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can
  actually write its own tests automatically to full standard.

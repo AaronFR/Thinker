@@ -72,7 +72,7 @@
 
 .add-tag-form {
   display: flexbox;
-  width: 20%;
+  width: 28%;
   flex-direction: column;
   align-items: center;
   font-size: var(--font-size-small-md);
