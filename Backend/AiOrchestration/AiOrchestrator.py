@@ -77,6 +77,7 @@ class AiOrchestrator:
             rerun_count: int,
             judgement_criteria: List[str]
     ) -> str:
+        logging.info("🙂 Executing Prompt")
         if rerun_count == 1:
             return Utility.execute_with_retries(
                 lambda: self.prompter.get_open_ai_response(messages, model)

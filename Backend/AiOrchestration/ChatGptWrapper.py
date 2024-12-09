@@ -27,7 +27,7 @@ class CostConfiguration:
 
     def __init__(self):
         """Initialize cost settings from environment variables or defaults.
-        ToDo: Off by at least an order of magnitude
+        ToDo: Off by about 25%?
         """
         self.input_token_costs = {model: float(os.environ.get(f'INPUT_COST_{model.name}', default)) for model, default in {
             ChatGptModel.CHAT_GPT_4_OMNI_MINI: 0.00000015,  # $/t
@@ -169,6 +169,8 @@ class ChatGptWrapper:
         :param model: the specific OpenAI model being used, the non Mini version is *very* expensive,
         and should be used rarely
         """
+        logging.info("🙃 Calculating prompt costs")
+
         input_cost = input_tokens * self.cost_config.input_token_costs[model]
         output_cost = output_tokens * self.cost_config.output_token_costs[model]
         total_cost = (input_cost + output_cost)
