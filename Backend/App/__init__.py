@@ -31,6 +31,7 @@ def create_app():
     socketio.init_app(app, cors_allowed_origins="*", async_mode="eventlet")
 
     # Register blueprints
+    from .routes.home_bp import home_bp
     from .routes.authorisation_bp import authorisation_bp
     from .routes.augmentation_bp import augmentation_bp
     from .routes.config_bp import config_bp
@@ -38,6 +39,7 @@ def create_app():
     from .routes.files_bp import files_bp
     from .routes.categories_bp import categories_bp
     from .routes.messages import messages_bp
+    app.register_blueprint(home_bp)
     app.register_blueprint(authorisation_bp)
     app.register_blueprint(augmentation_bp)
     app.register_blueprint(config_bp)

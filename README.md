@@ -112,6 +112,8 @@ To refine the system's architecture and enhance its capabilities and efficiency,
   - Can deselect a message or file from the main view area rather than their item
   - (optional) automatic category colourisation
   - Q&A can be malformed at times
+  - openAI can reject prompts and the user will never know
+  - Ability to terminate a mid-process prompt
   - its hard to select a file vs expanding it for review (solved if that means the same thing though..)
   - ~~files and messages should display in the large main section not tucked into the corner~~
 
