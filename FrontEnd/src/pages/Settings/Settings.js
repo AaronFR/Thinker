@@ -5,7 +5,7 @@ import { handleLogout } from '../../utils/loginUtils';
 
 import './Settings.css';   
 
-const FLASK_PORT = "http://localhost:5000"
+const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
 export const SettingsContext = createContext();
 

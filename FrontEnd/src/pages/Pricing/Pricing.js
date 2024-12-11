@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { apiFetch } from '../../utils/authUtils';
 import TransactionForm from '../../components/TransactionForm';
 
-const FLASK_PORT = "http://localhost:5000"
+const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
 function FormatPrice(price) {
     const scale = 100

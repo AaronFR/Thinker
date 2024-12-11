@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { apiFetch } from '../utils/authUtils';
 
-const useAugmentedPrompt = (flaskPort) => {
+const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+
+const useAugmentedPrompt = () => {
   const [augmentedPrompt, setAugmentedPrompt] = useState('');
   const [isAugmenting, setIsAugmenting] = useState(false);
   const [error, setError] = useState(null);
@@ -11,7 +13,7 @@ const useAugmentedPrompt = (flaskPort) => {
     setError(null);
 
     try {
-      const response = await apiFetch(`${flaskPort}/augmentation/augment_prompt`, {
+      const response = await apiFetch(`${FLASK_PORT}/augmentation/augment_prompt`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"

@@ -1,4 +1,4 @@
-const flask_port = "http://localhost:5000";
+const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
 export const csrfFetch = async (url, options = {}) => {
   // ToDo: maybe beneficial to combine csrfFetch and apiFetch?
@@ -42,7 +42,7 @@ export const apiFetch = async (url, options = {}) => {
       console.log("Access token expired, attempting refresh...");
       
       // Attempt to refresh the token
-      const refreshResponse = await fetch(flask_port + '/refresh', {
+      const refreshResponse = await fetch(FLASK_PORT + '/refresh', {
           method: 'POST',
           credentials: 'include', // Include cookies for refresh
       });

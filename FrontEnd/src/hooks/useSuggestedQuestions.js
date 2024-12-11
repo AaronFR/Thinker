@@ -1,22 +1,24 @@
 import { useState } from 'react';
 import { apiFetch } from '../utils/authUtils';
 
+const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+
 /*
  * Suggests releveant questions to the user to help provide additional beneficial context in their prompt
  * ToDo: Needs to be informed of reference file and message content
  */
-const useSuggestedQuestions = (flaskPort) => {
+const useSuggestedQuestions = () => {
   const [questionsForPrompt, setQuestionsForPrompt] = useState('');
   const [isQuestioning, setIsQuestioning] = useState(false);
   const [error, setError] = useState(null);
 
   const generateQuestionsForPrompt = async (input) => {
-    console.log("Generating questions for:", input);
+    console.log("Generating questions wadafor:", input);
     setIsQuestioning(true);
     setError(null);
 
     try {
-      const response = await apiFetch(`${flaskPort}/augmentation/question_prompt`, {
+      const response = await apiFetch(`${FLASK_PORT}/augmentation/question_prompt`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json"

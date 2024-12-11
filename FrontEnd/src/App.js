@@ -26,7 +26,7 @@ import './App.css';
  * Main application component that handles user input, displays messages,
  * and manages state related to prompts and API interactions.
  */
-const flask_port= "http://localhost:5000"
+const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
 function App () {
 
@@ -62,9 +62,9 @@ function App () {
     const [workflow, setWorkflow] = useState()
  
     // Custom hooks
-    const { message, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(flask_port, concatenatedQA, selectedFiles, selectedMessages, tags, workflow, setWorkflow);
-    const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt(flask_port);
-    const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions(flask_port);
+    const { message, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(concatenatedQA, selectedFiles, selectedMessages, tags, workflow, setWorkflow);
+    const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt();
+    const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions(FLASK_PORT);
 
     // Form State
     const [formsFilled, setFormsFilled] = useState(false);

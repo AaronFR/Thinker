@@ -5,7 +5,7 @@ import ProgressBar from './ProgressBar';
 
 import './styles/FileUploadButton.css';
 
-const flask_port = "http://localhost:5000";
+const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
 const initialState = {
   uploadStatus: '',
@@ -72,7 +72,7 @@ const FileUploadButton = ({ onUploadSuccess }) => {
       const signal = controller.signal;
 
       try {
-        const response = await fetch(`${flask_port}/file`, {
+        const response = await fetch(`${FLASK_PORT}/file`, {
           method: 'POST',
           body: formData,
           signal,

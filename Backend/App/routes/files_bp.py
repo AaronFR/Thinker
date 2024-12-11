@@ -16,12 +16,14 @@ FILES_PATH = os.path.join(os.path.dirname(__file__), '../../Data/FileData')
 
 
 @files_bp.route('/files/<category_name>', methods=['GET'])
+@login_required
 def get_files(category_name):
     category_name = category_name.lower()
     return fetch_entity(nodeDB().get_files_by_category(category_name), "files")
 
 
 @files_bp.route('/file/<file_category>/<file_name>', methods=['GET'])
+@login_required
 def get_file_content(file_category, file_name):
     full_path = str(file_category) + "/" + file_name
 
@@ -30,6 +32,7 @@ def get_file_content(file_category, file_name):
 
 
 @files_bp.route('/list_staged_files', methods=['GET'])
+@login_required
 def list_files():
     """
     Lists the staged files for the user on prompt submission
@@ -37,6 +40,7 @@ def list_files():
     :return:
     """
     user_id = get_user_context()
+    logging.info(f"🤔 {FILES_PATH}, {user_id}")
     user_folder = os.path.join(FILES_PATH, user_id)
 
     if not os.path.exists(user_folder):

@@ -4,7 +4,7 @@ import FileItem from './FileItem';
 import { withLoadingOpacity } from '../utils/textUtils';
 import { apiFetch } from '../utils/authUtils';
 
-const flask_port = "http://localhost:5000";
+const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
 /**
  * FilePane Component
@@ -52,7 +52,7 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
  
   const fetchCategories = async () => {
     try {
-      const response = await apiFetch(`${flask_port}/categories_with_files`, {
+      const response = await apiFetch(`${FLASK_PORT}/categories_with_files`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -106,7 +106,7 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
 
   const fetchFilesByCategory = async (categoryName, categoryId) => {
     try {
-      const response = await apiFetch(`${flask_port}/files/${categoryName.toLowerCase()}`, {
+      const response = await apiFetch(`${FLASK_PORT}/files/${categoryName.toLowerCase()}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json"

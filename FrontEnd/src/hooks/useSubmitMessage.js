@@ -3,9 +3,9 @@ import { io } from 'socket.io-client';
 
 import { apiFetch } from '../utils/authUtils';
 
-const FLASK_PORT = "http://localhost:5000";
+const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
-const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMessages, tags, workflow, setWorkflow) => {
+const useSubmitMessage = (concatenatedQA, filesForPrompt, selectedMessages, tags, workflow, setWorkflow) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -78,7 +78,7 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
   // Function to initialize the socket connection
   const initializeSocket = useCallback(() => {
     return new Promise((resolve, reject) => {
-      const socket = io(flaskPort, {
+      const socket = io(FLASK_PORT, {
         withCredentials: true
       });
       socketRef.current = socket;
@@ -169,7 +169,7 @@ const useSubmitMessage = (flaskPort, concatenatedQA, filesForPrompt, selectedMes
         }
       });
     });
-  }, [flaskPort, processUpdateQueue]);
+  }, [FLASK_PORT, processUpdateQueue]);
 
   // Initialize the socket connection when the component mounts
   useEffect(() => {

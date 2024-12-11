@@ -22,11 +22,25 @@ def create_app():
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
     app.config['JWT_COOKIE_CSRF_PROTECT'] = True
-    app.config['ENV'] = "development"
+    app.config['ENV'] = os.getenv("THINKER_ENV", "development")
 
     jwt.init_app(app)
 
-    CORS(app, supports_credentials=True)
+    frontend_origin = os.getenv(
+        "THE_THINKER_FRONTEND_URL",
+        "http://localhost:3000"  # Default frontend origin for local development
+    )
+
+
+    CORS(
+        app,
+        supports_credentials=True,
+        resources={
+            r"/*": {  # Allow all routes
+                "origins": frontend_origin
+            }
+        }
+    )
 
     socketio.init_app(app, cors_allowed_origins="*", async_mode="eventlet")
 

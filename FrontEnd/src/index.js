@@ -11,7 +11,7 @@ import { apiFetch } from "./utils/authUtils";
 
 import 'highlight.js/styles/atom-one-dark.css';
 
-const flask_port = "http://localhost:5000";
+const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
 function RootApp() {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -19,7 +19,7 @@ function RootApp() {
   useEffect(() => {
     const validateSession = async () => {
       try {
-        const response = await apiFetch(`${flask_port}/auth/validate`, {
+        const response = await apiFetch(`${FLASK_PORT}/auth/validate`, {
             method: "GET",
             credentials: "include", // Include cookies in the request
         });
