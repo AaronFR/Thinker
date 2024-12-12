@@ -44,7 +44,7 @@ def list_files():
     user_folder = os.path.join(FILES_PATH, user_id)
 
     if not os.path.exists(user_folder):
-        return jsonify({'message': 'User folder not found.'}), 404
+        return jsonify({'message': 'User folder not found.'}), 503
 
     return fetch_entity(os.listdir(user_folder), "files")
 
