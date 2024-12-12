@@ -158,7 +158,7 @@ def refresh():
             "message": "Token refreshed",
             ACCESS_TOKEN_COOKIE: new_access_token
         }))
-        response.set_cookie(ACCESS_TOKEN_COOKIE, new_access_token, httponly=True, secure=True)
+        response.set_cookie(ACCESS_TOKEN_COOKIE, new_access_token, httponly=True, secure=True, samesite="None")
         response.set_cookie(REFRESH_TOKEN_COOKIE, new_refresh_token, httponly=True, secure=True, samesite="None")
         return response
 

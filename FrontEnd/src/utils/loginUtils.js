@@ -66,6 +66,10 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
         try {
             const response = await csrfFetch(`${FLASK_PORT}/logout`, {
                 method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                credentials: "include"
             });
     
             if (response.ok) {
