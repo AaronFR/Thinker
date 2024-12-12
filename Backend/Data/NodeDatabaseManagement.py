@@ -7,8 +7,8 @@ from datetime import datetime
 from typing import List, Dict
 
 from Data import CypherQueries
-from Data.FileManagement import FileManagement
 from Data.Neo4jDriver import Neo4jDriver
+from Data.StorageMethodology import StorageMethodology
 from Personas.PersonaSpecification import PersonaConstants
 from Utilities.Contexts import get_user_context
 
@@ -53,7 +53,7 @@ class NodeDatabaseManagement:
         )
 
         if returned_user_id:
-            FileManagement.add_new_user_file_folder(returned_user_id)
+            StorageMethodology.select().add_new_user_file_folder(returned_user_id)
             return True
         return False
 
@@ -261,7 +261,7 @@ class NodeDatabaseManagement:
     # Files
 
     def create_file_nodes_for_user_prompt(self, user_prompt_id: str, category: str) -> None:
-        file_names = FileManagement.list_staged_files()
+        file_names = StorageMethodology.select().list_staged_files()
 
         for file_name in file_names:
             self.create_file_node(user_prompt_id, category, file_name)
@@ -281,7 +281,7 @@ class NodeDatabaseManagement:
             category_id = self.get_category_id(category)
             file_path = os.path.join(category_id, file_name)
 
-            content = FileManagement.read_file(file_path)
+            content = StorageMethodology.select().read_file(file_path)
             from AiOrchestration.AiOrchestrator import AiOrchestrator
             executor = AiOrchestrator()
             #ToDo: Summarises previous content if it exists when writing files

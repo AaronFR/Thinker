@@ -3,10 +3,9 @@ import os
 import logging
 import yaml
 
-from mimetypes import guess_type
 from typing import List, Dict
-from deprecated.classic import deprecated
 
+from Data.StorageBase import StorageBase
 from Utilities import Constants
 from Utilities.Constants import DEFAULT_ENCODING
 from Utilities.Decorators import handle_errors
@@ -24,7 +23,7 @@ class MyDumper(yaml.Dumper):
         return super().represent_scalar(tag, value, style)
 
 
-class FileManagement:
+class FileManagement(StorageBase):
     """
     Class for managing files related to tasks and solutions.
 
@@ -40,8 +39,9 @@ class FileManagement:
 
     @staticmethod
     @handle_errors(raise_errors=True)
-    def save_file(content: str, file_path, overwrite=False):
-        """Saves the response content to a file_name.
+    def save_file(content: str, file_path, overwrite: bool = False):
+        """
+        Saves the response content to a file_name.
 
         :param content: The content to be formatted and saved
         :param file_path: The file name with extension prefixed by the category folder id
@@ -52,6 +52,30 @@ class FileManagement:
         with open(data_path, mode, encoding=DEFAULT_ENCODING) as file:
             file.write(content)
             logging.info(f"File {'overwritten' if overwrite else 'saved'}: {data_path}")
+
+    def read_file(self, full_address: str) -> str:
+        """Read the content of a specified file.
+        ToDo: A retry needs to be added if a file is not detected after upload
+
+        :param full_address: The file name to read, including category folder prefix
+        :return: The content of the file or an error message to inform the next LLM what happened
+        """
+        full_path = os.path.join(FileManagement.file_data_directory, full_address)
+        logging.info(f"Loading file_name content from: {full_path}")
+
+        if self.is_image_file(full_address):
+            logging.warning(f"Attempted to read an image file: {full_address}")
+            return f"[CANNOT READ IMAGE FILE: {full_address}]"
+
+        try:
+            with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
+                return file.read()
+        except FileNotFoundError:
+            logging.exception(f"File not found: {full_address}")
+            return f"[FILE NOT FOUND {full_address}]"
+        except Exception:
+            logging.exception(f"An unexpected error occurred")
+            return f"[FAILED TO LOAD {full_address}]"
 
     @staticmethod
     def list_staged_files() -> List[str]:
@@ -79,38 +103,6 @@ class FileManagement:
     def get_numbered_string(lines) -> str:
         """Returns a str where each line is prepended with its line-number"""
         return ''.join([f"{i + 1}: {line}" for i, line in enumerate(lines)])
-
-    @staticmethod
-    def is_image_file(full_address: str) -> bool:
-        """Utility method to check if the file is an image."""
-        mime_type, _ = guess_type(full_address)
-        return mime_type is not None and mime_type.startswith('image')
-
-    @staticmethod
-    def read_file(full_address: str) -> str:
-        """Read the content of a specified file.
-        ToDo: A retry needs to be added if a file is not detected after upload
-
-        :param full_address: The file name to read, including category folder prefix
-        :return: The content of the file or an error message to inform the next LLM what happened
-        """
-        full_path = os.path.join(FileManagement.file_data_directory, full_address)
-        logging.info(f"Loading file_name content from: {full_path}")
-
-        if FileManagement.is_image_file(full_address):
-            logging.warning(f"Attempted to read an image file: {full_address}")
-            return f"[CANNOT READ IMAGE FILE: {full_address}]"
-
-        try:
-            with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
-                return file.read()
-        except FileNotFoundError:
-            logging.exception(f"File not found: {full_address}")
-            return f"[FILE NOT FOUND {full_address}]"
-        except Exception:
-            logging.exception(f"An unexpected error occurred")
-            return f"[FAILED TO LOAD {full_address}]"
-
 
     @staticmethod
     def write_to_csv(file_name, dictionaries, fieldnames):
@@ -142,7 +134,7 @@ class FileManagement:
 
         :param data: The data to write to the YAML file.
         :param yaml_path: The path where the YAML file will be saved.
-        :param overwrite: Determines if the yaml should be replaced or meerly appended to
+        :param overwrite: Determines if the yaml should be replaced or merely appended to
         """
         mode = "w" if overwrite or not os.path.exists(yaml_path) else "a"
         with open(yaml_path, mode, encoding=DEFAULT_ENCODING) as yaml_file:
@@ -178,7 +170,7 @@ class FileManagement:
         :param file_path: The file path including category prefix
         :raises ValueError: if the rewrite operation fails
         """
-        file_content = FileManagement.read_file(file_path)
+        file_content = FileManagement().read_file(file_path)
         modified_text = file_content.replace(target_string, replacement)
 
         if file_content == modified_text:
@@ -201,8 +193,5 @@ class FileManagement:
 
 
 if __name__ == '__main__':
-    numbered_lines = FileManagement.read_file("test/Writing.py", number_lines=True)
+    numbered_lines = FileManagement().read_file("test/Writing.py")
     print(numbered_lines)
-
-
-

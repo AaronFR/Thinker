@@ -5,7 +5,7 @@ from pprint import pformat
 from typing import List
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Data.FileManagement import FileManagement
+from Data.StorageMethodology import StorageMethodology
 from Personas.PersonaSpecification import PersonaConstants, AnalystSpecification
 from Personas.BasePersona import BasePersona
 from Utilities import Globals
@@ -28,7 +28,7 @@ class Analyst(BasePersona):
 
         ToDo: In the new system this will probably be saved as a node, if used
         """
-        self.evaluation_files = FileManagement.list_staged_files()  # needs to be adapted to reference all selected files
+        self.evaluation_files = StorageMethodology.select().list_staged_files()
 
         # evaluate current files
         analyst = AiOrchestrator(self.evaluation_files)
@@ -40,7 +40,7 @@ class Analyst(BasePersona):
 
         # save to Analysis.txt file_name
         file_path = "CATEGORY_ID_PLACEHOLDER\\" + PersonaConstants.meta_analysis_filename
-        FileManagement.save_file(analysis_report, file_path, overwrite=True)
+        StorageMethodology.select().save_file(analysis_report, file_path, overwrite=True)
         ExecutionLogs.add_to_logs("Analyst: Report written and saved")
 
         # Search for the pattern

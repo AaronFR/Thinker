@@ -4,8 +4,8 @@ import os
 from flask import Blueprint, jsonify, request
 from werkzeug.utils import secure_filename
 
-from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Data.StorageMethodology import StorageMethodology
 from Utilities.AuthUtils import login_required
 from Utilities.Routing import fetch_entity
 from Utilities.Contexts import get_user_context
@@ -28,7 +28,7 @@ def get_file_content(file_category, file_name):
     full_path = str(file_category) + "/" + file_name
 
     logging.info(f"File node {file_category}/{file_name} content extracted")
-    return fetch_entity(FileManagement.read_file(full_path), "content")
+    return fetch_entity(StorageMethodology.select().read_file(full_path), "content")
 
 
 @files_bp.route('/list_staged_files', methods=['GET'])

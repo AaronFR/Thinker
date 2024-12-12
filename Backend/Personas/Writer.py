@@ -2,7 +2,7 @@ import logging
 from typing import List
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Data.FileManagement import FileManagement
+from Data.StorageMethodology import StorageMethodology
 from Functionality.Writing import Writing
 from Utilities.ErrorHandler import ErrorHandler
 from Personas.PersonaSpecification import PersonaConstants, WriterSpecification
@@ -39,7 +39,7 @@ class Writer(BasePersona):
             [initial_message])
 
 
-        evaluation_files = FileManagement.list_staged_files()
+        evaluation_files = StorageMethodology.select().list_staged_files()
         if file_name in evaluation_files:
             file_name = executor.execute(
                 ["Given the context of the following prompt, should the writing be appended or should it overwrite "

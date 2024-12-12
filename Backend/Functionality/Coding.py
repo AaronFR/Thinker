@@ -6,10 +6,10 @@ import subprocess
 from typing import Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Data.StorageMethodology import StorageMethodology
 from Utilities.Decorators import return_for_error
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.ExecutionLogs import ExecutionLogs
-from Data.FileManagement import FileManagement
 from Personas.PersonaSpecification import PersonaConstants
 
 
@@ -38,7 +38,7 @@ class Coding(enum.Enum):
             [task_parameters[PersonaConstants.INSTRUCTION]]
         )
 
-        FileManagement.save_file(output, task_parameters[PersonaConstants.SAVE_TO], overwrite=True)
+        StorageMethodology.select().save_file(output, task_parameters[PersonaConstants.SAVE_TO], overwrite=True)
         ExecutionLogs.add_to_logs(f"Saved to {task_parameters[PersonaConstants.SAVE_TO]}")
 
     @staticmethod

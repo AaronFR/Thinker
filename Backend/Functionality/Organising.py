@@ -1,17 +1,16 @@
 import logging
 from typing import List, Tuple
 
-import celery as celery
 from deprecated import deprecated
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.CategoryManagement import CategoryManagement
 from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Data.StorageMethodology import StorageMethodology
 from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification import PersonaConstants
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA
-from Data.FileManagement import FileManagement
 from Utilities.Decorators import return_for_error
 
 
@@ -30,7 +29,7 @@ class Organising:
         :return A list of selected file names that are deemed relevant to the input questions
         """
         logging.info("GET_RELEVANT_FILES triggered")
-        evaluation_files = FileManagement.list_staged_files()  # needs to be changed to find files from ALL categories
+        evaluation_files = StorageMethodology.select().list_staged_files()  # needs to be changed to find files from ALL categories
         if not evaluation_files:
             logging.warning("No evaluation files found.")
             return []
@@ -48,7 +47,7 @@ class Organising:
 
         logging.info(f"Selected: {selected_files}, \nfrom: {evaluation_files}")
 
-        selected_files = FileManagement.list_staged_files()  # defaulting to grabbing staged files
+        selected_files = StorageMethodology.select().list_staged_files()  # defaulting to grabbing staged files
         logging.info(f"Selected files: {selected_files}")
         return selected_files
 

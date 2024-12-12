@@ -7,8 +7,8 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Configuration import Configuration
 from Data.EncyclopediaManagement import EncyclopediaManagement
-from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Data.StorageMethodology import StorageMethodology
 from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
 from Utilities.ErrorHandler import ErrorHandler
@@ -125,7 +125,7 @@ class BasePersona:
         :return response: stream"""
         file_content = []
         for file_reference in file_references:
-            content = FileManagement.read_file(file_reference)
+            content = StorageMethodology.select().read_file(file_reference)
             logging.info(f"Extracting file content [{file_reference}]: {content}")
             file_content.append(content)
 
@@ -163,7 +163,7 @@ class BasePersona:
         """
         logging.info("Processing user messages: %s", user_messages)
 
-        staged_files = FileManagement.list_staged_files()
+        staged_files = StorageMethodology.select().list_staged_files()
         executor = AiOrchestrator(staged_files)
         config = Configuration.load_config()
 

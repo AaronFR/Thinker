@@ -8,6 +8,7 @@ from typing import Optional
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Data.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context
 
 
@@ -104,7 +105,7 @@ class CategoryManagement:
 
         :param category: If defined the system will categorise the staged files with the given category, otherwise a category will be generated
         """
-        files = FileManagement.list_staged_files()
+        files = StorageMethodology.select().list_staged_files()
         logging.info(f"Staged files: {files}")
 
         category_id = CategoryManagement._return_id_for_category(category)

@@ -2,13 +2,15 @@ import enum
 import logging
 
 from typing import Dict, List
-from typing_extensions import deprecated
+
+from deprecated.classic import deprecated
 
 import Personas.PersonaSpecification.WriterSpecification
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.FileManagement import FileManagement
+from Data.StorageMethodology import StorageMethodology
 from Personas.PersonaSpecification import PersonaConstants
 from Personas.PersonaSpecification.EditorSpecification import REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS, \
     EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA, EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS
@@ -35,7 +37,7 @@ class Writing(enum.Enum):
             [task_parameters[PersonaConstants.INSTRUCTION]]
         )
 
-        FileManagement.save_file(output, task_parameters[PersonaConstants.SAVE_TO], overwrite=True)
+        StorageMethodology.select().save_file(output, task_parameters[PersonaConstants.SAVE_TO], overwrite=True)
         ExecutionLogs.add_to_logs(f"Saved to {task_parameters[PersonaConstants.SAVE_TO]}")
 
     @staticmethod
@@ -54,7 +56,7 @@ class Writing(enum.Enum):
             output += text
             logging.debug(f"Page {i} written: {text}")
 
-        FileManagement.save_file(output, task_parameters[PersonaConstants.SAVE_TO])
+        StorageMethodology.select().save_file(output, task_parameters[PersonaConstants.SAVE_TO])
         ExecutionLogs.add_to_logs(f"Saved to {task_parameters[PersonaConstants.SAVE_TO]}")
 
     @staticmethod
@@ -98,7 +100,7 @@ class Writing(enum.Enum):
             Constants.EXECUTOR_SYSTEM_INSTRUCTIONS,
             ["Primary Instructions: " + str(task_parameters[PersonaConstants.INSTRUCTION])]
         )
-        FileManagement.save_file(output, task_parameters[PersonaConstants.SAVE_TO])
+        StorageMethodology.select().save_file(output, task_parameters[PersonaConstants.SAVE_TO])
         ExecutionLogs.add_to_logs(f"Appended content to {task_parameters[PersonaConstants.SAVE_TO]}")
 
     @staticmethod
@@ -111,7 +113,7 @@ class Writing(enum.Enum):
         """
         executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
         replacement_instructions = [
-            ''.join(FileManagement.get_numbered_string(file_lines)),
+            ''.join(StorageMethodology.select().get_numbered_string(file_lines)),
             f"""For the specified file: {task_parameters[PersonaConstants.SAVE_TO]}, 
             perform replacements based on the following instructions: 
             {task_parameters[PersonaConstants.INSTRUCTION]}
@@ -139,7 +141,7 @@ class Writing(enum.Enum):
         :param approx_max_tokens: token chunk size to split the document by
         """
         executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
-        file_contents = FileManagement.read_file(str(task_parameters[PersonaConstants.SAVE_TO]))
+        file_contents = StorageMethodology.select().read_file(str(task_parameters[PersonaConstants.SAVE_TO]))
         text_chunks = Writing.chunk_text(file_contents, approx_max_tokens)
 
         re_written_file = ""
@@ -151,7 +153,7 @@ class Writing(enum.Enum):
                     In the following way: {str(task_parameters[PersonaConstants.INSTRUCTION])}"""]
             )
 
-        FileManagement.save_file(re_written_file,
+        StorageMethodology.select().save_file(re_written_file,
                                  task_parameters[PersonaConstants.SAVE_TO],
                                  overwrite=True)
         ExecutionLogs.add_to_logs(f"File rewritten successfully: {task_parameters[PersonaConstants.SAVE_TO]}")
@@ -183,7 +185,7 @@ class Writing(enum.Enum):
             - INSTRUCTION: The regex pattern and modifications to be applied
             - REWRITE_THIS: The target string or pattern that needs to be rewritten
         """
-        evaluation_files = FileManagement.list_staged_files()  # defaulting to staged files
+        evaluation_files = StorageMethodology.select().list_staged_files()  # defaulting to staged files
         for file in evaluation_files:
             try:
                 FileManagement.regex_refactor(

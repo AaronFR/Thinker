@@ -5,7 +5,7 @@ from typing import List, Dict
 
 from AiOrchestration.ChatGptWrapper import ChatGptRole
 from AiOrchestration.ChatGptModel import ChatGptModel
-from Data.FileManagement import FileManagement
+from Data.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context
 from Utilities.Utility import Utility
 
@@ -66,7 +66,7 @@ def build_role_messages(
     for file in input_files:
         try:
             full_address = os.path.join(get_user_context(), file)
-            content = FileManagement.read_file(full_address)
+            content = StorageMethodology.select().read_file(full_address)
             role_messages.append(
                 _format_message(ChatGptRole.USER, f"<{file}>{content}</{file}>"))
         except FileNotFoundError:
