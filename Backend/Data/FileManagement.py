@@ -39,6 +39,21 @@ class FileManagement:
         ErrorHandler.setup_logging()
 
     @staticmethod
+    @handle_errors(raise_errors=True)
+    def save_file(content: str, file_path, overwrite=False):
+        """Saves the response content to a file_name.
+
+        :param content: The content to be formatted and saved
+        :param file_path: The file name with extension prefixed by the category folder id
+        :param overwrite: whether the file_name should be overwritten
+        """
+        data_path = os.path.join(FileManagement.file_data_directory, file_path)
+        mode = "w" if overwrite or not os.path.exists(data_path) else "a"
+        with open(data_path, mode, encoding=DEFAULT_ENCODING) as file:
+            file.write(content)
+            logging.info(f"File {'overwritten' if overwrite else 'saved'}: {data_path}")
+
+    @staticmethod
     def list_staged_files() -> List[str]:
         """List all files in
         ToDo: should leave files tagged meta alone, as soon as we start tagging meta files...
@@ -72,12 +87,11 @@ class FileManagement:
         return mime_type is not None and mime_type.startswith('image')
 
     @staticmethod
-    def read_file_full_address(full_address: str, number_lines: bool = False) -> str:
+    def read_file(full_address: str) -> str:
         """Read the content of a specified file.
         ToDo: A retry needs to be added if a file is not detected after upload
 
         :param full_address: The file name to read, including category folder prefix
-        :param number_lines: Flag to determine if the content should be returned as numbered lines
         :return: The content of the file or an error message to inform the next LLM what happened
         """
         full_path = os.path.join(FileManagement.file_data_directory, full_address)
@@ -89,10 +103,7 @@ class FileManagement:
 
         try:
             with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
-                if number_lines:
-                    return FileManagement.get_numbered_string(file.readlines())
-                else:
-                    return file.read()
+                return file.read()
         except FileNotFoundError:
             logging.exception(f"File not found: {full_address}")
             return f"[FILE NOT FOUND {full_address}]"
@@ -100,50 +111,6 @@ class FileManagement:
             logging.exception(f"An unexpected error occurred")
             return f"[FAILED TO LOAD {full_address}]"
 
-    @deprecated("There should only be the one way of reading files")
-    @staticmethod
-    def read_file(file_path: str, number_lines: bool = False) -> str:
-        """Read the content of a specified file.
-
-        :param file_path: The path of the file_name to read, including category folder prefix
-        :param number_lines: Flag to determine if the content should be returned as numbered lines
-        :return: The content of the file or an error message to inform the next LLM what happened
-        """
-        user_id = get_user_context()
-        full_path = os.path.join(FileManagement.file_data_directory, user_id, file_path)
-        logging.info(f"Loading file_name content from: {full_path}")
-
-        if FileManagement.is_image_file(full_path):
-            logging.warning(f"Attempted to read an image file: {full_path}")
-            return f"[CANNOT READ IMAGE FILE: {full_path}]"
-
-        try:
-            with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
-                if number_lines:
-                    return FileManagement.get_numbered_string(file.readlines())
-                else:
-                    return file.read()
-        except FileNotFoundError:
-            logging.exception(f"File not found: {file_path}")
-            return f"[FILE NOT FOUND {file_path}]"
-        except Exception:
-            logging.exception(f"An unexpected error occurred")
-            return f"[FAILED TO LOAD {file_path}]"
-
-    @staticmethod
-    @handle_errors(raise_errors=True)
-    def save_file(content: str, file_path, overwrite=False):
-        """Saves the response content to a file_name.
-
-        :param content: The content to be formatted and saved
-        :param file_path: The file name with extension prefixed by the category folder id
-        :param overwrite: whether the file_name should be overwritten
-        """
-        data_path = os.path.join(FileManagement.file_data_directory, file_path)
-        mode = "w" if overwrite or not os.path.exists(data_path) else "a"
-        with open(data_path, mode, encoding=DEFAULT_ENCODING) as file:
-            file.write(content)
-            logging.info(f"File {'overwritten' if overwrite else 'saved'}: {data_path}")
 
     @staticmethod
     def write_to_csv(file_name, dictionaries, fieldnames):
@@ -202,7 +169,6 @@ class FileManagement:
 
         return existing_data
 
-
     @staticmethod
     def regex_refactor(target_string: str, replacement: str, file_path):
         """Replaces every instance of the target with the replacement str
@@ -235,7 +201,7 @@ class FileManagement:
 
 
 if __name__ == '__main__':
-    numbered_lines = FileManagement.read_file("Writing.py", number_lines=True)
+    numbered_lines = FileManagement.read_file("test/Writing.py", number_lines=True)
     print(numbered_lines)
 
 

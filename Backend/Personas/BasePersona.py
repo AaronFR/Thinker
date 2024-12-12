@@ -125,7 +125,7 @@ class BasePersona:
         :return response: stream"""
         file_content = []
         for file_reference in file_references:
-            content = FileManagement.read_file_full_address(file_reference)
+            content = FileManagement.read_file(file_reference)
             logging.info(f"Extracting file content [{file_reference}]: {content}")
             file_content.append(content)
 

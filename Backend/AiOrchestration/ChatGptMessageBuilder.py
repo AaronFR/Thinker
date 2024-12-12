@@ -1,10 +1,12 @@
 import logging
+import os
 from pprint import pformat
 from typing import List, Dict
 
 from AiOrchestration.ChatGptWrapper import ChatGptRole
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.FileManagement import FileManagement
+from Utilities.Contexts import get_user_context
 from Utilities.Utility import Utility
 
 
@@ -63,7 +65,8 @@ def build_role_messages(
     logging.info(f"Number of input files: {input_files}")
     for file in input_files:
         try:
-            content = FileManagement.read_file(file)
+            full_address = os.path.join(get_user_context(), file)
+            content = FileManagement.read_file(full_address)
             role_messages.append(
                 _format_message(ChatGptRole.USER, f"<{file}>{content}</{file}>"))
         except FileNotFoundError:

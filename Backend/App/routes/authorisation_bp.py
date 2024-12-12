@@ -95,6 +95,10 @@ def login():
 
 @authorisation_bp.route('/auth/validate', methods=['GET'])
 def validate_session():
+    """
+    ToDo: Might want to confirm user still exists in system if blacklisting is implemented
+
+    """
     try:
         token = request.cookies.get(ACCESS_TOKEN_COOKIE)
         if not token:

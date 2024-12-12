@@ -28,7 +28,7 @@ def get_file_content(file_category, file_name):
     full_path = str(file_category) + "/" + file_name
 
     logging.info(f"File node {file_category}/{file_name} content extracted")
-    return fetch_entity(FileManagement.read_file_full_address(full_path), "content")
+    return fetch_entity(FileManagement.read_file(full_path), "content")
 
 
 @files_bp.route('/list_staged_files', methods=['GET'])
@@ -39,6 +39,7 @@ def list_files():
 
     :return:
     """
+    logging.info("💀")
     user_id = get_user_context()
     logging.info(f"🤔 {FILES_PATH}, {user_id}")
     user_folder = os.path.join(FILES_PATH, user_id)
@@ -79,6 +80,12 @@ def upload_file():
 @files_bp.route('/file/<file_id>', methods=['DELETE'])
 @login_required
 def delete_file(file_id):
+    """
+    ToDo: Doesn't actually delete the file in storage
+
+    :param file_id:
+    :return:
+    """
     try:
         nodeDB().delete_file_by_id(file_id)
 

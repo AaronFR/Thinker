@@ -281,7 +281,7 @@ class NodeDatabaseManagement:
             category_id = self.get_category_id(category)
             file_path = os.path.join(category_id, file_name)
 
-            content = FileManagement.read_file_full_address(file_path)
+            content = FileManagement.read_file(file_path)
             from AiOrchestration.AiOrchestrator import AiOrchestrator
             executor = AiOrchestrator()
             #ToDo: Summarises previous content if it exists when writing files
