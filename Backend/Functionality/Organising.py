@@ -7,7 +7,7 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.CategoryManagement import CategoryManagement
 from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
-from Data.StorageMethodology import StorageMethodology
+from Data.Files.StorageMethodology import StorageMethodology
 from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification import PersonaConstants
 from Personas.PersonaSpecification.ThinkerSpecification import SELECT_FILES_FUNCTION_SCHEMA

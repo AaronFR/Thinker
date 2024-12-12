@@ -6,9 +6,9 @@ import shutil
 from typing import Optional
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Data.FileManagement import FileManagement
+from Data.Files.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
-from Data.StorageMethodology import StorageMethodology
+from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context
 
 

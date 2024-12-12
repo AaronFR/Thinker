@@ -5,7 +5,7 @@ from typing import List, Dict
 
 from AiOrchestration.ChatGptWrapper import ChatGptRole
 from AiOrchestration.ChatGptModel import ChatGptModel
-from Data.StorageMethodology import StorageMethodology
+from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context
 from Utilities.Utility import Utility
 

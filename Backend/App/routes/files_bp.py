@@ -5,7 +5,7 @@ from flask import Blueprint, jsonify, request
 from werkzeug.utils import secure_filename
 
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
-from Data.StorageMethodology import StorageMethodology
+from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.AuthUtils import login_required
 from Utilities.Routing import fetch_entity
 from Utilities.Contexts import get_user_context

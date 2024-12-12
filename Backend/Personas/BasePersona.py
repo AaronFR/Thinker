@@ -8,7 +8,7 @@ from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Configuration import Configuration
 from Data.EncyclopediaManagement import EncyclopediaManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
-from Data.StorageMethodology import StorageMethodology
+from Data.Files.StorageMethodology import StorageMethodology
 from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
 from Utilities.ErrorHandler import ErrorHandler

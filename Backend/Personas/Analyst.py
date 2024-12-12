@@ -5,7 +5,7 @@ from pprint import pformat
 from typing import List
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Data.StorageMethodology import StorageMethodology
+from Data.Files.StorageMethodology import StorageMethodology
 from Personas.PersonaSpecification import PersonaConstants, AnalystSpecification
 from Personas.BasePersona import BasePersona
 from Utilities import Globals

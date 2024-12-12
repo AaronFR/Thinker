@@ -9,8 +9,8 @@ import Personas.PersonaSpecification.WriterSpecification
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
-from Data.FileManagement import FileManagement
-from Data.StorageMethodology import StorageMethodology
+from Data.Files.FileManagement import FileManagement
+from Data.Files.StorageMethodology import StorageMethodology
 from Personas.PersonaSpecification import PersonaConstants
 from Personas.PersonaSpecification.EditorSpecification import REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS, \
     EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA, EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS

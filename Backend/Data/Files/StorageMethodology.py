@@ -1,8 +1,8 @@
 import os
 
-from Data.FileManagement import FileManagement
-from Data.S3Manager import S3Manager
-from Data.StorageBase import StorageBase
+from Data.Files.FileManagement import FileManagement
+from Data.Files.S3Manager import S3Manager
+from Data.Files.StorageBase import StorageBase
 
 
 class StorageMethodology:

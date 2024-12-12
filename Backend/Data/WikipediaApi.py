@@ -6,7 +6,7 @@ import os
 
 from typing import Dict, Optional, List
 
-from Data.FileManagement import FileManagement
+from Data.Files.FileManagement import FileManagement
 from Utilities.Decorators import handle_errors
 
 data_path = os.path.join(os.path.dirname(__file__), 'DataStores')

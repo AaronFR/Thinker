@@ -5,7 +5,7 @@ import yaml
 
 from typing import List, Dict
 
-from Data.StorageBase import StorageBase
+from Data.Files.StorageBase import StorageBase
 from Utilities import Constants
 from Utilities.Constants import DEFAULT_ENCODING
 from Utilities.Decorators import handle_errors
@@ -32,7 +32,7 @@ class FileManagement(StorageBase):
     ONLY information within the boundaries of the 'FileData' directory can be edited by the user.
     """
 
-    file_data_directory = os.path.join(os.path.dirname(__file__), 'FileData')
+    file_data_directory = os.path.join(os.path.dirname(__file__), '../FileData')
 
     def __init__(self):
         ErrorHandler.setup_logging()

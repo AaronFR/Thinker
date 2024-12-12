@@ -6,7 +6,7 @@ import subprocess
 from typing import Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Data.StorageMethodology import StorageMethodology
+from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Decorators import return_for_error
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.ExecutionLogs import ExecutionLogs

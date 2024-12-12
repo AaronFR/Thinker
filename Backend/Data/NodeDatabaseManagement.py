@@ -8,7 +8,7 @@ from typing import List, Dict
 
 from Data import CypherQueries
 from Data.Neo4jDriver import Neo4jDriver
-from Data.StorageMethodology import StorageMethodology
+from Data.Files.StorageMethodology import StorageMethodology
 from Personas.PersonaSpecification import PersonaConstants
 from Utilities.Contexts import get_user_context
 
