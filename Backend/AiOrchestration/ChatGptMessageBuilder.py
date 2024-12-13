@@ -65,7 +65,7 @@ def build_role_messages(
     logging.info(f"Number of input files: {input_files}")
     for file in input_files:
         try:
-            full_address = os.path.join(get_user_context(), file)
+            full_address = os.path.join(file)
             content = StorageMethodology.select().read_file(full_address)
             role_messages.append(
                 _format_message(ChatGptRole.USER, f"<{file}>{content}</{file}>"))
