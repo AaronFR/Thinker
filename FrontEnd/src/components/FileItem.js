@@ -1,7 +1,7 @@
 import React, { useState, memo } from 'react';
 import PropTypes from 'prop-types';
 
-import { shortenText, markedFull, MarkdownRenderer, CodeHighlighter } from '../utils/textUtils';
+import { shortenText, getBasename, MarkdownRenderer, CodeHighlighter } from '../utils/textUtils';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
@@ -33,7 +33,7 @@ const FileItem = ({ file, onDelete, onSelect }) => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${FLASK_PORT}/file/${file.category_id}/${file.name}`, {
+        const response = await fetch(`${FLASK_PORT}/file/${file.category_id}/${getBasename(file.name)}`, {
           method: 'GET',
           credentials: "include"
         });
@@ -96,7 +96,7 @@ const FileItem = ({ file, onDelete, onSelect }) => {
         onClick={toggleExpansion}
         className="file-item-header"
       >
-        <p><strong>File Name:</strong> {isExpanded ? file.name : shortenText(file.name)}</p>
+        <p><strong>File Name:</strong> {isExpanded ? getBasename(file.name) : shortenText(getBasename(file.name))}</p>
         
       </div>
       

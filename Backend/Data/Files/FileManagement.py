@@ -1,6 +1,8 @@
 import csv
 import os
 import logging
+import shutil
+
 import yaml
 
 from typing import List, Dict
@@ -77,21 +79,33 @@ class FileManagement(StorageBase):
             logging.exception(f"An unexpected error occurred")
             return f"[FAILED TO LOAD {full_address}]"
 
+    def move_file(self, current_path: str, new_path: str):
+        try:
+            staged_file_path = os.path.join(FileManagement.file_data_directory, current_path)
+            new_file_path = os.path.join(FileManagement.file_data_directory, new_path)
+            shutil.move(staged_file_path, new_file_path)
+            logging.info(f"{current_path} moved to {new_path}")
+        except Exception:
+            logging.exception("failed to move local files")
+
+
     @staticmethod
     def list_staged_files() -> List[str]:
         """List all files in
+        ToDo: should include the directory in the file path
         ToDo: should leave files tagged meta alone, as soon as we start tagging meta files...
 
-        :return: A list of file_name names in the directory
+        :return: A list of staged file paths that belong to the user staging directory
         """
         user_id = get_user_context()
         staging_directory = os.path.join(FileManagement.file_data_directory, user_id)
         try:
             entries = os.listdir(staging_directory)
-            file_names = [entry for entry in entries if os.path.isfile(os.path.join(staging_directory, entry))]
-            logging.info(f"Found the following files in Thought space: {file_names}")
+            file_paths = [os.path.join(user_id, entry) for entry in entries
+                          if os.path.isfile(os.path.join(staging_directory, entry))]
+            logging.info(f"Found the following files in Thought space: {file_paths}")
 
-            return file_names
+            return file_paths
         except FileNotFoundError:
             logging.exception(f"The directory {staging_directory} does not exist.")
             return []

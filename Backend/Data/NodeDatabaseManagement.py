@@ -266,7 +266,7 @@ class NodeDatabaseManagement:
         for file_name in file_names:
             self.create_file_node(user_prompt_id, category, file_name)
 
-    def create_file_node(self, user_prompt_id: str, category: str, file_name: str) -> None:
+    def create_file_node(self, user_prompt_id: str, category: str, file_path: str) -> None:
         """
         Saves a file node representing the files content, its category and its version number
 
@@ -274,12 +274,12 @@ class NodeDatabaseManagement:
 
         :param user_prompt_id: create the file node attached to the following message
         :param category: The name of the category the file belongs to
-        :param file_name: the name of the file, including extension
+        :param file_path: the name of the file, including extension
         """
         try:
             time = int(datetime.now().timestamp())
-            category_id = self.get_category_id(category)
-            file_path = os.path.join(category_id, file_name)
+            # category_id = self.get_category_id(category)
+            file_name = os.path.basename(file_path)
 
             content = StorageMethodology.select().read_file(file_path)
             from AiOrchestration.AiOrchestrator import AiOrchestrator

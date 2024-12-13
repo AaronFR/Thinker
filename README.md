@@ -94,7 +94,6 @@ To refine the system's architecture and enhance its capabilities and efficiency,
    But why does that need to be a limitation? If we let it connect to tools that help it simulate the world while it ""thinks"" in words
    we can have the best of both worlds. Unlocking a lot of capability/accuracy.
 
-
 - **Payment System**: Top up system for updating balance(awaiting stripe integration), ~~log files for each individual cost incurred~~.
 
 - **Best of X**: Let users run multiple prompts in parallel and have the system automatically select/pick and choice to create a superior answer
@@ -131,7 +130,10 @@ To refine the system's architecture and enhance its capabilities and efficiency,
    if it aims to implement the feature I'm asking for with the *minimum* amount of changes to the existing functionality.
 - **Persona Configuration**: Left to the user as much as possible.
 
-- **Undo Changes Files**: e.g. to files
+- **Files design**: Files manamgenet needs to be planned specifically when its certain how things should be arranged
+   e.g. should front end file data objects include their folder and use it or should we rely on abstractions and let 
+   only the backend manage folder ids?
+  - **Undo Changes Files**: e.g. to files
 
 - **Graph Database Implementation**: A lot of work was put into creating functionality which now needs to be done with a 
  graph based methodology

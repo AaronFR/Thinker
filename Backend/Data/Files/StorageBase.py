@@ -14,6 +14,10 @@ class StorageBase:
         pass
 
     @abstractmethod
+    def move_file(self, current_path: str, new_path: str):
+        pass
+
+    @abstractmethod
     def list_staged_files(self) -> List[str]:
         pass
 

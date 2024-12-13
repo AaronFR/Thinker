@@ -5,6 +5,16 @@ import hljs from 'highlight.js';
 import he from 'he';
 
 /**
+ * Strips the folder path from a given file path and returns the basename with extension.
+ *
+ * @param {string} filePath - The full path of the file.
+ * @returns {string} The basename of the file (i.e., the file name with extension).
+ */
+export const getBasename = (filePath) => {
+  return filePath.replace(/^.*[\\/]/, '')
+};
+
+/**
  * Shortens the provided text to the specified length and appends ellipsis if necessary.
  *
  * @param {string} text - The text to shorten.

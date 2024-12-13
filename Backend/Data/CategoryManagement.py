@@ -115,13 +115,11 @@ class CategoryManagement:
             return
 
         try:
-            user_id = get_user_context()
-
             for file in files:
-                staged_file_path = os.path.join(FileManagement.file_data_directory, user_id, file)
-                new_file_path = os.path.join(FileManagement.file_data_directory, str(category_id), file)
-                shutil.move(staged_file_path, new_file_path)
-                logging.info(f"{file} moved to {category_id}")
+                staged_file_path = os.path.join(file)
+                new_file_path = os.path.join(str(category_id), os.path.basename(file))
+
+                StorageMethodology.select().move_file(staged_file_path, new_file_path)
         except Exception:
             logging.exception(f"ERROR: Failed to move all files: {files} to folder: {category_id} .")
 

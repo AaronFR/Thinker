@@ -13,7 +13,7 @@ const useSuggestedQuestions = () => {
   const [error, setError] = useState(null);
 
   const generateQuestionsForPrompt = async (input) => {
-    console.log("Generating questions wadafor:", input);
+    console.log("Generating questions for:", input);
     setIsQuestioning(true);
     setError(null);
 

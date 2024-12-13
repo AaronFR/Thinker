@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import FileUploadButton from './FileUploadButton';
 import TagsManager from './TagsManager';
 import { apiFetch } from '../utils/authUtils';
+import { getBasename } from '../utils/textUtils'
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
@@ -59,7 +60,7 @@ const UserInputForm = ({
       const data = await response.json();
       setSelectedFiles((prevFiles) => [
         ...prevFiles,
-        ...data.files.map((fileName) => ({ name: fileName }))
+        ...data.files.map((fileName) => ({ name: getBasename(fileName) }))
       ]);
     } catch (error) {
       setFetchError('Error fetching files.');

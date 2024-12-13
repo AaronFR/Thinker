@@ -39,22 +39,14 @@ def list_files():
 
     :return:
     """
-    logging.info("💀")
-    user_id = get_user_context()
-    logging.info(f"🤔 {FILES_PATH}, {user_id}")
-    user_folder = os.path.join(FILES_PATH, user_id)
-
-    if not os.path.exists(user_folder):
-        return jsonify({'message': 'User folder not found.'}), 503
-
-    return fetch_entity(os.listdir(user_folder), "files")
+    return fetch_entity(StorageMethodology.select().list_staged_files(), "files")
 
 
 @files_bp.route('/file', methods=['POST'])
 @login_required
 def upload_file():
     """
-    Accept a user file and try uploading it for future reference.
+    Accept a user file and try uploading it for staging
 
     :returns: A Flask Response object containing a JSON representation of the processed message.
     """
@@ -67,13 +59,13 @@ def upload_file():
     filename = secure_filename(file.filename)
 
     user_id = get_user_context()
-    staged_file_path = os.path.join(FILES_PATH, user_id, filename)
+    staged_file_path = os.path.join(user_id, filename)
 
     try:
-        file.save(staged_file_path)
+        StorageMethodology.select().save_file(file.read().decode(), staged_file_path, overwrite=True)
         return jsonify({'message': 'File uploaded successfully.', 'filename': filename}), 200
     except Exception as e:
-        print(f"Error saving file: {e}")
+        logging.info(f"Error saving file: {e}")
         return jsonify({'message': 'File upload failed due to server error.'}), 500
 
 
