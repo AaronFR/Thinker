@@ -76,7 +76,7 @@ class S3Manager(StorageBase):
             return response['Body'].read().decode("utf-8")
         except ClientError as e:
             logging.error(f"Failed to download {full_address}: {e}")
-            return f"[FAILED TO LOAD {full_address}]"
+            return f"FAILED TO LOAD {full_address}"
 
     def move_file(self, current_path: str, new_path: str):
         try:
@@ -91,8 +91,8 @@ class S3Manager(StorageBase):
                 Key=self.convert_to_s3_path(current_path))
 
         except ClientError:
-            logging.exception(f"Failed to relocate {current_path}")
-            return f"Failed to relocate {current_path}"
+            logging.exception(f"FAILED TO MOVE {current_path} TO {new_path}")
+            return f"FAILED TO MOVE {current_path} TO {new_path}"
 
     def list_staged_files(self) -> list:
         """

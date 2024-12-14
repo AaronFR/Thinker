@@ -67,17 +67,17 @@ class FileManagement(StorageBase):
 
         if self.is_image_file(full_address):
             logging.warning(f"Attempted to read an image file: {full_address}")
-            return f"[CANNOT READ IMAGE FILE: {full_address}]"
+            return f"CANNOT READ IMAGE FILE: {full_address}"
 
         try:
             with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
                 return file.read()
         except FileNotFoundError:
             logging.exception(f"File not found: {full_address}")
-            return f"[FILE NOT FOUND {full_address}]"
+            return f"FILE NOT FOUND {full_address}"
         except Exception:
             logging.exception(f"An unexpected error occurred")
-            return f"[FAILED TO LOAD {full_address}]"
+            return f"FAILED TO LOAD {full_address}"
 
     def move_file(self, current_path: str, new_path: str):
         try:
