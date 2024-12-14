@@ -143,6 +143,9 @@ To refine the system's architecture and enhance its capabilities and efficiency,
   - Connecting relevant messages to the current prompt -> chain of messages displayed on the main section
   - sub-categories (possibly)
 
+- **Category descriptions**: input is cheap and a small description would probably significantly increase selection 
+   relevance
+
 - **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.
 
 - **API Integrations**: Integrate additional AI models to leverage the most appropriate based on context

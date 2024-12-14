@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 
+
+### Changed
+
+- 
+
+### Removed
+
+- 
+
+## [0.9.0] - 2024-12-14 - Auth, Login and Online Deployment AKA 'I now use this app instead of ChatGPT.com'
+
+### Added
+
 - Staged files remain staged persistently
 - User registration and login. User authentication
 - Users can manually select one or more messages as context for a prompt
@@ -16,17 +30,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Workflow progress is shown visually to the user
 - Left pane (files and message select) and Right pane (prompts) can be resized dynamically against one another
    .e.g. for reading a file or message properly.
+- User balance displayed to user
+- FrontEnd and Backend can communicate when deployed on Heroku
+- https://theThinkerAi.com domain permitted through CORS
 
 ### Changed
 
 - Responses now highlight code appropriately
   - Can copy code sections
 - user config files unique for each user
-
-### Removed
-
-- 
-
+- File storage locally or in AWS s3 based on configuration
 
 ## [0.8.1] - 2024-11-08 - File Selection and Streaming
 

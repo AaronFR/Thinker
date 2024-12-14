@@ -34,7 +34,7 @@ def create_app():
     frontend_origin = os.getenv("THE_THINKER_FRONTEND_URL", "http://localhost:3000")
     allowed_domains = [
         frontend_origin,
-        "http://thethinkerai.com"  # woah this site looks pretty cool *WINKS AGGRESSIVELY*
+        "https://thethinkerai.com"  # woah this site looks pretty cool *WINKS AGGRESSIVELY*
     ]
 
     CORS(

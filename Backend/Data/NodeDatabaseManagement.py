@@ -19,6 +19,8 @@ class NodeDatabaseManagement:
     """
     Singleton class for managing interactions with the Neo4j database.
     ToDo: each method should try catch for errors
+    ToDo: There is a bug where a user can login if they still have a access token even if their account no longer exists
+     in the db
 
     It's tempting to split this class up, however neo4jDriver has a notable time to connect, however this may be
     negligible in a frequently used server
