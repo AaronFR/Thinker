@@ -24,25 +24,34 @@ def create_app():
     app.config['JWT_COOKIE_CSRF_PROTECT'] = True
     app.config['ENV'] = os.getenv("THINKER_ENV", "development")
 
+    # Secure cookie settings
+    # app.config['JWT_COOKIE_SECURE'] = False  # app.config['ENV'] == "production"
+    # app.config['JWT_COOKIE_SAMESITE'] = False  # 'None' if app.config['ENV'] == "production" else 'Lax'
+
     jwt.init_app(app)
 
-    frontend_origin = os.getenv(
-        "THE_THINKER_FRONTEND_URL",
-        "http://localhost:3000"  # Default frontend origin for local development
-    )
-
+    # deployed heroku frontend origin, defaults to localhost for local development
+    frontend_origin = os.getenv("THE_THINKER_FRONTEND_URL", "http://localhost:3000")
+    allowed_domains = [
+        frontend_origin,
+        "http://thethinkerai.com"  # woah this site looks pretty cool *WINKS AGGRESSIVELY*
+    ]
 
     CORS(
         app,
         supports_credentials=True,
         resources={
             r"/*": {  # Allow all routes
-                "origins": frontend_origin
+                "origins": allowed_domains
             }
         }
     )
 
-    socketio.init_app(app, cors_allowed_origins="*", async_mode="eventlet")
+    socketio.init_app(
+        app,
+        cors_allowed_origins=allowed_domains,
+        async_mode="eventlet"
+    )
 
     # Register blueprints
     from .routes.home_bp import home_bp
