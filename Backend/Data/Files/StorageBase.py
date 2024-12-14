@@ -1,7 +1,7 @@
 # storage_base.py
 from abc import ABC, abstractmethod
 from mimetypes import guess_type
-from typing import List, Dict
+from typing import List, Dict, Any
 
 
 class StorageBase:
@@ -11,6 +11,12 @@ class StorageBase:
 
     @abstractmethod
     def read_file(self, file_path: str) -> str:
+        pass
+
+    def save_yaml(self, yaml_path: str, data: Dict[Any, Any]):
+        pass
+
+    def load_yaml(self, yaml_path: str) -> Dict:
         pass
 
     @abstractmethod

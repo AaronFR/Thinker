@@ -1,5 +1,7 @@
 import bcrypt
 
+from Utilities.Constants import DEFAULT_ENCODING
+
 
 def hash_password(password):
     """
@@ -8,9 +10,9 @@ def hash_password(password):
     :return:
     """
     salt = bcrypt.gensalt()
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
-    return hashed_password.decode('utf-8')
+    hashed_password = bcrypt.hashpw(password.encode(DEFAULT_ENCODING), salt)
+    return hashed_password.decode(DEFAULT_ENCODING)
 
 
 def check_password(password, hashed_password):
-    return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
+    return bcrypt.checkpw(password.encode(DEFAULT_ENCODING), hashed_password.encode(DEFAULT_ENCODING))

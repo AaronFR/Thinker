@@ -1,11 +1,13 @@
 import logging
 import os
-from typing import List, Dict
+from typing import List, Dict, Any
 
 import boto3
+import yaml
 from botocore.exceptions import ClientError
 
 from Data.Files.StorageBase import StorageBase
+from Utilities.Constants import DEFAULT_ENCODING
 from Utilities.Contexts import get_user_context
 from Utilities.Decorators import return_for_error
 
@@ -73,10 +75,55 @@ class S3Manager(StorageBase):
                 Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
                 Key=self.convert_to_s3_path(full_address)
             )
-            return response['Body'].read().decode("utf-8")
+            return response['Body'].read().decode(DEFAULT_ENCODING)
         except ClientError as e:
             logging.error(f"Failed to download {full_address}: {e}")
             return f"FAILED TO LOAD {full_address}"
+
+    def save_yaml(self, yaml_path: str, data: Dict[Any, Any]) -> None:
+        """
+        Saves a dictionary to a YAML file in the specified S3 bucket.
+
+        :param yaml_path: The key (path) to save the YAML file.
+        :param data: The dictionary to save.
+        """
+        yaml_content = yaml.safe_dump(data)
+        full_path = os.path.join("UserConfigs", yaml_path)
+
+        self.s3_client.put_object(
+            Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
+            Key=self.convert_to_s3_path(full_path),
+            Body=yaml_content,
+            ContentType='application/x-yaml'
+        )
+
+        logging.info(f"YAML data saved to s3: {full_path}")
+
+    def load_yaml(self, yaml_path: str) -> Dict[str, object]:
+        """
+        Loads existing data from a YAML file in the specified S3 bucket.
+
+        :param yaml_path: The key (path) to the YAML file.
+        :return: A dictionary containing the loaded data or an empty dictionary.
+        """
+        existing_data = {}
+        full_path = os.path.join("UserConfigs", yaml_path)
+
+        try:
+            response = self.s3_client.get_object(
+                Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
+                Key=self.convert_to_s3_path(full_path)
+            )
+            yaml_content = response['Body'].read().decode(DEFAULT_ENCODING)
+            existing_data = yaml.safe_load(yaml_content) or {}
+
+            logging.info(f"YAML data loaded from s3: {full_path}")
+        except self.s3_client.exceptions.NoSuchKey:
+            logging.info(f"No existing data file found at s3: {full_path}.")
+        except Exception as e:
+            logging.error(f"Error reading YAML file from S3: {e}")
+
+        return existing_data
 
     def move_file(self, current_path: str, new_path: str):
         try:

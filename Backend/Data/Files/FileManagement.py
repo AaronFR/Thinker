@@ -5,7 +5,9 @@ import shutil
 
 import yaml
 
-from typing import List, Dict
+from typing import List, Dict, Any
+
+from deprecated.classic import deprecated
 
 from Data.Files.StorageBase import StorageBase
 from Utilities import Constants
@@ -35,6 +37,9 @@ class FileManagement(StorageBase):
     """
 
     file_data_directory = os.path.join(os.path.dirname(__file__), '../FileData')
+    config_data_directory = os.path.join(os.path.dirname(__file__), '../UserConfigs')
+    # ToDo: Refactor required FileData should represent local storage / the s3 bucket, user_file data needs to be
+    #  created and files and UserConfigs moved inside
 
     def __init__(self):
         ErrorHandler.setup_logging()
@@ -88,6 +93,40 @@ class FileManagement(StorageBase):
         except Exception:
             logging.exception("failed to move local files")
 
+    @staticmethod
+    def save_yaml(yaml_path: str, data: Dict[Any, Any]):
+        """
+        Saves a dictionary to a YAML file at the specified path using the selected storage methodology.
+
+        :param yaml_path: The path to the YAML file.
+        :param data: The dictionary to save.
+        """
+        yaml_content = yaml.safe_dump(data)
+        full_path = os.path.join(FileManagement.config_data_directory, yaml_path)
+
+        FileManagement.save_file(yaml_content, full_path, overwrite=True)
+
+    @staticmethod
+    def load_yaml(yaml_path: str) -> Dict[str, object]:
+        """
+        Loads existing data from a YAML file if available.
+
+        :param yaml_path: The path to the YAML file.
+        :return: A dictionary containing the loaded data or an empty dictionary.
+        """
+        existing_data = {}
+
+        full_path = os.path.join(FileManagement.config_data_directory, yaml_path)
+        if os.path.isfile(full_path) and os.path.getsize(full_path) > 0:
+            try:
+                with open(full_path, 'r', encoding=DEFAULT_ENCODING) as yaml_file:
+                    existing_data = yaml.safe_load(yaml_file) or {}
+            except (FileNotFoundError, yaml.YAMLError) as e:
+                logging.error(f"Error reading YAML file: {e}")
+        else:
+            logging.info(f"No existing data file found at {full_path}.")
+
+        return existing_data
 
     @staticmethod
     def list_staged_files() -> List[str]:
@@ -140,6 +179,7 @@ class FileManagement(StorageBase):
             else:
                 logging.error("Error: Data is not a list of dictionaries!")
 
+    @deprecated("Should just use save_yaml")
     @staticmethod
     @handle_errors(raise_errors=True)
     def write_to_yaml(data: Dict[str, object], yaml_path: str, overwrite=False) -> None:
@@ -153,27 +193,6 @@ class FileManagement(StorageBase):
         mode = "w" if overwrite or not os.path.exists(yaml_path) else "a"
         with open(yaml_path, mode, encoding=DEFAULT_ENCODING) as yaml_file:
             yaml.dump(data, yaml_file, default_flow_style=False, Dumper=MyDumper, allow_unicode=True)
-
-    @staticmethod
-    def load_yaml(yaml_path: str) -> Dict[str, object]:
-        """
-        Loads existing data from a YAML file if available.
-
-        :param yaml_path: The path to the YAML file.
-        :return: A dictionary containing the loaded data or an empty dictionary.
-        """
-        existing_data = {}
-
-        if os.path.isfile(yaml_path) and os.path.getsize(yaml_path) > 0:
-            try:
-                with open(yaml_path, 'r', encoding=DEFAULT_ENCODING) as yaml_file:
-                    existing_data = yaml.safe_load(yaml_file) or {}
-            except (FileNotFoundError, yaml.YAMLError) as e:
-                logging.error(f"Error reading YAML file: {e}")
-        else:
-            logging.info(f"No existing data file found at {yaml_path}.")
-
-        return existing_data
 
     @staticmethod
     def regex_refactor(target_string: str, replacement: str, file_path):
