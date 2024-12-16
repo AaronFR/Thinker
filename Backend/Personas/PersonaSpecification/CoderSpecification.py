@@ -8,13 +8,14 @@ def load_configuration() -> str:
     """
     config = Configuration.load_config()
 
-    return f"""Following the following guidelines when writing code.
-    Docstrings and class definitions style: {config['documentation']['style']}
-    indentation: {config['code_style']['indentation']}
-    line length: {config['code_style']['line_length']}
-    imports_order: {config['code_style']['imports_order']}
-    Please write your code inside code blocks with language identifiers
-    """
+    return config.get("systemMessages", {}).get(
+        "coderPersonaMessage",
+        f"""Following the following guidelines when writing code. Docstrings and class definitions style: reStructuredText
+        indentation: 4_spaces (or typical for the language)
+        max line length: 120
+        imports_order: standard_libraries, then third_party_libraries finally local_imports
+        Please write your code inside code blocks with language identifiers"""
+    )
 
 
 CODER_INSTRUCTIONS = "Analyze the user prompt in sequential order, giving priority to the most recent instructions " \

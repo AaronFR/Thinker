@@ -6,6 +6,7 @@ import shutil
 from typing import Optional
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Data.Configuration import Configuration
 from Data.Files.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
@@ -40,18 +41,25 @@ class CategoryManagement:
         :return: The name of the selected category
         """
         categories = nodeDB().list_categories()
+        config = Configuration.load_config()
+
+        # This isn't the full message as we 'abstract' away some implementation details
+        user_categorisation_instructions = config.get('systemMessages', {}).get(
+            "categorisationMessage",
+            "Given the following prompt-response pair, think through step by step, explaining your reasoning"
+        )
 
         if llm_response:
             categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n" + \
                                    "<response>" + llm_response + "</response>"
             categorisation_instructions = f"LIGHTLY suggested existing categories, you DONT need to follow: {str(categories)}" + \
-                "Given the following prompt-response pair, think through step by step, explaining your reasoning" + \
+                user_categorisation_instructions + \
                 "and categorize the data with the most suitable single-word answer." + \
                 "Write it as <result=\"(your_selection)\""
         else:
             categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n"
             categorisation_instructions = f"LIGHTLY suggested existing categories, you DONT need to follow: {str(categories)}" + \
-                "Given the following prompt, think through step by step, explaining your reasoning" + \
+                user_categorisation_instructions + \
                 "and categorize the data with the most suitable single-word answer." + \
                 "Write it as <result=\"(your_selection)\""
 
