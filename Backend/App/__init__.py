@@ -25,8 +25,8 @@ def create_app():
     app.config['ENV'] = os.getenv("THINKER_ENV", "development")
 
     # Secure cookie settings
-    # app.config['JWT_COOKIE_SECURE'] = False  # app.config['ENV'] == "production"
-    # app.config['JWT_COOKIE_SAMESITE'] = False  # 'None' if app.config['ENV'] == "production" else 'Lax'
+    app.config['JWT_COOKIE_SECURE'] = True  # app.config['ENV'] == "production"
+    app.config['JWT_COOKIE_SAMESITE'] = 'None'  # 'None' if app.config['ENV'] == "production" else 'Lax'
 
     jwt.init_app(app)
 
@@ -34,12 +34,13 @@ def create_app():
     frontend_origin = os.getenv("THE_THINKER_FRONTEND_URL", "http://localhost:3000")
     allowed_domains = [
         frontend_origin,
-        "https://thethinkerai.com"  # woah this site looks pretty cool *WINKS AGGRESSIVELY*
+        "https://thethinkerai.com",  # woah this site looks pretty cool *WINKS AGGRESSIVELY*
     ]
 
     CORS(
         app,
         supports_credentials=True,
+        origins=allowed_domains,
         resources={
             r"/*": {  # Allow all routes
                 "origins": allowed_domains
