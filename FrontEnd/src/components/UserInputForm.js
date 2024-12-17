@@ -143,7 +143,7 @@ const UserInputForm = ({
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
           <textarea
             value={userInput}
-            onChange={handleInputChange}
+            onChange={(event) => handleInputChange(event, selectedMessages, selectedFiles)}
             placeholder='Enter your prompt'
             className="prompt-input"
             rows="2"

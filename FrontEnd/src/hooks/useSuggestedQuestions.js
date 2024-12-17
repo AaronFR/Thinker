@@ -12,8 +12,8 @@ const useSuggestedQuestions = () => {
   const [isQuestioning, setIsQuestioning] = useState(false);
   const [error, setError] = useState(null);
 
-  const generateQuestionsForPrompt = async (input) => {
-    console.log("Generating questions for:", input);
+  const generateQuestionsForPrompt = async (input, selectedMessages, selectedFiles) => {
+    console.log("Generating questions for:", input, selectedMessages, selectedFiles);
     setIsQuestioning(true);
     setError(null);
 
@@ -23,7 +23,7 @@ const useSuggestedQuestions = () => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ user_prompt: input }),
+        body: JSON.stringify({ user_prompt: input, selected_messages: selectedMessages, selected_files: selectedFiles }),
         credentials: "include"
       });
   

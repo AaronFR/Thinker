@@ -69,8 +69,9 @@ function App () {
     // Form State
     const [formsFilled, setFormsFilled] = useState(false);
 
-    const handleInputChange = (event) => {
+    const handleInputChange = (event, selectedMessages, selectedFiles) => {
       // ToDo: don't think it respects shift enters, issue for inputting code
+      
       setUserInput(event.target.value);
       if (typingTimer.current) {
         clearTimeout(typingTimer.current);
@@ -80,20 +81,22 @@ function App () {
       event.target.style.height = "auto"; // Reset height to calculate scroll height properly
       event.target.style.height = `${Math.min(event.target.scrollHeight, 8 * 24)}px`;
 
-      debouncedHandleTyping(event.target.value);
+      console.log("🛴", selectedMessages, selectedFiles)
+      debouncedHandleTyping(event.target.value, selectedMessages, selectedFiles);
     };
 
-    const handleTyping = (value) => {
+    const handleTyping = (value, selectedMessages, selectedFiles) => {
       if (augmentedPromptsEnabled) {
         generateAugmentedPrompt(value);
       }
       if (questionUserPromptsEnabled && !formsFilled) {
         generateQuestionsForPrompt(value);
+        generateQuestionsForPrompt(value, selectedMessages, selectedFiles);
       }
     };
 
     const debouncedHandleTyping = useRef(
-      debounce((value) => handleTyping(value), idleTime)
+      debounce((value, selectedMessages, selectedFiles) => handleTyping(value, selectedMessages, selectedFiles), idleTime)
     ).current;
     
     // Clean up the debounce on unmount
@@ -122,6 +125,7 @@ function App () {
       setUserInput(augmentedPrompt); // Copy augmentedPrompt into userInput
       if (questionUserPromptsEnabled && !formsFilled) {
         generateQuestionsForPrompt(augmentedPrompt); // Retrigger questions for prompt
+        generateQuestionsForPrompt(augmentedPrompt, selectedMessages, selectedFiles); // Retrigger questions for prompt
         setResetResponsesTrigger(prev => prev + 1);
       }
     };

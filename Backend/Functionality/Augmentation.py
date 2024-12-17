@@ -1,3 +1,5 @@
+import logging
+
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
 
@@ -28,9 +30,18 @@ class Augmentation:
         return result
 
     @staticmethod
-    def question_user_prompt(initial_prompt: str):
+    def question_user_prompt(initial_prompt: str, reference_messages: list = None, reference_files: list = None):
         executor = AiOrchestrator()
         config = Configuration.load_config()
+
+        final_payload = []
+        if reference_messages:
+            final_payload.extend(reference_messages)
+        if reference_files:
+            final_payload.extend(reference_files)
+
+        # Append the initial prompt at the end
+        final_payload.append(initial_prompt)
 
         prompt_questioning_system_message = config.get('systemMessages', {}).get(
             "promptQuestioningMessage",
@@ -41,9 +52,8 @@ class Augmentation:
         # ToDo: Indepth study of what makes for the best questions (after graph database has been developed)
         result = executor.execute(
             [prompt_questioning_system_message],
-            [initial_prompt]
+            final_payload
         )
-
         return result
 
 
