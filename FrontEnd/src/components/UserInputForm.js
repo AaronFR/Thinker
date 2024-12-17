@@ -45,9 +45,6 @@ const UserInputForm = ({
     try {
       const response = await apiFetch(`${FLASK_PORT}/list_staged_files`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        },
         credentials: "include"
       });
 

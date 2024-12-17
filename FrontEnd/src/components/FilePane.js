@@ -54,10 +54,6 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
     try {
       const response = await apiFetch(`${FLASK_PORT}/categories_with_files`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "include"
       });
 
       if (!response.ok) {
@@ -108,10 +104,6 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
     try {
       const response = await apiFetch(`${FLASK_PORT}/files/${categoryName.toLowerCase()}`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "include"
       });
 
       if (!response.ok) {

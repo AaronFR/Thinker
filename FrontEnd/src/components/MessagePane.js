@@ -70,10 +70,6 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
   const fetchCategories = async () => {
     const response = await apiFetch(`${FLASK_PORT}/categories`, {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include"
     });
 
     if (!response.ok) {
@@ -103,10 +99,6 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
       console.log(categoryName.toLowerCase())
       const response = await apiFetch(`${FLASK_PORT}/messages/${categoryName.toLowerCase()}`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "include"
       })
 
       if (!response.ok) {

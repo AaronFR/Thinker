@@ -15,11 +15,7 @@ const useAugmentedPrompt = () => {
     try {
       const response = await apiFetch(`${FLASK_PORT}/augmentation/augment_prompt`, {
         method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
         body: JSON.stringify({ user_prompt: input }),
-        credentials: "include"
       });
   
       if (!response.ok) {

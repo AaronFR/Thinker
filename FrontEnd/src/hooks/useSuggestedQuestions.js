@@ -20,11 +20,7 @@ const useSuggestedQuestions = () => {
     try {
       const response = await apiFetch(`${FLASK_PORT}/augmentation/question_prompt`, {
         method: 'POST',
-        headers: {
-          "Content-Type": "application/json"
-        },
         body: JSON.stringify({ user_prompt: input, selected_messages: selectedMessages, selected_files: selectedFiles }),
-        credentials: "include"
       });
   
       if (!response.ok) {

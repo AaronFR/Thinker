@@ -25,10 +25,6 @@ export function Pricing() {
         try {
             const response = await apiFetch(FLASK_PORT + '/pricing/balance', {
                 method: 'GET',
-                headers: {
-                  "Content-Type": "application/json"
-                },
-                credentials: "include"
             });
 
             if (response.ok) {
