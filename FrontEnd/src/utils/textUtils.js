@@ -1,6 +1,6 @@
+import React, { useEffect, useRef, useMemo } from 'react';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import React, { useEffect, useRef, useMemo } from 'react';
 import hljs from 'highlight.js';
 import he from 'he';
 
@@ -10,9 +10,7 @@ import he from 'he';
  * @param {string} filePath - The full path of the file.
  * @returns {string} The basename of the file (i.e., the file name with extension).
  */
-export const getBasename = (filePath) => {
-  return filePath.replace(/^.*[\\/]/, '')
-};
+export const getBasename = (filePath) => filePath.replace(/^.*[\\/]/, '');
 
 /**
  * Shortens the provided text to the specified length and appends ellipsis if necessary.
@@ -31,9 +29,7 @@ export const shortenText = (text, maxLength = 160) => {
  * @param {string} text - The Markdown text to sanitize and convert.
  * @returns {string} - The sanitized HTML string.
  */
-export const markedFull = (text) => {
-  return DOMPurify.sanitize(marked(text));
-};
+export const markedFull = (text) => DOMPurify.sanitize(marked(text));
 
 /**
    * Shortens text and applies Markdown formatting.
@@ -42,7 +38,7 @@ export const markedFull = (text) => {
    * @returns {string} - The sanitized HTML string.
    */
 export const shortenAndMarkupText = (text, maxLength = 160) => {
-  const shortenedText = text.length > maxLength ? text.slice(0, maxLength) + '...' : text;
+  const shortenedText = shortenText(text, maxLength);
   const markedShortened = marked(shortenedText);
   return DOMPurify.sanitize(markedShortened);
 };
@@ -57,18 +53,14 @@ export const shortenAndMarkupText = (text, maxLength = 160) => {
    * @param {string} className - The given CSS class name
    * @param {function} isLoading - The function to determine if opacity should be lowered while being reloaded
    */
-export const MarkdownRenderer = ({ markdownText, className = "", isLoading = false }) => (
-  <>
-    {markdownText ? (
-      <div 
-        className={className} 
-        style={{ opacity: isLoading ? 0.5 : 1 }}
-        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(markdownText || "")) }}
-      />) : (
-        ""
-      )
-    }
-  </>
+export const MarkdownRenderer = ({ markdownText, className = '', isLoading = false }) => (
+  markdownText ? (
+    <div
+      className={className}
+      style={{ opacity: isLoading ? 0.5 : 1 }}
+      dangerouslySetInnerHTML={{ __html: markedFull(markdownText) }}
+    />
+  ) : null
 );
 
 /**
@@ -87,7 +79,7 @@ const CopyCodeButton = ({ code }) => {
 
   return (
     <button 
-      onClick={handleCopy} 
+      onClick={handleCopy}
       style={{ position: 'absolute', top: 8, right: 8 }}
       aria-label="Copy code to clipboard"
     >
@@ -104,7 +96,7 @@ const CopyCodeButton = ({ code }) => {
  * :param index: The index for unique key generation.
  */
 const CodeBlock = ({ lang, code, index }) => {
-  const codeRef = useRef();
+  const codeRef = useRef(null);
 
   useEffect(() => {
       if (codeRef.current.dataset.highlighted) {
@@ -122,7 +114,7 @@ const CodeBlock = ({ lang, code, index }) => {
       <pre>
         <code 
           ref={codeRef} 
-          className={lang ? `language-${lang} hljs` : ''}
+          className={lang ? `language-${lang}` : ''}
           dangerouslySetInnerHTML={{ __html: escapedCode }}
         />
       </pre>
@@ -157,8 +149,9 @@ export const CodeHighlighter = ({ children }) => {
   const parts = useMemo(() => {
     const elements = [];
     let lastIndex = 0;
-    let match;
     const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+    let match;
+
     while ((match = codeBlockRegex.exec(children)) !== null) {
       const [fullMatch, lang, code] = match;
       const index = match.index;
@@ -170,7 +163,9 @@ export const CodeHighlighter = ({ children }) => {
       }
 
       // Handle code block
-      elements.push(<CodeBlock key={`code-${lastIndex}`} lang={lang} code={code} index={lastIndex} />);
+      elements.push(
+        <CodeBlock key={`code-${lastIndex}`} lang={lang} code={code} />
+      );
       
       lastIndex = index + fullMatch.length;
   }

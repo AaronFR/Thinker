@@ -8,6 +8,11 @@ const useAugmentedPrompt = () => {
   const [isAugmenting, setIsAugmenting] = useState(false);
   const [error, setError] = useState(null);
 
+  /**
+   * Generates an augmented prompt based on user input.
+   * 
+   * @param {string} input - The user input prompt to augment.
+   */ 
   const generateAugmentedPrompt = async (input) => {
     setIsAugmenting(true);
     setError(null);

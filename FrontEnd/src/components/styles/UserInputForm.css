@@ -9,6 +9,10 @@
   background-color: var(--color-input-bg-light);
   color: var(--color-input-text);
   transition: all var(--transition-fast);
+  resize: 'none';
+  overflow-y: 'auto';
+  margin-left: '10px';
+  margin-right: '10px';
 }
 .prompt-input:focus {
   border-color: var(--color-border-focus); /* Change color on focus for an interactive feel */
@@ -57,6 +61,14 @@ body.dark-mode .message-item, .file-item {
   color: var(--color-text-light);
   transition: background-color var(--transition-duration) var(--transition-ease),
               color var(--transition-duration) var(--transition-ease);
+}
+
+.reference-area {
+  margin-bottom: '20px';
+}
+
+.error-message {
+  color: red;
 }
 
 .message-item:hover, .file-item:hover {

@@ -29,6 +29,7 @@ def init_process_message_ws(socketio):
 
         ToDo: refresh tokens on streams are a bit difficult. Implement if its possible in the release
          to not hit a regular automatically-refreshing request
+        ToDo: user input sanitization needs to be employed.
 
         :param data: A dictionary containing the user prompt and additional parameters.
         :raises ValueError: If the prompt or persona is invalid.

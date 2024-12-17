@@ -60,7 +60,7 @@ const UserInputForm = ({
         ...data.files.map((fileName) => ({ name: getBasename(fileName) }))
       ]);
     } catch (error) {
-      setFetchError('Error fetching files.');
+      setFetchError(`Error fetching files. ${error.message}`);
       console.error('Error fetching files:', error);
     } finally {
       setUploadCompleted(false)
@@ -104,12 +104,12 @@ const UserInputForm = ({
   return (
     <div>
       {/* Display Selected Messages */}
-      <div style={{ marginBottom: '20px' }}>
+      <div className='reference-area'>
         {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
         {selectedMessages.length === 0 && !fetchError}
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {selectedMessages.map((message, index) => (
-            <li key={index} style={{ padding: '5px 0' }}>
+            <li key={index}>
               <span role="img" aria-label="message">✉</span> {message.prompt}
             </li>
           ))}
@@ -117,12 +117,12 @@ const UserInputForm = ({
       </div>
 
       {/* Display Selected Files */}
-      <div style={{ marginBottom: '20px' }}>
-        {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
+      <div className='reference-area'>
+        {fetchError && <p className='error-message'>{fetchError}</p>}
         {selectedFiles.length === 0 && !fetchError}
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {selectedFiles.map((file, index) => (
-            <li key={index} style={{ padding: '5px 0' }}>
+            <li key={index}>
               <span role="img" aria-label="file">📄</span> {file.name}
             </li>
           ))}
@@ -151,20 +151,21 @@ const UserInputForm = ({
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {/* Pass the callback to handleUploadSuccess */}
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
+          <label htmlFor="prompt-input" className="visually-hidden">Prompt Input</label>
           <textarea
+            id='prompt-input'
             value={userInput}
             onKeyDown={handleKeyDown}
             onChange={(event) => handleInputChange(event, selectedMessages, selectedFiles)}
             placeholder='Enter your prompt'
             className="prompt-input"
             rows="2"
-            style={{ resize: 'none', overflowY: 'auto', marginLeft: '10px', marginRight: '10px', width: '500px' }}
           ></textarea>
           <button 
             type="submit"
             className="submit-button"
             disabled={isProcessing}
-            style={{ padding: '10px 20px' }}
+            aria-busy={isProcessing}
           >
             {isProcessing ? 'Processing...' : 'Enter'}
           </button>
@@ -181,7 +182,20 @@ UserInputForm.propTypes = {
   handleInputChange: PropTypes.func.isRequired,
   userInput: PropTypes.string.isRequired,
   isProcessing: PropTypes.bool.isRequired,
-  selectedFiles: PropTypes.instanceOf(File),
+  selectedFiles: PropTypes.arrayOf(
+      PropTypes.shape({
+          name: PropTypes.string.isRequired,
+      })
+  ).isRequired,
+  setSelectedFiles: PropTypes.func.isRequired,
+  selectedMessages: PropTypes.arrayOf(
+      PropTypes.shape({
+          prompt: PropTypes.string.isRequired,
+      })
+  ).isRequired,
+  setSelectedMessages: PropTypes.func.isRequired,
+  tags: PropTypes.arrayOf(PropTypes.string).isRequired,
+  setTags: PropTypes.func.isRequired,
 };
 
 export default UserInputForm;
