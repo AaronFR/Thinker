@@ -74,17 +74,23 @@ const MessageItem = ({ msg, onDelete, onSelect }) => {
         onClick={toggleExpansion}
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
       >
-        <p><strong>Prompt:</strong> {isExpanded ? msg.prompt : shortenText(msg.prompt)}</p>
+          
+        <div className="markdown-output">
+          <CodeHighlighter>
+            {isExpanded ? msg.prompt : shortenText(msg.prompt)}
+          </CodeHighlighter>
+        </div>
+        
       </div>
       
       <div className="message-response">
-        <p><strong>Response:</strong>
-          <div className="markdown-output">
-            <CodeHighlighter>
-              {isExpanded ? msg.response : shortenText(msg.response)}
-            </CodeHighlighter>
-          </div>
-        </p>
+        <p><strong>Response:</strong></p>
+        <div className="markdown-output">
+          <CodeHighlighter>
+            {isExpanded ? msg.response : shortenText(msg.response)}
+          </CodeHighlighter>
+        </div>
+        
       </div>
 
       {error && <p className="error-message" style={{ color: 'red' }}>{error}</p>}
