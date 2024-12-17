@@ -2,6 +2,7 @@ import csv
 import os
 import logging
 import shutil
+import sys
 
 import yaml
 
@@ -10,8 +11,7 @@ from typing import List, Dict, Any
 from deprecated.classic import deprecated
 
 from Data.Files.StorageBase import StorageBase
-from Utilities import Constants
-from Utilities.Constants import DEFAULT_ENCODING
+from Utilities.Constants import DEFAULT_ENCODING, MAX_FILE_SIZE
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Contexts import get_user_context
@@ -54,6 +54,9 @@ class FileManagement(StorageBase):
         :param file_path: The file name with extension prefixed by the category folder id
         :param overwrite: whether the file_name should be overwritten
         """
+        if sys.getsizeof(content) > MAX_FILE_SIZE:
+            raise Exception("File is far too large. 10 MB max.")
+
         data_path = os.path.join(FileManagement.file_data_directory, file_path)
         mode = "w" if overwrite or not os.path.exists(data_path) else "a"
         with open(data_path, mode, encoding=DEFAULT_ENCODING) as file:
@@ -75,7 +78,7 @@ class FileManagement(StorageBase):
             return f"CANNOT READ IMAGE FILE: {full_address}"
 
         try:
-            with open(full_path, 'r', encoding=Constants.DEFAULT_ENCODING) as file:
+            with open(full_path, 'r', encoding=DEFAULT_ENCODING) as file:
                 return file.read()
         except FileNotFoundError:
             logging.exception(f"File not found: {full_address}")

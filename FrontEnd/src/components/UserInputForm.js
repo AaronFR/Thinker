@@ -76,6 +76,8 @@ const UserInputForm = ({
     }
   }, [uploadCompleted]);
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
   /**
    * Handles successful file uploads by updating the uploadedFiles state
    * and setting the files for prompting.
@@ -84,6 +86,10 @@ const UserInputForm = ({
    */
   const handleUploadSuccess = (file) => {
     if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        setFetchError('File size exceeds the maximum limit of 5MB.');
+        return;
+      }
       setUploadCompleted(true)
     }
   };
