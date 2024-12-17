@@ -94,6 +94,13 @@ const UserInputForm = ({
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSubmit(e);
+    }
+};
+
   return (
     <div>
       {/* Display Selected Messages */}
@@ -146,6 +153,7 @@ const UserInputForm = ({
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
           <textarea
             value={userInput}
+            onKeyDown={handleKeyDown}
             onChange={(event) => handleInputChange(event, selectedMessages, selectedFiles)}
             placeholder='Enter your prompt'
             className="prompt-input"
