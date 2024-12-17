@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import "./styles/expandableElement.css"
+import './styles/expandableElement.css';
 
 /**
  * ExpandableElement
@@ -11,75 +11,44 @@ import "./styles/expandableElement.css"
  * The component allows for separate minimized and maximized views. Child elements retain their
  * functionalities irrespective of the expansion state.
  *
- * Attributes:
- * -----------
- * - `minContent` : React node
- *     Content to display when the component is minimized.
- * - `maxContent` : React node
- *     Content to display when the component is maximized.
- * - `initiallyExpanded` : bool
- *     Determines whether the component is expanded on initial render.
- * - `toggleButtonLabel` : string
- *     Label for the toggle button.
- *
  * Usage:
  * ------
- * 
-
+ *
  * <ExpandableElement
- * minContent={<Header />}
- * maxContent={<DetailedView />}
- * initiallyExpanded={false}
- * toggleButtonLabel="Toggle View"
+ *   minContent={<Header />}
+ *   maxContent={<DetailedView />}
+ *   initiallyExpanded={false}
+ *   toggleButtonLabel="Toggle View"
  * />
  */
-class ExpandableElement extends Component {
-    /**
-     * Initialize the ExpandableElement component.
-     *
-     * @param {object} props - Component properties.
-     */
-    constructor(props) {
-        super(props);
-        this.state = {
-            isExpanded: props.initiallyExpanded || true,
-        };
-        this.toggleExpansion = this.toggleExpansion.bind(this);
-    }
+const ExpandableElement = React.memo(({
+    minContent,
+    maxContent,
+    initiallyExpanded = false,
+    toggleButtonLabel,
+}) => {
+    const [isExpanded, setIsExpanded] = useState(initiallyExpanded);
 
-    /**
-     * Toggle the expansion state of the component.
-     *
-     * Changes the `isExpanded` state between true and false.
-     */
-    toggleExpansion() {
-        this.setState((prevState) => ({
-            isExpanded: !prevState.isExpanded,
-        }));
-    }
+    const toggleExpansion = () => {
+        setIsExpanded((prev) => !prev);
+    };
 
-    /**
-     * Render the ExpandableElement component.
-     *
-     * Displays either the minimized or maximized content based on the current state.
-     * Includes a button to toggle between states.
-     *
-     * @returns {JSX.Element} The rendered component.
-     */
-    render() {
-        const { minContent, maxContent, toggleButtonLabel } = this.props;
-        const { isExpanded } = this.state;
+    const buttonLabel = toggleButtonLabel || (isExpanded ? '-' : '+');
 
-        return (
-            <>
-                {isExpanded ? maxContent : minContent}
-                <button onClick={this.toggleExpansion} className='min-max-button'>
-                    {toggleButtonLabel || (isExpanded ? '-' : '+')}
-                </button>
-            </>
-        );
-    }
-}
+    return (
+        <>
+            {isExpanded ? maxContent : minContent}
+            <button
+                onClick={toggleExpansion}
+                className="min-max-button"
+                aria-expanded={isExpanded}
+                aria-label="Toggle content visibility"
+            >
+                {buttonLabel}
+            </button>
+        </>
+    );
+});
 
 ExpandableElement.propTypes = {
     /**
