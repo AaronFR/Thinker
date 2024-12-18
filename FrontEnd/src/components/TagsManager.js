@@ -8,6 +8,7 @@ import './styles/TagsManager.css';
 const DEFAULT_TAGS = {
     model: ['gpt-4o', 'gpt-4o-mini', 'o1-mini', 'o1-preview'],
     category: [],
+    write: ['example.txt']
 };
 
 /**

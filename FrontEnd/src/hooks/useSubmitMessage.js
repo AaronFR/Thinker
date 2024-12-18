@@ -5,13 +5,22 @@ import { apiFetch } from '../utils/authUtils';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
-const useSubmitMessage = (concatenatedQA, filesForPrompt, selectedMessages, tags, workflow, setWorkflow) => {
+/**
+ * Custom hook to handle message submission through a websocket connection.
+ */
+const useSubmitMessage = (
+  concatenatedQA,
+  filesForPrompt,
+  selectedMessages,
+  tags,
+  workflow,
+  setWorkflow
+) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [totalCost, setTotalCost] = useState(null);
   const socketRef = useRef(null);
-  const isRefreshingRef = useRef(false);
 
   // Refs to store the latest userInput and selectedPersona
   const userInputRef = useRef('');
@@ -22,6 +31,7 @@ const useSubmitMessage = (concatenatedQA, filesForPrompt, selectedMessages, tags
 
   const updateQueueRef = useRef([]);
   const isProcessingQueueRef = useRef(false); // Flag to prevent multiple concurrent queue processing
+  const isRefreshingRef = useRef(false);
 
   /**
    * Update workflowRef whenever workflow state changes.
@@ -30,6 +40,9 @@ const useSubmitMessage = (concatenatedQA, filesForPrompt, selectedMessages, tags
     workflowRef.current = workflow;
   }, [workflow]);
 
+  /**
+   * Process the workflow update queue to ensure sequential updates.
+   */
   const processUpdateQueue = useCallback(() => {
     if (isProcessingQueueRef.current) return; // Prevent re-entrancy
     if (!workflowRef.current) return; // Ensure workflow is set
@@ -49,7 +62,6 @@ const useSubmitMessage = (concatenatedQA, filesForPrompt, selectedMessages, tags
 
         const updatedWorkflow = { ...prevWorkflow };
         if (updateData.type === 'status') {
-          // Update the overall workflow status
           updatedWorkflow.status = updateData.status;
           console.log("Updated workflow status:", updatedWorkflow.status);
           return updatedWorkflow;
@@ -113,7 +125,7 @@ const useSubmitMessage = (concatenatedQA, filesForPrompt, selectedMessages, tags
         console.log("Received workflow status update", data);
         updateQueueRef.current.push({ type: 'status', status: data.status });
         processUpdateQueue();
-    });
+      });
 
       socket.on('update_workflow_step', (data) => {
         console.log("Receiving workflow step update", data);

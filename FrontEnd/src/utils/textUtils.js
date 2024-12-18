@@ -13,6 +13,20 @@ import he from 'he';
 export const getBasename = (filePath) => filePath.replace(/^.*[\\/]/, '');
 
 /**
+ * Converts text to Title Case, where the first letter of each word is capitalised
+ * 
+ * @param {string} string - The string to convert.
+ * @returns {string} - The Title Cased string.
+ */
+export function toTitleCase(input) {
+  return input
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+/**
  * Shortens the provided text to the specified length and appends ellipsis if necessary.
  *
  * @param {string} text - The text to shorten.

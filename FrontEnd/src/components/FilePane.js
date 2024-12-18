@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import FileItem from './FileItem';
-import { withLoadingOpacity } from '../utils/textUtils';
+import { withLoadingOpacity, toTitleCase } from '../utils/textUtils';
 import { apiFetch } from '../utils/authUtils';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
@@ -41,14 +41,6 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
       };
     }
   }, [isProcessing]);
-
-  function toTitleCase(string) {
-    return string
-      .toLowerCase()
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
  
   const fetchCategories = async () => {
     try {
@@ -168,4 +160,4 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
   );
 };
 
-export default FilePane;
+export default React.memo(FilePane);

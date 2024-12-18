@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { apiFetch } from '../utils/authUtils';
-import { withLoadingOpacity } from '../utils/textUtils';
+import { withLoadingOpacity, toTitleCase} from '../utils/textUtils';
 
 import MessageItem from './MessageItem';
 
@@ -46,20 +46,6 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
 
       await fetchMessagesByCategory(name, id);
     }
-  };
-
-  /**
-   * Converts a string to Title Case.
-   * 
-   * @param {string} string - The string to convert.
-   * @returns {string} - The Title Cased string.
-   */
-  const toTitleCase = (string) => {
-    return string
-      .toLowerCase()
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
   };
 
   /**
@@ -191,4 +177,4 @@ MessageHistory.propTypes = {
   isProcessing: PropTypes.bool.isRequired,
 };
 
-export default MessageHistory;
+export default React.memo(MessageHistory);
