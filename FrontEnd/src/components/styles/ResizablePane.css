@@ -17,6 +17,7 @@
     /* No need for absolute positioning since it's within a flex container */
     /* Ensure it's clickable */
   user-select: none;
+  touch-action: none;
 }
 
 .resizer:hover,
