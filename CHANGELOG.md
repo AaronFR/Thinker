@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Question prompt will also reference files and/or messages added to the prompt (no more: "Can you tell me what language
   (lorem.py) is written in...)
+- Resizing file/prompt panes works on mobile with touch
 
 ### Removed
 

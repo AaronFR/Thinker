@@ -1,4 +1,3 @@
-// ResizablePane.js
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './styles/ResizablePane.css';
@@ -15,38 +14,76 @@ const ResizablePane = ({ children, className }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [paneWidth, setPaneWidth] = useState(45); // Percentage without %
 
-    const handleMouseDown = (e) => {
-        e.preventDefault();
+    const handleDragStart = (clientX) => {
         setIsDragging(true);
     };
 
-    const handleMouseMove = (e) => {
+    const handleDrag = (clientX) => {
         if (!isDragging) return;
-        const container = e.target.closest('.resizable-container');
+        const container = document.querySelector('.resizable-container');
         if (!container) return;
-        
+
         const containerRect = container.getBoundingClientRect();
-        let newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100; // Convert to percentage
-        newWidth = Math.max(20, Math.min(newWidth, 80)); // Restrict between 20% and 80%
+        let newWidth = ((clientX - containerRect.left) / containerRect.width) * 100; // Convert to percentage
+        newWidth = Math.max(10, Math.min(newWidth, 90)); // Restrict between 20% and 80%
         setPaneWidth(newWidth);
     };
 
-    const handleMouseUp = () => {
+    const handleDragEnd = () => {
         setIsDragging(false);
+    };
+
+    // Mouse Events
+    const handleMouseDown = (e) => {
+        e.preventDefault();
+        handleDragStart(e.clientX);
+    };
+
+    const handleMouseMove = (e) => {
+        handleDrag(e.clientX);
+    };
+
+    const handleMouseUp = () => {
+        handleDragEnd();
+    };
+
+    // Touch Events
+    const handleTouchStart = (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        handleDragStart(touch.clientX);
+    };
+
+    const handleTouchMove = (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        handleDrag(touch.clientX);
+    };
+
+    const handleTouchEnd = () => {
+        handleDragEnd();
     };
 
     useEffect(() => {
         if (isDragging) {
+            // Mouse Events
             window.addEventListener('mousemove', handleMouseMove);
             window.addEventListener('mouseup', handleMouseUp);
+            // Touch Events
+            window.addEventListener('touchmove', handleTouchMove, { passive: false });
+            window.addEventListener('touchend', handleTouchEnd);
         } else {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
         }
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
         };
     }, [isDragging]);
 
@@ -58,6 +95,7 @@ const ResizablePane = ({ children, className }) => {
             <div
                 className={`resizer ${isDragging ? 'resizing' : ''}`}
                 onMouseDown={handleMouseDown}
+                onTouchStart={handleTouchStart}
                 role="separator"
                 aria-orientation="vertical"
                 aria-label="Resize panes"
