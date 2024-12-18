@@ -154,11 +154,7 @@ export function Settings() {
   ];
 
   const betaOptions = [
-    { label: "Augmented prompt suggestions - A copy of the prompt will be generated, optimised with prompt engineering in mind to produce better responses. For reference or copying all",
-     value: settings.augmentedPromptsEnabled, onChange: toggleAugmentedPrompts },
-    { label: "Question user prompt - Questions will be generated against the users prompt as suggestions for the user to think about their prompt in detail",
-     value: settings.questionUserPromptsEnabled, onChange: toggleQuestionUserPrompts },
-    { label: "User knowledge - The thinker will remember details about the user and their preferences",
+    { label: "User knowledge - The thinker will remember details about the user and their preferences (user preferences and facts are accumulated when enabled but not currently used when prompting)",
      value: settings.userEncyclopediaEnabled, onChange: toggleUserEncyclopedia },
     { label: "Reference knowledge - The thinker will look up details online (Wikipedia currently) and use them in reference to your prompt where appropriate",
      value: settings.encyclopediaEnabled, onChange: toggleEncyclopedia },
@@ -181,6 +177,48 @@ export function Settings() {
         </label>
       ))}
 
+      <h2 className="settings-heading">Functionality</h2>
+      <h2>Prompt Questioning</h2>
+          <label className="settings-label">
+            <input 
+              type="checkbox"
+              className="settings-checkbox"
+              id="prompt-questioning-checkbox"
+              checked={settings.questionUserPromptsEnabled}
+              onChange={toggleQuestionUserPrompts}
+            />
+            Generates questions against the users prompt and reference material, giving suggestions for the user to think about their prompt in detail
+          </label>
+          <p>Use case: Difficult, 'knotty' technical questions where the extra details can help fomulate solutions. Not so useful when you *just* want any answer from the AI</p>
+          <div className="message-settings">
+            <textarea
+              value={settings.promptQuestioningMessage}
+              onChange={(e) => handleMessageChange('promptQuestioningMessage', e.target.value)}
+              style={{ opacity: 0.5 }}
+            />
+        </div>
+
+      <h2>Auto Prompt Engineering</h2>
+        <label className="settings-label">
+          <input
+            type="checkbox"
+            className="settings-checkbox"
+            id="auto-prompt-engineering-checkbox"
+            checked={settings.augmentedPromptsEnabled}
+            onChange={toggleAugmentedPrompts}
+          />
+          Generates a copy of your prompt, re-written in line with 'prompt engineering' to produce better responses.
+        </label>
+        <p>And the shills told you it would be a career skill...</p>
+        <p>Use case: simple, plain prompts that can none the less benefit from a *good* well thought out response</p>
+        <div className='message-settings'>
+          <textarea
+            value={settings.promptAugmentationMessage}
+            onChange={(e) => handleMessageChange('promptAugmentationMessage', e.target.value)}
+            style={{ opacity: 0.5 }}
+          />
+        </div>
+
       <h2 className="settings-heading">🚧 Beta features</h2>
       {betaOptions.map(({ label, value, onChange }, index) => (
         <label key={index} className="settings-label">
@@ -191,22 +229,6 @@ export function Settings() {
 
       <h2 className="settings-heading">System Messages</h2>
         <div className="message-settings">
-          <label className="message-label">
-            Prompt Augmentation:
-            <textarea
-              value={settings.promptAugmentationMessage}
-              onChange={(e) => handleMessageChange('promptAugmentationMessage', e.target.value)}
-              style={{ opacity: 0.5 }}
-            />
-          </label>
-          <label className="message-label">
-            Prompt Questioning:
-            <textarea
-              value={settings.promptQuestioningMessage}
-              onChange={(e) => handleMessageChange('promptQuestioningMessage', e.target.value)}
-              style={{ opacity: 0.5 }}
-            />
-          </label>
           <label className="message-label">
             Coder Persona:
             <textarea
