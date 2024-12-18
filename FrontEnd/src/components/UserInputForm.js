@@ -151,7 +151,6 @@ const UserInputForm = ({
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {/* Pass the callback to handleUploadSuccess */}
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
-          <label htmlFor="prompt-input" className="visually-hidden">Prompt Input</label>
           <textarea
             id='prompt-input'
             value={userInput}
