@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - User can manually specify llm system message instructions
 - File size limit of 10 MB implemented to avoid incorrect use (Only text files are accepted for now)
+- Any route that uses LLM calls checks the user has sufficient balance (sorry 🤗)
 
 ### Changed
 

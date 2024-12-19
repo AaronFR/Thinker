@@ -8,6 +8,7 @@ from Functionality.Organising import Organising
 from Personas.Coder import Coder
 from Utilities.AuthUtils import login_required_ws
 from Utilities.Contexts import set_message_context, get_message_context
+from Utilities.CostingUtils import balance_required
 from Utilities.Routing import parse_and_validate_data
 
 ERROR_NO_PROMPT = "No prompt found"
@@ -23,6 +24,7 @@ PROCESS_MESSAGE_SCHEMA = {
 def init_process_message_ws(socketio):
     @socketio.on('start_stream')
     @login_required_ws
+    @balance_required
     def process_message(data):
         """
         Accept a user prompt and process it through the selected persona.

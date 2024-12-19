@@ -109,11 +109,12 @@ To refine the system's architecture and enhance its capabilities and efficiency,
   - categories should be listed according to date of their latest massage
   - messages and files show when they are selected, categories holding selected files are also visually identified
   - Can deselect a message or file from the main view area rather than their item
-  - (optional) automatic category colourisation
   - Q&A can be malformed at times
   - openAI can reject prompts and the user will never know
   - Ability to terminate a mid-process prompt
-  - its hard to select a file vs expanding it for review (solved if that means the same thing though..)
+  - Prompts can fail and the user doesn't know why, it just stalls at 'Processing..'
+  - It's hard to select a file vs expanding it for review (solved if that means the same thing though..)
+  - (optional) automatic category colourisation
   - ~~files and messages should display in the large main section not tucked into the corner~~
 
 - **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can

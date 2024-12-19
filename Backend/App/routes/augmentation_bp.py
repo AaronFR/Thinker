@@ -6,6 +6,7 @@ from flask import Blueprint, jsonify, request
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Augmentation import Augmentation
 from Utilities.AuthUtils import login_required
+from Utilities.CostingUtils import balance_required
 from Utilities.Routing import parse_and_validate_data
 
 augmentation_bp = Blueprint('augmentation', __name__)
@@ -22,6 +23,7 @@ QUESTION_PROMPT_SCHEMA = {
 
 @augmentation_bp.route('/augmentation/augment_prompt', methods=['POST'])
 @login_required
+@balance_required
 def augment_user_prompt():
     """
     Accept a user prompt and augment it in line with prompt engineering standards.
@@ -52,6 +54,7 @@ def augment_user_prompt():
 
 @augmentation_bp.route('/augmentation/question_prompt', methods=['POST'])
 @login_required
+@balance_required
 def question_user_prompt():
     """
     Accept a user prompt and generates a list of questions that *may* improve the llm's response
