@@ -18,6 +18,9 @@ import Navigation from './components/Navigation';
 import useSubmitMessage from './hooks/useSubmitMessage';
 import useAugmentedPrompt from './hooks/useAugmentedPrompt';
 import useSuggestedQuestions from './hooks/useSuggestedQuestions';
+import LowBalanceWarning from './components/BalanceWarning';
+
+import { apiFetch } from './utils/authUtils';
 
 import './App.css';
 /**
@@ -43,16 +46,16 @@ function App () {
     const { settings } = useContext(SettingsContext);
     const { augmentedPromptsEnabled, questionUserPromptsEnabled } = settings;
 
-    // QA Management
+    // QA management
     const [concatenatedQA, setConcatenatedQA] = useState('');
     const [resetResponsesTrigger, setResetResponsesTrigger] = useState(0);
 
-    // Tags Management
+    // Tags management
     const [tags, setTags] = useState(
       { model: "gpt-4o-mini" }  // e.g. write: "example.txt" category: "example"
     );
 
-    // File Management
+    // File management
     const [selectedFiles, setSelectedFiles] = useState([]);
 
     // Message management
@@ -68,6 +71,32 @@ function App () {
 
     // Form State
     const [formsFilled, setFormsFilled] = useState(false);
+
+    // Balance management
+    const [balance, setBalance] = useState(0.0);
+
+    const loadBalance = async () => {
+      try {
+          const response = await apiFetch(FLASK_PORT + '/pricing/balance', {
+              method: 'GET',
+          });
+
+          if (response.ok) {
+              const balanceData = await response.json();
+              if (balanceData && balanceData.balance) {
+                  setBalance(balanceData.balance);
+              }
+          } else {
+              console.error('Failed to load user balance', response);
+          }
+      } catch (error) {
+          console.error('Error retrieving user balance:', error);
+      }
+    }
+
+    useEffect(() => {
+      loadBalance()
+    }, [formsFilled])
 
     const handleInputChange = (event, selectedMessages, selectedFiles) => {
       // ToDo: don't think it respects shift enters, issue for inputting code
@@ -180,6 +209,8 @@ function App () {
               setSelectedPersona={setSelectedPersona} 
               autoDetectedPersona={autoDetectedPersona}
             />
+
+            <LowBalanceWarning balance={balance} />
     
             {/* ToDo: Should expand out on hover */}
             <UserInputForm 
