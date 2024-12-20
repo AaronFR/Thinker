@@ -131,7 +131,7 @@ To refine the system's architecture and enhance its capabilities and efficiency,
    if it aims to implement the feature I'm asking for with the *minimum* amount of changes to the existing functionality.
 - **Persona Configuration**: Left to the user as much as possible.
 
-- **Files design**: Files manamgenet needs to be planned specifically when its certain how things should be arranged
+- **Files design**: Files management needs to be planned specifically when its certain how things should be arranged
    e.g. should front end file data objects include their folder and use it or should we rely on abstractions and let 
    only the backend manage folder ids?
   - **Undo Changes Files**: e.g. to files
