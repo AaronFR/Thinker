@@ -7,17 +7,17 @@ import PropTypes from 'prop-types';
  * @param {number} balance - The user's current balance.
  */
 const LowBalanceWarning = ({ balance }) => {
-    if (balance > 1) return null;
+    if (balance == null || balance > 1) return null;
 
     return (
       <div className="low-balance-warning">
         {balance > 0.05 ? (
           <span>
-            Your balance is low (${balance}).
+            ⛽ Your balance is low (${balance})
           </span>
         ) : (
           <span>
-            Your balance is low (${balance}). Please add funds to continue using The Thinker.
+            ⛽ Your balance is low (${balance}). Please add funds to continue using The Thinker ⛽
           </span>
         )}
       </div>

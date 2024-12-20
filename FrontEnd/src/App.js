@@ -73,7 +73,7 @@ function App () {
     const [formsFilled, setFormsFilled] = useState(false);
 
     // Balance management
-    const [balance, setBalance] = useState(0.0);
+    const [balance, setBalance] = useState();
 
     const loadBalance = async () => {
       try {
