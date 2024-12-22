@@ -4,6 +4,7 @@ import { marked } from 'marked';
 
 import { MarkdownRenderer, withLoadingOpacity } from '../utils/textUtils';
 import ExpandableElement from '../utils/expandableElement';
+import AutoExpandingTextarea from '../utils/AutoExpandingTextarea';
 
 import './styles/SuggestedQuestions.css';
 
@@ -151,8 +152,8 @@ const SuggestedQuestions = ({
             />
 
             <form className="response-form">
-              <textarea
-                className="response-textarea"
+              <AutoExpandingTextarea
+                className="textarea response-textarea"
                 placeholder="Your answer"
                 disabled={isQuestioning}
                 value={responses[index] || ""}

@@ -161,7 +161,6 @@ body.dark-mode .scrollable::-webkit-scrollbar-track {
 
 /* Text Areas */
 .textarea {
-  min-height: 20px;
   padding: var(--spacing-sm);
   font-family: inherit;
   font-size: var(--font-size-small-lg);

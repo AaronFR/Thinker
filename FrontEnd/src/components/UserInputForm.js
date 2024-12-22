@@ -132,7 +132,8 @@ const UserInputForm = ({
       </div>
 
       {/* User Input Form */}
-      <form 
+      <form
+        className='user-input-form'
         onSubmit={handleSubmit}
         onKeyDown={(e) => {
           if (e.key === 'Enter' && e.shiftKey) {
@@ -148,20 +149,20 @@ const UserInputForm = ({
             handleSubmit(e);
           }
         }}
-        style={{ marginTop: '20px' }}
       >
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <AutoExpandingTextarea
+          id='prompt-input'
+          value={userInput}
+          onKeyDown={handleKeyDown}
+          onChange={(event) => handleInputChange(event, selectedMessages, selectedFiles)}
+          placeholder='Enter your prompt'
+          className="textarea prompt-input"
+          rows="2"
+        />
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px'}}>
           {/* Pass the callback to handleUploadSuccess */}
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
-          <AutoExpandingTextarea
-            id='prompt-input'
-            value={userInput}
-            onKeyDown={handleKeyDown}
-            onChange={(event) => handleInputChange(event, selectedMessages, selectedFiles)}
-            placeholder='Enter your prompt'
-            className="textarea prompt-input"
-            rows="2"
-          ></AutoExpandingTextarea>
           <button 
             type="submit"
             className="button submit-button"

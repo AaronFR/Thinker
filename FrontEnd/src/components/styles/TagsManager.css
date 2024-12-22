@@ -1,5 +1,4 @@
 .tags-manager {
-  width: 90%;
   margin: 10px auto;
   border: 1px solid #2828286d;
   box-shadow: #111;
@@ -35,7 +34,6 @@
   border-radius: 15px;
   background-color: #636ed3;
 }
-
 .tag-item:last-child {
   border-bottom: none;
 }

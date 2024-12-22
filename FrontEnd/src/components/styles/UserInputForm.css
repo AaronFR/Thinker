@@ -1,8 +1,16 @@
+/* Form */
+.user-input-form {
+  max-width: 93%;
+  margin:auto;
+  border: 1px solid #3434342d;
+  padding: 10px;
+  border-radius: 15px;
+}
+
 .prompt-input {
-  padding: var(--spacing-lg);
   font-size: var(--font-size-small-md);
-  width: 80%;
-  max-width: 90%;
+  margin: auto;
+  max-width: 98%;
 }
 
 .submit-button {
