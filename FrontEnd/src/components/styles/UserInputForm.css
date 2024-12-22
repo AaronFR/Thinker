@@ -3,20 +3,6 @@
   font-size: var(--font-size-small-md);
   width: 80%;
   max-width: 90%;
-  border: 2px solid var(--color-border-input);
-  border-radius: var(--border-radius-md);
-  outline: none;
-  background-color: var(--color-input-bg-light);
-  color: var(--color-input-text);
-  transition: all var(--transition-fast);
-  resize: 'none';
-  overflow-y: 'auto';
-  margin-left: '10px';
-  margin-right: '10px';
-}
-.prompt-input:focus {
-  border-color: var(--color-border-focus); /* Change color on focus for an interactive feel */
-  box-shadow: 0 0 var(--shadow-focus-size) var(--color-shadow-focus);
 }
 
 .submit-button {
@@ -44,7 +30,9 @@
 }
 
 /* Message Item */
-.message-item, .file-item {
+
+.message-item,
+.file-item {
   padding: var(--spacing-md);
   background-color: var(--color-white);
   border-radius: var(--border-radius-sm);

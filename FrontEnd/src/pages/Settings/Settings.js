@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import { handleLogout } from '../../utils/loginUtils';
-import AutoExpandingTextarea from '../../components/AutoExpandingTextarea';
+import AutoExpandingTextarea from '../../utils/AutoExpandingTextarea';
 
 import './Settings.css';   
 
@@ -164,7 +164,7 @@ export function Settings() {
   ];
 
   return (
-    <div className="settings-container">
+    <div className="scrollable settings-container">
       <nav className="settings-nav">
         <Link to="/" className="link">Home</Link>
         <Link to="/pricing" className="link">Pricing</Link>

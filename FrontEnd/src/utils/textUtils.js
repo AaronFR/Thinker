@@ -126,9 +126,9 @@ const CodeBlock = ({ lang, code, index }) => {
     <div style={{ position: 'relative' }}>
       <CopyCodeButton code={code} />
       <pre>
-        <code 
+        <code
           ref={codeRef} 
-          className={lang ? `language-${lang}` : ''}
+          className={`scrollable ${lang ? `language-${lang}` : ''}`}
           dangerouslySetInnerHTML={{ __html: escapedCode }}
         />
       </pre>

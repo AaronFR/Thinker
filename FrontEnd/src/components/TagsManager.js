@@ -126,7 +126,7 @@ const TagsManager = ({ tags, setTags }) => {
                             <span><strong>{key}:</strong> {value}</span>
                             <button
                                 onClick={() => handleDelete(key)}
-                                className="delete-button"
+                                className="button delete-button"
                                 aria-label={`Delete ${key} tag`}
                                 type="button"
                             >
@@ -146,7 +146,7 @@ const TagsManager = ({ tags, setTags }) => {
                             <input
                                 type="text"
                                 list="field-suggestions"
-                                placeholder="Field"
+                                placeholder="Tag"
                                 value={newField}
                                 onChange={handleFieldChange}
                                 onKeyDown={handleFieldKeyDown}
@@ -162,7 +162,7 @@ const TagsManager = ({ tags, setTags }) => {
                             <input
                                 type="text"
                                 list="value-suggestions"
-                                placeholder="Value"
+                                placeholder="Content"
                                 value={newValue}
                                 onChange={handleValueChange}
                                 onKeyDown={handleValueKeyDown}
@@ -175,7 +175,7 @@ const TagsManager = ({ tags, setTags }) => {
                                     <option key={val} value={val} />
                                 ))}
                             </datalist>
-                            <button onClick={resetAddForm} className="cancel-button" type="button">x</button>
+                            <button onClick={resetAddForm} className="button cancel-button" type="button">x</button>
                         </div>
                     </div>
                 )}

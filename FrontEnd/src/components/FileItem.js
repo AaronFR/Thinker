@@ -124,7 +124,7 @@ const FileItem = ({ file, onDelete, onSelect }) => {
       <div className="message-footer">
         <button
           onClick={handleDelete}
-          className="delete-button"
+          className="button delete-button"
           type="button"
         >
           Delete

@@ -122,72 +122,61 @@ body.dark-mode .right-pane {
 
 /* Scrolling */
 
-/* Right Pane */
-.right-pane::-webkit-scrollbar {
+.scrollable::-webkit-scrollbar {
   width: 12px; /* Set the width of the scrollbar */
 }
-
-.right-pane::-webkit-scrollbar-track {
+.scrollable::-webkit-scrollbar-track {
   background: #f1f1f1; /* Color of the scrollbar track */
   border-radius: 10px; /* Roundness of the scrollbar track */
 }
-body.dark-mode .right-pane::-webkit-scrollbar-track {
+body.dark-mode .scrollable::-webkit-scrollbar-track {
   background: #161616; /* Color of the scrollbar track */
   border-radius: 10px; /* Roundness of the scrollbar track */
 }
-
-.right-pane::-webkit-scrollbar-thumb {
+.scrollable::-webkit-scrollbar-thumb {
   background: #888; /* Color of the scrollbar thumb */
   border-radius: 10px; /* Roundness of the scrollbar thumb */
 }
-
-.right-pane::-webkit-scrollbar-thumb:hover {
+.scrollable::-webkit-scrollbar-thumb:hover {
   background: #555; /* Color of the scrollbar thumb on hover */
 }
 
-/* Left Pane */
-.left-pane::-webkit-scrollbar {
-  width: 12px; /* Set the width of the scrollbar */
+
+/* Buttons */
+
+/* Base button styles */
+.button {
+  border: 2px solid transparent; /* Default border */
+  font-size: var(--font-size-medium); /* Default font size */
+  font-weight: bold;
+  cursor: pointer; /* Change cursor on hover */
+  transition: all var(--transition-fast); /* Common transition */
+}
+.button:hover {
+  opacity: 0.9;
+}
+.button.active {
+  transform: scale(1.1);
 }
 
-.left-pane::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Color of the scrollbar track */
-  border-radius: 10px; /* Roundness of the scrollbar track */
-}
-body.dark-mode .left-pane::-webkit-scrollbar-track {
-  background: #161616; /* Color of the scrollbar track */
-  border-radius: 10px; /* Roundness of the scrollbar track */
-}
-
-.left-pane::-webkit-scrollbar-thumb {
-  background: #888; /* Color of the scrollbar thumb */
-  border-radius: 10px; /* Roundness of the scrollbar thumb */
-}
-
-.left-pane::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Color of the scrollbar thumb on hover */
+/* Text Areas */
+.textarea {
+  min-height: 20px;
+  padding: var(--spacing-sm);
+  font-family: inherit;
+  font-size: var(--font-size-small-lg);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--border-radius);
+  background-color: var(--color-input-text);
+  color: var(--color-text-light);
+  resize: vertical;
+  width: 100%;
+  transition: border-color var(--transition-speed), 
+              box-shadow var(--transition-speed);
 }
 
-/* Settings */
-/* Left Pane */
-.settings-container::-webkit-scrollbar {
-  width: 12px; /* Set the width of the scrollbar */
-}
-
-.settings-container::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Color of the scrollbar track */
-  border-radius: 10px; /* Roundness of the scrollbar track */
-}
-body.dark-mode .settings-container::-webkit-scrollbar-track {
-  background: #161616; /* Color of the scrollbar track */
-  border-radius: 10px; /* Roundness of the scrollbar track */
-}
-
-.settings-container::-webkit-scrollbar-thumb {
-  background: #888; /* Color of the scrollbar thumb */
-  border-radius: 10px; /* Roundness of the scrollbar thumb */
-}
-
-.settings-container::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Color of the scrollbar thumb on hover */
+.textarea:focus {
+  border-color: var(--color-border-input);
+  box-shadow: 0 0 var(--shadow-focus-size) var(--color-shadow-focus);
+  outline: none;
 }

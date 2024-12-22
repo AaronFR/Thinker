@@ -29,8 +29,8 @@
   display: flex;
   align-items: center;
   margin: 0px 1px;
-  font-size: var(--font-size-small-md);
-  padding: 5px 10px;
+  font-size: var(--font-size-small-lg);
+  padding: 0 5px;
   border: 1px solid #9aa2ea;
   border-radius: 15px;
   background-color: #636ed3;
@@ -92,6 +92,6 @@
 }
 
 input::placeholder {
-  color: #000000; /* Change this to your desired color */
-  opacity: 0.33; /* Optional: ensures full opacity for the color */
+  color: #000000;
+  opacity: 0.33;
 }

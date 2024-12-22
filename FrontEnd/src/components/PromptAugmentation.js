@@ -31,7 +31,7 @@ const PromptAugmentation = ({
           />
           {augmentedPrompt && (
               <button
-                  className="augment-button"
+                  className="button augment-button"
                   onClick={(e) => {
                       e.stopPropagation();
                       copyAugmentedPrompt();

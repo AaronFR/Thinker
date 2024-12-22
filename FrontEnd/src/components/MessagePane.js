@@ -139,7 +139,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
           categories.map((category) => (
             <div key={category.id} className="category-item">
               <header
-                className="category-title"
+                className="button category-title"
                 onClick={() => toggleCategory(category.id, category.name)}
                 tabIndex={0}
                 role="button"

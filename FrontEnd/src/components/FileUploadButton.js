@@ -1,7 +1,7 @@
 import React, { useReducer, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import ProgressBar from './ProgressBar';
+import ProgressBar from '../utils/ProgressBar';
 
 import './styles/FileUploadButton.css';
 
@@ -107,7 +107,7 @@ const FileUploadButton = ({ onUploadSuccess }) => {
   }, [onUploadSuccess, dispatch]);
 
   return (
-    <div className="file-upload-button">
+    <div className="button file-upload-button">
       <input 
         type="file" 
         id="file-input"

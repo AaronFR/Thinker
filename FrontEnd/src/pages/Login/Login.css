@@ -63,25 +63,23 @@
   background-color: #333; /* Default dark grey */
   color: #707070; /* Default grey text */
   cursor: pointer;
-  transition: all 0.3s ease;
   outline: none;
   font-size: 16px;
   font-weight: bold;
   width: 120px;
   text-align: center;
   border-radius: 5px 5px 0 0; /* Rounded top corners */
+  transition: all var(--transition-fast);
 }
-
 .toggle-button.active {
   background-color: #87CEEB;
   color: #fff;
   border-color: #87CEEB;
+  transform: scale(1.1);
 }
-
 .toggle-button:not(:last-child) {
   border-right: none; /* Remove double borders between buttons */
 }
-
 .toggle-button:hover {
   background-color: #444; /* Slightly lighter grey when hovering */
   color: #fff;

@@ -7,7 +7,7 @@ import TagsManager from './TagsManager';
 import { apiFetch } from '../utils/authUtils';
 import { getBasename } from '../utils/textUtils'
 
-import AutoExpandingTextarea from './AutoExpandingTextarea';
+import AutoExpandingTextarea from '../utils/AutoExpandingTextarea';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 

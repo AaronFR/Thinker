@@ -4,7 +4,7 @@ import debounce from 'lodash.debounce';
 
 import { SettingsContext } from './pages/Settings/Settings';
 
-import ResizablePane from './components/resizeablePane';
+import ResizablePane from './utils/resizeablePane';
 import FilePane from './components/FilePane'
 import MessagePane from './components/MessagePane';
 import OutputSection from './components/OutputSection';
@@ -18,7 +18,7 @@ import Navigation from './components/Navigation';
 import useSubmitMessage from './hooks/useSubmitMessage';
 import useAugmentedPrompt from './hooks/useAugmentedPrompt';
 import useSuggestedQuestions from './hooks/useSuggestedQuestions';
-import LowBalanceWarning from './components/BalanceWarning';
+import LowBalanceWarning from './utils/BalanceWarning';
 
 import { apiFetch } from './utils/authUtils';
 
@@ -110,7 +110,6 @@ function App () {
       event.target.style.height = "auto"; // Reset height to calculate scroll height properly
       event.target.style.height = `${Math.min(event.target.scrollHeight, 8 * 24)}px`;
 
-      console.log("🛴", selectedMessages, selectedFiles)
       debouncedHandleTyping(event.target.value, selectedMessages, selectedFiles);
     };
 
@@ -192,7 +191,7 @@ function App () {
     return (
       <div className="app-container">
         <ResizablePane>
-          <div className="left-pane">
+          <div className="scrollable left-pane">
             <FilePane 
               onFileSelect={handleFileSelect}
               isProcessing={isProcessing}
@@ -203,7 +202,7 @@ function App () {
             />
           </div>
         
-          <div className="right-pane">
+          <div className="scrollable right-pane">
             <PersonaSelector 
               selectedPersona={selectedPersona} 
               setSelectedPersona={setSelectedPersona} 

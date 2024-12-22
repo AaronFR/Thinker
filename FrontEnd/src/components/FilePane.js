@@ -133,7 +133,7 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
         {categories.length > 0 ? (
           categories.map((category) => (
             <div key={category.id} className="category-item">
-              <div className="category-title" onClick={() => toggleCategory(category.id, category.name)}>
+              <div className="button category-title" onClick={() => toggleCategory(category.id, category.name)}>
                 {category.name}
               </div>
               {expandedCategoryId === category.id && (

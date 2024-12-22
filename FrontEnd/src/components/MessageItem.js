@@ -98,7 +98,7 @@ const MessageItem = ({ msg, onDelete, onSelect }) => {
       <div className="message-footer">
         <button
           onClick={handleDelete}
-          className="delete-button"
+          className="button delete-button"
           type="button"
           disabled={isDeleting}
         >

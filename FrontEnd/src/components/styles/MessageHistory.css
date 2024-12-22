@@ -12,21 +12,6 @@ body.dark-mode .message-history-container {
               color var(--transition-duration) var(--transition-ease);
 }
 
-/* Sidebar */
-.sidebar {
-  background-color: var(--color-secondary-bg);
-  padding: var(--spacing-xs);
-  border-radius: var(--border-radius-md);
-  overflow-y: auto;
-}
-
-body.dark-mode .sidebar {
-  background: var(--background-gradient);
-  color: var(--color-text-light);
-  transition: background-color var(--transition-duration) var(--transition-ease),
-              color var(--transition-duration) var(--transition-ease);
-}
-
 /* Category List */
 .category-list {
   display: flex;
