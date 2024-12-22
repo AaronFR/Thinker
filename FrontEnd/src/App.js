@@ -83,7 +83,7 @@ function App () {
 
           if (response.ok) {
               const balanceData = await response.json();
-              if (balanceData && balanceData.balance) {
+              if (balanceData && typeof balanceData.balance === 'number') {
                   setBalance(balanceData.balance);
               }
           } else {

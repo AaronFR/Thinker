@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; 
 import PropTypes from 'prop-types';
 
 /**
@@ -17,7 +18,7 @@ const LowBalanceWarning = ({ balance }) => {
           </span>
         ) : (
           <span>
-            ⛽ Your balance is low (${balance}). Please add funds to continue using The Thinker ⛽
+            ⛽ Your balance is low (${balance}). Please <Link to="/pricing">add funds</Link> to continue using The Thinker ⛽
           </span>
         )}
       </div>
