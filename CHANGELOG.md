@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 
+
+### Changed
+
+- 
+
+### Removed
+
+- 
+
+## [0.9.1] - 2024-12-22 - Getting ready for β
+
+### Added
+
 - User can manually specify llm system message instructions
 - File size limit of 10 MB implemented to avoid incorrect use (Only text files are accepted for now)
 - Any route that uses LLM calls checks the user has sufficient balance (sorry 🤗)
@@ -21,9 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resizing file/prompt panes works on mobile with touch
 - Minor tweaks to scale better on mobile
 
-### Removed
-
-- 
 
 ## [0.9.0] - 2024-12-14 - Auth, Login and Online Deployment AKA 'I now use this app instead of ChatGPT.com'
 
