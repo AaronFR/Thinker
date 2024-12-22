@@ -7,9 +7,9 @@
 
 
 .resizer {
-  width: 5px;
+  width: 7px;
   cursor: col-resize;
-  background-color: #ddd;
+  background-color: #101010;
   transition: background-color 0.2s;
   /* Make the resizer take the full height of the container */
   height: 100%;
@@ -18,6 +18,11 @@
     /* Ensure it's clickable */
   user-select: none;
   touch-action: none;
+}
+@media screen and (max-width: 768px){
+  .resizer {
+    width: 2%;
+  }
 }
 
 .resizer:hover,
