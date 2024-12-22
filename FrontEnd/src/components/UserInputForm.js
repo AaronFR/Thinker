@@ -7,6 +7,8 @@ import TagsManager from './TagsManager';
 import { apiFetch } from '../utils/authUtils';
 import { getBasename } from '../utils/textUtils'
 
+import AutoExpandingTextarea from './AutoExpandingTextarea';
+
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
 /**
@@ -151,18 +153,18 @@ const UserInputForm = ({
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {/* Pass the callback to handleUploadSuccess */}
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
-          <textarea
+          <AutoExpandingTextarea
             id='prompt-input'
             value={userInput}
             onKeyDown={handleKeyDown}
             onChange={(event) => handleInputChange(event, selectedMessages, selectedFiles)}
             placeholder='Enter your prompt'
-            className="prompt-input"
+            className="textarea prompt-input"
             rows="2"
-          ></textarea>
+          ></AutoExpandingTextarea>
           <button 
             type="submit"
-            className="submit-button"
+            className="button submit-button"
             disabled={isProcessing}
             aria-busy={isProcessing}
           >

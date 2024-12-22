@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import { handleLogout } from '../../utils/loginUtils';
+import AutoExpandingTextarea from '../../components/AutoExpandingTextarea';
 
 import './Settings.css';   
 
@@ -191,10 +192,11 @@ export function Settings() {
           </label>
           <p>Use case: Difficult, 'knotty' technical questions where the extra details can help fomulate solutions. Not so useful when you *just* want any answer from the AI</p>
           <div className="message-settings">
-            <textarea
+            <AutoExpandingTextarea
               value={settings.promptQuestioningMessage}
+              className='textarea'
               onChange={(e) => handleMessageChange('promptQuestioningMessage', e.target.value)}
-              style={{ opacity: 0.5 }}
+              style={{ opacity: 0.9 }}  // ToDo: Opacity needs to change based on if its a default value or not
             />
         </div>
 
@@ -212,10 +214,11 @@ export function Settings() {
         <p>And the shills told you it would be a career skill...</p>
         <p>Use case: simple, plain prompts that can none the less benefit from a *good* well thought out response</p>
         <div className='message-settings'>
-          <textarea
+          <AutoExpandingTextarea
             value={settings.promptAugmentationMessage}
+            className='textarea'
             onChange={(e) => handleMessageChange('promptAugmentationMessage', e.target.value)}
-            style={{ opacity: 0.5 }}
+            style={{ opacity: 0.9 }}
           />
         </div>
 
@@ -231,18 +234,20 @@ export function Settings() {
         <div className="message-settings">
           <label className="message-label">
             Coder Persona:
-            <textarea
+            <AutoExpandingTextarea
               value={settings.coderPersonaMessage}
+              className='textarea'
               onChange={(e) => handleMessageChange('coderPersonaMessage', e.target.value)}
-              style={{ opacity: 0.5 }}
+              style={{ opacity: 0.9 }}
             />
           </label>
           <label className="message-label">
             Categorisation:
-            <textarea
+            <AutoExpandingTextarea
               value={settings.categorisationMessage}
+              className='textarea'
               onChange={(e) => handleMessageChange('categorisationMessage', e.target.value)}
-              style={{ opacity: 0.5 }}
+              style={{ opacity: 0.9 }}
             />
           </label>
         </div>
