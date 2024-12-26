@@ -97,11 +97,20 @@ const UserInputForm = ({
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        handleSubmit(e);
+    if (e.key === 'Enter') {
+        if (e.shiftKey) {
+            e.preventDefault();  // Prevent form submission and insert newline.
+            const { selectionStart, selectionEnd, value } = e.target;
+            e.target.value =
+                value.substring(0, selectionStart) + '\n' +
+                value.substring(selectionEnd);
+            e.target.selectionStart = e.target.selectionEnd = selectionStart + 1;
+        } else {
+            e.preventDefault(); // Prevent default Enter behavior.
+            handleSubmit(e);    // Submit the form.
+        }
     }
-};
+  };
 
   return (
     <div>
@@ -135,20 +144,6 @@ const UserInputForm = ({
       <form
         className='user-input-form'
         onSubmit={handleSubmit}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && e.shiftKey) {
-            e.preventDefault();
-            const { selectionStart, selectionEnd, value } = e.target;
-            
-            e.target.value = 
-              value.substring(0, selectionStart) + '\n' + value.substring(selectionEnd);
-            
-            e.target.selectionStart = e.target.selectionEnd = selectionStart + 1;
-          } else if (e.key === 'Enter') {
-            e.preventDefault();
-            handleSubmit(e);
-          }
-        }}
       >
         <AutoExpandingTextarea
           id='prompt-input'
@@ -161,7 +156,6 @@ const UserInputForm = ({
         />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px'}}>
-          {/* Pass the callback to handleUploadSuccess */}
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
           <button 
             type="submit"
