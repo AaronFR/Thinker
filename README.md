@@ -71,9 +71,6 @@ To refine the system's architecture and enhance its capabilities and efficiency,
    clutter
 
 - **Expand Workflows**: More workflows for more use-cases, improving on the quality of existing workflows.
-  - **Flexible workflows**: Workflows shouldn't really be 'hardcoded', they should be defined from a common format likely
-    JSON, this would allow workflow to be flexible and easily modified, copied and extended by the user.
-
   - **Modular Workflows**: In write_workflow for coder there's always a step for improving code quality/
     writing documentation this should actually be a switch depending on the context.
     Many workflows should consist of switch logic that allows for intelligent processing of a given request without needless details.

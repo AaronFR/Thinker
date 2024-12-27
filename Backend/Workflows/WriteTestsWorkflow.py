@@ -81,15 +81,7 @@ class WriteTestsWorkflow(BaseWorkflow):
                     streaming=True,
                     model=model,
                 )
-                response = process_question(
-                    message,
-                    file_references or [],
-                    selected_message_ids or [],
-                    streaming=True,
-                    model=model,
-                )
-                logging.info("Test Workflow Iteration %d completed, streaming workflow completion summary", iteration)
 
-            emit(UPDATE_WORKFLOW_STEPUPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
+            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
 
         return response

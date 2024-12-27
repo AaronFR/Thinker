@@ -1,5 +1,3 @@
-# workflows/chat_workflow.py
-
 import logging
 from typing import Callable, Optional, List, Dict
 
@@ -33,19 +31,16 @@ class ChatWorkflow(BaseWorkflow):
         :return: AI's response.
         """
         logging.info("Chat workflow selected")
-        prompt_messages = [initial_message]
         model = find_enum_value(tags.get("model"))
 
-        response = ""
-        for iteration, message in enumerate(prompt_messages, start=1):
-            response = self._chat_step(
-                iteration=iteration,
-                process_question=process_question,
-                message=message,
-                file_references=file_references or [],
-                selected_message_ids=selected_message_ids or [],
-                streaming=True,
-                model=model,
-            )
+        response = self._chat_step(
+            iteration=1,
+            process_question=process_question,
+            message=initial_message,
+            file_references=file_references or [],
+            selected_message_ids=selected_message_ids or [],
+            streaming=True,
+            model=model,
+        )
 
         return response
