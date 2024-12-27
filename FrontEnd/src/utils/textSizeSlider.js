@@ -1,0 +1,52 @@
+import React, { useContext } from 'react';
+import { SettingsContext } from '../pages/Settings/SettingsContext';
+
+import './styles/TextSizeSlider.css';
+
+/**
+ * TextSizeSlider Component
+ *
+ * Allows users to adjust the text size of the application.
+ *
+ * Utilizes SettingsContext to access and modify font size settings.
+ */
+const TextSizeSlider = () => {
+    const { fontSize, setFontSize } = useContext(SettingsContext);
+
+    const MIN_FONT_SIZE = 12;
+    const MAX_FONT_SIZE = 24;
+
+    /**
+     * Handle slider change event
+     *
+     * @param {Object} event - The change event from the slider input.
+     */
+    const handleChange = (event) => {
+        const newSize = event.target.value;
+        setFontSize(newSize);
+        document.documentElement.style.fontSize = `${newSize}px`;
+
+        localStorage.setItem('fontSize', newSize);
+    };
+
+    return (
+        <div className='container'>
+            <label htmlFor="fontSizeSlider" className='label'>
+                Text Size:
+            </label>
+            <input
+                id="fontSizeSlider"
+                className='slider'
+                type="range"
+                min={MIN_FONT_SIZE}
+                max={MAX_FONT_SIZE}
+                value={fontSize}
+                onChange={handleChange}
+                aria-label="Text Size Slider"
+            />
+            <span className='size-display'>{`${fontSize}px`}</span>
+        </div>
+    );
+};
+
+export default TextSizeSlider;

@@ -13,6 +13,7 @@ ReactDOM.render(
       <Route path="/pricing" element={<Pricing />} />
     </Routes>
   </BrowserRouter>,
+  
   document.getElementById("root")
 );
 

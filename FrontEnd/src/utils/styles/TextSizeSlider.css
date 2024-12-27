@@ -1,0 +1,21 @@
+.container {
+  display: flex;
+  align-items: center;
+  margin-top: 50px;
+}
+
+.label {
+  margin-right: 10px;
+  font-size: 1rem;
+}
+
+.slider {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.size-display {
+  width: 50px;
+  text-align: right;
+  font-size: 1rem;
+}

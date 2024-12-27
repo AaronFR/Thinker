@@ -4,7 +4,8 @@ import './index.css';
 import App from "./App";
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Settings, { SettingsProvider } from './pages/Settings/Settings';
+import Settings from './pages/Settings/Settings';
+import { SettingsProvider } from "./pages/Settings/SettingsContext";
 import Pricing from './pages/Pricing/Pricing';
 import Login from './pages/Login/Login';
 import { apiFetch } from "./utils/authUtils";
@@ -61,6 +62,7 @@ function RootApp() {
         </Routes>
       </BrowserRouter>
     </SettingsProvider>
+    
   );
 }
 

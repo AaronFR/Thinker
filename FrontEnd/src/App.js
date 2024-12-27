@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 
 import debounce from 'lodash.debounce';
 
-import { SettingsContext } from './pages/Settings/Settings';
+import { SettingsContext } from './pages/Settings/SettingsContext';
 
 import ResizablePane from './utils/resizeablePane';
 import FilePane from './components/FilePane'
