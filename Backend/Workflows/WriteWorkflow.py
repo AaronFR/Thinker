@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Callable, Optional, List, Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from AiOrchestration.ChatGptModel import find_enum_value
+from AiOrchestration.ChatGptModel import find_enum_value, ChatGptModel
 from Data.Configuration import Configuration
 from Functionality.Coding import Coding
 from Personas.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
@@ -78,7 +78,7 @@ class WriteWorkflow(BaseWorkflow):
                     file_references=file_references or [],
                     selected_message_ids=selected_message_ids or [],
                     streaming=True,
-                    model=model,
+                    model=ChatGptModel.CHAT_GPT_4_OMNI_MINI.value,
                 )
 
             return summary
