@@ -78,7 +78,7 @@ class WriteWorkflow(BaseWorkflow):
                     file_references=file_references or [],
                     selected_message_ids=selected_message_ids or [],
                     streaming=True,
-                    model=ChatGptModel.CHAT_GPT_4_OMNI_MINI.value,
+                    model=ChatGptModel.CHAT_GPT_4_OMNI_MINI,
                 )
 
             return summary

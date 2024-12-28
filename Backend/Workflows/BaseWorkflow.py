@@ -37,7 +37,7 @@ class BaseWorkflow:
         file_references: List[str],
         selected_message_ids: List[str],
         streaming: bool = True,
-        model: str = ChatGptModel.CHAT_GPT_4_OMNI_MINI.value,
+        model: str = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
     ) -> str:
         """
         Handles individual chat steps.
@@ -69,7 +69,7 @@ class BaseWorkflow:
         message: str,
         file_references: List[str],
         file_name: str,
-        model: str = ChatGptModel.CHAT_GPT_4_OMNI_MINI.value,
+        model: str = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
     ) -> str:
         """
         Handles the process of saving files.
