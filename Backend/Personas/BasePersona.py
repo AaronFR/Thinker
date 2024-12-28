@@ -1,7 +1,9 @@
 import ast
 import logging
 
-from typing import List, Tuple
+from typing import List, Tuple, Any, Dict
+
+from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
@@ -13,6 +15,8 @@ from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
+from Workflows.WorkflowManager import WorkflowManager
+from Workflows.Workflows import CHAT_WORKFLOW
 
 
 class BasePersona:
@@ -23,6 +27,9 @@ class BasePersona:
     the left, first on the right. So it must be reversed if put into openAi API as messages
     """
     MAX_HISTORY = 5
+    WORKFLOWS: Dict[str, Dict[str, Any]] = {
+        'chat': CHAT_WORKFLOW,
+    }
 
     def __init__(self, name):
         self.name = name
@@ -30,6 +37,8 @@ class BasePersona:
         self.workflows = {}
         self.instructions = ""
         self.configuration = ""
+
+        self.workflow_manager = WorkflowManager()
 
         ErrorHandler.setup_logging()
 
@@ -53,17 +62,13 @@ class BasePersona:
         else:
             print("Invalid input. Please ask a clear and valid question.")
 
-    def chat_workflow(self,
-                      initial_message: str,
-                      file_references: List[str] = None,
-                      selected_message_ids: List[str] = None,
-                      tags: List[str] = None):
-        raise NotImplementedError("Default workflow is to be implemented in specific persona")
-
     def query_user_for_input(self):
         """
         Continuously prompts the user for questions until they choose to exit.
         For debugging the backend from the terminal.
+
+        ToDo: Seriously consider removing this and related methods
+         querying from terminal has little use even for debugging
         """
         config = Configuration.load_config()
         while True:
@@ -103,14 +108,58 @@ class BasePersona:
         selected_workflow = output['selection']
 
         logging.info(f"Selected workflow: {selected_workflow}")
-        return self.run_workflow(selected_workflow, initial_message, file_references)
+        return self.run_workflow(initial_message, file_references, None, None)
 
     def run_workflow(self,
-                     selected_workflow: str,
                      initial_message: str,
                      file_references: List[str] = None,
-                     selected_message_ids: List[str] = None):
-        raise NotImplementedError("This method should be overridden by subclasses")
+                     selected_message_ids: List[str] = None,
+                     tags: List[str] = None) -> Any:
+        """
+        Determines and executes the appropriate workflow based on user input and tags.
+
+        :param initial_message: The user's initial message or prompt.
+        :param file_references: List of file paths referenced in the workflow.
+        :param selected_message_ids: UUIDs of previously selected messages for context.
+        :param tags: Additional tags to influence workflow selection.
+        :return: The last response message from the executed workflow.
+        """
+        tags = tags or {}
+        workflow_key = self._determine_workflow_key(tags)
+
+        if workflow_key:
+            emit("send_workflow", {"workflow": self.WORKFLOWS[workflow_key]})
+            return self.workflow_manager.execute_workflow(
+                workflow_key,
+                self.process_question,
+                initial_message,
+                file_references,
+                selected_message_ids,
+                tags
+            )
+
+        # Handle case where no valid workflow key is found
+        emit("send_workflow", {"workflow": CHAT_WORKFLOW})
+        return self.workflow_manager.execute_workflow(
+            "chat",
+            self.process_question,
+            initial_message,
+            file_references,
+            selected_message_ids,
+            tags
+        )
+
+    def _determine_workflow_key(self, tags: Dict[str, bool]) -> str | None:
+        """
+        Determines the workflow key based on tags.
+
+        :param tags: A dictionary of tags provided by the user.
+        :return: The key of the selected workflow or None if not found.
+        """
+        for key in self.WORKFLOWS.keys():
+            if tags.get(key):
+                return key
+        return None
 
     def process_question(
         self,
