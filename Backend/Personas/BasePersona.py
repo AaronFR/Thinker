@@ -15,8 +15,7 @@ from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
-from Workflows.WorkflowManager import WorkflowManager
-from Workflows.Workflows import CHAT_WORKFLOW
+from Workflows.ChatWorkflow import ChatWorkflow
 
 
 class BasePersona:

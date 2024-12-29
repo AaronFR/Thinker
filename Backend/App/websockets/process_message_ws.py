@@ -6,6 +6,7 @@ from flask_socketio import emit
 from Data.CategoryManagement import CategoryManagement
 from Functionality.Organising import Organising
 from Personas.Coder import Coder
+from Personas.Writer import Writer
 from Utilities.AuthUtils import login_required_ws
 from Utilities.Contexts import set_message_context, get_message_context
 from Utilities.CostingUtils import balance_required
@@ -94,7 +95,9 @@ def get_selected_persona(data):
     persona_selection = data.get("persona")
     if persona_selection == 'coder':
         persona = Coder("Coder")
-    if persona_selection not in ['coder']:
+    if persona_selection == 'writer':
+        persona = Writer("Writer")
+    if persona_selection not in ['coder', 'writer']:
         logging.warning("Invalid persona selected, defaulting to coder")
         return Coder("Default")
     return persona

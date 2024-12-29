@@ -12,7 +12,8 @@ const PersonaSelector = ({ selectedPersona, setSelectedPersona, autoDetectedPers
           className="dropdown"
         >
           <option value="auto">Auto - {autoDetectedPersona}</option>
-          <option value="coder">Coder</option>
+          <option value="coder">💻 Coder</option>
+          <option value="writer">✍ Writer</option>
           {/* Add more personas as needed */}
         </select>
       </label>
