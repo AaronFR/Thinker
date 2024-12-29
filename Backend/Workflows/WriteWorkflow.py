@@ -2,11 +2,12 @@ import logging
 from pathlib import Path
 from typing import Callable, Optional, List, Dict
 
-from AiOrchestration.AiOrchestrator import AiOrchestrator
+from flask_socketio import emit
+
 from AiOrchestration.ChatGptModel import find_enum_value, ChatGptModel
-from Data.Configuration import Configuration
 from Functionality.Coding import Coding
-from Personas.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
+from Functionality.Writing import Writing
+
 from Utilities.Contexts import get_user_context
 from Utilities.Decorators import return_for_error
 from Workflows.BaseWorkflow import BaseWorkflow
@@ -43,7 +44,7 @@ class WriteWorkflow(BaseWorkflow):
         try:
             model = find_enum_value(tags.get("model")) if tags else None
 
-            files = self._determine_files(initial_message, tags)
+            files = Writing.determine_files(initial_message, tags)
             summary = ""
             for file in files:
                 file_name = file['file_name']
@@ -86,42 +87,3 @@ class WriteWorkflow(BaseWorkflow):
             return summary
         except Exception as e:
             logging.exception("Failed to process write workflow")
-
-    def _determine_files(
-        self,
-        initial_message: str,
-        tags: Optional[Dict[str, str]],
-    ) -> List[Dict[str, str]]:
-        """
-        Determine the list of files to be processed.
-
-        :param initial_message: The user's guidance for writing code.
-        :param tags: Additional metadata.
-        :return: List of files with their purposes.
-        """
-        config = Configuration.load_config()
-
-        if tags and tags.get("write"):
-            files = [{
-                "file_name": tags.get("write"),
-                "purpose": "create from scratch"
-            }]
-        else:
-            prompt = (
-                "Give just a filename (with extension) that should be worked on given the following prompt. "
-                "No commentary. "
-                "If appropriate, write multiple files, the ones at the top of the class hierarchy first/on the top."
-            ) if config['beta_features']['multi_file_processing_enabled'] else (
-                "Give just a filename (with extension) that should be worked on given the following prompt. "
-                "No commentary. Select only one singular file alone."
-            )
-
-            self.executor = AiOrchestrator()
-            files = self.executor.execute_function(
-                [prompt],
-                [initial_message],
-                GENERATE_FILE_NAMES_FUNCTION_SCHEMA
-            )['files']
-
-        logging.info(f"Referencing/Creating the following files: {files}")
-        return files

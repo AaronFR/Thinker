@@ -1,7 +1,7 @@
 import enum
 import logging
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from deprecated.classic import deprecated
 
@@ -9,19 +9,55 @@ import Personas.PersonaSpecification.WriterSpecification
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
+from Data.Configuration import Configuration
 from Data.Files.FileManagement import FileManagement
 from Data.Files.StorageMethodology import StorageMethodology
 from Personas.PersonaSpecification import PersonaConstants
+from Personas.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
 from Personas.PersonaSpecification.EditorSpecification import REWRITE_EXECUTOR_SYSTEM_INSTRUCTIONS, \
     EDITOR_LINE_REPLACEMENT_FUNCTION_SCHEMA, EDITOR_LINE_REPLACEMENT_FUNCTION_INSTRUCTIONS
 from Utilities import Constants
 from Utilities.ExecutionLogs import ExecutionLogs
 
 
-
-
 class Writing(enum.Enum):
     """Writing represents various task types used within the persona system."""
+
+    @staticmethod
+    def determine_files(initial_message: str, tags: Optional[Dict[str, str]]) -> List[Dict[str, str]]:
+        """
+        Determine the list of files to be processed.
+
+        :param initial_message: The user's guidance for writing code.
+        :param tags: Additional metadata.
+        :return: List of files with their purposes.
+        """
+        config = Configuration.load_config()
+
+        if tags and tags.get("write"):
+            files = [{
+                "file_name": tags.get("write"),
+                "purpose": "create from scratch"
+            }]
+        else:
+            prompt = (
+                "Give just a filename (with extension) that should be worked on given the following prompt. "
+                "No commentary. "
+                "If appropriate, write multiple files, the ones at the top of the class hierarchy first/on the top."
+            ) if config['beta_features']['multi_file_processing_enabled'] else (
+                "Give just a filename (with extension) that should be worked on given the following prompt. "
+                "No commentary. Select only one singular file alone."
+            )
+
+            executor = AiOrchestrator()
+            files = executor.execute_function(
+                [prompt],
+                [initial_message],
+                GENERATE_FILE_NAMES_FUNCTION_SCHEMA
+            )['files']
+
+        logging.info(f"Referencing/Creating the following files: {files}")
+        return files
 
     @staticmethod
     def write_to_file_task(task_parameters: Dict[str, object]):
