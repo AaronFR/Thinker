@@ -54,6 +54,7 @@ class WriteWorkflow(BaseWorkflow):
 
                 logging.info(f"Writing code to {file_path}, \nPurpose: {purpose}")
 
+                # ToDo: You should check if this pre-planning stage has value and to what degree if so
                 self._chat_step(
                     iteration=1,
                     process_question=process_question,
@@ -69,7 +70,8 @@ class WriteWorkflow(BaseWorkflow):
                     process_question=process_question,
                     message=write_code_file(file_name, purpose) if Coding.is_coding_file(file_name)
                     else write_file(file_name, purpose),
-                    file_references=file_references or [],
+                    file_references=[],
+                    selected_message_ids=[],
                     file_name=file_name,
                     model=model,
                 )

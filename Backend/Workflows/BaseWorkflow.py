@@ -6,6 +6,7 @@ from flask_socketio import emit
 from pathlib import Path
 
 from AiOrchestration.ChatGptModel import ChatGptModel
+from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context
 from Functionality.Coding import Coding
 from Personas.PersonaSpecification import PersonaConstants
@@ -68,6 +69,7 @@ class BaseWorkflow:
         process_question: Callable,
         message: str,
         file_references: List[str],
+        selected_message_ids: List[str],
         file_name: str,
         model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
         overwrite: bool = True
@@ -87,19 +89,14 @@ class BaseWorkflow:
         response = process_question(
             message,
             file_references,
+            selected_message_ids,
             model=model,
         )
 
         user_id = get_user_context()
         file_path = Path(user_id).joinpath(file_name)
 
-        Coding.write_to_file_task(
-            {
-                PersonaConstants.SAVE_TO: file_path,
-                PersonaConstants.INSTRUCTION: response
-            },
-            overwrite
-        )
+        StorageMethodology.select().save_file(response, str(file_path), overwrite=overwrite)
 
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
         return response

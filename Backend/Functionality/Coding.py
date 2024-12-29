@@ -24,25 +24,6 @@ class Coding(enum.Enum):
         ErrorHandler.setup_logging()
 
     @staticmethod
-    def write_to_file_task(task_parameters: Dict[str, object], overwrite=True):
-        """
-        Repeatedly writes content to the specified number of pages. Where one page roughly corresponds to 500 words
-        (2000 tokens output)
-
-        :param task_parameters: Dict with SAVE_TO and INSTRUCTION
-        :param overwrite: Whether the original file should be overwritten
-        """
-        logging.info(f"Writing to file task initiated with the following parameters: {task_parameters}")
-        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
-        output = executor.execute(
-            ["Just write the code from the following input, strip out any code block designators, e.g. ```python...```"],
-            [task_parameters[PersonaConstants.INSTRUCTION]]
-        )
-
-        StorageMethodology.select().save_file(output, task_parameters[PersonaConstants.SAVE_TO], overwrite=overwrite)
-        ExecutionLogs.add_to_logs(f"Saved to {task_parameters[PersonaConstants.SAVE_TO]}")
-
-    @staticmethod
     def is_coding_file(file_name):
         # List of common coding file extensions
         coding_extensions = {'.py', '.js', '.java', '.cpp', '.c', '.rb', '.php', '.html', '.css', '.go', '.ts', '.cs'}

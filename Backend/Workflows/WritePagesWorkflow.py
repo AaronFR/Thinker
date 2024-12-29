@@ -53,23 +53,13 @@ class WritePagesWorkflow(BaseWorkflow):
 
 
             for page_instruction in pages:
-                user_id = get_user_context()
 
-                self._chat_step(
+                self._save_file_step(
                     iteration=1,
                     process_question=process_question,
                     message=page_instruction,
                     file_references=file_references or [],
                     selected_message_ids=selected_message_ids or [],
-                    streaming=False,
-                    model=model,
-                )
-
-                self._save_file_step(
-                    iteration=2,
-                    process_question=process_question,
-                    message=write_code_file(file_name, purpose),
-                    file_references=file_references or [],
                     file_name=file_name,
                     model=model,
                     overwrite=False
@@ -78,12 +68,13 @@ class WritePagesWorkflow(BaseWorkflow):
             summary = self._chat_step(
                 iteration=3,
                 process_question=process_question,
-                message="Very quickly summarize what you just wrote and where you wrote it.",
+                message="Very quickly summarize all of what you just wrote and where you wrote it.",
                 file_references=file_references or [],
                 selected_message_ids=selected_message_ids or [],
                 streaming=True,
-                model=ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+                model=ChatGptModel.CHAT_GPT_4_OMNI_MINI
             )
+            user_id = get_user_context()
             file_path = Path(user_id).joinpath(file_name)
 
             logging.info(f"Writing code to {file_path}, \nPurpose: {purpose}")
@@ -105,6 +96,9 @@ class WritePagesWorkflow(BaseWorkflow):
         :return: List of files with their purposes.
         """
         pages = int(tags.get("pages", 1))
+        if pages > 10:  # maxed at 10 to prevent expensive misinput till confirmation checks is added
+            pages = 10
+
         prompt = (
             "Just give a mark down list of prompts to be used to create a series of pages based on the following user "
             "prompt. Each prompt corresponds to one 'page'. Your prompts should be clear and concise, while making sure "

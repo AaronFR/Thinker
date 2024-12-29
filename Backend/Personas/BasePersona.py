@@ -2,7 +2,6 @@ import ast
 import logging
 
 from typing import List, Tuple, Any, Dict
-
 from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
@@ -22,37 +21,36 @@ class BasePersona:
     """
     Base class for creating personas that execute tasks.
 
-    history: Note that history is written first on the left, latest on the right, but openAi uses latest on
-    the left, first on the right. So it must be reversed if put into openAi API as messages
+    :param name: Name of the persona.
+
+    history: Note that history is written first on the left, latest on the right, but OpenAI uses latest on
+    the left, first on the right. Therefore, it must be reversed if submitted to OpenAI API as messages.
     """
+
     MAX_HISTORY = 5
-    WORKFLOWS: Dict[str, Dict[str, Any]] = {
+    WORKFLOWS: Dict[str, Any] = {
         'chat': ChatWorkflow(),
     }
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
         self.history: List[Tuple[str, str]] = []  # question-response pairs
-        self.workflows = {}  # ToDo: Delete?
         self.instructions = ""
         self.configuration = ""
-
         ErrorHandler.setup_logging()
 
     def query(self,
               user_prompt: str,
               file_references: List[str] = None,
               selected_message_ids: List[str] = None,
-              tags: List[str] = None):
+              tags: List[str] = None) -> Any:
         """
         Handles a user prompt
 
-        ToDo adding to the user_encyclopedia needs to be influenced by context category
-
-        :param user_prompt: user input prompt
-        :param file_references: additional file references paths, format <category_id>/<file_name_with_extension>
-        :param selected_message_ids: the uuids of previous selected relevant messages to review
-        :param tags: additional information for prompting, e.g. if and where to write a file
+        :param user_prompt: User input prompt.
+        :param file_references: Additional file references paths, format <category_id>/<file_name_with_extension>.
+        :param selected_message_ids: UUIDs of previously selected relevant messages to review.
+        :param tags: Additional information for prompting, e.g., if and where to write a file.
         """
         if Utility.is_valid_prompt(user_prompt):
             return self.select_workflow(user_prompt, file_references, selected_message_ids, tags)
@@ -130,54 +128,60 @@ class BasePersona:
         emit("update_workflow", {"status": "finished"})
         return result
 
-    def process_question(
-        self,
-        question: str,
-        file_references: List[str] = None,
-        selected_message_ids: List[str] = None,
-        streaming: bool = False,
-        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
-     ):
-        """Process and store the user's question.
+    def process_question(self,
+                         question: str,
+                         file_references: List[str] = None,
+                         selected_message_ids: List[str] = None,
+                         streaming: bool = False,
+                         model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str:
+        """
+        Process and store the user's question.
 
-        :return response: stream"""
+        :param question: The user's question.
+        :param file_references: List of file paths referenced for context.
+        :param selected_message_ids: UUIDs of previously selected relevant messages.
+        :param streaming: Whether to stream the response.
+        :param model: The model to use for generating responses.
+        :return: Generated response.
+        """
         file_content = []
+
         for file_reference in file_references:
             content = StorageMethodology.select().read_file(file_reference)
             logging.info(f"Extracting file content [{file_reference}]: {content}")
             file_content.append(content)
 
         messages = []
+
         if selected_message_ids:
             for message_id in selected_message_ids:
                 message = nodeDB().get_message_by_id(message_id)
                 content = message["prompt"] + " : \n\n" + message["response"]
                 messages.append(content)
+
         logging.info(f"Message content: {messages}")
 
-        input_messages = [question] + file_content
+        input_messages = file_content + [question]
         response = self.think(input_messages, messages, streaming, model)
         self.history.append((question, response))
+
         return response
 
-    def think(
-        self,
-        user_messages: List[str],
-        previous_messages: List[str] = None,
-        streaming: bool = False,
-        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
-    ) -> str:
-        """Process the input question and think through a response.
-        ToDo: this will be called multiple times redundantly in a workflow, user_messages are small however and the
-         context can change from step to step so its not a priority
-        ToDo: split additional_context lists up before sending on
+    def think(self,
+              user_messages: List[str],
+              previous_messages: List[str] = None,
+              streaming: bool = False,
+              model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str:
+        """
+        Process the input question and create a response.
+
         ToDo: How the application accesses and gives history to the llm will need to be optimised
 
-        :param user_messages: List of existing user message
-        :param previous_messages: prior messages selected as context for this prompt
-        :param streaming: whether this 'thought' is to be streamed or not, for the final stage in a workflow
-         for presenting information quickly to the user
-        :return The generated response stream or an error message
+        :param user_messages: List of user messages.
+        :param previous_messages: Previous messages for context.
+        :param streaming: Whether to stream the response.
+        :param model: The AI model used for generating the response.
+        :return: Generated response or an error message.
         """
         logging.info("Processing user messages: %s", user_messages)
 
@@ -201,7 +205,6 @@ class BasePersona:
             recent_history = self.detect_relevant_history(user_messages)
         else:
             recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
-
         recent_history.extend(previous_messages)
 
         try:
@@ -219,14 +222,14 @@ class BasePersona:
 
     def detect_relevant_history(self, user_messages: List[str]) -> List[str]:
         """
-        Uses an ai call to actually determine which prompt - response pairs to send on
+        Automatically determine which prompt-response pairs are relevant for the current context.
 
         ToDo: latter this project would probably be better suited extracting 'concepts' from prompts, these concepts
          would be keywords that can then relate *back* to the knowledge base, user knowledge, history, configuration,
          persona, workflow, etc. With contexts having different strengths based on the input prompt and response
 
-        :param user_messages:
-        :return:
+        :param user_messages: List of messages inputted by the user.
+        :return: Relevant history entries.
         """
         numbered_prompts = "Prompt History: " + "\n".join(
             [f"{idx}: {entry[0]}" for idx, entry in enumerate(self.history)]
@@ -235,10 +238,8 @@ class BasePersona:
         executor = AiOrchestrator()
         relevant_history_list = executor.execute(
             ["Review the messages I've entered and am about to enter, check them against the Prompt History, write a "
-             "list of number ids for the prompts."
-             "Be very harsh only include a message from the history if it DIRECTLY relates to the user message, "
-             "Otherwise include NOTHING. "
-             "Just the list of numbers in square brackets, no commentary",
+             "list of number ids for the prompts. Be very harsh only include a message from the history if it "
+             "DIRECTLY relates to the user message. Otherwise include NOTHING. Just the list of numbers in square brackets, no commentary",
              numbered_prompts],
             user_messages
         )
@@ -251,6 +252,6 @@ class BasePersona:
                 for id in relevant_history_list:
                     relevant_history.append(str(self.history[int(id)]))
         except Exception:
-            logging.exception(f"Failed to Retrieve relevant history!")
+            logging.exception("Failed to Retrieve relevant history!")
 
         return relevant_history
