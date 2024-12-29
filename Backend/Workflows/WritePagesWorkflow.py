@@ -123,7 +123,6 @@ class WritePagesWorkflow(BaseWorkflow):
             model=model
         )
 
-
         pages = self.extract_markdown_list_items(response)
         if not pages:
             raise Exception("No prompt suggestions generated!")
