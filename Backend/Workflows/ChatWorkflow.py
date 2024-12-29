@@ -1,9 +1,12 @@
 import logging
 from typing import Callable, Optional, List, Dict
 
+from flask_socketio import emit
+
 from AiOrchestration.ChatGptModel import find_enum_value
 from Utilities.Decorators import return_for_error
 from Workflows.BaseWorkflow import BaseWorkflow
+from Workflows.Workflows import CHAT_WORKFLOW
 
 
 class ChatWorkflow(BaseWorkflow):
@@ -30,6 +33,8 @@ class ChatWorkflow(BaseWorkflow):
         :param tags: Additional metadata.
         :return: AI's response.
         """
+        emit("send_workflow", {"workflow": CHAT_WORKFLOW})
+
         logging.info("Chat workflow selected")
         model = find_enum_value(tags.get("model"))
 

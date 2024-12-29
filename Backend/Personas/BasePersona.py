@@ -28,17 +28,15 @@ class BasePersona:
     """
     MAX_HISTORY = 5
     WORKFLOWS: Dict[str, Dict[str, Any]] = {
-        'chat': CHAT_WORKFLOW,
+        'chat': ChatWorkflow(),
     }
 
     def __init__(self, name):
         self.name = name
         self.history: List[Tuple[str, str]] = []  # question-response pairs
-        self.workflows = {}
+        self.workflows = {}  # ToDo: Delete?
         self.instructions = ""
         self.configuration = ""
-
-        self.workflow_manager = WorkflowManager()
 
         ErrorHandler.setup_logging()
 
@@ -128,8 +126,7 @@ class BasePersona:
         workflow_key = self._determine_workflow_key(tags)
 
         if workflow_key:
-            emit("send_workflow", {"workflow": self.WORKFLOWS[workflow_key]})
-            return self.workflow_manager.execute_workflow(
+            return self.execute_workflow(
                 workflow_key,
                 self.process_question,
                 initial_message,
@@ -139,8 +136,7 @@ class BasePersona:
             )
 
         # Handle case where no valid workflow key is found
-        emit("send_workflow", {"workflow": CHAT_WORKFLOW})
-        return self.workflow_manager.execute_workflow(
+        return self.execute_workflow(
             "chat",
             self.process_question,
             initial_message,
@@ -149,7 +145,7 @@ class BasePersona:
             tags
         )
 
-    def _determine_workflow_key(self, tags: Dict[str, bool]) -> str | None:
+    def _determine_workflow_key(self, tags: Dict[str, str]) -> str | None:
         """
         Determines the workflow key based on tags.
 
@@ -160,6 +156,28 @@ class BasePersona:
             if tags.get(key):
                 return key
         return None
+
+    def execute_workflow(self, name: str, *args, **kwargs) -> Any:
+        """
+        Executes the specified workflow.
+
+        :param name: Name of the workflow.
+        :param args: Positional arguments for the workflow.
+        :param kwargs: Keyword arguments for the workflow.
+        :return: The result of the workflow execution.
+        :raises ValueError: If the workflow does not exist.
+        """
+        if name not in self.WORKFLOWS.keys():
+            logging.error(f"Workflow '{name}' not found.")
+            raise ValueError(f"Workflow '{name}' not found.")
+
+        logging.info(f"Executing workflow '{name}'.")
+        emit("update_workflow", {"status": "in-progress"})
+
+        result = self.WORKFLOWS[name].execute(*args, **kwargs)
+
+        emit("update_workflow", {"status": "finished"})
+        return result
 
     def process_question(
         self,

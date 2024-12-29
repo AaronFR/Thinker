@@ -11,6 +11,7 @@ from Utilities.Contexts import get_user_context
 from Utilities.Decorators import return_for_error
 from Workflows.BaseWorkflow import BaseWorkflow
 from Workflows.Instructions import write_file, write_code_file, plan_file_creation
+from Workflows.Workflows import WRITE_WORKFLOW
 
 
 class WriteWorkflow(BaseWorkflow):
@@ -38,6 +39,7 @@ class WriteWorkflow(BaseWorkflow):
         :return: AI's response.
         :raises WorkflowExecutionError: If any step in the workflow fails.
         """
+        emit("send_workflow", {"workflow": WRITE_WORKFLOW})
         try:
             model = find_enum_value(tags.get("model")) if tags else None
 
