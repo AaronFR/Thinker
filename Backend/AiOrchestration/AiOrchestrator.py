@@ -1,5 +1,4 @@
 import logging
-from pprint import pformat
 from typing import List, Dict
 
 from AiOrchestration.ChatGptWrapper import ChatGptWrapper
@@ -52,7 +51,7 @@ class AiOrchestrator:
         """
         assistant_messages = assistant_messages or []
         messages = generate_messages(system_prompts, user_prompts, assistant_messages, self.input_files, model)
-        logging.info(f"Executing LLM call with messages: \n{pformat(messages, width=500)}")
+        logging.info(f"Executing LLM call with messages: \n{messages}")
 
         if streaming:
             logging.info("Executing streaming response")
@@ -122,7 +121,7 @@ class AiOrchestrator:
             logging.error("Failed to obtain a valid response from OpenAI API.")
             raise RuntimeError("OpenAI API returned no response.")
 
-        logging.info(f"Function evaluated with response: {pformat(response)}")
+        logging.info(f"Function evaluated with response: {response}")
         return response
 
 

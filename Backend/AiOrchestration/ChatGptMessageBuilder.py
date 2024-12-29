@@ -1,6 +1,5 @@
 import logging
 import os
-from pprint import pformat
 from typing import List, Dict
 
 from AiOrchestration.ChatGptWrapper import ChatGptRole
@@ -26,7 +25,7 @@ def generate_messages(
     :param model: The selected model
     :return: List of formatted messages for LLM processing
     """
-    logging.debug(f"Composing messages with user prompts: {pformat(user_prompts, width=280)}")
+    logging.debug(f"Composing messages with user prompts: {user_prompts}")
 
     system_prompts = Utility.ensure_string_list(system_prompts)
     user_prompts = Utility.ensure_string_list(user_prompts)
@@ -34,7 +33,7 @@ def generate_messages(
         assistant_messages = Utility.ensure_string_list(assistant_messages)
 
     messages = build_role_messages(input_files, system_prompts, user_prompts, assistant_messages, model)
-    logging.debug(f"Messages: {pformat(messages)}")
+    logging.debug(f"Messages: {messages}")
     logging.info(f"Tokens used (limit 128k): {Utility.calculate_tokens_used(messages)}")
     return messages
 
