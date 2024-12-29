@@ -33,6 +33,3 @@ if __name__ == '__main__':
     """Suggestions: 
     - Write a detailed report about the future of tidal technology, what innovations and possible disruptions could occur
     """
-
-    writer = Writer("prototype")
-    writer.query_user_for_input()

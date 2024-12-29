@@ -36,6 +36,3 @@ if __name__ == '__main__':
     assume the terrain is entered as a 2d data plot
     - How would you improve the Thinker.py class?
     """
-
-    coder = Coder("prototype")
-    coder.query_user_for_input()

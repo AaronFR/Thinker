@@ -55,63 +55,15 @@ class BasePersona:
         :param tags: additional information for prompting, e.g. if and where to write a file
         """
         if Utility.is_valid_prompt(user_prompt):
-            return self.run_workflow(user_prompt, file_references, selected_message_ids, tags)
+            return self.select_workflow(user_prompt, file_references, selected_message_ids, tags)
         else:
-            print("Invalid input. Please ask a clear and valid question.")
+            logging.error("Invalid input. Please ask a clear and valid question.")
 
-    def query_user_for_input(self):
-        """
-        Continuously prompts the user for questions until they choose to exit.
-        For debugging the backend from the terminal.
-
-        ToDo: Seriously consider removing this and related methods
-         querying from terminal has little use even for debugging
-        """
-        config = Configuration.load_config()
-        while True:
-            user_input = input("Please enter your task (or type 'exit' to quit): ")
-            if Utility.is_exit_command(user_input):
-                print("Exiting the question loop.")
-                break
-            elif user_input.lower() == 'history':
-                self.display_history()
-            elif Utility.is_valid_prompt(user_input):
-                self.select_workflow(user_input)
-            else:
-                print("Invalid input. Please ask a clear and valid question.")
-
-    def display_history(self):
-        """Display the conversation history to the user.
-        If there is no history available, a message is shown.
-        """
-        if not self.history:
-            print("No interaction history available.")
-            return
-        print("Interaction History:")
-        for i, (question, response) in enumerate(self.history):
-            print(f"{i + 1}: Q: {question}\n    A: {response}")
-
-    def select_workflow(self, initial_message: str, file_references: List[str] = None):
-        """Determine and run the appropriate workflow based on the user's query"""
-        executor = AiOrchestrator()
-        output = executor.execute_function(
-            [
-                f"Given what my next task is, which of the following workflows is the most appropriate? "
-                f"Just select which workflow is most appropriate.\nWorkflows: {self.workflows}"
-            ],
-            [initial_message],
-            SELECT_WORKFLOW_INSTRUCTIONS
-        )
-        selected_workflow = output['selection']
-
-        logging.info(f"Selected workflow: {selected_workflow}")
-        return self.run_workflow(initial_message, file_references, None, None)
-
-    def run_workflow(self,
-                     initial_message: str,
-                     file_references: List[str] = None,
-                     selected_message_ids: List[str] = None,
-                     tags: List[str] = None) -> Any:
+    def select_workflow(self,
+                        initial_message: str,
+                        file_references: List[str] = None,
+                        selected_message_ids: List[str] = None,
+                        tags: List[str] = None) -> Any:
         """
         Determines and executes the appropriate workflow based on user input and tags.
 
