@@ -5,7 +5,6 @@ from typing import List, Dict
 from AiOrchestration.ChatGptWrapper import ChatGptRole
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Files.StorageMethodology import StorageMethodology
-from Utilities.Contexts import get_user_context
 from Utilities.Utility import Utility
 
 
@@ -67,15 +66,15 @@ def build_role_messages(
             full_address = os.path.join(file)
             content = StorageMethodology.select().read_file(full_address)
             role_messages.append(
-                _format_message(ChatGptRole.USER, f"<{file}>{content}</{file}>"))
+                _format_message(ChatGptRole.ASSISTANT, f"<{file}>{content}</{file}>"))
         except FileNotFoundError:
             logging.error(f"File not found: {file}. Please ensure the file exists.")
             role_messages.append(
-                _format_message(ChatGptRole.SYSTEM, f"File not found: {file}"))
+                _format_message(ChatGptRole.ASSISTANT, f"File not found: {file}"))
         except Exception as e:
             logging.error(f"Error reading file {file}: {e}")
             role_messages.append(
-                _format_message(ChatGptRole.SYSTEM, f"Error reading file {file}. Exception: {e}"))
+                _format_message(ChatGptRole.ASSISTANT, f"Error reading file {file}. Exception: {e}"))
 
     role_messages += [
          _format_message(ChatGptRole.SYSTEM, prompt) for prompt in system_prompts
