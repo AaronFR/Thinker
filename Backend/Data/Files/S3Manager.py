@@ -47,7 +47,7 @@ class S3Manager(StorageBase):
         """
         if not overwrite & self.check_file_exists(file_path):
             pass
-            # content += self.read_file(file_path)
+            content = self.read_file(file_path) + content
 
         self.s3_client.put_object(
             Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),

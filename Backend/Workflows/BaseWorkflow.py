@@ -37,7 +37,7 @@ class BaseWorkflow:
         file_references: List[str],
         selected_message_ids: List[str],
         streaming: bool = True,
-        model: str = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
     ) -> str:
         """
         Handles individual chat steps.
@@ -69,7 +69,8 @@ class BaseWorkflow:
         message: str,
         file_references: List[str],
         file_name: str,
-        model: str = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+        overwrite: bool = True
     ) -> str:
         """
         Handles the process of saving files.
@@ -92,10 +93,13 @@ class BaseWorkflow:
         user_id = get_user_context()
         file_path = Path(user_id).joinpath(file_name)
 
-        Coding.write_to_file_task({
-            PersonaConstants.SAVE_TO: file_path,
-            PersonaConstants.INSTRUCTION: response
-        })
+        Coding.write_to_file_task(
+            {
+                PersonaConstants.SAVE_TO: file_path,
+                PersonaConstants.INSTRUCTION: response
+            },
+            overwrite
+        )
 
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
         return response
