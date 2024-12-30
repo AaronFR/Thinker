@@ -44,6 +44,12 @@ function App () {
 
     // Context Settings
     const { settings } = useContext(SettingsContext);
+    const settingsRef = useRef(settings);
+
+    useEffect(() => {
+      settingsRef.current = settings;
+    }, [settings]);
+
     const { augmentedPromptsEnabled, questionUserPromptsEnabled } = settings;
 
     // QA management
@@ -105,7 +111,7 @@ function App () {
       if (typingTimer.current) {
         clearTimeout(typingTimer.current);
       }
-      
+
       // Adjust height to fit content, up to a max height
       event.target.style.height = "auto"; // Reset height to calculate scroll height properly
       event.target.style.height = `${Math.min(event.target.scrollHeight, 8 * 24)}px`;
@@ -114,11 +120,12 @@ function App () {
     };
 
     const handleTyping = (value, selectedMessages, selectedFiles) => {
-      if (augmentedPromptsEnabled) {
+      const currentSettings = settingsRef.current;
+      
+      if (currentSettings.augmentedPromptsEnabled) {
         generateAugmentedPrompt(value);
       }
-      if (questionUserPromptsEnabled && !formsFilled) {
-        generateQuestionsForPrompt(value);
+      if (currentSettings.questionUserPromptsEnabled && !formsFilled) {
         generateQuestionsForPrompt(value, selectedMessages, selectedFiles);
       }
     };
@@ -152,7 +159,6 @@ function App () {
     const copyAugmentedPrompt = () => {
       setUserInput(augmentedPrompt); // Copy augmentedPrompt into userInput
       if (questionUserPromptsEnabled && !formsFilled) {
-        generateQuestionsForPrompt(augmentedPrompt); // Retrigger questions for prompt
         generateQuestionsForPrompt(augmentedPrompt, selectedMessages, selectedFiles); // Retrigger questions for prompt
         setResetResponsesTrigger(prev => prev + 1);
       }

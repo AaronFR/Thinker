@@ -46,19 +46,11 @@ function RootApp() {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
+
           {/* Protected Routes */}
-          <Route
-            path="/"
-            element={isAuthenticated ? <App /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/settings"
-            element={isAuthenticated ? <Settings /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/pricing"
-            element={isAuthenticated ? <Pricing /> : <Navigate to="/login" />}
-          />
+          <Route path="/" element={isAuthenticated ? <App /> : <Navigate to="/login" />} />
+          <Route path="/settings" element={isAuthenticated ? <Settings /> : <Navigate to="/login" />} />
+          <Route path="/pricing" element={isAuthenticated ? <Pricing /> : <Navigate to="/login" />} />
         </Routes>
       </BrowserRouter>
     </SettingsProvider>
