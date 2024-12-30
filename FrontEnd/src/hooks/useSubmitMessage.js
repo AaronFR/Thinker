@@ -60,27 +60,39 @@ const useSubmitMessage = (
           return prevWorkflow;
         }
 
+        // Update overall workflow status
         const updatedWorkflow = { ...prevWorkflow };
         if (updateData.type === 'status') {
           updatedWorkflow.status = updateData.status;
           console.log("Updated workflow status:", updatedWorkflow.status);
           return updatedWorkflow;
-        } else {
-          const stepIndex = updateData.step - 1; // workflows are 1-indexed
-          const newStatus = updateData.status;
-
-          if (updatedWorkflow.steps[stepIndex]) {
-            updatedWorkflow.steps[stepIndex] = {
-              ...updatedWorkflow.steps[stepIndex],
-              status: newStatus
-            };
-            console.log("Updated workflow step:", updatedWorkflow.steps[stepIndex]);
-            return updatedWorkflow;
-          } else {
-            console.error(`Invalid workflow step index: ${stepIndex}`);
-            return prevWorkflow;
-          }
         }
+        
+        // update an individual step
+        const stepIndex = updateData.step - 1; // workflows are 1-indexed
+        if (updatedWorkflow.steps[stepIndex]) {
+          const currentStep = updatedWorkflow.steps[stepIndex];
+
+          if (updateData.status) {
+              currentStep.status = updateData.status;
+              console.log("Updated workflow step status:", currentStep);
+          }
+          if (updateData.response) {
+              currentStep.response = updateData.response;
+              console.log("Updated workflow step response:", currentStep);
+          }
+          if (updateData.file_name) {
+            currentStep.parameters.file_name = updateData.file_name;
+            console.log("Updated workflow step response:", currentStep);
+        }
+
+          updatedWorkflow.steps[stepIndex] = currentStep;
+
+          return updatedWorkflow;
+      } else {
+          console.error(`Invalid workflow step index: ${stepIndex}`);
+          return prevWorkflow;
+      }
       });
     }
 

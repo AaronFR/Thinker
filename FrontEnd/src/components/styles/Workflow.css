@@ -70,6 +70,10 @@ body.dark-mode .step{
   border-left: 5px solid var(--color-status-in-progress);
   box-shadow: 0 0 10px rgba(23, 162, 184, 0.2);
 }
+.step.streaming {
+  border-left: 5px solid var(--color-status-streaming);
+  box-shadow: 0 0 10px rgba(26, 47, 234, 0.2);
+}
 .step.finished {
   border-left: 5px solid var(--color-border-active);
   box-shadow: var(--box-shadow-deep);
@@ -107,6 +111,9 @@ body.dark-mode .step{
 }
 .status.in-progress {
   color: var(--color-status-in-progress);
+}
+.status.streaming {
+  color: var(--color-status-streaming);
 }
 .status.finished {
   color: var(--color-border-active);

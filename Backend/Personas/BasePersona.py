@@ -11,7 +11,6 @@ from Data.EncyclopediaManagement import EncyclopediaManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Data.UserContextManagement import UserContextManagement
-from Personas.PersonaSpecification.PersonaConstants import SELECT_WORKFLOW_INSTRUCTIONS
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
 from Workflows.ChatWorkflow import ChatWorkflow

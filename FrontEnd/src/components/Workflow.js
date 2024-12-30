@@ -11,7 +11,6 @@ const Workflow = ({ workflowData }) => {
     <div className={`workflow ${workflowData.status}`}>
       <div className="workflow-details">
         <p className="workflow-name">{workflowData.workflow_name} (v{workflowData.version})</p>
-        <p className="workflow-id">{workflowData.workflow_id}</p>
         <p className={`status ${workflowData.status}`}>{workflowData.status}</p>
       </div>
       <div className="steps">
@@ -23,7 +22,7 @@ const Workflow = ({ workflowData }) => {
               <p className={`status ${step.status}`}>{step.status}</p>
             </div>
             <p>
-              {workflowData.modules[step.module]?.description || "No description available"}
+              {step.description || "No description available"}
             </p>
             {step.parameters && (
               <div className="parameters">

@@ -67,6 +67,7 @@ code {
   --color-text-shadow: rgba(0, 0, 0, 0.3);
   --color-status-pending: #767676;
   --color-status-in-progress: #b89317;
+  --color-status-streaming: #449bff;
 
   /* Font Sizes */
   --font-size-small: 0.6875em;

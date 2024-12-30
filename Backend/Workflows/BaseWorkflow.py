@@ -8,8 +8,6 @@ from pathlib import Path
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context
-from Functionality.Coding import Coding
-from Personas.PersonaSpecification import PersonaConstants
 
 UPDATE_WORKFLOW_STEP = "update_workflow_step"
 
@@ -60,7 +58,8 @@ class BaseWorkflow:
             streaming=streaming,
             model=model,
         )
-        emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
+
+        BaseWorkflow.emit_step_completed_events(iteration, streaming, response)
         return response
 
     @staticmethod
@@ -92,11 +91,22 @@ class BaseWorkflow:
             selected_message_ids,
             model=model,
         )
+        response = response + """
+        
+        """  # Otherwise when the next section is appended on it won't be on a new line
+
 
         user_id = get_user_context()
         file_path = Path(user_id).joinpath(file_name)
 
         StorageMethodology.select().save_file(response, str(file_path), overwrite=overwrite)
 
-        emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
+        BaseWorkflow.emit_step_completed_events(iteration, False, response)
         return response
+
+    @staticmethod
+    def emit_step_completed_events(iteration: int, streaming: bool, response: str):
+        emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "streaming"})
+        if not streaming:
+            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
+            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "response": response})
