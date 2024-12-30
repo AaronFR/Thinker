@@ -36,7 +36,7 @@ const ExpandableElement = React.memo(({
     const buttonLabel = toggleButtonLabel || (isExpanded ? '-' : '+');
 
     return (
-        <>
+        <div className='expandable-element'>
             {isExpanded ? maxContent : minContent}
             <button
                 onClick={toggleExpansion}
@@ -46,7 +46,7 @@ const ExpandableElement = React.memo(({
             >
                 {buttonLabel}
             </button>
-        </>
+        </div>
     );
 });
 

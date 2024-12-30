@@ -1,5 +1,7 @@
 import React from "react";
 
+import ExpandableElement from "../utils/expandableElement";
+
 import './styles/Workflow.css'
 
 const Workflow = ({ workflowData }) => {
@@ -33,10 +35,15 @@ const Workflow = ({ workflowData }) => {
               </div>
             )}
             {step.response && Object.keys(step.response).length > 0 && (
-              <div>
-                <h4>Response:</h4>
-                <pre>{JSON.stringify(step.response, null, 2)}</pre>
-              </div>
+                <ExpandableElement
+                  className="module"
+                  minContent={"Response Generated + "}
+                  maxContent={<>
+                    <h4>Response</h4>
+                    <p className="parameters">{step.response}</p>
+                  </>}
+                  initiallyExpanded={false}
+                />
             )}
           </div>
         ))}

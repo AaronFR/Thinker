@@ -12,7 +12,6 @@
 
 /* Markdown Suggested Question Text Styling */
 .markdown-questions-for-prompt {
-  position: relative; /* Enable positioning for the child elements */
   text-align: left; /* Ensures markdown lists are well aligned */
   font-size: var(--font-size-small-lg);
   padding: var(--spacing-xxl);

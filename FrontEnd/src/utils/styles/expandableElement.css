@@ -1,8 +1,12 @@
+.expandable-element {
+  position: relative;
+}
+
 .min-max-button {
   position: absolute; /* Position the button relative to the parent */
   padding: 10px 10px;
-  top: 10px; /* Adjust the vertical position */
-  right: 10px; /* Adjust the horizontal position */
+  top: 0px; /* Adjust the vertical position */
+  right: 0px; /* Adjust the horizontal position */
   opacity: 0.25; /* Make the button slightly transparent */
   background-color: white; /* Optional: make the background transparent */
   border: none; /* Optional: remove the border */

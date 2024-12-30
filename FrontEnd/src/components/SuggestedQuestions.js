@@ -141,7 +141,7 @@ const SuggestedQuestions = ({
   );
 
   const maxContent = (
-    <>
+    <div className="markdown-questions-for-prompt">
       <ol className="questions-list">
         {questions.map((question, index) => (
           <li key={index} className="question-item">
@@ -163,18 +163,16 @@ const SuggestedQuestions = ({
           </li>
         ))}
       </ol>
-    </>
+    </div>
   );
 
   return (
-    <div className="markdown-questions-for-prompt">
-        <ExpandableElement
-            minContent={minContent}
-            maxContent={maxContent}
-            initiallyExpanded={true}
-            toggleButtonLabel=""
-        />
-    </div>
+    <ExpandableElement
+        minContent={minContent}
+        maxContent={maxContent}
+        initiallyExpanded={true}
+        toggleButtonLabel=""
+    />
   );
 };
 
