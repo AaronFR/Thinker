@@ -72,6 +72,7 @@ const FileUploadButton = ({ onUploadSuccess }) => {
       const signal = controller.signal;
 
       try {
+        // ToDo switch to ApiFetch (will require some debugging)
         const response = await fetch(`${FLASK_PORT}/file`, {
           method: 'POST',
           body: formData,

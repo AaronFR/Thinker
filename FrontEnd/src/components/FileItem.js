@@ -2,6 +2,7 @@ import React, { useState, memo } from 'react';
 import PropTypes from 'prop-types';
 
 import { shortenText, getBasename, MarkdownRenderer, CodeHighlighter } from '../utils/textUtils';
+import { apiFetch } from '../utils/authUtils';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
@@ -33,7 +34,7 @@ const FileItem = ({ file, onDelete, onSelect }) => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${FLASK_PORT}/file/${file.category_id}/${getBasename(file.name)}`, {
+        const response = await apiFetch(`${FLASK_PORT}/file/${file.category_id}/${getBasename(file.name)}`, {
           method: 'GET',
           credentials: "include"
         });
@@ -62,7 +63,7 @@ const FileItem = ({ file, onDelete, onSelect }) => {
     e.stopPropagation(); // Prevent triggering the toggleExpansion
     if (window.confirm("Are you sure you want to delete this file?")) {
       try {
-        const response = await fetch(`${FLASK_PORT}/file/${file.id}`, {
+        const response = await apiFetch(`${FLASK_PORT}/file/${file.id}`, {
           method: 'DELETE',
           credentials: "include"
         });
