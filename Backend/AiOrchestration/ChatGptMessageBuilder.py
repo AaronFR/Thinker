@@ -12,7 +12,6 @@ def generate_messages(
     system_prompts: List[str] | str,
     user_prompts: List[str],
     assistant_messages: List[str] = None,
-    input_files: List[str] = None,
     model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
 ) -> List[Dict[str, str]]:
     """Generates the list of messages by composing user and system prompts.
@@ -20,7 +19,6 @@ def generate_messages(
     :param system_prompts: Messages providing contextual guidance to the LLM
     :param user_prompts: User prompts representing instructions
     :param assistant_messages: History of the current interaction
-    :param input_files: selected file paths as reference for the prompt
     :param model: The selected model
     :return: List of formatted messages for LLM processing
     """
@@ -31,14 +29,13 @@ def generate_messages(
     if assistant_messages:
         assistant_messages = Utility.ensure_string_list(assistant_messages)
 
-    messages = build_role_messages(input_files, system_prompts, user_prompts, assistant_messages, model)
+    messages = build_role_messages(system_prompts, user_prompts, assistant_messages, model)
     logging.debug(f"Messages: {messages}")
     logging.info(f"Tokens used (limit 128k): {Utility.calculate_tokens_used(messages)}")
     return messages
 
 
 def build_role_messages(
-    input_files: List[str],
     system_prompts: List[str],
     user_prompts: List[str],
     assistant_messages: List[str] = None,
@@ -47,7 +44,6 @@ def build_role_messages(
     """Creates a list of messages to be handled by the ChatGpt API, the most important messages is the very last
     'latest' message in the list
 
-    :param input_files: selected file paths as reference for the prompt
     :param system_prompts: list of instructions to be saved as system info
     :param user_prompts: primary initial instruction and other supplied material
     :param assistant_messages: messages which represent the prior course of the conversation
@@ -59,22 +55,6 @@ def build_role_messages(
     if assistant_messages:
         role_messages.extend(
             _format_message(ChatGptRole.ASSISTANT, prompt) for prompt in assistant_messages)
-
-    logging.info(f"Number of input files: {input_files}")
-    for file in input_files:
-        try:
-            full_address = os.path.join(file)
-            content = StorageMethodology.select().read_file(full_address)
-            role_messages.append(
-                _format_message(ChatGptRole.ASSISTANT, f"<{file}>{content}</{file}>"))
-        except FileNotFoundError:
-            logging.error(f"File not found: {file}. Please ensure the file exists.")
-            role_messages.append(
-                _format_message(ChatGptRole.ASSISTANT, f"File not found: {file}"))
-        except Exception as e:
-            logging.error(f"Error reading file {file}: {e}")
-            role_messages.append(
-                _format_message(ChatGptRole.ASSISTANT, f"Error reading file {file}. Exception: {e}"))
 
     role_messages += [
          _format_message(ChatGptRole.SYSTEM, prompt) for prompt in system_prompts

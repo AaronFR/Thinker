@@ -40,8 +40,7 @@ class Writing(enum.Enum):
                 "No commentary. Select only one singular file alone."
             )
 
-            executor = AiOrchestrator()
-            files = executor.execute_function(
+            files = AiOrchestrator().execute_function(
                 [prompt],
                 [initial_message],
                 GENERATE_FILE_NAMES_FUNCTION_SCHEMA
@@ -50,22 +49,6 @@ class Writing(enum.Enum):
         logging.info(f"Referencing/Creating the following files: {files}")
         return files
 
-    @staticmethod
-    def write_to_file_task(task_parameters: Dict[str, object]):
-        """
-        Repeatedly writes content to the specified number of pages. Where one page roughly corresponds to 500 words
-        (2000 tokens output)
-
-        :param task_parameters: Dict with SAVE_TO and INSTRUCTION
-        """
-        executor = AiOrchestrator(task_parameters.get(PersonaConstants.REFERENCE, []))
-        output = executor.execute(
-            ["Just write the key text, without any of the typical LLM 'would you like to know more' parts"],
-            [task_parameters[PersonaConstants.INSTRUCTION]]
-        )
-
-        StorageMethodology.select().save_file(output, task_parameters[PersonaConstants.SAVE_TO], overwrite=True)
-        ExecutionLogs.add_to_logs(f"Saved to {task_parameters[PersonaConstants.SAVE_TO]}")
 
 
 

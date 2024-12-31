@@ -8,7 +8,6 @@ class Augmentation:
 
     @staticmethod
     def augment_prompt(initial_prompt: str):
-        executor = AiOrchestrator()
         config = Configuration.load_config()
 
         # ToDo: It shouldn't be possible to inject code by mal-forming a string in a compiled process right?
@@ -22,7 +21,7 @@ class Augmentation:
         )
 
         # ToDo: Indepth study of prompt engineering principles and testing to optimise this prompt
-        result = executor.execute(
+        result = AiOrchestrator().execute(
             [prompt_augmentation_system_message],
             ["user prompt: \"\"\"\n" + initial_prompt + "\n\"\"\""]
         )
@@ -31,7 +30,6 @@ class Augmentation:
 
     @staticmethod
     def question_user_prompt(initial_prompt: str, reference_messages: list = None, reference_files: list = None):
-        executor = AiOrchestrator()
         config = Configuration.load_config()
 
         final_payload = []
@@ -50,7 +48,7 @@ class Augmentation:
         )
 
         # ToDo: Indepth study of what makes for the best questions (after graph database has been developed)
-        result = executor.execute(
+        result = AiOrchestrator().execute(
             [prompt_questioning_system_message],
             final_payload
         )

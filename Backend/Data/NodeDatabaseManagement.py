@@ -285,9 +285,8 @@ class NodeDatabaseManagement:
 
             content = StorageMethodology.select().read_file(file_path)
             from AiOrchestration.AiOrchestrator import AiOrchestrator
-            executor = AiOrchestrator()
             #ToDo: Summarises previous content if it exists when writing files
-            summary = executor.execute(
+            summary = AiOrchestrator().execute(
                 [PersonaConstants.SUMMARISER_SYSTEM_INSTRUCTIONS],
                 [content]
             )

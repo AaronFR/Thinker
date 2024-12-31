@@ -35,7 +35,6 @@ class UserContextManagement(EncyclopediaManagementInterface):
         :param user_input: The input text provided by the user.
         :return: A list of dictionaries containing extracted terms and their respective content.
         """
-        executor = AiOrchestrator()
 
         instructions = (
             "For the given prompt, explain your reasoning step by step. "
@@ -48,7 +47,7 @@ class UserContextManagement(EncyclopediaManagementInterface):
             "content=\"(the content you want to note)\" />"
             "Required: tag name, parameter, content, all 3 must be included"
         )
-        user_topics_reasoning = executor.execute(
+        user_topics_reasoning = AiOrchestrator().execute(
             [instructions],
             user_input,
         )

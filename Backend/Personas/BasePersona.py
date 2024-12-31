@@ -76,7 +76,7 @@ class BasePersona:
         if workflow_key:
             return self.execute_workflow(
                 workflow_key,
-                self.process_question,
+                self.process_prompt,
                 initial_message,
                 file_references,
                 selected_message_ids,
@@ -86,7 +86,7 @@ class BasePersona:
         # Handle case where no valid workflow key is found
         return self.execute_workflow(
             "chat",
-            self.process_question,
+            self.process_prompt,
             initial_message,
             file_references,
             selected_message_ids,
@@ -127,16 +127,16 @@ class BasePersona:
         emit("update_workflow", {"status": "finished"})
         return result
 
-    def process_question(self,
-                         question: str,
-                         file_references: List[str] = None,
-                         selected_message_ids: List[str] = None,
-                         streaming: bool = False,
-                         model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str:
+    def process_prompt(self,
+                       prompt: str,
+                       file_references: List[str] = None,
+                       selected_message_ids: List[str] = None,
+                       streaming: bool = False,
+                       model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str:
         """
         Process and store the user's question.
 
-        :param question: The user's question.
+        :param prompt: The user's question.
         :param file_references: List of file paths referenced for context.
         :param selected_message_ids: UUIDs of previously selected relevant messages.
         :param streaming: Whether to stream the response.
@@ -144,6 +144,8 @@ class BasePersona:
         :return: Generated response.
         """
         file_content = []
+        file_references += StorageMethodology.select().list_staged_files()
+        logging.info(f"Woooooooa buddi {file_references}")
 
         for file_reference in file_references:
             content = StorageMethodology.select().read_file(file_reference)
@@ -160,15 +162,15 @@ class BasePersona:
 
         logging.info(f"Message content: {messages}")
 
-        input_messages = file_content + [question]
+        input_messages = file_content + [prompt]
         response = self.think(input_messages, messages, streaming, model)
-        self.history.append((question, response))
+        self.history.append((prompt, response))
 
         return response
 
     def think(self,
               user_messages: List[str],
-              previous_messages: List[str] = None,
+              history_messages: List[str] = None,
               streaming: bool = False,
               model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str:
         """
@@ -177,15 +179,14 @@ class BasePersona:
         ToDo: How the application accesses and gives history to the llm will need to be optimised
 
         :param user_messages: List of user messages.
-        :param previous_messages: Previous messages for context.
+        :param history_messages: The ai will treat these messages as prior context
         :param streaming: Whether to stream the response.
         :param model: The AI model used for generating the response.
         :return: Generated response or an error message.
         """
         logging.info("Processing user messages: %s", user_messages)
 
-        staged_files = StorageMethodology.select().list_staged_files()
-        executor = AiOrchestrator(staged_files)
+        executor = AiOrchestrator()
         config = Configuration.load_config()
 
         system_messages = [self.instructions, self.configuration]
@@ -204,7 +205,7 @@ class BasePersona:
             recent_history = self.detect_relevant_history(user_messages)
         else:
             recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
-        recent_history.extend(previous_messages)
+        recent_history.extend(history_messages)
 
         try:
             output = executor.execute(

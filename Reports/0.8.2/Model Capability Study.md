@@ -99,10 +99,11 @@ def execute_workflow_steps(self, messages: List[str], file_references: List[str]
     """A helper that processes a list of messages as part of the workflow."""
     responses = []
     for iteration, message in enumerate(messages, start=1):
-        response = self.process_question(message, file_references, model=model)
+        response = self.process_prompt(message, file_references, model=model)
         logging.info(f"Iteration {iteration} completed with response: {response}")
         responses.append(response)
     return responses
+
 
 # Usage in write_workflow
 

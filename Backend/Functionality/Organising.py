@@ -58,8 +58,7 @@ class Organising:
 
         :param content: The content to be summarised
         """
-        executor = AiOrchestrator()
-        summary = executor.execute(
+        summary = AiOrchestrator().execute(
             [PersonaConstants.SUMMARISER_SYSTEM_INSTRUCTIONS],
             [content]
         )

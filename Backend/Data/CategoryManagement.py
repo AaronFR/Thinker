@@ -26,9 +26,6 @@ class CategoryManagement:
             cls._instance = super(CategoryManagement, cls).__new__(cls)
         return cls._instance
 
-    def __init__(self):
-        self.executor = AiOrchestrator()
-
     @staticmethod
     def categorise_prompt_input(user_prompt: str, llm_response: str = None, creating: bool = True):
         """
@@ -63,7 +60,7 @@ class CategoryManagement:
                 "and categorize the data with the most suitable single-word answer." + \
                 "Write it as <result=\"(your_selection)\""
 
-        category_reasoning = CategoryManagement().executor.execute(
+        category_reasoning = AiOrchestrator().execute(
             [categorisation_instructions],
             [categorisation_input]
         )

@@ -36,8 +36,7 @@ class WriteTestsWorkflow(BaseWorkflow):
         """
         model = find_enum_value(tags.get("model"))
 
-        executor = AiOrchestrator()
-        file_name = executor.execute(
+        file_name = AiOrchestrator().execute(
             ["Please provide the filename (including extension) of the code for which tests should be written. "
              "Please be concise."],
             [initial_message]

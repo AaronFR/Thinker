@@ -103,7 +103,7 @@ To refine the system's architecture and enhance its capabilities and efficiency,
   - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
 
 - **QOL**:
-  - categories should be listed according to date of their latest massage
+  - categories should be listed according to date of their latest message
   - messages and files show when they are selected, categories holding selected files are also visually identified
   - Can deselect a message or file from the main view area rather than their item
   - Q&A can be malformed at times

@@ -74,8 +74,7 @@ class EncyclopediaManagementInterface:
         :param user_messages: The user input messages containing the terms.
         :return: A string representation of the additional context found.
         """
-        executor = AiOrchestrator()
-        output = executor.execute_function(
+        output = AiOrchestrator().execute_function(
             [self.instructions],
             user_messages,
             SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
@@ -98,8 +97,7 @@ class EncyclopediaManagementInterface:
                 term_name = term['term'].lower().strip()
                 user_topics = nodeDB().list_user_topics()
 
-                executor = AiOrchestrator()
-                selected_topic_raw = executor.execute(
+                selected_topic_raw = AiOrchestrator().execute(
                     ["Given the list of topics I gave you, just return the most appropriate from the list"],
                     [term.get("term") + " : " + term.get("specifics"), str(user_topics)]
                 )
@@ -122,8 +120,7 @@ class EncyclopediaManagementInterface:
         :return: A shorter processed version of the encyclopedia file
         """
         entry_dict = self.encyclopedia.get(term_name)
-        executor = AiOrchestrator()
-        output = executor.execute(
+        output = AiOrchestrator().execute(
             [
                 "Summarize the following information while retaining essential details."
             ],

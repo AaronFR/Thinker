@@ -124,8 +124,7 @@ class WritePagesWorkflow(BaseWorkflow):
             f"I expect {page_count} prompts. No more no less."
         )
 
-        self.executor = AiOrchestrator()
-        response = self.executor.execute(
+        response = AiOrchestrator().execute(
             [prompt],
             [initial_message],
             model=model

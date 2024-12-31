@@ -145,7 +145,7 @@ class FileManagement(StorageBase):
             entries = os.listdir(staging_directory)
             file_paths = [os.path.join(user_id, entry) for entry in entries
                           if os.path.isfile(os.path.join(staging_directory, entry))]
-            logging.info(f"Found the following files in Thought space: {file_paths}")
+            logging.info(f"Found the following files in the users staging directory: {file_paths}")
 
             return file_paths
         except FileNotFoundError:
