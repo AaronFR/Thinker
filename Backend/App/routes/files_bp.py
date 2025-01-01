@@ -12,7 +12,6 @@ from Utilities.Contexts import get_user_context
 
 
 files_bp = Blueprint('files', __name__)
-FILES_PATH = os.path.join(os.path.dirname(__file__), '../../Data/FileData')
 
 
 @files_bp.route('/files/<category_name>', methods=['GET'])

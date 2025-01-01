@@ -18,7 +18,7 @@ class ErrorHandler:
             logger_name: str = None,
             format_scheme: str = '%(asctime)s [%(levelname)s] (%(filename)s:%(lineno)d) %(message)s'):
         """Sets up logging configuration."""
-        logs_directory = os.path.join(os.path.dirname(__file__), '..', 'Data', 'Logs')
+        logs_directory = os.path.join(os.path.dirname(__file__), '../../../UserData', 'Data', 'Logs')
         os.makedirs(logs_directory, exist_ok=True)
 
         log_file_location = os.path.join(logs_directory, log_file)

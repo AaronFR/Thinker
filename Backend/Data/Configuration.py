@@ -6,7 +6,6 @@ from typing import Mapping
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context
 
-USER_CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'UserConfigs')
 
 
 class Configuration:

@@ -34,12 +34,12 @@ class FileManagement(StorageBase):
     Its worth noting the file management system as a whole has a deliberately in-flexible system to prevent
     possible prompt injection and extraction of data from outside the designated data areas.
     ONLY information within the boundaries of the 'FileData' directory can be edited by the user.
+
+    ToDo: (Bug) tries to create a category folder even when set to s3?
     """
 
-    file_data_directory = os.path.join(os.path.dirname(__file__), '../FileData')
-    config_data_directory = os.path.join(os.path.dirname(__file__), '../UserConfigs')
-    # ToDo: Refactor required FileData should represent local storage / the s3 bucket, user_file data needs to be
-    #  created and files and UserConfigs moved inside
+    file_data_directory = os.path.join(os.path.dirname(__file__), '../../../UserData/FileData')
+    config_data_directory = os.path.join(os.path.dirname(__file__), '../../../UserData/UserConfigs')
 
     def __init__(self):
         ErrorHandler.setup_logging()
@@ -167,7 +167,7 @@ class FileManagement(StorageBase):
         """
 
         logging.info(f"Data being written to CSV: {dictionaries}")
-        file_path = os.path.join(os.path.dirname(__file__), 'DataStores', file_name)
+        file_path = os.path.join(os.path.dirname(__file__), '../../UserData/DataStores', file_name)
 
         file_exists = os.path.isfile(file_path) and os.path.getsize(file_path) > 0
         mode = 'a' if file_exists else 'w'
