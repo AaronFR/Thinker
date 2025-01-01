@@ -27,6 +27,7 @@ class AutoWorkflow(BaseWorkflow):
     ) -> str:
         """
         Execute all steps of the write pages workflow.
+        ToDo: add settings to not incorporate history from one prompt to another
 
         :param process_prompt: Function to process user questions.
         :param initial_message: The user's guidance for writing code.
@@ -52,7 +53,7 @@ class AutoWorkflow(BaseWorkflow):
                 self._save_file_step(
                     iteration=iteration,
                     process_prompt=process_prompt,
-                    message=initial_message,
+                    message=initial_message + f"\n\nSpecifically focus on {file_name}",
                     file_references=file_references,
                     selected_message_ids=selected_message_ids or [],
                     file_name=file_name,
