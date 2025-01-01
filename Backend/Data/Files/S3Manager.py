@@ -22,17 +22,15 @@ class S3Manager(StorageBase):
 
     def __init__(self, aws_access_key_id: str, aws_secret_access_key: str) -> None:
         """
-        Initialize the S3Manager with AWS credentials and region.
-        ToDo: consider adding region_name
+        Initialize the S3Manager with AWS credentials.
 
         :param aws_access_key_id: AWS access key ID.
         :param aws_secret_access_key: AWS secret access key.
-
         """
         self.s3_client = boto3.client(
             's3',
-            aws_access_key_id=os.getenv("THE-THINKER-S3-STANDARD-ACCESS-KEY"),
-            aws_secret_access_key=os.getenv("THE-THINKER-S3-STANDARD-SECRET-ACCESS-KEY")
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key
         )
 
     @return_for_error(False, debug_logging=True)
@@ -40,35 +38,40 @@ class S3Manager(StorageBase):
         """
         Save a file to an S3 bucket.
 
-        :param content: The content to be formatted and saved
-        :param file_path: S3 object name including folder prefix
-        :param overwrite: ToDo: NOT IMPLEMENTED - currently we don't append ever, only overwrite
+        :param content: The content to be formatted and saved.
+        :param file_path: S3 object name including folder prefix.
+        :param overwrite: If True, allows overwriting existing files.
         :return: True if file was uploaded, else False.
         """
-        if not overwrite & self.check_file_exists(file_path):
-            pass
-            content = self.read_file(file_path) + content
+        # Prevent overwriting without an explicit overwrite
+        if not overwrite and self.check_file_exists(file_path):
+            logging.warning(f"File {file_path} already exists. Not overwriting.")
+            return False
 
-        self.s3_client.put_object(
-            Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
-            Key=self.convert_to_s3_path(file_path),
-            Body=content
-        )
-        logging.info(f"File {file_path} uploaded.")
-        return True
+        try:
+            self.s3_client.put_object(
+                Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
+                Key=self.convert_to_s3_path(file_path),
+                Body=content
+            )
+            logging.info(f"File {file_path} uploaded successfully.")
+            return True
+        except ClientError as e:
+            logging.error(f"Failed to upload {file_path}: {e}")
+            return False
 
     def read_file(self, full_address: str) -> str:
         """
         Read a text file from an S3 bucket.
 
         :param full_address: S3 object name.
-        :return: The contents of the file
+        :return: The contents of the file or an error message.
         """
         try:
-            logging.info(f"Reading File {full_address}")
+            logging.info(f"Reading file {full_address}")
 
             if self.is_image_file(full_address):
-                logging.warning(f"Attempted to read an image file: {full_address}")
+                logging.warning(f"Cannot read image file: {full_address}")
                 return f"[CANNOT READ IMAGE FILE: {full_address}]"
 
             response = self.s3_client.get_object(
@@ -90,14 +93,16 @@ class S3Manager(StorageBase):
         yaml_content = yaml.safe_dump(data)
         full_path = os.path.join("UserConfigs", yaml_path)
 
-        self.s3_client.put_object(
-            Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
-            Key=self.convert_to_s3_path(full_path),
-            Body=yaml_content,
-            ContentType='application/x-yaml'
-        )
-
-        logging.info(f"YAML data saved to s3: {full_path}")
+        try:
+            self.s3_client.put_object(
+                Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
+                Key=self.convert_to_s3_path(full_path),
+                Body=yaml_content,
+                ContentType='application/x-yaml'
+            )
+            logging.info(f"YAML data saved to S3: {full_path}")
+        except ClientError as e:
+            logging.error(f"Failed to save YAML to S3: {e}")
 
     def load_yaml(self, yaml_path: str) -> Dict[str, object]:
         """
@@ -117,31 +122,35 @@ class S3Manager(StorageBase):
             yaml_content = response['Body'].read().decode(DEFAULT_ENCODING)
             existing_data = yaml.safe_load(yaml_content) or {}
 
-            logging.info(f"YAML data loaded from s3: {full_path}")
-        except self.s3_client.exceptions.NoSuchKey:
-            logging.info(f"No existing data file found at s3: {full_path}.")
-        except Exception as e:
+            logging.info(f"YAML data loaded from S3: {full_path}")
+        except (ClientError, yaml.YAMLError) as e:
             logging.error(f"Error reading YAML file from S3: {e}")
 
         return existing_data
 
-    def move_file(self, current_path: str, new_path: str):
+    def move_file(self, current_path: str, new_path: str) -> None:
+        """
+        Moves a file from one location to another in the S3 bucket.
+
+        :param current_path: The current S3 object key.
+        :param new_path: The new S3 object key.
+        """
         try:
             self.s3_client.copy_object(
                 Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
                 CopySource={'Bucket': os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
                             'Key': self.convert_to_s3_path(current_path)},
-                Key=self.convert_to_s3_path(new_path))
-
+                Key=self.convert_to_s3_path(new_path)
+            )
             self.s3_client.delete_object(
                 Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
-                Key=self.convert_to_s3_path(current_path))
+                Key=self.convert_to_s3_path(current_path)
+            )
+            logging.info(f"File {current_path} moved to {new_path}.")
+        except ClientError as e:
+            logging.error(f"FAILED TO MOVE {current_path} TO {new_path}: {e}")
 
-        except ClientError:
-            logging.exception(f"FAILED TO MOVE {current_path} TO {new_path}")
-            return f"FAILED TO MOVE {current_path} TO {new_path}"
-
-    def list_staged_files(self) -> list:
+    def list_staged_files(self) -> List[str]:
         """
         List files in a specific directory within an S3 bucket.
 
@@ -166,10 +175,24 @@ class S3Manager(StorageBase):
             return []
 
     def write_to_csv(self, file_name: str, dictionaries: List[Dict], fieldnames: List[str]) -> None:
+        """
+        Writes or appends a list of dictionaries to a CSV file. (NOT IMPLEMENTED)
+
+        :param file_name: The name of the CSV file to save to.
+        :param dictionaries: The list of dictionaries to write.
+        :param fieldnames: The order of the fields in the CSV.
+        """
         logging.error("NOT IMPLEMENTED")
         pass
 
     def write_to_yaml(self, data: Dict[str, object], yaml_path: str, overwrite: bool = False) -> None:
+        """
+        Writes data to a YAML file in S3. (NOT IMPLEMENTED)
+
+        :param data: The data to write to the YAML file.
+        :param yaml_path: The path where the YAML file will be saved.
+        :param overwrite: Determines if the YAML file should be replaced or appended to.
+        """
         logging.error("NOT IMPLEMENTED")
         pass
 
@@ -197,34 +220,37 @@ class S3Manager(StorageBase):
             return False
 
     def check_file_exists(self, file_key: str) -> bool:
-        """Check if a specific file exists in the S3 bucket.
+        """
+        Check if a specific file exists in the S3 bucket.
 
         :param file_key: The key of the file to check for.
         :return: True if the file exists, False otherwise.
         """
-
         try:
             self.s3_client.head_object(
                 Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
-                Key=self.convert_to_s3_path(file_key))
+                Key=self.convert_to_s3_path(file_key)
+            )
             return True
         except ClientError as e:
             if e.response['Error']['Code'] == '404':
                 return False
             else:
+                logging.error(f"Error checking if file exists: {e}")
                 raise
 
-    def add_new_user_file_folder(self, user_id):
+    def add_new_user_file_folder(self, user_id: str) -> None:
         """
-        It isn't necessary to create a 'folder' in S3, its just a part of the name
+        Add a new user file folder. (Not necessary in S3, as folders are virtual.)
+
+        :param user_id: The ID of the user for which to create a folder.
         """
         pass
 
     @staticmethod
-    def convert_to_s3_path(path):
+    def convert_to_s3_path(path: str) -> str:
         """
-        Converts a file system path to an Amazon S3-compatible path by replacing backslashes
-        with forward slashes.
+        Converts a file system path to an Amazon S3-compatible path.
         The existence of this method is terrible
 
         :param path: The original file system path as a string.
@@ -239,7 +265,6 @@ if __name__ == "__main__":
         os.getenv("THE-THINKER-S3-STANDARD-SECRET-ACCESS-KEY")
     )
 
-    # response = s3manager.read_file("testing.txt")
+    # Example usage
     response = s3manager.save_file("testing 789", "test/testing.txt", overwrite=True)
-    # response = s3manager.check_file_exists("testing.txt")
-    # print(response)
+    print(response)
