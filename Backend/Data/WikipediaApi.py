@@ -9,7 +9,7 @@ from typing import Dict, Optional, List
 from Data.Files.FileManagement import FileManagement
 from Utilities.Decorators import handle_errors
 
-data_path = os.path.join(os.path.dirname(__file__), 'DataStores')
+data_path = os.path.join(os.path.dirname(__file__), '../../UserData/DataStores')
 
 
 def _section_to_dict(section) -> Dict[str, object]:

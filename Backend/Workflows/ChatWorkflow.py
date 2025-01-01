@@ -17,7 +17,7 @@ class ChatWorkflow(BaseWorkflow):
     @return_for_error("An error occurred during the chat workflow.", debug_logging=True)
     def execute(
         self,
-        process_question: Callable,
+        process_prompt: Callable,
         initial_message: str,
         file_references: Optional[List[str]] = None,
         selected_message_ids: Optional[List[str]] = None,
@@ -26,7 +26,7 @@ class ChatWorkflow(BaseWorkflow):
         """
         Executes the chat workflow.
 
-        :param process_question: Function to process user questions.
+        :param process_prompt: Function to process user questions.
         :param initial_message: The user's initial prompt.
         :param file_references: References to relevant files.
         :param selected_message_ids: IDs of selected messages for context.
@@ -41,7 +41,7 @@ class ChatWorkflow(BaseWorkflow):
 
         response = self._chat_step(
             iteration=1,
-            process_question=process_question,
+            process_prompt=process_prompt,
             message=initial_message,
             file_references=file_references or [],
             selected_message_ids=selected_message_ids or [],

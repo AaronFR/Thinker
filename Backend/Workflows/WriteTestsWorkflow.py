@@ -18,7 +18,7 @@ class WriteTestsWorkflow(BaseWorkflow):
     @return_for_error("An error occurred during the write tests workflow.", debug_logging=True)
     def execute(
         self,
-        process_question: Callable,
+        process_prompt: Callable,
         initial_message: str,
         file_references: Optional[List[str]] = None,
         selected_message_ids: Optional[List[str]] = None,
@@ -27,7 +27,7 @@ class WriteTestsWorkflow(BaseWorkflow):
         """
         Executes the write tests workflow.
 
-        :param process_question: Function to process user questions.
+        :param process_prompt: Function to process user questions.
         :param initial_message: The user's guidance for writing tests.
         :param file_references: References to relevant files.
         :param selected_message_ids: Selected message IDs for context.
@@ -63,7 +63,7 @@ class WriteTestsWorkflow(BaseWorkflow):
             if iteration == 1:
                 response = self._save_file_step(
                     iteration=iteration,
-                    process_question=process_question,
+                    process_prompt=process_prompt,
                     message=message,
                     file_references=file_references or [],
                     file_name=file_name,
@@ -73,7 +73,7 @@ class WriteTestsWorkflow(BaseWorkflow):
             elif iteration == 2:
                 response = self._chat_step(
                     iteration=iteration,
-                    process_question=process_question,
+                    process_prompt=process_prompt,
                     message=message,
                     file_references=file_references or [],
                     selected_message_ids=selected_message_ids or [],

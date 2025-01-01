@@ -184,7 +184,6 @@ class BasePersona:
         """
         logging.info("Processing user messages: %s", user_messages)
 
-        executor = AiOrchestrator()
         config = Configuration.load_config()
 
         system_messages = [self.instructions, self.configuration]
@@ -206,7 +205,7 @@ class BasePersona:
         recent_history.extend(history_messages)
 
         try:
-            output = executor.execute(
+            output = AiOrchestrator().execute(
                 system_messages,
                 user_messages,
                 model=model,

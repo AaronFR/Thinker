@@ -1,4 +1,3 @@
-
 from abc import abstractmethod
 from typing import Callable, Any, List
 
@@ -18,11 +17,11 @@ class BaseWorkflow:
     """
 
     @abstractmethod
-    def execute(self, process_question: Callable, **kwargs) -> Any:
+    def execute(self, process_prompt: Callable, **kwargs) -> Any:
         """
         Executes the workflow with the given parameters.
 
-        :param process_question: Function to process user questions.
+        :param process_prompt: Function to process user questions.
         :param kwargs: Additional arguments specific to the workflow.
         :return: Result of the workflow execution.
         """
@@ -31,7 +30,7 @@ class BaseWorkflow:
     @staticmethod
     def _chat_step(
         iteration: int,
-        process_question: Callable,
+        process_prompt: Callable,
         message: str,
         file_references: List[str],
         selected_message_ids: List[str],
@@ -42,7 +41,7 @@ class BaseWorkflow:
         Handles individual chat steps.
 
         :param iteration: Current iteration number.
-        :param process_question: Function to process user questions.
+        :param process_prompt: Function to process user questions.
         :param message: The message to process.
         :param file_references: References to files.
         :param selected_message_ids: Selected message IDs for context.
@@ -51,7 +50,7 @@ class BaseWorkflow:
         :return: AI's response.
         """
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
-        response = process_question(
+        response = process_prompt(
             message,
             file_references,
             selected_message_ids,
@@ -65,7 +64,7 @@ class BaseWorkflow:
     @staticmethod
     def _save_file_step(
         iteration: int,
-        process_question: Callable,
+        process_prompt: Callable,
         message: str,
         file_references: List[str],
         selected_message_ids: List[str],
@@ -77,7 +76,7 @@ class BaseWorkflow:
         Handles the process of saving files.
 
         :param iteration: Current iteration number.
-        :param process_question: Function to process user questions.
+        :param process_prompt: Function to process user questions.
         :param message: The message to process.
         :param file_references: References to files.
         :param file_name: Name of the file to save.
@@ -85,7 +84,7 @@ class BaseWorkflow:
         :return: AI's response.
         """
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
-        response = process_question(
+        response = process_prompt(
             message,
             file_references,
             selected_message_ids,
@@ -94,7 +93,6 @@ class BaseWorkflow:
         response = response + """
         
         """  # Otherwise when the next section is appended on it won't be on a new line
-
 
         user_id = get_user_context()
         file_path = Path(user_id).joinpath(file_name)

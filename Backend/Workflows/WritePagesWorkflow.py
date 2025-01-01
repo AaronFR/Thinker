@@ -11,7 +11,7 @@ from Functionality.Writing import Writing
 from Utilities.Contexts import get_user_context
 from Utilities.Decorators import return_for_error
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
-from Workflows.Workflows import WRITE_PAGES_WORKFLOW, generate_write_pages_workflow
+from Workflows.Workflows import generate_write_pages_workflow
 
 
 class WritePagesWorkflow(BaseWorkflow):
@@ -22,7 +22,7 @@ class WritePagesWorkflow(BaseWorkflow):
     @return_for_error("An error occurred during the write workflow.", debug_logging=True)
     def execute(
         self,
-        process_question: Callable,
+        process_prompt: Callable,
         initial_message: str,
         file_references: Optional[List[str]] = None,
         selected_message_ids: Optional[List[str]] = None,
@@ -31,7 +31,7 @@ class WritePagesWorkflow(BaseWorkflow):
         """
         Execute all steps of the write pages workflow.
 
-        :param process_question: Function to process user questions.
+        :param process_prompt: Function to process user questions.
         :param initial_message: The user's guidance for writing code.
         :param file_references: References to relevant files.
         :param selected_message_ids: Selected message IDs for context.
@@ -66,7 +66,7 @@ class WritePagesWorkflow(BaseWorkflow):
             for page_instruction in pages:
                 self._save_file_step(
                     iteration=iteration,
-                    process_question=process_question,
+                    process_prompt=process_prompt,
                     message=page_instruction,
                     file_references=file_references or [],
                     selected_message_ids=selected_message_ids or [],
@@ -78,7 +78,7 @@ class WritePagesWorkflow(BaseWorkflow):
 
             summary = self._chat_step(
                 iteration=iteration,
-                process_question=process_question,
+                process_prompt=process_prompt,
                 message="Very quickly summarize all of what you just wrote and where you wrote it.",
                 file_references=file_references or [],
                 selected_message_ids=selected_message_ids or [],
@@ -104,7 +104,7 @@ class WritePagesWorkflow(BaseWorkflow):
         """
         Determine the list of files to be processed.
 
-        ToDo: Look at how llm execution logic is run, process_question doesn't allow for custom system messages but
+        ToDo: Look at how llm execution logic is run, process_prompt doesn't allow for custom system messages but
          AiOrchestrator calls aren't setup to process message or file reference ids
 
         :param initial_message: The user's guidance for writing code.

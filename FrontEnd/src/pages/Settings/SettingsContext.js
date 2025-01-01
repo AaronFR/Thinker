@@ -21,8 +21,8 @@ export const SettingsProvider = ({ children }) => {
     const [settings, setSettings] = useState({
         darkMode: false,
         language: 'en',
-        augmentedPromptsEnabled: true,
-        questionUserPromptsEnabled: true,
+        augmentedPromptsEnabled: false,
+        questionUserPromptsEnabled: false,
         userEncyclopediaEnabled: false,
         encyclopediaEnabled: false,
         multiFileProcessingEnabled: false,
