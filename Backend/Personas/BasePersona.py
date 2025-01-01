@@ -144,8 +144,6 @@ class BasePersona:
         :return: Generated response.
         """
         file_content = []
-        file_references += StorageMethodology.select().list_staged_files()
-        logging.info(f"Woooooooa buddi {file_references}")
 
         for file_reference in file_references:
             content = StorageMethodology.select().read_file(file_reference)

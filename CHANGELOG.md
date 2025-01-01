@@ -5,13 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased] - 'Quantity is a Quality of its own'
 
 ### Added
 
-- Update base text size in settings
+
+- Auto workflow: In coder, select 'auto' in the tags -> 1 prompt is applied to all file references individually
 - Writer Persona ✍ : When writing to a file, specify 'pages' to a number in the tags and the llm will respond that many
    times (capped at 10 for now)
+- Update base text size in settings
 
 ### Changed
 

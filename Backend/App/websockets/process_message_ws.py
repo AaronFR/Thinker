@@ -4,6 +4,7 @@ import shortuuid
 from flask_socketio import emit
 
 from Data.CategoryManagement import CategoryManagement
+from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Organising import Organising
 from Personas.Coder import Coder
 from Personas.Writer import Writer
@@ -51,7 +52,8 @@ def init_process_message_ws(socketio):
             files = parsed_data["files"]
             messages = parsed_data["messages"]
 
-            file_references = Organising.process_files(files)
+            file_references = Organising.process_files(files) + StorageMethodology.select().list_staged_files()
+
             category = CategoryManagement.determine_category(user_prompt, tags.get("category"))
             selected_persona = get_selected_persona(data)
 

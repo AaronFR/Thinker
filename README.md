@@ -83,9 +83,6 @@ To refine the system's architecture and enhance its capabilities and efficiency,
    even if it can only try a fixed number of times and worst case scenario explains to the user that its solution is invalid
    and this is the best it can do, this is a huge improvement in value.
 
-  - **Blueprint**: Certain workflows should follow outlined blueprints created on the spot, guiding the construction of
-   documents, ensuring internal consistency and coherence.
-
   - **Mathematician/Engineer/Physicist**: LLMs are bad at math the same way Humans are bad at math, neurons are just not well
    suited to counting and arithmetic operations compared to binary functions. However, unlike humans their *terrible* at **spatial reasoning**
    But why does that need to be a limitation? If we let it connect to tools that help it simulate the world while it ""thinks"" in words
