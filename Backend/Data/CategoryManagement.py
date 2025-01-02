@@ -5,7 +5,6 @@ from typing import Optional
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
-from Data.Files.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Decorators import handle_errors
@@ -105,7 +104,6 @@ class CategoryManagement:
         return None
 
     @staticmethod
-    @handle_errors
     def stage_files(category: Optional[str] = None) -> None:
         """
         Stages files into a specific category based on the user prompt.
