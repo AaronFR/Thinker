@@ -106,6 +106,17 @@ class StorageBase(ABC):
         """
         pass
 
+    def add_new_category_folder(self, category_id: str) -> None:
+        """
+        Create a new category folder.
+
+        This method is not abstract because the implementation can be
+        defined in subclasses based on specific storage requirements.
+
+        :param category_id: The ID of the new category folder.
+        """
+        pass
+
     @staticmethod
     def is_image_file(full_address: str) -> bool:
         """

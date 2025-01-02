@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import yaml
 
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
@@ -15,9 +15,9 @@ from Utilities.Decorators import handle_errors
 class EncyclopediaManagementInterface:
     """Manages encyclopedia data files and provides search and retrieval capabilities.
 
-        This class facilitates loading encyclopedia entries and redirects, searching for terms,
-        and summarizing information relevant to user queries.
-        """
+    This class facilitates loading encyclopedia entries and redirects, searching for terms,
+    and summarizing information relevant to user queries.
+    """
 
     ENCYCLOPEDIA_EXT = ".yaml"
     REDIRECTS_EXT = "Redirects.csv"
@@ -26,16 +26,14 @@ class EncyclopediaManagementInterface:
 
     _instance = None
 
-    def __new__(cls):
+    def __new__(cls) -> 'EncyclopediaManagementInterface':
         """Implements the singleton pattern to ensure only one instance exists."""
         if cls._instance is None:
             cls._instance = super(EncyclopediaManagementInterface, cls).__new__(cls)
         return cls._instance
 
     def __init__(self):
-        """
-        Initializes the EncyclopediaManagementInterface.
-        """
+        """Initializes the EncyclopediaManagementInterface."""
         if not hasattr(self, 'initialized'):  # Prevent reinitialization
             self.encyclopedia: Dict[str, str] = {}
             self.redirects: Dict[str, str] = {}
@@ -46,24 +44,32 @@ class EncyclopediaManagementInterface:
             self.data_path = os.path.join(os.path.dirname(__file__), '../../UserData/DataStores')
             self.initialized = True
 
+    @handle_errors()
     def load_encyclopedia_data(self) -> None:
         """Load encyclopedia and redirect data from the specified files."""
         self.encyclopedia = self._load_yaml_file(self.encyclopedia_path)
         self.redirects = self._load_redirects(self.redirect_encyclopedia_path)
-
-        logging.info("Encyclopedia and redirects loaded successfully")
+        logging.info("Encyclopedia and redirects loaded successfully.")
 
     @staticmethod
     @handle_errors(raise_errors=True)
     def _load_yaml_file(filepath: str) -> Dict[str, str]:
-        """Load a YAML file and return its content."""
+        """Load a YAML file and return its content as a dictionary.
+
+        :param filepath: Path to the YAML file to load.
+        :return: Dictionary containing the file contents.
+        """
         with open(filepath, 'r', encoding=DEFAULT_ENCODING) as file:
             return yaml.safe_load(file) or {}
 
     @staticmethod
     @handle_errors(raise_errors=True)
     def _load_redirects(filepath: str) -> Dict[str, str]:
-        """Load redirect terms from a CSV file and return them as a dictionary."""
+        """Load redirect terms from a CSV file and return them as a dictionary.
+
+        :param filepath: Path to the CSV file containing redirects.
+        :return: Dictionary mapping redirect terms to target terms.
+        """
         redirects_df = pd.read_csv(filepath, header=None, names=['redirect_term', 'target_term'])
         return redirects_df.set_index('redirect_term')['target_term'].to_dict()
 
@@ -71,7 +77,7 @@ class EncyclopediaManagementInterface:
     def search_encyclopedia(self, user_messages: List[str]) -> str:
         """Searches the encyclopedia for terms derived from user messages.
 
-        :param user_messages: The user input messages containing the terms.
+        :param user_messages: List of user input messages containing the terms.
         :return: A string representation of the additional context found.
         """
         output = AiOrchestrator().execute_function(
@@ -80,12 +86,12 @@ class EncyclopediaManagementInterface:
             SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
         )
         terms = output['terms']
-        logging.info(f"terms to search for in {self.ENCYCLOPEDIA_NAME}: {terms}")
+        logging.info(f"Terms to search for in {self.ENCYCLOPEDIA_NAME}: {terms}")
 
         return self.extract_terms_from_encyclopedia(terms)
 
-    def extract_terms_from_encyclopedia(self, terms: List[dict[str, str]]) -> str:
-        """Search for a set of terms in the database
+    def extract_terms_from_encyclopedia(self, terms: List[Dict[str, str]]) -> str:
+        """Search for a set of terms in the encyclopedia and return additional context.
 
         :param terms: The terms to check in the encyclopedia.
         :return: A string representation of additional context extracted.
@@ -113,11 +119,11 @@ class EncyclopediaManagementInterface:
         return str(additional_context)
 
     def selectively_process_entry(self, term_name: str, specifics: str) -> str:
-        """Must be run after data files have been loaded.
+        """Processes a specific encyclopedia entry to summarize information.
 
-        :param term_name: term to search for in encyclopedia data files
-        :param specifics: the reason you are searching for this term, what the llm hopes to find more info on
-        :return: A shorter processed version of the encyclopedia file
+        :param term_name: The term to search for in encyclopedia data.
+        :param specifics: The specifics about what to explore regarding the term.
+        :return: A summarized version of the encyclopedia file content.
         """
         entry_dict = self.encyclopedia.get(term_name)
         output = AiOrchestrator().execute(

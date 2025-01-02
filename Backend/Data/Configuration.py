@@ -1,17 +1,21 @@
 import logging
 import os
-
-from typing import Mapping
+from typing import Mapping, Dict, Any
 
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context
-
+from Utilities.Decorators import handle_errors
 
 
 class Configuration:
+    """
+    Configuration class to manage loading and updating configuration settings
+    from YAML and CSV files. This includes support for deep merging of
+    configurations and handling user-specific settings.
+    """
 
     @staticmethod
-    def deep_merge(dict1, dict2):
+    def deep_merge(dict1: Dict[str, Any], dict2: Dict[str, Any]) -> Dict[str, Any]:
         """
         Deeply merges dict2 into dict1. dict2 takes precedence over dict1.
 
@@ -27,13 +31,15 @@ class Configuration:
         return dict1
 
     @staticmethod
+    @handle_errors
     def load_config(yaml_file="Config.yaml"):
         """
-        Loads the configuration from the baseline YAML file then merging the users config on top
+        Loads the configuration from the baseline YAML file then merges the user's config on top,
         extracting the combined values.
 
         :param yaml_file: The path to the YAML file
-        :returns dict: A dictionary containing the extracted configuration values
+        :returns: A dictionary containing the extracted configuration values
+        :raises FileNotFoundError: If the specified YAML file does not exist.
         """
         config = StorageMethodology.select().load_yaml(yaml_file)
         user_config = StorageMethodology.select().load_yaml(f"{get_user_context()}.yaml")
@@ -44,14 +50,16 @@ class Configuration:
         return merged_config
 
     @staticmethod
-    def update_config_field(field_path, value):
+    @handle_errors(raise_errors=True)
+    def update_config_field(field_path: str, value: Any) -> None:
         """
-        Updates a particular field in the users YAML configuration file.
-        For first time changes, a new user config file will be created automatically
+        Updates a particular field in the user's YAML configuration file.
+        For first-time changes, a new user config file will be created automatically.
 
-        :param field_path: The dot-separated path to the field to update (e.g., 'interface.dark_mode')
-        :param value: The value to set for the specified field
-        :returns: None
+        :param field_path: The dot-separated path to the field to update (e.g., 'interface.dark_mode').
+        :param value: The value to set for the specified field.
+        :raises FileNotFoundError: If the user configuration file does not exist.
+        :raises Exception: If there are issues while saving the configuration.
         """
         file_storage = StorageMethodology.select()
         user_config_path = os.path.join(get_user_context() + ".yaml")

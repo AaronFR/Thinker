@@ -247,6 +247,14 @@ class S3Manager(StorageBase):
         """
         pass
 
+    def add_new_category_folder(self, category_id: str) -> None:
+        """
+        Add a new category file folder. (Not necessary in S3, as folders are virtual.)
+
+        :param category_id: The ID of the new category folder.
+        """
+        pass
+
     @staticmethod
     def convert_to_s3_path(path: str) -> str:
         """

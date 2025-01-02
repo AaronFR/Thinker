@@ -1,8 +1,6 @@
 import logging
 import os
 import re
-import shutil
-
 from typing import Optional
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
@@ -10,15 +8,17 @@ from Data.Configuration import Configuration
 from Data.Files.FileManagement import FileManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
-from Utilities.Contexts import get_user_context
+from Utilities.Decorators import handle_errors
 
 
 class CategoryManagement:
     """
-    Manages the automatic categorisation of uploaded files by the user and of files created by the system
+    Manages the automatic categorisation of uploaded files and files created by the system.
     """
 
     _instance = None
+    CATEGORIZATION_TEMPLATE = """<user prompt>{}</user prompt>
+    <response>{}</response>"""
 
     def __new__(cls):
         """Implements the singleton pattern to ensure only one instance exists."""
@@ -27,138 +27,131 @@ class CategoryManagement:
         return cls._instance
 
     @staticmethod
-    def categorise_prompt_input(user_prompt: str, llm_response: str = None, creating: bool = True):
+    def sanitise_category_name(category: str) -> str:
         """
-        ToDo: reject categories with a / in them, will confuse routing
+        Sanitize the category name to remove invalid characters like '/'.
 
-        :param user_prompt: the input prompt string
+
+        :param category: The category name to be sanitized.
+        :return: A sanitized category name.
+        """
+        return category.replace('/', '_')  # Replace '/' to avoid routing issues
+
+    @staticmethod
+    def categorise_prompt_input(user_prompt: str, llm_response: Optional[str] = None) -> str:
+        """
+        Categorizes the user input based on prompt and optional response using the AI orchestrator.
+
+        :param user_prompt: The user's input prompt string.
         :param llm_response: The optional llm response for additional context
-        :param creating: flag if a node or message is being prompted, if the category is just a suggestion new
-         categories should not be created in the database
-        :return: The name of the selected category
+        :return: Name of the selected category.
         """
         categories = nodeDB().list_categories()
         config = Configuration.load_config()
 
-        # This isn't the full message as we 'abstract' away some implementation details
         user_categorisation_instructions = config.get('systemMessages', {}).get(
             "categorisationMessage",
-            "Given the following prompt-response pair, think through step by step, explaining your reasoning"
+            "Given the following prompt-response pair, think through step by step and explain your reasoning."
         )
-
-        if llm_response:
-            categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n" + \
-                                   "<response>" + llm_response + "</response>"
-            categorisation_instructions = f"LIGHTLY suggested existing categories, you DONT need to follow: {str(categories)}" + \
-                user_categorisation_instructions + \
-                "and categorize the data with the most suitable single-word answer." + \
-                "Write it as <result=\"(your_selection)\""
-        else:
-            categorisation_input = "<user prompt>" + user_prompt + "</user prompt>\n"
-            categorisation_instructions = f"LIGHTLY suggested existing categories, you DONT need to follow: {str(categories)}" + \
-                user_categorisation_instructions + \
-                "and categorize the data with the most suitable single-word answer." + \
-                "Write it as <result=\"(your_selection)\""
-
-        category_reasoning = AiOrchestrator().execute(
-            [categorisation_instructions],
-            [categorisation_input]
+        instruction_template = (
+            f"LIGHTLY suggested existing categories, you DONT need to follow: {str(categories)} "
+            f"{user_categorisation_instructions} "
+            "and categorize the data with the most suitable single-word answer."
+            "Write it as <result=\"(your_selection)\""
         )
+        categorisation_instructions = instruction_template.format(categories)
+
+        categorisation_input = CategoryManagement.CATEGORIZATION_TEMPLATE.format(user_prompt, llm_response or "")
+
+        category_reasoning = AiOrchestrator().execute([categorisation_instructions], [categorisation_input])
         logging.info(f"Category Reasoning: {category_reasoning}")
-        category = CategoryManagement.extract_example_text(category_reasoning)
+
+        category = CategoryManagement.extract_result(category_reasoning)
+        if not category:
+            logging.warning("Failure to categorize! Invalid category provided.")
+            return None
 
         return CategoryManagement.possibly_create_category(category)
 
     @staticmethod
-    def possibly_create_category(category):
+    def possibly_create_category(category: str) -> str:
         """
-        If it doesn't already exist in the node database
+        Creates a category in the database if it does not already exist.
 
-        :param category: The category to possibly be added to the node database
-        :return: Category
+        :param category: The category to potentially add to the node database.
+        :return: The existing or newly created category.
         """
+        sanitized_category = CategoryManagement.sanitise_category_name(category)
         categories = nodeDB().list_categories()
-        if (category not in categories):
-            nodeDB().create_category(category)
 
-        return category
+        if sanitized_category not in categories:
+            nodeDB().create_category(sanitized_category)
+
+        return sanitized_category
 
     @staticmethod
-    def extract_example_text(input_string):
+    def extract_result(input_string: str) -> Optional[str]:
         """
         Extracts the text contained within the result element.
 
         :param input_string: The string containing the result element.
-        :type input_string: str
         :return: The text inside the result element or None if not found.
-        :rtype: str or None
         """
         match = re.search(r'<result="([^"]+)">', input_string)
         if match:
             return match.group(1)
 
-        logging.warning("Failure to categorise!")
+        logging.warning("Failed to categorize input string.")
         return None
 
     @staticmethod
-    def stage_files(category: str = None):
+    @handle_errors
+    def stage_files(category: Optional[str] = None) -> None:
         """
-        Stages files into a specific category based on user prompt.
+        Stages files into a specific category based on the user prompt.
 
         This method retrieves files from the staging area, summarises them, and categorises them
         according to their content with the help of an AI orchestrator.
 
-        :param category: If defined the system will categorise the staged files with the given category, otherwise a category will be generated
+        :param category: The category for staged files. If None, a category will be generated.
         """
         files = StorageMethodology.select().list_staged_files()
         logging.info(f"Staged files: {files}")
 
-        category_id = CategoryManagement._return_id_for_category(category)
+        category_id = CategoryManagement._get_or_create_category_id(category)
         logging.info(f"Category selected: [{category_id}] - {category}")
 
         if not files:
             return
 
-        try:
-            for file in files:
-                staged_file_path = os.path.join(file)
-                new_file_path = os.path.join(str(category_id), os.path.basename(file))
+        for file in files:
+            staged_file_path = os.path.join(file)
+            new_file_path = os.path.join(str(category_id), os.path.basename(file))
 
-                StorageMethodology.select().move_file(staged_file_path, new_file_path)
-        except Exception:
-            logging.exception(f"ERROR: Failed to move all files: {files} to folder: {category_id} .")
+            StorageMethodology.select().move_file(staged_file_path, new_file_path)
+        logging.info(f"All files moved to category: {category_id}.")
 
     @staticmethod
-    def _return_id_for_category(category_name: str) -> Optional[str]:
-        """Retrieves the ID for the specified category, creating a new category if necessary.
+    def _get_or_create_category_id(category_name: str) -> Optional[str]:
+        """Retrieves or creates a category ID for the specified category name.
 
-        :param category_name: The name of the category associated with an existing category ID.
-        :return: The category ID if found, otherwise None.
+        :param category_name: The name of the category.
+        :return: The category ID if found; otherwise None.
         """
-        category_id = nodeDB().get_category_id(category_name)
-        CategoryManagement._add_new_category(category_id)
+        sanitized_category_name = CategoryManagement.sanitise_category_name(category_name)
+        category_id = nodeDB().get_category_id(sanitized_category_name)
 
-        logging.info(f"Id found for category [{category_id}] - {category_name}")
+        StorageMethodology.select().add_new_category_folder(category_id)
 
         return category_id
 
     @staticmethod
-    def _add_new_category(category_id: str) -> None:
-        """
-        Creates the folder to store files against a given category
-
-        :param category_id: The new folder category id to create
-        """
-        new_directory = os.path.join(FileManagement.file_data_directory, category_id)
-        os.makedirs(new_directory, exist_ok=True)  # Create new folder for the given id
-
-    @staticmethod
-    def determine_category(user_prompt, tag_category=None):
+    def determine_category(user_prompt: str, tag_category: Optional[str] = None) -> str:
         """
         Determine the category for the user prompt.
 
         :param user_prompt: The user's input prompt.
-        :param tag_category: The optional tag_category from the front end
+        :param tag_category: Optional tag category from the front end.
         :return: The determined category.
         """
         if not tag_category:
@@ -170,4 +163,4 @@ class CategoryManagement:
 
 
 if __name__ == '__main__':
-    CategoryManagement.stage_files("Put this file in Notes please")
+    CategoryManagement().stage_files("Put this file in Notes please")

@@ -242,7 +242,19 @@ class FileManagement(StorageBase):
         :param user_id: The new folder id to create.
         """
         new_directory = os.path.join(FileManagement.file_data_directory, str(user_id))
-        os.makedirs(new_directory, exist_ok=True)
+        os.makedirs(new_directory, exist_ok=True)  # Create new folder for the given id
+
+    @staticmethod
+    def add_new_category_folder(category_id: str) -> None:
+        """
+        Creates a category folder locally for a new category.
+        ToDo: This will need to be changed when s3 is adapted to resemble local storage
+         that is UserData/FileData/UserId?/Categories
+
+        :param category_id: The new folder id to create.
+        """
+        new_directory = os.path.join(FileManagement.file_data_directory, category_id)
+        os.makedirs(new_directory, exist_ok=True)  # Create new folder for the given id
 
 
 if __name__ == '__main__':

@@ -37,3 +37,12 @@ class StorageMethodology:
         else:
             raise ValueError(f"Invalid storage type specified: {storage_type}")
 
+    @staticmethod
+    def extract_file_name(file_reference: str) -> str:
+        """Extracts the file name from a given file path or S3 reference.
+
+        :param file_reference: The file path or S3 reference as a string.
+        :return: The extracted file name.
+        """
+        file_name = file_reference.split("/")[-1] if "/" in file_reference else file_reference.split("\\")[-1]
+        return file_name

@@ -144,14 +144,12 @@ class BasePersona:
         :return: Generated response.
         """
         file_content = []
-
         for file_reference in file_references:
             content = StorageMethodology.select().read_file(file_reference)
             logging.info(f"Extracting file content [{file_reference}]: {content}")
             file_content.append(content)
 
         messages = []
-
         if selected_message_ids:
             for message_id in selected_message_ids:
                 message = nodeDB().get_message_by_id(message_id)

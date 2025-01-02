@@ -4,15 +4,14 @@ import os
 import shortuuid
 
 from datetime import datetime
-from typing import List, Dict
+from typing import List, Dict, Optional, Any
 
 from Data import CypherQueries
 from Data.Neo4jDriver import Neo4jDriver
 from Data.Files.StorageMethodology import StorageMethodology
 from Personas.PersonaSpecification import PersonaConstants
-from Utilities.Contexts import get_user_context
-
-from Utilities.Contexts import get_message_context
+from Utilities.Contexts import get_user_context, get_message_context
+from Utilities.Decorators import handle_errors
 
 
 class NodeDatabaseManagement:
@@ -30,6 +29,7 @@ class NodeDatabaseManagement:
     _lock = threading.Lock()
 
     def __new__(cls, *args, **kwargs):
+        """Ensures a single instance of NodeDatabaseManagement."""
         if not cls._instance:
             with cls._lock:  # Ensure thread-safety during instance creation
                 if not cls._instance:  # Double-check to avoid race conditions
@@ -37,17 +37,27 @@ class NodeDatabaseManagement:
         return cls._instance
 
     def __init__(self):
-        if not hasattr(self, "neo4jDriver"):  # Prevent reinitialization
+        """Initialise the Neo4j driver instance."""
+        if not hasattr(self, 'neo4jDriver'):
             self.neo4jDriver = Neo4jDriver()
 
     # User
 
-    def create_user(self, user_id, email, password_hash):
+    @handle_errors(debug_logging=True)
+    def create_user(self, user_id: str, email: str, password_hash: str) -> bool:
+        """Creates a new user in the database.
+
+        :param user_id: Unique identifier for the user.
+        :param email: User's email address.
+        :param password_hash: Hashed password of the user.
+        :return: True if the user is created successfully, False otherwise.
+        """
         parameters = {
             "user_id": user_id,
             "email": email,
             "password_hash": password_hash
         }
+
         returned_user_id = self.neo4jDriver.execute_write(
             CypherQueries.CREATE_USER,
             parameters,
@@ -56,32 +66,35 @@ class NodeDatabaseManagement:
 
         if returned_user_id:
             StorageMethodology.select().add_new_user_file_folder(returned_user_id)
+            logging.info(f"User created successfully: {user_id}")
             return True
+
         return False
 
-    def user_exists(self, email):
+    @handle_errors()
+    def user_exists(self, email: str) -> bool:
+        """Check if a user with the given email exists.
+
+        :param email: The email to check.
+        :return: True if the user exists, False otherwise.
         """
-        Check if a user node with the given email already exists.
-        """
-        parameters = {
-            "email": email
-        }
+        parameters = {"email": email}
+
         result = self.neo4jDriver.execute_read(
             CypherQueries.FIND_USER_BY_EMAIL,
             parameters
         )
-        return bool(result)  # Will return False if no user is found
+        return bool(result)
 
-    def find_user_by_email(self, email):
-        """
-        Return the user id for a given (unique) email address
+    @handle_errors()
+    def find_user_by_email(self, email: str) -> Optional[str]:
+        """Return the user id for a given email address.
 
-        :param email: The email to search for in the system
-        :return: The file friendly uuid associated with the email address
+        :param email: Email to search for.
+        :return: The user_id if found, None otherwise.
         """
-        parameters = {
-            "email": email
-        }
+        parameters = {"email": email}
+
         records = self.neo4jDriver.execute_read(
             CypherQueries.FIND_USER_BY_EMAIL,
             parameters
@@ -89,69 +102,74 @@ class NodeDatabaseManagement:
 
         if len(records) > 1:
             logging.error(f"Database Catastrophe: Shared email address [{email}]!")
+            raise ValueError(f"Multiple users found for email: {email}")
 
-        return records[0]["user_id"]
+        if records:
+            return records[0]["user_id"]
 
-    def get_user_password_hash(self, user_id):
+        return None
+
+    @handle_errors()
+    def get_user_password_hash(self, user_id: str) -> Optional[str]:
+        """Return the hashed password for a given user ID.
+
+        :param user_id: The unique identifier for the user.
+        :return: The hashed password if found, None otherwise.
         """
-        Returns the hashed password for a given user id
+        parameters = {"user_id": user_id}
 
-        :param user_id: The uuid associated with the user
-        :return: Their hashed password
-        """
-        parameters = {
-            "user_id": user_id
-        }
         records = self.neo4jDriver.execute_read(
             CypherQueries.GET_USER_PASSWORD_HASH,
             parameters
         )
 
         if len(records) > 1:
-            logging.error(f"Database Catastrophe: These UUID's aren't very unique! [{user_id}]!")
-            # for the record I'm saying this would be my fault not a uuid generators.
+            logging.error(f"Database error: Multiple password hashes found for user [{user_id}]!")
 
-        return records[0]["password_hash"]
+        return records[0]["password_hash"] if records else None
 
     # Messages
 
-    def get_message_by_id(self, message_id) -> Dict[str, str]:
-        """
-        Retrieves a message by its uuid
+    @handle_errors()
+    def get_message_by_id(self, message_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieve a message by its id.
 
-        :param message_id: The uuid of the message
-        :return: The details of the message node
+        :param message_id: ID of the message.
+        :return: A dictionary with message details if found, None otherwise.
         """
         parameters = {
             "user_id": get_user_context(),
             "message_id": message_id,
         }
+
         records = self.neo4jDriver.execute_read(
             CypherQueries.GET_MESSAGE,
             parameters
         )
 
-        record = records[0]
-        message = {
-            "id": record["id"],
-            "prompt": record["prompt"],
-            "response": record["response"],
-            "time": record["time"]
-        }
+        if records:
+            record = records[0]
+            return {
+                "id": record["id"],
+                "prompt": record["prompt"],
+                "response": record["response"],
+                "time": record["time"]
+            }
 
-        return message
+        return None
 
+    @handle_errors()
     def create_user_prompt_node(self, category: str, user_prompt: str, llm_response: str) -> str:
         """
         Saves a prompt - response pair as a USER_PROMPT in the neo4j database
         Categorising the prompt and staging any attached files under that category
 
-        :param user_prompt: The given user prompt
-        :param llm_response: The final response from the system
-        :return: The category associated with the new user prompt node
+        :param user_prompt: The user prompt content.
+        :param llm_response: The response generated by the language model.
+        :param category: Category of the user prompt.
+        :return: The category associated with the new user prompt node.
         """
         time = int(datetime.now().timestamp())
-
         parameters = {
             "user_id": get_user_context(),
             "message_id": get_message_context(),
@@ -160,6 +178,7 @@ class NodeDatabaseManagement:
             "time": time,
             "category": category
         }
+
         user_prompt_id = self.neo4jDriver.execute_write(
             CypherQueries.CREATE_USER_PROMPT_NODES,
             parameters,
@@ -168,14 +187,15 @@ class NodeDatabaseManagement:
 
         self.create_file_nodes_for_user_prompt(user_prompt_id, category)
 
+        logging.info(f"User prompt node created with ID: {user_prompt_id}")
         return category
 
-    def get_messages_by_category(self, category_name: str) -> List[Dict]:
-        """
-        Retrieve all messages linked to a particular category, newest first.
+    @handle_errors()
+    def get_messages_by_category(self, category_name: str) -> List[Dict[str, Any]]:
+        """Retrieve messages linked to a specific category.
 
-        :param category_name: Name of the category node to investigate
-        :return: all messages related to that category node
+        :param category_name: The category to retrieve messages for.
+        :return: A list of messages related to that category.
         """
         parameters = {
             "user_id": get_user_context(),
@@ -183,19 +203,19 @@ class NodeDatabaseManagement:
         }
 
         records = self.neo4jDriver.execute_read(CypherQueries.GET_MESSAGES, parameters)
-        messages_list = [
+        return [
             {"id": record["id"],
              "prompt": record["prompt"],
              "response": record["response"],
-             "time": record["time"]} for record in records]
-        return messages_list
+             "time": record["time"]} for record in records
+        ]
 
+    @handle_errors()
     def delete_message_by_id(self, message_id: str) -> None:
-        """
-        Deletes a specific message (isolated USER_PROMPT node) by its id.
+        """Deletes a message by its ID.
         If the CATEGORY the message is associated with has no more messages, it deletes the CATEGORY node as well.
 
-        :param message_id: UUID of the message to be deleted
+        :param message_id: ID of the message to delete.
         """
         parameters = {
             "user_id": get_user_context(),
@@ -207,7 +227,12 @@ class NodeDatabaseManagement:
 
     # Categories
 
-    def create_category(self, category_name: str):
+    @handle_errors()
+    def create_category(self, category_name: str) -> None:
+        """Creates a new category in the database.
+
+        :param category_name: The name of the new category.
+        """
         category_id = str(shortuuid.uuid())
         logging.info(f"Creating new category [{category_id}]: {category_name}")
 
@@ -216,156 +241,151 @@ class NodeDatabaseManagement:
             "category_name": category_name.lower(),
             "category_id": category_id
         }
+
         self.neo4jDriver.execute_write(
             CypherQueries.CREATE_CATEGORY,
             parameters
         )
 
-    def get_category_id(self, category_name: str) -> str:
-        """
-        Retrieve all files linked to a particular category, newest first.
+    @handle_errors()
+    def get_category_id(self, category_name: str) -> Optional[str]:
+        """Retrieve the ID of a category by its name.
 
-        :param category_name: Name of the category node
-        :return: the uuid of that category node
+        :param category_name: Name of the category.
+        :return: The ID of the category if found, None otherwise.
         """
         parameters = {"category_name": category_name}
+
         records = self.neo4jDriver.execute_read(CypherQueries.GET_CATEGORY_ID, parameters)
         category_id = records[0]["category_id"]
 
-        logging.info(f"Category id for {category_name}: {category_id}")
+        logging.info(f"Category ID for {category_name}: {category_id}")
         return category_id
 
+    @handle_errors()
     def list_categories(self) -> List[str]:
-        """
-        List all unique categories associated with the user
+        """Lists all unique categories associated with the user.
 
         ToDo: Might be better to order by number of messages associated to category or latest datetime for the messages
          of each category
-        """
-        parameters = {
-            "user_id": get_user_context()
-        }
-        result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES, parameters)
-        categories = [record["category_name"] for record in result]
-        return categories
 
-    def list_categories_with_files(self) -> List[str]:
+        :return: A list of category names.
         """
-        List all unique categories associated with the user which have files attached
-        """
-        parameters = {
-            "user_id": get_user_context()
-        }
-        result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES_WITH_FILES, parameters)
-        categories = [record["category_name"] for record in result]
-        return categories
+        parameters = {"user_id": get_user_context()}
+
+        result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES, parameters)
+        return [record["category_name"] for record in result]
 
     # Files
 
     def create_file_nodes_for_user_prompt(self, user_prompt_id: str, category: str) -> None:
-        file_names = StorageMethodology.select().list_staged_files()
+        """Creates file nodes associated with the user prompt.
 
+        :param user_prompt_id: The ID of the user prompt.
+        :param category: The category associated with the user prompt.
+        """
+        file_names = StorageMethodology.select().list_staged_files()
         for file_name in file_names:
             self.create_file_node(user_prompt_id, category, file_name)
 
+    @handle_errors()
     def create_file_node(self, user_prompt_id: str, category: str, file_path: str) -> None:
+        """Creates a file node in the database representing the file content.
+
+        :param user_prompt_id: ID of the associated user prompt.
+        :param category: Category of the file.
+        :param file_path: Path to the file.
         """
-        Saves a file node representing the files content, its category and its version number
+        time = int(datetime.now().timestamp())
+        file_name = os.path.basename(file_path)
 
-        ToDo: the usage of file_name/file_path/full_path is very convoluted and needs to be made systematic
+        content = StorageMethodology.select().read_file(file_path)
+        from AiOrchestration.AiOrchestrator import AiOrchestrator
 
-        :param user_prompt_id: create the file node attached to the following message
-        :param category: The name of the category the file belongs to
-        :param file_path: the name of the file, including extension
-        """
-        try:
-            time = int(datetime.now().timestamp())
-            # category_id = self.get_category_id(category)
-            file_name = os.path.basename(file_path)
+        summary = AiOrchestrator().execute(
+            [PersonaConstants.SUMMARISER_SYSTEM_INSTRUCTIONS],
+            [content]
+        )
 
-            content = StorageMethodology.select().read_file(file_path)
-            from AiOrchestration.AiOrchestrator import AiOrchestrator
-            #ToDo: Summarises previous content if it exists when writing files
-            summary = AiOrchestrator().execute(
-                [PersonaConstants.SUMMARISER_SYSTEM_INSTRUCTIONS],
-                [content]
-            )
+        parameters = {
+            "user_id": get_user_context(),
+            "category": category,
+            "user_prompt_id": user_prompt_id,
+            "name": file_name,
+            "time": time,
+            "summary": summary,
+            "structure": "PROTOTYPING"
+        }
 
-            parameters = {
-                "user_id": get_user_context(),
-                "category": category,
-                "user_prompt_id": user_prompt_id,
-                "name": file_name,
-                "time": time,
-                "summary": summary,
-                "structure": "PROTOTYPING"
-            }
+        logging.info(f"Creating file node: {category}/{file_name} against prompt [{user_prompt_id}]\nSummary: {summary}")
+        self.neo4jDriver.execute_write(CypherQueries.CREATE_FILE_NODE, parameters)
 
-            logging.info(f"Creating file node: {category}/{file_name} against prompt [{user_prompt_id}]\nsummary: {summary}")
-            self.neo4jDriver.execute_write(CypherQueries.CREATE_FILE_NODE, parameters)
-        except Exception:
-            logging.exception("Failed to save file node")
-
+    @handle_errors()
     def get_file_by_id(self, file_id: int):
         """
         Retrieve a file by its id, including the category its attached to
         ToDo: like most of these database calls we're going to have to ensure only the users files are
-         accessed
+         accessed.
 
-        :param file_id: Neo4J id of the file
-        :return: The singular file related to that id
+        :param file_id: ID of the file.
+        :return: The file record if found, None otherwise.
         """
         parameters = {"file_id": file_id}
+
         records = self.neo4jDriver.execute_read(CypherQueries.GET_FILE_BY_ID, parameters)
-        logging.info(f"File retrieved for file id [{file_id}]: {records}")
 
-        if records:
-            return records[0]
-        return None
+        return records[0]
 
-    def get_files_by_category(self, category_name: str) -> List[Dict]:
+    @handle_errors()
+    def get_files_by_category(self, category_name: str) -> List[Dict[str, Any]]:
+        """Retrieve all files associated with a specified category.
+
+        :param category_name: Name of the category.
+        :return: A list of files related to that category.
         """
-        Retrieve all files linked to a particular category, newest first.
-
-        :param category_name: Name of the category node to investigate
-        :return: all messages related to that category node
-        """
-        logging.info(f"files: {category_name}")
         parameters = {
             "user_id": get_user_context(),
             "category_name": category_name
         }
 
         records = self.neo4jDriver.execute_read(CypherQueries.GET_FILES_FOR_CATEGORY, parameters)
-        files_list = [
-            {"id": record["id"],
-             "category_id": record["category_id"],
-             "name": record["name"],
-             "summary": record["summary"],
-             "structure": record["structure"],
-             "time": record["time"]} for record in records]
-        logging.info(f"Files retrieved: {files_list}")
-        return files_list
+        return [
+            {
+                "id": record["id"],
+                "category_id": record["category_id"],
+                "name": record["name"],
+                "summary": record["summary"],
+                "structure": record["structure"],
+                "time": record["time"]
+            } for record in records
+        ]
 
+    @handle_errors()
     def delete_file_by_id(self, file_id: int) -> None:
         """
-        Deletes a specific message (isolated USER_PROMPT node) by its id.
+        Deletes a specific message (isolated USER_PROMPT node) by its Neo4j internal id.
         If the CATEGORY the message is associated with has no more messages, it deletes the CATEGORY node as well.
 
-        :param file_id: ID of the file to be deleted (Neo4j internal id or custom id)
+        ToDo: Eventually needs to move to deleting by assigned id before accessing neo4j internal id's is phased out
+
+        :param file_id: ID of the file to be deleted.
         """
-        file_id = int(file_id)
         parameters = {
             "user_id": get_user_context(),
-            "file_id": file_id,
+            "file_id": int(file_id),
         }
 
         self.neo4jDriver.execute_delete(CypherQueries.DELETE_FILE_BY_ID, parameters)
+        logging.info(f"File with ID {file_id} deleted")
 
     # User Topics
 
-    def create_user_topic_nodes(self, terms):
-        logging.info(f"Noted the following user topics : {terms}")
+    def create_user_topic_nodes(self, terms: List[Dict[str, str]]) -> None:
+        """Creates user topic nodes in the database.
+
+        :param terms: List of terms to create user topics for.
+        """
+        logging.info(f"Noted the following user topics: {terms}")
 
         for term in terms:
             parameters = {
@@ -373,17 +393,29 @@ class NodeDatabaseManagement:
                 "node_name": term.get('node').lower(),
                 "content": term.get('content')
             }
-            self.neo4jDriver.execute_write(
-                CypherQueries.format_create_user_topic_query(term.get('parameter')),
-                parameters
-            )
+            try:
+                self.neo4jDriver.execute_write(
+                    CypherQueries.format_create_user_topic_query(term.get('parameter')),
+                    parameters
+                )
+            except Exception as e:
+                logging.error(f"Error creating user topic node: {term}, error: {e}")
 
-    def search_for_user_topic_content(self, term, synonyms=None):
+    @handle_errors()
+    def search_for_user_topic_content(self, term: str, synonyms: Optional[List[str]] = None) -> Optional[Dict[str, Any]]:
+        """Searches for user topic content in the database.
+
+        :param term: The term to search for.
+        :param synonyms: Optional list of synonyms to consider for the search.
+        :return: The content associated with the term if found, None otherwise.
+        """
         logging.info(f"Attempting search for the following term: {term}")
+
         parameters = {
             "user_id": get_user_context(),
             "node_name": term
         }
+
         records = self.neo4jDriver.execute_read(
             CypherQueries.SEARCH_FOR_USER_TOPIC,
             parameters
@@ -392,21 +424,17 @@ class NodeDatabaseManagement:
             record = records[0]
             if record:
                 node_content = record["all_properties"]
-
-                logging.info(f"Extracted content for {term} : {node_content}")
+                logging.info(f"Extracted content for {term}: {node_content}")
                 return node_content
 
-        return None
+    @handle_errors()
+    def list_user_topics(self) -> Optional[List[str]]:
+        """Lists all user topics.
 
-    def list_user_topics(self):
+        :return: A list of user topic names if found, None otherwise.
         """
-        Returns the usernames of the USER TOPICs arranged newest first
+        parameters = {"user_id": get_user_context()}
 
-        :return:
-        """
-        parameters = {
-            "user_id": get_user_context()
-        }
         records = self.neo4jDriver.execute_read(
             CypherQueries.SEARCH_FOR_ALL_USER_TOPICS,
             parameters
@@ -415,60 +443,66 @@ class NodeDatabaseManagement:
             names = [record['name'] for record in records]
             return names
 
-        return None
-
     # Pricing
 
-    def get_user_balance(self):
-        """
-        Returns the hashed password for a given user id
+    @handle_errors()
+    def get_user_balance(self) -> Optional[float]:
+        """Returns the current user balance.
 
-        :return: Their hashed password
+        :return: The user balance if found, None otherwise.
         """
-        parameters = {
-            "user_id": get_user_context()
-        }
+        parameters = {"user_id": get_user_context()}
+
         records = self.neo4jDriver.execute_read(
             CypherQueries.GET_USER_BALANCE,
             parameters
         )
-
         if len(records) > 1:
-            logging.error(f"Database Catastrophe: Multiple users for a user id! [{get_user_context()}]!")
-
+            logging.error(f"Database Catastrophe: Multiple records found for user ID: {get_user_context()}!")
         return records[0]["balance"]
 
-    def deduct_from_user_balance(self, sum: float):
-        """
+    @handle_errors()
+    def deduct_from_user_balance(self, amount: float) -> None:
+        """Deducts a specific amount from the user's balance.
+
         Making it *very* obvious
 
-        :param sum: positive amount to deduct from the balance
+        :param amount: The amount to deduct (should be a positive value).
         """
-        self.update_user_balance(-sum)
+        if amount <= 0:
+            logging.error("Deduction amount must be positive.")
+            return
 
-    def update_user_balance(self, sum: float):
-        """
-        Returns the hashed password for a given user id
+        self.update_user_balance(-amount)
 
-        :param sum: positive for an amount to add to the users balance. DON'T GET THE F###ING SIGN WRONG
-        :return: Their hashed password
+    @handle_errors()
+    def update_user_balance(self, amount: float) -> None:
+        """Updates the user's balance by the specified amount.
+
+        :param amount: positive for an amount to add to the users balance. DON'T GET THE F###ING SIGN WRONG
         """
         parameters = {
             "user_id": get_user_context(),
-            "sum": sum
+            "amount": amount
         }
+
         self.neo4jDriver.execute_write(
             CypherQueries.UPDATE_USER_BALANCE,
             parameters
         )
+        logging.info(f"User balance updated by: {amount}")
 
-    def create_receipt(self, input_costs, output_costs, mode):
-        """
-        Creates a receipt representing a transaction cost to the user
+    @handle_errors()
+    def create_receipt(self, input_costs: float, output_costs: float, mode: str) -> None:
+        """Creates a transaction receipt for the user.
 
-        :return: Their hashed password
+        :param input_costs: The input costs incurred.
+        :param output_costs: The output costs incurred.
+        :param mode: how the cost was incurred.
         """
-        logging.info(f"Logging receipt: {input_costs}, {output_costs}, {mode}, {get_user_context()}, {get_message_context()}")
+        logging.info(f"Logging receipt: {input_costs}, {output_costs}, {mode}, user ID: {get_user_context()}, "
+                     f"message ID: {get_message_context()}")
+
         parameters = {
             "user_id": get_user_context(),
             "message_id": get_message_context(),
@@ -476,7 +510,9 @@ class NodeDatabaseManagement:
             "output_costs": output_costs,
             "mode": mode
         }
-        results = self.neo4jDriver.execute_write(
+
+        self.neo4jDriver.execute_write(
             CypherQueries.CREATE_RECEIPT,
             parameters
         )
+        logging.info("Receipt created successfully.")

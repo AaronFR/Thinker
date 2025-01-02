@@ -44,6 +44,7 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
  
   const fetchCategories = async () => {
     try {
+      // ToDo: (bug) will be run after opening a file in category folder, which annoyingly resets an expanded folder
       const response = await apiFetch(`${FLASK_PORT}/categories_with_files`, {
         method: "GET",
       });

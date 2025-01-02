@@ -29,6 +29,8 @@ const TagsManager = ({ tags, setTags }) => {
 
     /**
      * Handles the Add button click to initiate tag addition.
+     * 
+     * ToDo: bug where trying to enter a tag with no value will cause a prompt submission.
      */
     const handleAddClick = () => {
         setIsAdding(true);

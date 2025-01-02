@@ -1,23 +1,27 @@
 import logging
-import regex as re
+import os
+import re
 import requests
 import wikipediaapi
-import os
 
 from typing import Dict, Optional, List
 
 from Data.Files.FileManagement import FileManagement
 from Utilities.Decorators import handle_errors
 
-data_path = os.path.join(os.path.dirname(__file__), '../../UserData/DataStores')
+DATA_PATH = os.path.join(os.path.dirname(__file__), '../../UserData/DataStores')
+WIKI_API_URL = "https://en.wikipedia.org/w/api.php"
+USER_AGENT = 'ThinkerBot (https://github.com/AaronFR/Thinker)'
 
 
 def _section_to_dict(section) -> Dict[str, object]:
     """
     Recursively convert section and its subsections to a dictionary.
+
+    :param section: A section object from WikipediaAPI.
+    :return: A dictionary representation of the section.
     """
     section_dict = {'content': section.text}
-
     if section.sections:
         section_dict['subsections'] = {
             subsection.title: _section_to_dict(subsection) for subsection in section.sections
@@ -25,7 +29,7 @@ def _section_to_dict(section) -> Dict[str, object]:
     return section_dict
 
 
-def search_wikipedia_api(term: str, file_name="Encyclopedia"):
+def search_wikipedia_api(term: str, file_name: str = "Encyclopedia") -> None:
     """
     Fetches a Wikipedia page for the given term and caches the content in a local Encyclopedia cache.
 
@@ -35,24 +39,27 @@ def search_wikipedia_api(term: str, file_name="Encyclopedia"):
     :param file_name: The base name (without extension) for the output YAML file.
     """
     yaml_filename = f"{file_name}.yaml"
-    yaml_path = os.path.join(data_path, yaml_filename)
+    yaml_path = os.path.join(DATA_PATH, yaml_filename)
 
     existing_data = FileManagement.load_yaml(yaml_path)
     if term in existing_data:
         logging.info(f"Data for '{term}' is already present in {yaml_filename}. Skipping fetch.")
         return
 
-    wiki_wiki = wikipediaapi.Wikipedia('ThinkerBot (https://github.com/AaronFR/Thinker)', 'en')
+    wiki_wiki = wikipediaapi.Wikipedia(USER_AGENT, 'en')
     page = wiki_wiki.page(term)
 
     if page.exists():
         logging.info(f"Processing page: {page.title}")
-        page_dict = _build_page_dict(page)
 
-        existing_data.update(page_dict)
-        FileManagement.write_to_yaml(existing_data, yaml_path)
-        _add_new_redirects(page.title, f"{file_name}Redirects.csv")
-        logging.info(f"Page content written to {yaml_filename}")
+        try:
+            page_dict = _build_page_dict(page)
+            existing_data.update(page_dict)
+            FileManagement.write_to_yaml(existing_data, yaml_path)
+            _add_new_redirects(page.title, f"{file_name}Redirects.csv")
+            logging.info(f"Page content written to {yaml_filename}")
+        except Exception as e:
+            logging.exception(f"Error while processing page '{term}': {str(e)}")
     else:
         logging.warning(f"No page found for '{term}'.")
 
@@ -77,15 +84,17 @@ def _build_page_dict(page) -> Dict[str, object]:
 
     return page_dict
 
+
 @handle_errors
 def _get_wikipedia_infobox(term: str) -> Optional[str]:
     """
     Fetches the infobox for the specified Wikipedia term.
 
+    ToDo: https://github.com/martin-majlis/Wikipedia-API/issues/32#issuecomment-724785111 may be a better approach
+
     :param term: The title of the Wikipedia page from which to fetch the infobox.
     :return: A cleaned infobox string, or None if it does not exist.
     """
-    url = f"https://en.wikipedia.org/w/api.php"
     params = {
         'action': 'query',
         'prop': 'revisions',
@@ -94,11 +103,11 @@ def _get_wikipedia_infobox(term: str) -> Optional[str]:
         'titles': term,
         'format': 'json',
         'formatversion': 2,
-        'rvslots': 'main'
+        'rvslots': 'main',
     }
 
-    response = requests.get(url, params=params)
-    response.raise_for_status()
+    response = requests.get(WIKI_API_URL, params=params)
+    response.raise_for_status()  # Raise an error for bad responses
     data = response.json()
 
     page = data['query']['pages'][0]
@@ -107,36 +116,31 @@ def _get_wikipedia_infobox(term: str) -> Optional[str]:
         infobox = _get_infobox(content)
         if infobox:
             return _clean_infobox(infobox)
-        else:
-            return None
+        return None
     else:
         logging.info(f"Page '{term}' does not contain an infobox.")
         return None
 
 
-def _get_infobox(content: str) -> str | None:
+def _get_infobox(content: str) -> Optional[str]:
     """
-    Extracts an infobox from the content of a Wikipedia page. Balanced in that any braces starting braces pair with
-    ending braces so only the matching brace for the infobox section is used to extract the infobox
-
-    ToDo: https://github.com/martin-majlis/Wikipedia-API/issues/32#issuecomment-724785111 may be a better approach
+    Extracts an infobox from the content of a Wikipedia page while ensuring balanced braces.
 
     :param content: The complete content of the Wikipedia page.
-    :return: The extracted infobox string or an error message.
+    :return: The extracted infobox string or None if unsuccessful.
     """
-
     infobox_start = content.find("{{Infobox")
     if infobox_start == -1:
-        logging.info(f"No infobox found")
+        logging.info("No infobox found.")
         return None
 
     brace_count = 0
     index = infobox_start
     while index < len(content):
-        if content[index:index+2] == "{{":
+        if content[index:index + 2] == "{{":
             brace_count += 1
             index += 2
-        elif content[index:index+2] == "}}":
+        elif content[index:index + 2] == "}}":
             brace_count -= 1
             index += 2
             if brace_count == 0:
@@ -149,7 +153,7 @@ def _get_infobox(content: str) -> str | None:
 
 def _clean_infobox(infobox: str) -> str:
     """
-    Cleans and formats the infobox for readability and minimising tokens for llm processing
+    Cleans and formats the infobox for readability and minimizing tokens for language model processing.
 
     :param infobox: The raw infobox string.
     :return: A cleaned infobox string for easier interpretation.
@@ -175,7 +179,7 @@ def _clean_infobox(infobox: str) -> str:
     infobox = re.sub(r'\s*\n\s*', '\n', infobox)  # Clean up extra newlines
     infobox = infobox.strip()  # Strip leading/trailing spaces
 
-    return infobox
+    return infobox.strip()
 
 
 def _infobox_to_dict(text: str) -> Dict[str, object]:
@@ -198,10 +202,8 @@ def _infobox_to_dict(text: str) -> Dict[str, object]:
         if line.startswith(":"):
             if "=" in line:
                 key, value = line.split("=", 1)
-                key = key.strip().strip(":")
-                key = key.strip()
+                key = key.strip().strip(":").strip()
                 value = value.strip()
-
                 if value == "plainlist :":
                     current_key = key
                     current_list = []
@@ -214,10 +216,8 @@ def _infobox_to_dict(text: str) -> Dict[str, object]:
                 # If no value but a list continuation, append to current list
                 if current_list is not None:
                     current_list.append(line.strip(":").strip())
-        else:
-            # Add extra lines to current list if necessary
-            if current_list is not None:
-                current_list.append(line)
+        elif current_list is not None:
+            current_list.append(line)
 
     return result
 
@@ -232,9 +232,8 @@ def _add_new_redirects(term: str, redirect_file: str) -> None:
     redirects = _get_redirects(term)
     logging.info(f"Redirects found: {redirects}")
 
-    redirect_dicts = [{'redirect_term': redirect, 'target_term': term} for redirect in redirects]
-
-    if redirect_dicts:
+    if redirects:
+        redirect_dicts = [{'redirect_term': redirect, 'target_term': term} for redirect in redirects]
         fieldnames = ['redirect_term', 'target_term']
         FileManagement.write_to_csv(redirect_file, redirect_dicts, fieldnames)
     else:
@@ -249,7 +248,6 @@ def _get_redirects(term: str) -> List[str]:
     :param term: The title of the Wikipedia page to check for redirects.
     :return: A list of titles for pages that redirect to the specified page.
     """
-    url = "https://en.wikipedia.org/w/api.php"
     params = {
         'action': 'query',
         'format': 'json',
@@ -259,7 +257,7 @@ def _get_redirects(term: str) -> List[str]:
         'bllimit': 'max'  # Maximum number of redirects
     }
 
-    response = requests.get(url, params=params)
+    response = requests.get(WIKI_API_URL, params=params)
     response.raise_for_status()  # Raise an error for bad responses
     data = response.json()
 
@@ -272,4 +270,3 @@ def _get_redirects(term: str) -> List[str]:
 if __name__ == "__main__":
     term = input("Enter a search term: ")
     search_wikipedia_api(term)
-

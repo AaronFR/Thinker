@@ -29,6 +29,9 @@ The enhanced prompt is adjusted to tell get the llm to adopt the persona of a sk
 (assumed) skill level.
 
 ## Comparison Base v Enhanced
+
+### Sets 2 v 3
+
 | File                  | Base System Messages                                                                                                           | Enhanced System Messages                                                                                                                                     |
 |-----------------------|--------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | StorageMethodology.py | ✔ Good. Deletes comments but actually resolves them. Improves log functionality                                                | Similarly resolves the comment but doesn't improve the logs                                                                                                  |
@@ -42,3 +45,33 @@ No clear winner, its a very small sample but this already indicates theres no st
 There could be an issue where the Enhanced system prompt is supposed to adapt the response based on the users skill level.
 Given how simple the input prompt is, it could be adjusting the output to be quite simple for an assumed novice user.
 In the next set we'll remove any mention of adapting for the skill of the user
+
+### Sets 4 v 5
+
+Set 4 is the 'enhanced' system message. The implementation is different. Notes are made in the respective set
+First Set 4 was applied and beneficial changes applied. Then set 5 was applied over these changes.
+In the next set this order should be reversed for fairness in testing
+
+
+| File                            | Enhanced | Base | Reasoning                                                                                                                |
+|---------------------------------|----------|------|--------------------------------------------------------------------------------------------------------------------------|
+| WikipediaApi.py                 | ✔        | ❌    | By and large bases changes were just uninteresting                                                                       |
+| UserContextManagement.py        | ✔        | ✔    |                                                                                                                          |
+| Pricing.py                      | 0        | ✔    | Close. But base added a value error while enhanced just added a useful log                                               |
+| NodeDatabaseManagement.py       | ❌        | ✔    | Base suggested try catches for all methods. Enhanced deleted methods                                                     |
+| Neo4jDriver.py                  | ✔        | ✔    | Base noticed running optional field should be inside a if statement, enhanced added a good value error to initialisation |
+| EncyclopediaManagementInterface | ❌        | ✔    | Enhanced broke the file.                                                                                                 |
+| CypherQueries.py                | ❌        | ✔    | The base didn't delete necessary constants and pointed out more useful refactorings                                      |
+| Configuration.py                | ❌        | ✔    | Enhanced, malforms the function, while base adds a useful try-catch                                                      |
+| CategoryManagement.py           | ✔        | ✔    | Both suggested valuable improvements will also missing details the other picked up                                       |
+
+There's a possible defect in that the base testing set was interrupted due to introduced errors and was split in two runs of the auto workflow
+3 / 7 rather than 10 files at once. So possibly the Enhanced value suffered under the weight of a larger message history confusing it.
+
+However, even then the lengthy 'Enhanced' system prompt produced 4 malformed files against the base system messages 1,
+and half as many useful outputs.
+
+I'll run the test in reverse with the base and then Enhanced test. But I think this easily goes to demonstrate that system prompts should be
+**short and to the point**
+
+And why the 'Enhanced' system messages aren't very popular...

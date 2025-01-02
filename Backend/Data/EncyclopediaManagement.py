@@ -3,6 +3,7 @@ import os
 
 from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
 from Data.WikipediaApi import search_wikipedia_api
+from Utilities.Decorators import return_for_error
 
 
 class EncyclopediaManagement(EncyclopediaManagementInterface):
@@ -40,6 +41,7 @@ class EncyclopediaManagement(EncyclopediaManagementInterface):
         self.redirect_encyclopedia_path = os.path.join(self.data_path, self.ENCYCLOPEDIA_NAME + "Redirects.csv")
         self.load_encyclopedia_data()
 
+    @return_for_error(False)
     def fetch_term_and_update(self, term_name: str) -> bool:
         """Fetches the term from Wikipedia and updates the encyclopedia.
 
@@ -49,16 +51,13 @@ class EncyclopediaManagement(EncyclopediaManagementInterface):
         :param term_name: The name of the term to fetch from Wikipedia.
         :return: A status indicating whether the fetching and updating were successful.
         """
-        try:
-            search_wikipedia_api(term_name, self.ENCYCLOPEDIA_NAME)
-            self.load_encyclopedia_data()
+        search_wikipedia_api(term_name, self.ENCYCLOPEDIA_NAME)
+        self.load_encyclopedia_data()
 
-            return True
-        except Exception as e:
-            logging.exception(f"Error while accessing '{self.ENCYCLOPEDIA_NAME}' for term  '{term_name}'", exc_info=e)
-            return False
+        return True
 
 
 if __name__ == '__main__':
-    encyclopediaManagement = EncyclopediaManagement()
-    print(encyclopediaManagement.search_encyclopedia(["Can you talk about 'code reuse'?"]))
+    encyclopedia_management = EncyclopediaManagement()
+    result = encyclopedia_management.search_encyclopedia(["Can you talk about 'code reuse'?"])
+    print(result)
