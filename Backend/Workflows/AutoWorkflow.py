@@ -6,6 +6,7 @@ from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import find_enum_value, ChatGptModel
+from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Decorators import return_for_error
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
 from Workflows.Workflows import generate_auto_workflow
@@ -48,7 +49,7 @@ class AutoWorkflow(BaseWorkflow):
 
             iteration = 1
             for file_reference in file_references:
-                file_name = file_reference.split("\\")[-1]
+                file_name = StorageMethodology().extract_file_name(file_reference)
                 logging.info(f"🌆 {file_reference} - {file_name}")
                 self._save_file_step(
                     iteration=iteration,
