@@ -4,9 +4,10 @@ from typing import Union, Callable
 
 from Utilities.ErrorHandler import ErrorHandler
 
-def handle_errors(debug_logging: bool = False, raise_errors: bool = False):
 ErrorHandler.setup_logging()
 
+
+def handle_errors(func=None, *, debug_logging: bool = False, raise_errors: bool = False):
     """
     Handles any errors that occur in the decorated function.
 
@@ -19,18 +20,12 @@ ErrorHandler.setup_logging()
     :param raise_errors: If false the error will merely be logged, for graceful error handling. True will raise an
      error
     """
-    def decorator(method):
-        @functools.wraps(method)
-        def wrapper(*args, **kwargs):
-            try:
+    if func is None:
+        return lambda f: handle_errors(f, debug_logging=debug_logging, raise_errors=raise_errors)
 
-                return method(*args, **kwargs)
-            except Exception as e:
-                logging.exception(f"Error in {method.__name__}: {e}", exc_info=e)
-                if raise_errors:
-                    raise
-        return wrapper
-    return decorator
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
             if debug_logging:
                 logging.debug(f"Executing {func.__name__} with args={args}, kwargs={kwargs}")
 
@@ -40,6 +35,12 @@ ErrorHandler.setup_logging()
                 logging.debug(f"{func.__name__} executed successfully, outputting: {result}")
 
             return result
+        except Exception as e:
+            logging.exception(f"Error in {func.__name__}: {e}", exc_info=e)
+            if raise_errors:
+                raise
+
+    return wrapper
 
 
 def return_for_error(return_object: Union[object, Callable], debug_logging: bool = False):
