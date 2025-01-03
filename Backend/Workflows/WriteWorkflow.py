@@ -18,6 +18,10 @@ from Workflows.Workflows import generate_write_workflow
 class WriteWorkflow(BaseWorkflow):
     """
     Workflow for writing code based on user specifications.
+
+    This workflow manages the process of creating code files by interacting
+    with the user through a series of prompts and saving the generated code
+    appropriately.
     """
 
     @return_for_error("An error occurred during the write workflow.", debug_logging=True)
@@ -42,7 +46,7 @@ class WriteWorkflow(BaseWorkflow):
         """
 
         try:
-            model = find_enum_value(tags.get("model")) if tags else None
+            model = find_enum_value(tags.get("model") if tags else None)
             emit("send_workflow",
                  {"workflow": generate_write_workflow(initial_message, file_references, selected_message_ids,
                                                       model.value)})

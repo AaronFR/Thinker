@@ -7,6 +7,7 @@ from pathlib import Path
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context
+from Utilities.ErrorHandler import ErrorHandler
 
 UPDATE_WORKFLOW_STEP = "update_workflow_step"
 
@@ -16,12 +17,15 @@ class BaseWorkflow:
     Abstract base class for all workflows.
     """
 
+    def __init__(self):
+        ErrorHandler().setup_logging()
+
     @abstractmethod
     def execute(self, process_prompt: Callable, **kwargs) -> Any:
         """
         Executes the workflow with the given parameters.
 
-        :param process_prompt: Function to process user questions.
+        :param process_prompt: Function to process user prompts.
         :param kwargs: Additional arguments specific to the workflow.
         :return: Result of the workflow execution.
         """
@@ -41,10 +45,10 @@ class BaseWorkflow:
         Handles individual chat steps.
 
         :param iteration: Current iteration number.
-        :param process_prompt: Function to process user questions.
+        :param process_prompt: Persona function to process user questions.
         :param message: The message to process.
-        :param file_references: References to files.
-        :param selected_message_ids: Selected message IDs for context.
+        :param file_references: Optional references to files.
+        :param selected_message_ids: Optional selected message IDs for context.
         :param streaming: Whether to stream the response.
         :param model: The AI model to use.
         :return: AI's response.
@@ -73,13 +77,13 @@ class BaseWorkflow:
         overwrite: bool = True
     ) -> str:
         """
-        Handles the process of saving files.
+        Handles the process of saving files to the staging directory.
 
         :param iteration: Current iteration number.
-        :param process_prompt: Function to process user questions.
+        :param process_prompt: Persona function to process user questions.
         :param message: The message to process.
         :param file_references: References to files.
-        :param file_name: Name of the file to save.
+        :param file_name: Name of the file to save including extension
         :param model: The AI model to use.
         :return: AI's response.
         """
@@ -99,7 +103,7 @@ class BaseWorkflow:
 
         StorageMethodology.select().save_file(response, str(file_path), overwrite=overwrite)
 
-        BaseWorkflow.emit_step_completed_events(iteration, False, response)
+        BaseWorkflow.emit_step_completed_events(iteration, streaming=False, response=response)
         return response
 
     @staticmethod

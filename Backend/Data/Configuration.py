@@ -41,16 +41,15 @@ class Configuration:
         :returns: A dictionary containing the extracted configuration values
         :raises FileNotFoundError: If the specified YAML file does not exist.
         """
-        config = StorageMethodology.select().load_yaml(yaml_file)
+        default_config = StorageMethodology.select().load_yaml(yaml_file)
         user_config = StorageMethodology.select().load_yaml(f"{get_user_context()}.yaml")
 
         # Merge user_config into config
-        merged_config = Configuration.deep_merge(config, user_config)
+        merged_config = Configuration.deep_merge(default_config, user_config)
 
         return merged_config
 
     @staticmethod
-    @handle_errors(raise_errors=True)
     def update_config_field(field_path: str, value: Any) -> None:
         """
         Updates a particular field in the user's YAML configuration file.
@@ -64,17 +63,17 @@ class Configuration:
         file_storage = StorageMethodology.select()
         user_config_path = os.path.join(get_user_context() + ".yaml")
 
-        config = file_storage.load_yaml(user_config_path)
+        user_config = file_storage.load_yaml(user_config_path)
 
         # Navigate to the specified field and update the value
         keys = field_path.split('.')
-        current = config
+        current = user_config
         for key in keys[:-1]:
             current = current.setdefault(key, {})
         current[keys[-1]] = value
 
         # Save the updated configuration back to the YAML file
-        file_storage.save_yaml(user_config_path, config)
+        file_storage.save_yaml(user_config_path, user_config)
 
 
 if __name__ == '__main__':

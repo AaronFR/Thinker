@@ -8,13 +8,17 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import find_enum_value, ChatGptModel
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Decorators import return_for_error
+from Utilities.Utility import Utility
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
 from Workflows.Workflows import generate_auto_workflow
 
 
 class AutoWorkflow(BaseWorkflow):
     """
-    Workflow for automating a series of prompts, each file reference is fed as context into an individual prompt
+    Workflow for automating a series of prompts, where each file reference is used as context for individual prompts.
+
+    Note:
+        Saving files may take some time.
     """
 
     @return_for_error("An error occurred during the write workflow.", debug_logging=True)
@@ -30,43 +34,50 @@ class AutoWorkflow(BaseWorkflow):
         Execute all steps of the write pages workflow.
         ToDo: add settings to not incorporate history from one prompt to another
 
-        :param process_prompt: Function to process user questions.
-        :param initial_message: The user's guidance for writing code.
-        :param file_references: References to relevant files.
-        :param selected_message_ids: Selected message IDs for context.
-        :param tags: Additional metadata.
+        :param process_prompt: Function to process user prompts.
+        :param initial_message: The user's prompy.
+        :param file_references: Optional list of file references.
+        :param selected_message_ids: Optional list of selected message IDs for context.
+        :param tags: Optional dictionary of additional metadata.
         :return: AI's response.
         :raises WorkflowExecutionError: If any step in the workflow fails.
         """
         try:
-            model = find_enum_value(tags.get("model")) if tags else None
-            logging.info(f"☀ {file_references}")
+            model = find_enum_value(tags.get("model") if tags else None)
 
-            emit("send_workflow",
-                 {"workflow": generate_auto_workflow(file_references,
-                                                     selected_message_ids,
-                                                     model.value)})
+            workflow_data = generate_auto_workflow(
+                file_references=file_references or [],
+                selected_messages=selected_message_ids or [],
+                model=model.value
+            )
+            emit("send_workflow", {"workflow": workflow_data})
 
             iteration = 1
-            for file_reference in file_references:
+            for file_reference in file_references or []:
                 file_name = StorageMethodology().extract_file_name(file_reference)
-                logging.info(f"🌆 {file_reference} - {file_name}")
+                logging.info(f"Processing file reference: {file_reference} (Extracted name: {file_name})")
+
+                prompt_message = f"{initial_message}\n\nSpecifically focus on {file_name}"
                 self._save_file_step(
                     iteration=iteration,
                     process_prompt=process_prompt,
-                    message=initial_message + f"\n\nSpecifically focus on {file_name}",
+                    message=prompt_message,
                     file_references=file_references,
                     selected_message_ids=selected_message_ids or [],
                     file_name=file_name,
                     model=model,
-                    overwrite=False
+                    overwrite=True
                 )
                 iteration += 1
 
+            summary_message = (
+                f"Write a very quick summary indicating that each file in {file_references} has been processed "
+                f"according to the initial user message: <user_message>{initial_message}</user_message>"
+            )
             summary = self._chat_step(
                 iteration=iteration,
                 process_prompt=process_prompt,
-                message=f"Write a very quick summary to the effect that each file in {file_references} has been processed according to the initial user message: <user_message>{initial_message}</user_message>",
+                message=summary_message,
                 file_references=[],
                 selected_message_ids=[],
                 streaming=True,
@@ -74,7 +85,7 @@ class AutoWorkflow(BaseWorkflow):
             )
 
             return summary
-        except Exception as e:
+        except Exception:
             logging.exception("Failed to process write workflow")
 
     def _determine_pages_step(
@@ -96,17 +107,16 @@ class AutoWorkflow(BaseWorkflow):
         :return: List of files with their purposes.
         """
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
+
         prompt = (
             "Just give a mark down list of prompts to be used to create a series of pages based on the following user "
             "prompt. "
-            "Each prompt corresponds to one 'page'. Your prompts should be clear and concise, while making sure "
-            "that the list of prompts all together give valid and concise instructions that should fully satisfy all "
-            "aspects of my next prompt."
+            "Each prompt corresponds to one 'page'. Ensure that all prompts are clear, concise, and collectively "
+            "provide valid and comprehensive instructions to fully satisfy the user's needs. "
             "If it would be beneficial to think through the problem please do so outside and before your list of "
             "prompts."
             f"I expect {page_count} prompts. No more no less."
         )
-
         response = AiOrchestrator().execute(
             [prompt],
             [initial_message],
@@ -118,14 +128,14 @@ class AutoWorkflow(BaseWorkflow):
             raise Exception("No prompt suggestions generated!")
 
         logging.info(f"Creating the following pages: {pages}")
-        BaseWorkflow.emit_step_completed_events(iteration, False, response)
+        BaseWorkflow.emit_step_completed_events(iteration, streaming=False, response=response)
         return pages
 
     @staticmethod
     def extract_markdown_list_items(text: str) -> List[str]:
         """Extracts list items from markdown-formatted text, including both unordered and ordered lists.
 
-        :param text: The text containing markdown list items.
+        :param text: The text containing Markdown list items.
         :returns: A list of strings containing the extracted list items.
         """
         pattern = r'^\s*[-*]\s+(.*)$|^\s*\d+\.\s+(.*)$'
@@ -135,4 +145,3 @@ class AutoWorkflow(BaseWorkflow):
         # Flatten the matches and filter out empty strings
         extracted_items = [item[0] or item[1] for item in matches if item[0] or item[1]]
         return extracted_items
-

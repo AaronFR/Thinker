@@ -276,6 +276,17 @@ class NodeDatabaseManagement:
         result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES, parameters)
         return [record["category_name"] for record in result]
 
+    def list_categories_with_files(self) -> List[str]:
+        """
+        List all unique categories associated with the user which have files attached
+        """
+        parameters = {
+            "user_id": get_user_context()
+        }
+        result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES_WITH_FILES, parameters)
+        categories = [record["category_name"] for record in result]
+        return categories
+
     # Files
 
     def create_file_nodes_for_user_prompt(self, user_prompt_id: str, category: str) -> None:

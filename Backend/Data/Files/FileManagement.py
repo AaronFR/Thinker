@@ -47,7 +47,8 @@ class FileManagement(StorageBase):
         """Constructs the complete path for the given file_name."""
         return os.path.join(self.file_data_directory, file_path)
 
-    def _log_file_action(self, action: str, file_path: str):
+    @staticmethod
+    def _log_file_action(action: str, file_path: str):
         """Log the action performed on the file."""
         logging.info(f"File {action}: {file_path}")
 
@@ -98,6 +99,7 @@ class FileManagement(StorageBase):
             logging.exception("An unexpected error occurred while reading the file.")
             return f"FAILED TO LOAD {full_address}"
 
+    @handle_errors()
     def move_file(self, current_path: str, new_path: str) -> None:
         """
         Move a file to a new path within the file management system.
@@ -105,11 +107,8 @@ class FileManagement(StorageBase):
         :param current_path: The path of the current file.
         :param new_path: The destination path for the file.
         """
-        try:
-            shutil.move(self._get_data_path(current_path), self._get_data_path(new_path))
-            self._log_file_action('moved', f"{current_path} to {new_path}")
-        except Exception:
-            logging.exception("Failed to move local files.")
+        shutil.move(self._get_data_path(current_path), self._get_data_path(new_path))
+        self._log_file_action('moved', f"{current_path} to {new_path}")
 
     @staticmethod
     def save_yaml(yaml_path: str, data: Dict[Any, Any]) -> None:

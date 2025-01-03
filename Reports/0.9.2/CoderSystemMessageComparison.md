@@ -30,7 +30,7 @@ The enhanced prompt is adjusted to tell get the llm to adopt the persona of a sk
 
 ## Comparison Base v Enhanced
 
-### Sets 2 v 3
+### Sets 2 v 3 - /Data/Files
 
 | File                  | Base System Messages                                                                                                           | Enhanced System Messages                                                                                                                                     |
 |-----------------------|--------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -46,7 +46,7 @@ There could be an issue where the Enhanced system prompt is supposed to adapt th
 Given how simple the input prompt is, it could be adjusting the output to be quite simple for an assumed novice user.
 In the next set we'll remove any mention of adapting for the skill of the user
 
-### Sets 4 v 5
+### Sets 4 v 5 - /Data
 
 Set 4 is the 'enhanced' system message. The implementation is different. Notes are made in the respective set
 First Set 4 was applied and beneficial changes applied. Then set 5 was applied over these changes.
@@ -62,7 +62,7 @@ In the next set this order should be reversed for fairness in testing
 | Neo4jDriver.py                  | ✔        | ✔    | Base noticed running optional field should be inside a if statement, enhanced added a good value error to initialisation |
 | EncyclopediaManagementInterface | ❌        | ✔    | Enhanced broke the file.                                                                                                 |
 | CypherQueries.py                | ❌        | ✔    | The base didn't delete necessary constants and pointed out more useful refactorings                                      |
-| Configuration.py                | ❌        | ✔    | Enhanced, malforms the function, while base adds a useful try-catch                                                      |
+| Configuration.py                | ❌        | ✔    | Enhanced, mal-forms the function, while base adds a useful try-catch                                                      |
 | CategoryManagement.py           | ✔        | ✔    | Both suggested valuable improvements will also missing details the other picked up                                       |
 
 There's a possible defect in that the base testing set was interrupted due to introduced errors and was split in two runs of the auto workflow
@@ -75,3 +75,11 @@ I'll run the test in reverse with the base and then Enhanced test. But I think t
 **short and to the point**
 
 And why the 'Enhanced' system messages aren't very popular...
+
+### Sets 6 v 7 - Workflows
+
+Welp that sucked. There was very little value provided which to be fair makes sense based on the types of files the workflows 
+we're by and large, however while sharing memory could lead to consistency it can also lead to dislikeable ideas being brought up frequently.
+Set 6 cost approximately 98 cents, and I'm not too inclinded to try and see if a second set can improve on that
+
+### Sets 7 v 8

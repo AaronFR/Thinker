@@ -12,6 +12,9 @@ from Workflows.Workflows import generate_chat_workflow
 class ChatWorkflow(BaseWorkflow):
     """
     Handles chat-based interactions with the user.
+
+    This workflow manages the process of responding to user prompts
+    and processing any relevant file references or selected messages.
     """
 
     @return_for_error("An error occurred during the chat workflow.", debug_logging=True)
@@ -26,18 +29,23 @@ class ChatWorkflow(BaseWorkflow):
         """
         Executes the chat workflow.
 
-        :param process_prompt: Function to process user questions.
+        :param process_prompt: Function to process user prompts.
         :param initial_message: The user's initial prompt.
-        :param file_references: References to relevant files.
-        :param selected_message_ids: IDs of selected messages for context.
-        :param tags: Additional metadata.
+        :param file_references: Optional list of file references.
+        :param selected_message_ids: Optional list of selected message IDs for context.
+        :param tags: Optional dictionary of additional metadata.
         :return: AI's response.
         """
 
         logging.info("Chat workflow selected")
-        model = find_enum_value(tags.get("model"))
-        emit("send_workflow",
-             {"workflow": generate_chat_workflow(initial_message, file_references, selected_message_ids, model.value)})
+        model = find_enum_value(tags.get("model") if tags else None)
+        workflow_details = generate_chat_workflow(
+            initial_message=initial_message,
+            file_references=file_references or [],
+            selected_messages=selected_message_ids or [],
+            model=model.value
+        )
+        emit("send_workflow", {"workflow": workflow_details})
 
         response = self._chat_step(
             iteration=1,

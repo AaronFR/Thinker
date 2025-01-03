@@ -2,6 +2,7 @@ import logging
 from typing import Callable, Optional, List, Dict
 
 from flask_socketio import emit
+
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import find_enum_value
 from Utilities.Decorators import return_for_error
@@ -10,7 +11,7 @@ from Workflows.BaseWorkflow import UPDATE_WORKFLOW_STEP, BaseWorkflow
 
 class WriteTestsWorkflow(BaseWorkflow):
     """
-    Generates a test file for a specified file.
+    Workflow for generating test files based on user-specified code files.
 
     ⚠ WIP ⚠
     """
@@ -27,27 +28,32 @@ class WriteTestsWorkflow(BaseWorkflow):
         """
         Executes the write tests workflow.
 
-        :param process_prompt: Function to process user questions.
+        :param process_prompt: Function to process user prompts.
         :param initial_message: The user's guidance for writing tests.
-        :param file_references: References to relevant files.
-        :param selected_message_ids: Selected message IDs for context.
-        :param tags: Additional metadata.
-        :return: AI's response.
+        :param file_references: Optional list of file references.
+        :param selected_message_ids: Optional list of selected message IDs for context.
+        :param tags: Optional dictionary of additional metadata.
+        :return: Summary of the AI's response.
+        :raises WorkflowExecutionError: If any step in the workflow fails.
         """
-        model = find_enum_value(tags.get("model"))
+        model = find_enum_value(tags.get("model") if tags else None)
 
-        file_name = AiOrchestrator().execute(
-            ["Please provide the filename (including extension) of the code for which tests should be written. "
-             "Please be concise."],
-            [initial_message]
+        file_name_prompt = (
+            "Please provide the filename (including extension) of the code for which tests should be written. "
+            "Please be concise."
         )
+        file_name = AiOrchestrator().execute(
+            [file_name_prompt],
+            [initial_message],
+            model=model
+        ).strip()
 
         test_prompt_messages = [
             f"Review {file_name} in light of [{initial_message}]. What should we test? How? What should we prioritize "
             f"and how should the test file be structured?",
 
-            f"Write a test file for {file_name}, implementing the tests as we discussed. Make sure each test has robust"
-            " documentation explaining the test's purpose.",
+            f"Write a test file for {file_name}, implementing the tests as we discussed. Make sure each test has robust "
+            "documentation explaining the test's purpose.",
 
             f"Assess edge cases and boundary conditions in {file_name}, generating appropriate tests. "
             f"Present the final test cases in {file_name} and comment on coverage and areas needing additional tests.",
@@ -68,6 +74,7 @@ class WriteTestsWorkflow(BaseWorkflow):
                     file_references=file_references or [],
                     file_name=file_name,
                     model=model,
+                    overwrite=True
                 )
 
             elif iteration == 2:

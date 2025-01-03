@@ -49,4 +49,3 @@ class Pricing:
         :return: The current session cost.
         """
         return Globals.current_request_cost
-
