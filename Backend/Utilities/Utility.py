@@ -62,11 +62,6 @@ class Utility:
         return output
 
     @staticmethod
-    def is_exit_command(user_input: str) -> bool:
-        """Check if the user intends to exit the input loop."""
-        return user_input.lower() == 'exit'
-
-    @staticmethod
     def is_valid_prompt(user_input: str) -> bool:
         """Validate if the user input is a non-empty question."""
         if not user_input.strip():
@@ -74,16 +69,6 @@ class Utility:
             return False
 
         return True
-
-    @staticmethod
-    def file_name_sans_extension(original_filename: str) -> str:
-        """Creates a summary file name based on the original file name.
-
-        :param original_filename: The name of the original file including extension e.g. '.txt'
-        :return: A string representing the file name without an extension
-        """
-        base, _ = os.path.splitext(original_filename)
-        return base
 
 
 if __name__ == '__main__':
