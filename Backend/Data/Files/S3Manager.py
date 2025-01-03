@@ -32,6 +32,7 @@ class S3Manager(StorageBase):
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key
         )
+        boto3.set_stream_logger("Boto", level=logging.INFO)
 
     @return_for_error(False, debug_logging=True)
     def save_file(self, content: str, file_path: str = None, overwrite: bool = False) -> bool:
