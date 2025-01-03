@@ -2,8 +2,11 @@ import functools
 import logging
 from typing import Union, Callable
 
+from Utilities.ErrorHandler import ErrorHandler
 
 def handle_errors(debug_logging: bool = False, raise_errors: bool = False):
+ErrorHandler.setup_logging()
+
     """
     Handles any errors that occur in the decorated function.
 
