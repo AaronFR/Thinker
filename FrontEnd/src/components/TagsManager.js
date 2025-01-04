@@ -28,14 +28,8 @@ const TagsManager = ({ tags, setTags }) => {
     const valueInputRef = useRef(null);
 
     /**
-     * Handles the Add button click to initiate tag addition.
-     * 
-     * ToDo: bug where trying to enter a tag with no value will cause a prompt submission.
+     * Focuses on the field input when adding a new tag.
      */
-    const handleAddClick = () => {
-        setIsAdding(true);
-    };
-
     useEffect(() => {
         if (isAdding) {
             fieldInputRef.current.focus();
@@ -43,16 +37,26 @@ const TagsManager = ({ tags, setTags }) => {
     }, [isAdding]);
 
     /**
+     * Handles the Add button click to initiate tag addition.
+     */
+    const handleAddClick = () => {
+        setIsAdding(true);
+    };
+
+    /**
      * Handles key down events for the field input.
      *
      * @param {object} e - Event object.
      */
     const handleFieldKeyDown = (e) => {
-        if (e.key === 'Enter' && newField.trim() !== '') {
+        e.stopPropagation();
+        if (e.key === 'Enter') {
             e.preventDefault();
-            e.stopPropagation();
-            if (DEFAULT_TAGS[newField.trim()]) {
-                setValueSuggestions(DEFAULT_TAGS[newField.trim()]);
+        }
+        if (e.key === 'Enter' && newField.trim()) {
+            const trimmedField = newField.trim();
+            if (DEFAULT_TAGS[trimmedField]) {
+                setValueSuggestions(DEFAULT_TAGS[trimmedField]);
             } else {
                 setValueSuggestions([]);
             }
@@ -66,10 +70,14 @@ const TagsManager = ({ tags, setTags }) => {
      * @param {object} e - Event object.
      */
     const handleValueKeyDown = (e) => {
-        if (e.key === 'Enter' && newValue.trim() !== '') {
+        if (e.key === 'Enter') {
             e.preventDefault();
-            e.stopPropagation();
-            setTags({ ...tags, [newField.trim()]: newValue.trim() });
+        }
+        if (e.key === 'Enter' && newValue.trim()) {
+            setTags((prevTags) => ({
+                ...prevTags,
+                [newField.trim()]: newValue.trim(),
+            }));
             resetAddForm();
         }
     };
