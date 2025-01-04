@@ -18,7 +18,7 @@ export const SettingsContext = createContext();
  * :param {React.ReactNode} props.children - React components that consume this context.
  */
 export const SettingsProvider = ({ children }) => {
-    const [settings, setSettings] = useState({
+    const initialSettings = {
         darkMode: false,
         language: 'en',
         augmentedPromptsEnabled: false,
@@ -30,7 +30,9 @@ export const SettingsProvider = ({ children }) => {
         promptQuestioningMessage: 'Default prompt questioning message...',
         coderPersonaMessage: 'Default coder persona message...',
         categorisationMessage: 'Default categorisation message...',
-    });
+    };
+
+    const [settings, setSettings] = useState(initialSettings);
 
     const [fontSize, setFontSize] = useState(() => {
         const savedFontSize = localStorage.getItem('fontSize');
@@ -38,7 +40,7 @@ export const SettingsProvider = ({ children }) => {
     });
 
     const typingTimer = useRef(null);
-    const idleTime = 2000;
+    const idleTime = 2000; // Time before processing user message changes
 
     const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || 'http://localhost:5000';
 
@@ -60,6 +62,7 @@ export const SettingsProvider = ({ children }) => {
                     loadedConfig.interface &&
                     loadedConfig.beta_features &&
                     loadedConfig.systemMessages;
+                    
                 return hasRequiredFields ? loadedConfig : null;
             }
             console.error('Failed to load config');
@@ -100,29 +103,25 @@ export const SettingsProvider = ({ children }) => {
             if (loadedConfig) {
                 setSettings((prevSettings) => ({
                     ...prevSettings,
-                    darkMode: loadedConfig.interface.dark_mode ?? false,
+                    darkMode: loadedConfig.interface.dark_mode ?? initialSettings.darkMode,
                     augmentedPromptsEnabled:
-                        loadedConfig.beta_features.augmented_prompts_enabled ?? false,
+                        loadedConfig.beta_features.augmented_prompts_enabled ?? initialSettings.augmentedPromptsEnabled,
                     questionUserPromptsEnabled:
-                        loadedConfig.beta_features.question_user_prompts_enabled ?? false,
+                        loadedConfig.beta_features.question_user_prompts_enabled ?? initialSettings.questionUserPromptsEnabled,
                     userEncyclopediaEnabled:
-                        loadedConfig.beta_features.user_context_enabled ?? false,
+                        loadedConfig.beta_features.user_context_enabled ?? initialSettings.userEncyclopediaEnabled,
                     encyclopediaEnabled:
-                        loadedConfig.beta_features.encyclopedia_enabled ?? false,
+                        loadedConfig.beta_features.encyclopedia_enabled ?? initialSettings.encyclopediaEnabled,
                     multiFileProcessingEnabled:
-                        loadedConfig.beta_features.multi_file_processing_enabled ?? false,
+                        loadedConfig.beta_features.multi_file_processing_enabled ?? initialSettings.multiFileProcessingEnabled,
                     promptAugmentationMessage:
-                        loadedConfig.systemMessages.promptAugmentationMessage ||
-                        'Default prompt augmentation message...',
+                        loadedConfig.systemMessages.promptAugmentationMessage || initialSettings.promptAugmentationMessage,
                     promptQuestioningMessage:
-                        loadedConfig.systemMessages.promptQuestioningMessage ||
-                        'Default prompt questioning message...',
+                        loadedConfig.systemMessages.promptQuestioningMessage || initialSettings.promptQuestioningMessage,
                     coderPersonaMessage:
-                        loadedConfig.systemMessages.coderPersonaMessage ||
-                        'Default coder persona message...',
+                        loadedConfig.systemMessages.coderPersonaMessage || initialSettings.coderPersonaMessage,
                     categorisationMessage:
-                        loadedConfig.systemMessages.categorisationMessage ||
-                        'Default categorisation message...',
+                        loadedConfig.systemMessages.categorisationMessage || initialSettings.categorisationMessage,
                 }));
             }
         };

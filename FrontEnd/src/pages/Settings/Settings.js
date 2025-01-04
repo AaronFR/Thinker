@@ -140,7 +140,9 @@ export function Settings() {
           </label>
         </div>
 
-        <button onClick={handleLogout} className="logout-button">Logout</button>
+        <div className='center-contents'>
+          <button onClick={handleLogout} className="centered logout-button">Logout</button>
+        </div>
       </div>
     );
 }

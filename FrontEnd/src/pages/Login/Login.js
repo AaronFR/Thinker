@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import { handleLogin, handleRegister, handleLogout } from '../../utils/loginUtils';
 
@@ -9,18 +9,26 @@ export function Login() {
     const [isLoginMode, setIsLoginMode] = useState(true); // Toggles between Login and Register
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     
     const handleSwitch = () => {
         setIsLoginMode(!isLoginMode)
+        setError('');  // Clear any previous errors when switching
     }
 
-    const handleButtonClick = () => {
-        if (isLoginMode) {
-            handleLogin(email, password);
-        } else {
-            handleRegister(email, password);
+    // Handles login or registration based on the current mode
+    const handleButtonClick = useCallback(async () => {
+        try {
+            if (isLoginMode) {
+                await handleLogin(email, password);
+            } else {
+                await handleRegister(email, password);
+            }
+            setError('');  // Clear error on successful login or registration
+        } catch (err) {
+            setError(err.message || 'An error occurred. Please try again.');
         }
-    };
+    }, [isLoginMode, email, password]);
 
     return (
         <div className="auth-container">
@@ -34,7 +42,6 @@ export function Login() {
                 <div className='thinker'>The Thinker</div>
                 <div className='ai'>AI</div>
             </div>
-            
 
             <div className="card-container">
                 <div className="card left-card">
@@ -71,6 +78,9 @@ export function Login() {
                     <p style={{opacity: 0.1}}>Bounties in future at $30/hr (<b><i>subject to review</i></b>), I dunno message me</p>
                 </div>
             </div>
+
+            {/** Error message display */}
+            {error && <p className="error-message">{error}</p>}
 
             <div className="auth-toggle">
                 <button 
@@ -117,7 +127,7 @@ export function Login() {
 
 
             <button onClick={handleLogout} className="logout-button">Logout</button>
-            <p className='version-number'>v0.9.0</p>
+            <p className='version-number'>v0.9.2</p>
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 import { apiFetch } from '../../utils/authUtils';
@@ -6,6 +6,14 @@ import TransactionForm from '../../components/TransactionForm';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
+/**
+ * FormatPrice
+ *
+ * Converts a price value into a formatted string for display.
+ *
+ * :param {number} price - The price value to format.
+ * :returns {string} The formatted price string.
+ */
 function FormatPrice(price) {
     const scale = 100
     if (price < 1) {
@@ -21,28 +29,32 @@ export function Pricing() {
     const [balance, setBalance] = useState(0.0);
     const [sessionCost, setSessionCost] = useState(0.0);
 
-    const loadBalance = async () => {
+    /**
+     * Load user's balance from the server.
+     */
+    const loadBalance = useCallback(async () => {
         try {
-            const response = await apiFetch(FLASK_PORT + '/pricing/balance', {
+            const response = await apiFetch(`${FLASK_PORT}/pricing/balance`, {
                 method: 'GET',
             });
 
             if (response.ok) {
                 const balanceData = await response.json();
-                if (balanceData && balanceData.balance) {
-                    setBalance(balanceData.balance);
-                }
+                setBalance(balanceData.balance);
             } else {
                 console.error('Failed to load user balance', response);
             }
         } catch (error) {
             console.error('Error retrieving user balance:', error);
         }
-    }
+    }, []);
 
-    const loadSessionCost = async () => {
+    /**
+     * Load session cost from the server.
+     */
+    const loadSessionCost = useCallback(async () => {
         try {
-            const response = await apiFetch(FLASK_PORT + '/pricing/session', {
+            const response = await apiFetch(`${FLASK_PORT}/pricing/session`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -52,21 +64,20 @@ export function Pricing() {
 
             if (response.ok) {
                 const priceData = await response.json();
-                if (priceData && priceData.cost) {
-                    setSessionCost(priceData.cost);
-                }
+                setSessionCost(priceData.cost);
             } else {
-                console.error('Failed to load session price');
+                console.error('Failed to load session price', response);
             }
         } catch (error) {
             console.error('Error retrieving session cost:', error);
         }
-    };
+    }, []);
 
+    // Load balance and session cost on component mount
     useEffect(() => {
         loadBalance();
         loadSessionCost();
-    }, []);
+    }, [loadBalance, loadSessionCost]);
 
     return (
         <div className="settings-container">
