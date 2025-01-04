@@ -37,7 +37,6 @@ function uploadReducer(state, action) {
   }
 }
 
-
 /**
  * FileUploadButton Component
  * 

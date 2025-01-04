@@ -5,10 +5,10 @@ import './styles/ResizablePane.css';
 /**
  * ResizablePane component which allows resizing of child elements.
  *
- * :param {Object} props - Component props.
- * :param {React.ReactNode} props.children - Two child components: left and right panes.
- * :param {string} props.className - Additional class names for styling.
- * :returns {JSX.Element} The rendered ResizablePane component.
+ * @param {Object} props - Component props.
+ * @param {React.ReactNode} props.children - Two child components: left and right panes.
+ * @param {string} props.className - Additional class names for styling.
+ * @returns {JSX.Element} The rendered ResizablePane component.
  */
 const ResizablePane = ({ children, className }) => {
     const [isDragging, setIsDragging] = useState(false);

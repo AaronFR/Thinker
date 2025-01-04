@@ -14,8 +14,8 @@ export const SettingsContext = createContext();
  *
  * Wraps the application components and provides settings-related state and functions.
  *
- * :param {object} props - The component props.
- * :param {React.ReactNode} props.children - React components that consume this context.
+ * @param {object} props - The component props.
+ * @param {React.ReactNode} props.children - React components that consume this context.
  */
 export const SettingsProvider = ({ children }) => {
     const initialSettings = {
@@ -76,8 +76,8 @@ export const SettingsProvider = ({ children }) => {
     /**
      * Saves a setting to the server.
      *
-     * :param {string} field - The config field to update.
-     * :param {any} value - The new value for the config field.
+     * @param {string} field - The config field to update.
+     * @param {any} value - The new value for the config field.
      */
     const saveConfig = async (field, value) => {
         try {
@@ -131,8 +131,8 @@ export const SettingsProvider = ({ children }) => {
     /**
      * Toggles a boolean setting and saves the updated config to the server.
      *
-     * :param {string} field - The config field to update.
-     * :param {string} key - The key in the settings state to toggle.
+     * @param {string} field - The config field to update.
+     * @param {string} key - The key in the settings state to toggle.
      */
     const toggleSetting = useCallback((field, key) => {
         setSettings((prev) => {
@@ -145,8 +145,8 @@ export const SettingsProvider = ({ children }) => {
     /**
      * Handles changes to message settings with debounce.
      *
-     * :param {string} key - The key of the message to update.
-     * :param {string} value - The new message value.
+     * @param {string} key - The key of the message to update.
+     * @param {string} value - The new message value.
      */
     const handleMessageChange = useCallback((key, value) => {
         setSettings((prev) => ({ ...prev, [key]: value }));

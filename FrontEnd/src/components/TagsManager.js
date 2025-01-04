@@ -14,8 +14,8 @@ const DEFAULT_TAGS = {
 /**
  * TagsManager component allows adding and deleting tags with optional default values.
  *
- * :param {object} tags - Current tags.
- * :param {function} setTags - Function to update tags.
+ * @param {object} tags - Current tags.
+ * @param {function} setTags - Function to update tags.
  */
 const TagsManager = ({ tags, setTags }) => {
     const [isAdding, setIsAdding] = useState(false);

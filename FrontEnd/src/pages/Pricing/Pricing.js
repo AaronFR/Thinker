@@ -11,8 +11,8 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
  *
  * Converts a price value into a formatted string for display.
  *
- * :param {number} price - The price value to format.
- * :returns {string} The formatted price string.
+ * @param {number} price - The price value to format.
+ * @returns {string} The formatted price string.
  */
 function FormatPrice(price) {
     const scale = 100

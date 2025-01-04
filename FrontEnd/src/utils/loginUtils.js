@@ -6,9 +6,9 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
     /**
      * Sends a POST request to the specified endpoint with the provided data.
      *
-     * :param {string} endpoint: The API endpoint to send the request to.
-     * :param {Object} data: The payload to include in the request body.
-     * :returns {Promise<Response>} The fetch response.
+     * @param {string} endpoint: The API endpoint to send the request to.
+     * @param {Object} data: The payload to include in the request body.
+     * @returns {Promise<Response>} The fetch response.
      */
     const postRequest = async (endpoint, data) => {
         try {

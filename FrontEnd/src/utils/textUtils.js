@@ -80,7 +80,7 @@ export const MarkdownRenderer = ({ markdownText, className = '', isLoading = fal
 /**
  * Renders a button that copies the code text to the clipboard.
  *
- * :param code: The code text to be copied.
+ * @param code: The code text to be copied.
  */
 const CopyCodeButton = ({ code }) => {
   const handleCopy = async () => {
@@ -105,9 +105,9 @@ const CopyCodeButton = ({ code }) => {
 /**
  * CodeBlock component for rendering highlighted code with a copy button.
  *
- * :param lang: The language of the code block.
- * :param code: The actual code to highlight.
- * :param index: The index for unique key generation.
+ * @param lang: The language of the code block.
+ * @param code: The actual code to highlight.
+ * @param index: The index for unique key generation.
  */
 const CodeBlock = ({ lang, code, index }) => {
   const codeRef = useRef(null);
@@ -139,7 +139,7 @@ const CodeBlock = ({ lang, code, index }) => {
 /**
  * Renders a standard text block.
  *
- * :param text: The text to render as HTML.
+ * @param text: The text to render as HTML.
  */
 const TextBlock = ({ text }) => (
   <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(text)) }} />

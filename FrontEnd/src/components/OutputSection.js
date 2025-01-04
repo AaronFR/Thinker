@@ -16,10 +16,10 @@ import './styles/OutputSection.css';
  * 2. This method only operates mid-stream so if the response is malformed from
  *  a malformed code block in the response it is only *temporarily* malformed
  * 
- * :param message: The message string to be checked and possibly modified.
- * :param isProcessing: Boolean flag indicating that the message is being 
+ * @param message: The message string to be checked and possibly modified.
+ * @param isProcessing: Boolean flag indicating that the message is being 
  *                      streamed currently.
- * :return: The original message, possibly with a triple backtick
+ * @return: The original message, possibly with a triple backtick
  */
 const handleIncompleteMessage = (message) => {
   const tripleBacktickRegex = /```/g;

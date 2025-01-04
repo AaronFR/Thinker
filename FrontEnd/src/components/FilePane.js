@@ -12,10 +12,8 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
  * Displays a list of file categories and their respective files.
  * Allows users to expand/collapse categories, view file details, select files, and delete files.
  * 
- * :param onFileSelect: Callback function to handle file selection.
- * :type onFileSelect: function
- * :param isProcessing: Indicates if the app is currently processing data.
- * :type isProcessing: bool
+ * @param onFileSelect: Callback function to handle file selection.
+ * @param isProcessing: Indicates if the app is currently processing data.
  */
 const FilePane = ({ onFileSelect, isProcessing }) => {
   const [categories, setCategories] = useState([]);
