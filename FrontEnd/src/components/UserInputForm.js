@@ -45,29 +45,35 @@ const UserInputForm = ({
    */
   const fetchStagedFiles = async () => {
     try {
-      const response = await apiFetch(`${FLASK_PORT}/list_staged_files`, {
-        method: "GET",
-        credentials: "include"
-      });
+        const response = await apiFetch(`${FLASK_PORT}/list_staged_files`, {
+            method: "GET",
+            credentials: "include"
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        setFetchError(errorData.message || 'Failed to fetch files.');
-        return;
-      }
+        if (!response.ok) {
+            const errorData = await response.json();
+            setFetchError(errorData.message || 'Failed to fetch files.');
+            return;
+        }
 
-      const data = await response.json();
-      setSelectedFiles((prevFiles) => [
-        ...prevFiles,
-        ...data.files.map((fileName) => ({ name: getBasename(fileName) }))
-      ]);
+        const data = await response.json();
+
+        const existingFileNames = new Set(selectedFiles.map(file => file.name));
+        const newFiles = data.files
+            .map(fileName => ({ name: getBasename(fileName) }))
+            .filter(file => !existingFileNames.has(file.name)); // Filter out duplicates
+
+        setSelectedFiles(prevFiles => [
+            ...prevFiles,
+            ...newFiles
+        ]);
     } catch (error) {
-      setFetchError(`Error fetching files. ${error.message}`);
-      console.error('Error fetching files:', error);
+        setFetchError(`Error fetching files: ${error.message}`);
+        console.error(error);
     } finally {
-      setUploadCompleted(false)
+        setUploadCompleted(false);
     }
-  };
+};
 
   /**
    * useEffect hook to fetch uploaded files
