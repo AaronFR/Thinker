@@ -141,10 +141,7 @@ const UserInputForm = ({
       </div>
 
       {/* User Input Form */}
-      <form
-        className='user-input-form'
-        onSubmit={handleSubmit}
-      >
+      <form className='user-input-form' onSubmit={handleSubmit}>
         <AutoExpandingTextarea
           id='prompt-input'
           value={userInput}
@@ -153,6 +150,8 @@ const UserInputForm = ({
           placeholder='Enter your prompt'
           className="textarea prompt-input"
           rows="2"
+          required
+          aria-label="User prompt input"
         />
 
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px'}}>
