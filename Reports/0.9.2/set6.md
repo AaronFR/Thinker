@@ -3,7 +3,7 @@
 Running on o1-mini
 Estimated cost: $1.5 (which was lost because of the @handle_errors decorator bug 😑)
 
-Actual useable set cost a whole dollar 🙃, but it took a whole day to review the mini so probably worth the sum
+Actual usable set cost a whole dollar 🙃, but it took a whole day to review the mini so probably worth the sum
 
 
 ## AutoWorkflow.py

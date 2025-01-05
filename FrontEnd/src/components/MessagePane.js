@@ -13,14 +13,16 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
 /**
  * MessageHistory Component
  * 
- * Displays a list of message categories and their respective messages.
- * Allows users to expand/collapse categories, view message details, select messages, and delete messages.
+ * Displays a list of messages with options to select, expand, and delete them.
  * 
  * Props:
- * - isProcessing (boolean): Indicates if the app is currently processing data.
+ * - isProcessing (boolean): Indicates if the application is currently processing data.
+ * - onMessageSelect (function): Callback to handle message selection.
  */
 const MessageHistory = ({ isProcessing, onMessageSelect }) => {
   const [categories, setCategories] = useState([])
+  const [error, setError] = useState('');
+
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
 
   /**
@@ -101,6 +103,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
       )
     } catch (error) {
       console.error("Error fetching messages:", error)
+      setError("Unable to load messages. Please try again.");
     }
   };
 
@@ -134,6 +137,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
   return (
     <div className="message-history-container" style={withLoadingOpacity(isProcessing)}>
       <h2>Messages</h2>
+      {error && <p className="error-message">{error}</p>}
       <section className="category-list">
         {categories.length > 0 ? (
           categories.map((category) => (
@@ -175,6 +179,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
 
 MessageHistory.propTypes = {
   isProcessing: PropTypes.bool.isRequired,
+  onMessageSelect: PropTypes.func.isRequired,
 };
 
 export default React.memo(MessageHistory);

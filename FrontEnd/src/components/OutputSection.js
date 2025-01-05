@@ -16,37 +16,43 @@ import './styles/OutputSection.css';
  * 2. This method only operates mid-stream so if the response is malformed from
  *  a malformed code block in the response it is only *temporarily* malformed
  * 
- * @param message: The message string to be checked and possibly modified.
- * @param isProcessing: Boolean flag indicating that the message is being 
- *                      streamed currently.
- * @return: The original message, possibly with a triple backtick
+ * @param {string} message - The message string to check and possibly modify.
+ * @param {boolean} isProcessing - Boolean flag indicating that the message is being streamed.
+ * @return {string} - The modified message, possibly with an extra closing code block.
  */
 const handleIncompleteMessage = (message) => {
   const tripleBacktickRegex = /```/g;
   const matches = message.match(tripleBacktickRegex);
   const count = matches ? matches.length : 0;
 
-  if (count % 2 !== 0) {
-    if (!message.endsWith("```")) {
-      message += "\n```";
-    }
-  }
-      
-  return message;
-}
+  // Append closing code block if the count of opening and closing backticks is odd
+  return (count % 2 !== 0 && !message.endsWith("```")) 
+  ? message + "\n```" 
+  : message;
+};
 
+/**
+ * OutputSection Component
+ * 
+ * Renders the output content, handling both error messages and standard messages.
+ * 
+ * @param message: The message string to display. Can contain markdown and code blocks.
+ * @param error: Optional error message to display.
+ * @param isProcessing: Indicates if the message is currently being streamed/processed.
+ */ 
 const OutputSection = ({ message, error = '', isProcessing }) => {
   if (!message && !error && !isProcessing) return null
 
   return (
     <div className="markdown-output">
       <CodeHighlighter>
-        {error ? error : 
-          (isProcessing ? handleIncompleteMessage(message) : message)
+        {error 
+          ? error
+          : (isProcessing ? handleIncompleteMessage(message) : message)
         }
       </CodeHighlighter>
     </div>
   );
 };
 
-export default OutputSection;
+export default React.memo(OutputSection);

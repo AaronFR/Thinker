@@ -46,7 +46,7 @@ body.dark-mode .app-container {
 }
 
 /* Link styling for navigation */
-.link {
+.link, .nav-link {
   display: inline-block;
   margin-top: var(--spacing-md);
   padding: var(--spacing-xs) var(--spacing-sm);
@@ -71,12 +71,12 @@ body.dark-mode .app-container {
   }
 }
 
-.link:hover {
+.link:hover, .nav-link:hover {
   color: var(--color-link-hover);
   animation: link-bounce var(--animation-duration) ease-in-out;
 }
 
-body.dark-mode .link {
+body.dark-mode .link, .nav-link {
   background-color: var(--color-link-bg-dark);
   color: var(--color-link-dark);
   transition: background-color var(--transition-normal), color var(--transition-normal);

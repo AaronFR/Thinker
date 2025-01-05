@@ -7,6 +7,7 @@ import './styles/FileUploadButton.css';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
+// Define initial state for the reducer
 const initialState = {
   uploadStatus: '',
   isUploading: false,
@@ -15,12 +16,12 @@ const initialState = {
 
 /**
  * Reducer function to manage upload state transitions.
- * 
+ *
  * @param {Object} state - Current state.
  * @param {Object} action - Action object containing type and payload.
  * @returns {Object} - New state.
  */
-function uploadReducer(state, action) {
+const uploadReducer = (state, action) => {
   switch (action.type) {
     case 'UPLOAD_START':
       return { ...state, isUploading: true, uploadStatus: 'Uploading...', uploadProgress: 0 };
@@ -35,14 +36,16 @@ function uploadReducer(state, action) {
     default:
       return state;
   }
-}
+};
 
 /**
  * FileUploadButton Component
- * 
+ *
  * Allows users to upload files with real-time progress feedback.
  * 
- * @param {Object} props - Component props.
+ * ToDo: I should be able to click on the edges of the button and upload, currently you 
+ *  have to click on the file emoji directly
+ *
  * @param {Function} props.onUploadSuccess - Callback invoked upon successful upload.
  */
 const FileUploadButton = ({ onUploadSuccess }) => {
@@ -50,17 +53,20 @@ const FileUploadButton = ({ onUploadSuccess }) => {
 
   /**
    * Handles file upload when a user selects a file.
-   * Supports multiple file uploads and provides upload progress feedback.
-   * 
+   *
    * @param {Event} event - The file input change event.
    */
   const handleFileChange = useCallback(async (event) => {
     const files = Array.from(event.target.files);
 
     if (files.length === 0) {
-      dispatch({ type: 'UPLOAD_FAILURE', payload: 'No file selected.' });
+      dispatch({
+        type: 'UPLOAD_FAILURE',
+        payload: 'No file selected.',
+      });
       return;
     }
+
     dispatch({ type: 'UPLOAD_START' });
 
     for (const file of files) {
@@ -71,7 +77,7 @@ const FileUploadButton = ({ onUploadSuccess }) => {
       const signal = controller.signal;
 
       try {
-        // ToDo switch to ApiFetch (will require some debugging)
+        // ToDo switch to ApiFetch (will require some debugging - backend doesn't detech any files)
         const response = await fetch(`${FLASK_PORT}/file`, {
           method: 'POST',
           body: formData,
@@ -102,16 +108,15 @@ const FileUploadButton = ({ onUploadSuccess }) => {
       }
     }
 
-    // Reset the file input after upload
-    event.target.value = null;
+    event.target.value = null; // Reset the file input after upload
   }, [onUploadSuccess, dispatch]);
 
   return (
     <div className="button file-upload-button">
-      <input 
-        type="file" 
+      <input
+        type="file"
         id="file-input"
-        onChange={handleFileChange} 
+        onChange={handleFileChange}
         disabled={state.isUploading}
         className='file-input'
         aria-disabled={state.isUploading}
@@ -119,13 +124,18 @@ const FileUploadButton = ({ onUploadSuccess }) => {
         style={{ display: 'none' }}
       />
 
-      {/* Custom Label as a Button */}
-      <label htmlFor="file-input" className='custom-file-label'>
-      📂 {/* Upload Emoji */}
+      <label 
+        htmlFor="file-input"
+        className='custom-file-label'
+        role="button"
+        tabIndex={0}
+        aria-label="Upload files"
+      >
+        📂 {/* Upload Emoji */}
       </label>
 
       {state.isUploading && (
-        <div className='upload-progress'>
+        <div className='upload-progress' aria-live="polite">
           <ProgressBar progress={state.uploadProgress} />
           <p>{state.uploadProgress}%</p>
         </div>
@@ -138,4 +148,4 @@ FileUploadButton.propTypes = {
   onUploadSuccess: PropTypes.func.isRequired,
 };
 
-export default FileUploadButton;
+export default React.memo(FileUploadButton);

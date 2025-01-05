@@ -26,7 +26,7 @@ import './styles/SuggestedQuestions.css';
 const SuggestedQuestions = ({
   questionUserPromptsEnabled,
   questionsForPrompt,
-  error = "",
+  error = '',
   isQuestioning,
   onFormsFilled,
   setConcatenatedQA,
@@ -48,7 +48,7 @@ const SuggestedQuestions = ({
   if (error) {
     return (
       <div className="markdown-questions-for-prompt" style={withLoadingOpacity(isQuestioning)}>
-        <div className="error-message">{error}</div>
+        <div role="alert"  className="error-message">{error}</div>
       </div>
     );
   }
@@ -57,7 +57,7 @@ const SuggestedQuestions = ({
   if (!questionsForPrompt) {
     return (
       <div style={withLoadingOpacity(isQuestioning)}>
-        {isQuestioning ? "..." : ""}
+        {isQuestioning ? "Loading questions..." : ""}
       </div>
     );
   }
@@ -70,25 +70,17 @@ const SuggestedQuestions = ({
    * @returns {Array<string>} - An array of question strings.
    */
   const parseQuestions = (markdownText) => {
-    const tokens = marked.lexer(questionsForPrompt);
-    if (tokens) {
-      let questions = [];
+    const tokens = marked.lexer(markdownText);
+    let questions = [];
 
-      tokens.forEach((token) => {
-        if (token.type !== 'list') {
-          questions.push(token.text);
-        }
-        if (token.type === 'list') {
-          questions = token.items.map((item) => item.text);
-        }
-      });
+    tokens.forEach((token) => {
+      if (token.type === 'list') {
+        questions = token.items.map(item => item.text);
+      }
+    });
 
-      return questions;
-    } else {
-      return [questionsForPrompt]
-    }
-    
-  }
+    return questions.length ? questions : [markdownText];
+  };
 
   const questions = parseQuestions(questionsForPrompt);
 
@@ -103,15 +95,11 @@ const SuggestedQuestions = ({
   const handleResponseChange = (index, value) => {
     setResponses((prevResponses) => {
       const newResponses = { ...prevResponses, [index]: value };
-
-      // Determine if any textarea has content
       const anyFilled = Object.values(newResponses).some((val) => val.trim() !== "");
-      console.log("TEMP", anyFilled)
+      
       onFormsFilled(anyFilled); // Notify parent component
+      setConcatenatedQA(concatenateQA(questions, newResponses))
 
-      const concatenatedQA = concatenateQA(questions, newResponses);
-      console.log(concatenatedQA);
-      setConcatenatedQA(concatenatedQA)
       return newResponses;
     });
   };
@@ -124,33 +112,24 @@ const SuggestedQuestions = ({
    * @returns {string} - Concatenated Q&A string.
    */
   const concatenateQA = (questionsList, answers) => {
-    return questionsList.map((question, index) => {
-        const answer = answers[index] ? answers[index].trim() : "";
-        return answer ? `${question}: ${answer}` : null
+    return questionsList
+      .map((question, index) => {
+        const answer = answers[index] ? answers[index].trim() : '';
+        return answer ? `${question}: ${answer}` : null;
       })
       .filter(Boolean) // Remove nulls
       .join('\n');
   };
 
   const minContent = (
-    <MarkdownRenderer 
-      markdownText={"Questions and Answers +"} 
-      className="question-text" 
-      isLoading={isQuestioning}
-    />
+    <MarkdownRenderer markdownText={"Questions and Answers +"} className="question-text" isLoading={isQuestioning} />
   );
-
   const maxContent = (
     <div className="markdown-questions-for-prompt">
       <ol className="questions-list">
         {questions.map((question, index) => (
           <li key={index} className="question-item">
-            <MarkdownRenderer 
-              markdownText={question}
-              className="question-text"
-              isLoading={isQuestioning}
-            />
-
+            <MarkdownRenderer markdownText={question} className="question-text" isLoading={isQuestioning} />
             <form className="response-form">
               <AutoExpandingTextarea
                 className="textarea response-textarea"

@@ -159,7 +159,7 @@ body.dark-mode .workflow-details{
   color: var(--color-text);
 }
 
-.module {
+.response {
   flex: 2;
   text-align: center;
   font-size: var(--font-size-small);

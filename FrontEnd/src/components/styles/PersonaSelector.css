@@ -9,11 +9,9 @@
   color: var(--color-input-text);
   transition: border-color var(--transition-fast);
 }
-
 .dropdown:focus {
   border-color: var(--color-link-hover); /* Similar focus effect to input */
 }
-
 body.dark-mode .dropdown {
   background-color: var(--color-input-bg-dark);
   color: var(--color-input-text-dark);

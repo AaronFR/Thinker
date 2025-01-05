@@ -1,0 +1,43 @@
+/* Navigation.css */
+
+.navigation {
+  background-color: #bababa;
+  border-bottom: 1px solid #dee2e6;
+  border-radius: 15px;
+  margin-top: auto;
+  margin-bottom: 2.5%;
+}
+body.dark-mode .navigation {
+  background-color: #161616;
+  border-bottom: 1px solid #505254;
+}
+
+.nav-list {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2%;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  /* Additional styling if needed */
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #343a40;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #007bff;
+}
+
+.active {
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
+}

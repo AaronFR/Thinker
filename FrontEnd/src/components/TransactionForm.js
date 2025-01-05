@@ -1,8 +1,19 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+
 import { apiFetch } from '../utils/authUtils';
+import './styles/TransactionForm.css';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
+/**
+ * TransactionForm Component
+ * 
+ * Renders a form that allows users to top up their balance.
+ * Validates user input, handles form submission, and provides real-time feedback.
+ *
+ * @param onSuccess: Callback function invoked upon successful transaction.
+ */
 const TransactionForm = ({ onSuccess }) => {
     const [amount, setAmount] = useState('');
     const [error, setError] = useState('');
@@ -21,6 +32,11 @@ const TransactionForm = ({ onSuccess }) => {
         return !isNaN(floatValue) && floatValue > 0 && regex.test(value);
     };
 
+    /**
+     * Attempts to process the transaction.
+     *
+     * @param {Event} event - The form submission event.
+     */
     const attemptTransaction = async (event) => {
         event.preventDefault();
         setError('');
@@ -32,7 +48,6 @@ const TransactionForm = ({ onSuccess }) => {
         }
 
         setIsLoading(true);
-        console.log("Transaction attempted with amount: $", amount);
 
         try {
             const floatAmount = parseFloat(amount).toFixed(2); // only dollars and cents ($)1.23456 -> ($)1.23
@@ -40,6 +55,7 @@ const TransactionForm = ({ onSuccess }) => {
             const response = await apiFetch(`${FLASK_PORT}/pricing/add`, {
                 method: 'POST',
                 body: JSON.stringify({ sum: parseFloat(floatAmount) }),
+                credentials: 'include',
             });
 
             if (!response.ok) {
@@ -62,36 +78,55 @@ const TransactionForm = ({ onSuccess }) => {
     /**
      * Handles changes to accept only whole dollars and cents as a float
      *
-     * @param {Event} e - The event object.
+     * @param {Event} e - The input change event.
      */
     const handleAmountChange = (e) => {
         const value = e.target.value;
         if (/^\d*\.?\d{0,2}$/.test(value)) {
             setAmount(value);
+            if (error) setError('');
         }
     };
 
     return (
-        <form onSubmit={attemptTransaction}>
-            <h3>Top up $</h3>
-            <label htmlFor="amount" className="visually-hidden">Amount in dollars</label>
-            <input
-                type="text"
-                id="amount"
-                name="amount"
-                placeholder='Amount in dollars $...'
-                value={amount}
-                onChange={handleAmountChange}
-                aria-describedby="amountHelp"
-                required
-            />
-            {error && <p className="error-message" role="alert">{error}</p>}
-            {success && <p className="success-message" role="status">{success}</p>}
-            <button type="submit" disabled={isLoading}>
+        <form onSubmit={attemptTransaction} aria-label="Transaction Form">
+            <h3>Top Up Your Balance $</h3>
+            <div className="form-group">
+                <label htmlFor="amount" className="visually-hidden">
+                    Amount in dollars
+                </label>
+                <input
+                    type="text"
+                    className={`input-field ${error ? 'input-error' : ''}`}
+                    id="amount"
+                    name="amount"
+                    placeholder='Amount in dollars $...'
+                    value={amount}
+                    onChange={handleAmountChange}
+                    aria-describedby="amountHelp"
+                    required
+                    aria-invalid={!!error}
+                />
+                <small id="amountHelp" className="form-text">
+                    Enter the amount in USD (e.g., 5.00)
+                </small>
+                {error && <p className="error-message" role="alert">{error}</p>}
+                {success && <p className="success-message" role="status">{success}</p>}
+            </div>
+            <button
+                type="submit"
+                disabled={isLoading}
+                className={`submit-button ${isLoading ? 'button-loading' : ''}`}
+                aria-busy={isLoading}
+            >
                 {isLoading ? 'Processing...' : 'Pay'}
             </button>
         </form>
     );
+};
+
+TransactionForm.propTypes = {
+    onSuccess: PropTypes.func.isRequired,
 };
 
 export default TransactionForm;

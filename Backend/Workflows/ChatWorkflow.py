@@ -29,6 +29,8 @@ class ChatWorkflow(BaseWorkflow):
         """
         Executes the chat workflow.
 
+        ToDo: has a bad habit of saying 'the user'
+
         :param process_prompt: Function to process user prompts.
         :param initial_message: The user's initial prompt.
         :param file_references: Optional list of file references.

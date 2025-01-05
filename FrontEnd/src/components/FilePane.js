@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 import FileItem from './FileItem';
 import { withLoadingOpacity, toTitleCase } from '../utils/textUtils';
@@ -18,9 +19,12 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
 const FilePane = ({ onFileSelect, isProcessing }) => {
   const [categories, setCategories] = useState([]);
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
- 
+  const [fetchError, setFetchError] = useState('');
+
   const fetchCategories = async () => {
     try {
+      setFetchError('')
+
       const response = await apiFetch(`${FLASK_PORT}/categories_with_files`, {
         method: "GET",
       });
@@ -40,40 +44,8 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
       setCategories(categoriesWithId);
     } catch (error) {
       console.error("Error fetching file categories:", error);
+      setFetchError('Unable to load file categories. Please try again later.');
     }
-  };
-
-  // Fetch categories on mount and when finished processing
-  useEffect(() => {
-    if (!isProcessing) {
-      fetchCategories();
-    }
-  }, [isProcessing]);
-
-  /**
-   * Toggles the expansion of a category.
-   * If the category is already expanded, it collapses it.
-   * Otherwise, it expands the category and fetches its files if not already loaded.
-   * 
-   * @param {number} id - The ID of the category.
-   * @param {string} name - The name of the category.
-   */
-  const toggleCategory = async (id, name) => {
-    if (expandedCategoryId === id) {
-      setExpandedCategoryId(null);
-      return
-    }
-
-    setExpandedCategoryId(id); // Expand the clicked category
-
-    // Check if this category already has files loaded
-    const category  = categories.find(cat => cat.id === id);
-    if (category.files && category.files.length > 0) {
-      // Files already loaded, no need to fetch again
-      return;
-    }
-
-    await fetchFilesByCategory(name, id);
   };
 
   const fetchFilesByCategory = async (categoryName, categoryId) => {
@@ -87,17 +59,48 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
       }
 
       const data = await response.json();      
-
       setCategories(prevCategories =>
         prevCategories.map(category =>
-          category.id === categoryId ? { ...category, files: data.files } : category
+          category.id === categoryId
+            ? { ...category, files: data.files }
+            : category
         )
       );
     } catch (error) {
       console.error("Error fetching files:", error);
+      setFetchError(
+        `Unable to load files for ${categoryName}. Please try again later.`
+    );
     }
   };
 
+  /**
+   * Toggles the expansion of a category.
+   * If the category is already expanded, it collapses it.
+   * Otherwise, it expands the category and fetches its files if not already loaded.
+   * 
+   * @param {number} id - The ID of the category.
+   * @param {string} name - The name of the category.
+   */
+  const toggleCategory = async (id, name) => {
+    if (expandedCategoryId === id) {
+      setExpandedCategoryId(null);
+    } else {
+        setExpandedCategoryId(id);
+        const category = categories.find(cat => cat.id === id);
+        if (!category.files.length) {
+            await fetchFilesByCategory(name, id);
+        }
+    }
+  };
+
+
+  /**
+   * Handles the deletion of a file by updating the state.
+   * 
+   * @param {number} categoryId: The ID of the category containing the file.
+   * @param {number} fileId: The ID of the file to delete.
+   */
   const handleDeleteFile = (categoryId, fileId) => {
     setCategories(prevCategories =>
       prevCategories.map(category => {
@@ -110,18 +113,38 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
     );
   };
 
+  /**
+   * Fetches categories when the component mounts or when processing state changes.
+   */
+  useEffect(() => {
+    if (!isProcessing) {
+      fetchCategories();
+    }
+  }, [isProcessing]);
+
   return (
     <div className="files-container" style={withLoadingOpacity(isProcessing)}>
       <h2>Files</h2>
+      {fetchError && <p className="error-message" role="alert">{fetchError}</p>}
       <section className="category-list">
         {categories.length > 0 ? (
           categories.map((category) => (
             <div key={category.id} className="category-item">
-              <div className="button category-title" onClick={() => toggleCategory(category.id, category.name)}>
+              <header
+                className="button category-title"
+                onClick={() => toggleCategory(category.id, category.name)}
+                role="button"
+                aria-expanded={expandedCategoryId === category.id}
+                aria-controls={`category-${category.id}`}
+                tabIndex={0}
+                onKeyPress={(e) => {
+                      if (e.key === 'Enter') toggleCategory(category.id, category.name);
+                }}
+              >
                 {category.name}
-              </div>
+              </header>
               {expandedCategoryId === category.id && (
-                <div className="file-list">
+                <div id={`category-${category.id}`} className="file-list">
                   {category.files.length === 0 ? (
                     <p>Loading files...</p>
                   ) : (
@@ -142,6 +165,11 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
       </section>
     </div>
   );
+};
+
+FilePane.propTypes = {
+  onFileSelect: PropTypes.func.isRequired,
+  isProcessing: PropTypes.bool.isRequired,
 };
 
 export default React.memo(FilePane);

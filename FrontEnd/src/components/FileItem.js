@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { shortenText, getBasename, MarkdownRenderer, CodeHighlighter } from '../utils/textUtils';
@@ -10,75 +10,91 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
  * FileItem Component
  * 
  * Displays an individual file with options to expand/collapse, select, and delete.
- * ToDo: A method of automatic code detection/blocking code needs to be added, 
- * responses will have code blocks input files (and saved files eventually) won't
- * If the file is say a python file you can just automatically add the code block when its to be displayed to the user
- * 
- * Props:
- * - file (Object): The file object containing id, name, summary, content, category_id, and time.
- * - onDelete (Function): Callback function to handle file deletion.
- * - onSelect (Function): Callback function to handle file selection.
+ *
+ * @param file: The file object containing id, name, summary, content, category_id, and time. * 
+ * @param onDelete: Callback function to handle file deletion. * 
+ * @param onSelect: Callback function to handle file selection.
  */
 const FileItem = ({ file, onDelete, onSelect }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [content, setContent] = useState(file.content || '');
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (isExpanded && !content) {
+      fetchContent();
+    }
+  }, [isExpanded]);
+
+  /**
+   * Fetches file content and handles errors.
+   * Sets the content state or handles errors accordingly.
+   */
+  const fetchContent = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${FLASK_PORT}/file/${file.category_id}/${getBasename(file.name)}`, {
+        method: 'GET',
+        credentials: "include"
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch file content.");
+      }
+
+      const data = await response.json();
+      setContent(data.content);
+    } catch (err) {
+      console.error("Error fetching file content:", err);
+      setError("Unable to load content. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   /**
    * Toggles the expansion state of the file item.
-   * Fetches content if expanding and content is not already loaded.
    */
-  const toggleExpansion = async () => {
-    if (!isExpanded) {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await apiFetch(`${FLASK_PORT}/file/${file.category_id}/${getBasename(file.name)}`, {
-          method: 'GET',
-          credentials: "include"
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch file content.");
-        }
-
-        const data = await response.json();
-        setContent(data.content);
-      } catch (err) {
-        console.error("Error fetching file content:", err);
-        setError("Unable to load content. Please try again.");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    setIsExpanded(prev => !prev);
+  const toggleExpansion = () => {
+    setIsExpanded((prev) => !prev);
   };
 
   /**
-   * Handles the deletion of the file by making an API call.
-   */
+     * Handles the deletion of the file by making an API call.
+     * Prevents multiple deletions and provides user feedback.
+     * 
+     * @param e: Event object.
+     */
   const handleDelete = async (e) => {
     e.stopPropagation(); // Prevent triggering the toggleExpansion
-    if (window.confirm("Are you sure you want to delete this file?")) {
-      try {
+    if (isDeleting) return; // Prevent multiple deletions
+
+    if (!window.confirm('Are you sure you want to delete this file?')) return;
+
+    setIsDeleting(true);
+    setError(null);
+
+    try {
         const response = await apiFetch(`${FLASK_PORT}/file/${file.id}`, {
-          method: 'DELETE',
-          credentials: "include"
+            method: 'DELETE',
+            credentials: 'include',
         });
 
         if (!response.ok) {
-          throw new Error("Failed to delete the file.");
+            throw new Error('Failed to delete the file.');
         }
 
-        onDelete(file.id); // Call the onDelete callback to remove the file from the UI
-      } catch (err) {
-        console.error("Error deleting the file:", err);
-        setError("Unable to delete the file. Please try again.");
-      }
+        onDelete(file.id); // Remove the file from the UI
+    } catch (err) {
+        console.error('Error deleting the file:', err);
+        setError('Unable to delete the file. Please try again.');
+    } finally {
+        setIsDeleting(false);
     }
-  };
+};
 
   /**
    * Handles the selection of the file.
@@ -92,45 +108,69 @@ const FileItem = ({ file, onDelete, onSelect }) => {
       className="file-item"
       onClick={handleSelect}
       style={{ cursor: 'pointer', opacity: isLoading ? 0.5 : 1 }}
+      role="button"
+      aria-pressed={isExpanded}
+      tabIndex={0}
+      onKeyPress={(e) => {
+          if (e.key === 'Enter') toggleExpansion();
+      }}
     >
       <div
         onClick={toggleExpansion}
         className="file-item-header"
+        aria-expanded={isExpanded}
+        role="button"
+        tabIndex={0}
+        onKeyPress={(e) => {
+            if (e.key === 'Enter') toggleExpansion();
+        }}
       >
-        <p><strong>File Name:</strong> {isExpanded ? getBasename(file.name) : shortenText(getBasename(file.name))}</p>
-        
+        <p>
+          <strong>File Name:</strong> 
+          {isExpanded
+            ? getBasename(file.name)
+            : shortenText(getBasename(file.name))}
+        </p>
       </div>
       
       {isExpanded && (
         <div className="file-details" style={{ padding: '10px 0' }}>
           <p><strong>Description:</strong> 
             <MarkdownRenderer>
-              { file.summary || 'No description available.' }
+              {file.summary || 'No description available.'}
             </MarkdownRenderer>
           </p>
-          <p><strong>Content:</strong> 
-          {isLoading && <span>Loading content...</span>}
-          {!isLoading && error && <span className="error">{error}</span>}
-          {!isLoading && !error && (
-            <div className="markdown-output">
-              <CodeHighlighter>
-                {content}
-              </CodeHighlighter>
-            </div>
-          )}
+
+          <p>
+            <strong>Content:</strong>{' '}
+            {isLoading && <span>Loading content...</span>}
+            {error && <span className="error">{error}</span>}
+            {!isLoading && !error && (
+              <div className="markdown-output">
+                <CodeHighlighter>{content}</CodeHighlighter>
+              </div>
+            )}
           </p>
-          {/* Add more file details if necessary */}
         </div>
       )}
+
       <div className="message-footer">
-        <button
-          onClick={handleDelete}
-          className="button delete-button"
-          type="button"
-        >
-          Delete
-        </button>
-        <p className='time'>{new Date(file.time * 1000).toLocaleString()}</p>
+      <button
+        onClick={handleDelete}
+        className="button delete-button"
+        type="button"
+        disabled={isDeleting}
+        aria-label={
+            isDeleting
+                ? 'Deleting file'
+                : 'Delete this file'
+        }
+      >
+          {isDeleting ? 'Deleting...' : 'Delete'}
+      </button>
+        <p className="time">
+          {new Date(file.time * 1000).toLocaleString()
+        }</p>
       </div>
     </div>
   );

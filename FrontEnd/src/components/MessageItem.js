@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { shortenText, CodeHighlighter } from '../utils/textUtils';
@@ -11,115 +11,140 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
  * 
  * Displays an individual message with options to expand/collapse and delete.
  * 
- * Props:
- * - msg (Object): The message object containing id, prompt, response, and time.
- * - onDelete (Function): Callback function to handle message deletion.
+ * @param {Object} msg : The message object containing id, prompt, response, and time.
+ * @param {Function} onDelete : Callback function to handle message deletion.
+ * @param {Function} onSelect : Callback function to handle message selection.
  */
 const MessageItem = ({ msg, onDelete, onSelect }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [error, setError] = useState(null);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [error, setError] = useState(null);
 
-  /**
-   * Toggles the expansion state of the message item.
-   */
-  const toggleExpansion = () => {
-    setIsExpanded(prev => !prev);
-  };
+    /**
+     * Toggles the expansion state of the message item.
+     */
+    const toggleExpansion = () => {
+        setIsExpanded(prev => !prev);
+    };
 
-  /**
-   * Handles the deletion of the message by making an API call.
-   */
-  const handleDelete = async (e) => {
-    e.stopPropagation(); // Prevent triggering the toggleExpansion
-    if (isDeleting) return; // Prevent multiple deletions
-    if (!window.confirm("Are you sure you want to delete this message?")) return;
-
-    setIsDeleting(true);
-    setError(null);
-
-    try {
-      const response = await apiFetch(`${FLASK_PORT}/messages/${msg.id}`, {
-        method: 'DELETE',
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete the message.");
-      }
-
-      onDelete(msg.id); // Call the onDelete callback to remove the message from the UI
-    } catch (err) {
-      console.error("Error deleting the message:", err);
-      setError("Unable to delete the message. Please try again.");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  /**
-   * Handles the selection of the message.
-   */
-  const handleSelect = () => {
-    onSelect(msg);
-  };
-
-  return (
-    <div 
-      className="message-item"
-      onClick={handleSelect}
-      style={{ cursor: 'pointer' }}
-    >
-      <div 
-        className="message-header"
-        onClick={toggleExpansion}
-        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-      >
-          
-        <div className="markdown-output">
-          <CodeHighlighter>
-            {isExpanded ? msg.prompt : shortenText(msg.prompt)}
-          </CodeHighlighter>
-        </div>
+    /**
+     * Handles the deletion of the message by making an API call.
+     */
+    const handleDelete = async (e) => {
+        e.stopPropagation(); // Prevent triggering the toggleExpansion
+        if (isDeleting) return; // Prevent multiple deletions
         
-      </div>
-      
-      <div className="message-response">
-        <p><strong>Response:</strong></p>
-        <div className="markdown-output">
-          <CodeHighlighter>
-            {isExpanded ? msg.response : shortenText(msg.response)}
-          </CodeHighlighter>
-        </div>
-        
-      </div>
+        if (!window.confirm("Are you sure you want to delete this message?")) return;
 
-      {error && <p className="error-message" style={{ color: 'red' }}>{error}</p>}
+        setIsDeleting(true);
+        setError(null);
 
-      <div className="message-footer">
-        <button
-          onClick={handleDelete}
-          className="button delete-button"
-          type="button"
-          disabled={isDeleting}
+        try {
+            const response = await apiFetch(`${FLASK_PORT}/messages/${msg.id}`, {
+                method: 'DELETE',
+                credentials: "include",
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to delete the message.");
+            }
+
+            onDelete(msg.id); // Call the onDelete callback to remove the message from the UI
+        } catch (err) {
+            console.error("Error deleting the message:", err);
+            setError("Unable to delete the message. Please try again.");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    /**
+     * Handles the selection of the message.
+     */
+    const handleSelect = () => {
+        onSelect(msg);
+    };
+
+    return (
+        <div
+            className="message-item"
+            onClick={handleSelect}
+            style={{ cursor: 'pointer', opacity: isDeleting ? 0.5 : 1 }}
+            role="button"
+            aria-pressed={isExpanded}
+            tabIndex={0}
+            onKeyPress={(e) => {
+                if (e.key === 'Enter') toggleExpansion();
+            }}
         >
-          {isDeleting ? 'Deleting...' : 'Delete'}
-        </button>
-        <p className='time'>{new Date(msg.time * 1000).toLocaleString()}</p>
-      </div>
-    </div>
-  );
+            <div 
+                className="message-header" 
+                onClick={toggleExpansion} 
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}
+                role="button"
+                aria-expanded={isExpanded}
+                aria-controls={`message-content-${msg.id}`}
+                tabIndex={0}
+                onKeyPress={(e) => { if (e.key === 'Enter') toggleExpansion(); }}
+            >
+                <div className="markdown-output">
+                    <CodeHighlighter>
+                        {isExpanded ? msg.prompt : shortenText(msg.prompt)}
+                    </CodeHighlighter>
+                </div>
+            </div>
+            
+            {isExpanded && (
+                <div id={`message-content-${msg.id}`} className="message-response">
+                    <p>
+                        <strong>Response:</strong>
+                    </p>
+                    <div className="markdown-output">
+                        <CodeHighlighter>
+                            {msg.response || 'No response available.'}
+                        </CodeHighlighter>
+                    </div>
+                </div>
+            )}
+
+            {error && <p className="error-message" role="alert" style={{ color: 'red' }}>
+                    {error}
+                </p>
+            }
+
+            <div className="message-footer">
+                <button
+                    onClick={handleDelete}
+                    className="button delete-button"
+                    type="button"
+                    disabled={isDeleting}
+                    aria-label={
+                        isDeleting ? 'Deleting message' : 'Delete this message'
+                    }
+                >
+                    {isDeleting ? 'Deleting...' : 'Delete'}
+                </button>
+                <p className='time'>
+                    {new Date(msg.time * 1000).toLocaleString()}
+                </p>
+            </div>
+        </div>
+    );
 };
 
 MessageItem.propTypes = {
-  msg: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    prompt: PropTypes.string.isRequired,
-    response: PropTypes.string.isRequired,
-    time: PropTypes.number.isRequired,
-  }).isRequired,
-  onSelect: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
+    msg: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        prompt: PropTypes.string.isRequired,
+        response: PropTypes.string,
+        time: PropTypes.number.isRequired,
+    }).isRequired,
+    onSelect: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
 };
 
-export default MessageItem;
+export default React.memo(MessageItem);

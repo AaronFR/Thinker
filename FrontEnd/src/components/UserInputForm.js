@@ -1,29 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import './styles/UserInputForm.css';
 import PropTypes from 'prop-types';
 
 import FileUploadButton from './FileUploadButton';
 import TagsManager from './TagsManager';
 import { apiFetch } from '../utils/authUtils';
-import { getBasename } from '../utils/textUtils'
-
+import { getBasename } from '../utils/textUtils';
 import AutoExpandingTextarea from '../utils/AutoExpandingTextarea';
+
+import './styles/UserInputForm.css';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
 /**
  * UserInputForm Component
- * 
+ *
  * Renders a form that allows users to input text and upload files.
  * Handles fetching of uploaded files, managing uploaded files state,
  * and integrates the FileUploadButton component for file uploads.
- * 
- * Props:
- * - handleSubmit (function): Function to handle form submission.
- * - handleInputChange (function): Function to handle changes in user input.
- * - userInput (string): Current value of the user input.
- * - isProcessing (boolean): Indicates if the form is in a processing state.
- * - selectedFiles (File): Currently selected file for upload.
+ *
+ * @param {function} handleSubmit - Function to handle form submission.
+ * @param {function} handleInputChange - Function to handle changes in user input.
+ * @param {string} userInput - Current value of the user input.
+ * @param {boolean} isProcessing - Indicates if the form is in a processing state.
+ * @param {Array} selectedFiles - Currently selected files for upload.
+ * @param {function} setSelectedFiles - Set function for selected files.
+ * @param {Array} selectedMessages - Currently selected messages.
+ * @param {function} setSelectedMessages - Set function for selected messages.
+ * @param {Array} tags - Current tags.
+ * @param {function} setTags - Set function for tags.
  */
 const UserInputForm = ({
   handleSubmit,
@@ -76,10 +80,10 @@ const UserInputForm = ({
 };
 
   /**
-   * useEffect hook to fetch uploaded files
+   * useEffect hook to fetch uploaded files.
    */
   useEffect(() => {
-    if (uploadCompleted){
+    if (uploadCompleted) {
       fetchStagedFiles();
     }
   }, [uploadCompleted]);
@@ -87,34 +91,36 @@ const UserInputForm = ({
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
   /**
-   * Handles successful file uploads by updating the uploadedFiles state
-   * and setting the files for prompting.
-   * 
+   * Handles successful file uploads by updating the selectedFiles state.
+   *
    * @param {Object} file - The uploaded file object.
    */
   const handleUploadSuccess = (file) => {
-    if (file) {
-      if (file.size > MAX_FILE_SIZE) {
-        setFetchError('File size exceeds the maximum limit of 5MB.');
-        return;
-      }
-      setUploadCompleted(true)
+    if (file && file.size > MAX_FILE_SIZE) {
+      setFetchError('File size exceeds the maximum limit of 10MB.');
+      return;
     }
+    setUploadCompleted(true);
   };
 
+  /**
+   * Handles key down events for the textarea.
+   *
+   * @param {Event} e - The keyboard event object.
+   */
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-        if (e.shiftKey) {
-            e.preventDefault();  // Prevent form submission and insert newline.
-            const { selectionStart, selectionEnd, value } = e.target;
-            e.target.value =
-                value.substring(0, selectionStart) + '\n' +
-                value.substring(selectionEnd);
-            e.target.selectionStart = e.target.selectionEnd = selectionStart + 1;
-        } else {
-            e.preventDefault(); // Prevent default Enter behavior.
-            handleSubmit(e);    // Submit the form.
-        }
+      if (e.shiftKey) {
+        e.preventDefault();  // Prevent form submission and insert a newline.
+        const { selectionStart, selectionEnd, value } = e.target;
+        e.target.value =
+          value.substring(0, selectionStart) + '\n' +
+          value.substring(selectionEnd);
+        e.target.selectionStart = e.target.selectionEnd = selectionStart + 1;
+      } else {
+        e.preventDefault(); // Prevent default Enter behavior.
+        handleSubmit(e);    // Submit the form.
+      }
     }
   };
 
@@ -122,8 +128,6 @@ const UserInputForm = ({
     <div>
       {/* Display Selected Messages */}
       <div className='reference-area'>
-        {fetchError && <p style={{ color: 'red' }}>{fetchError}</p>}
-        {selectedMessages.length === 0 && !fetchError}
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {selectedMessages.map((message, index) => (
             <li key={index}>
@@ -160,7 +164,7 @@ const UserInputForm = ({
           aria-label="User prompt input"
         />
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px'}}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
           <button 
             type="submit"
@@ -172,7 +176,7 @@ const UserInputForm = ({
           </button>
         </div>
 
-        <TagsManager tags={tags} setTags={setTags}/>
+        <TagsManager tags={tags} setTags={setTags} />
       </form>
     </div>
   );
@@ -184,15 +188,15 @@ UserInputForm.propTypes = {
   userInput: PropTypes.string.isRequired,
   isProcessing: PropTypes.bool.isRequired,
   selectedFiles: PropTypes.arrayOf(
-      PropTypes.shape({
-          name: PropTypes.string.isRequired,
-      })
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+    })
   ).isRequired,
   setSelectedFiles: PropTypes.func.isRequired,
   selectedMessages: PropTypes.arrayOf(
-      PropTypes.shape({
-          prompt: PropTypes.string.isRequired,
-      })
+    PropTypes.shape({
+      prompt: PropTypes.string.isRequired,
+    })
   ).isRequired,
   setSelectedMessages: PropTypes.func.isRequired,
   tags: PropTypes.arrayOf(PropTypes.string).isRequired,
