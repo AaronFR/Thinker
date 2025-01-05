@@ -62,7 +62,7 @@ class AutoWorkflow(BaseWorkflow):
                     iteration=iteration,
                     process_prompt=process_prompt,
                     message=prompt_message,
-                    file_references=file_references,
+                    file_references=[file_reference],
                     selected_message_ids=selected_message_ids or [],
                     file_name=file_name,
                     model=model,

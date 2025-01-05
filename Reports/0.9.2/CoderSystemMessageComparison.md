@@ -53,16 +53,16 @@ First Set 4 was applied and beneficial changes applied. Then set 5 was applied o
 In the next set this order should be reversed for fairness in testing
 
 
-| File                            | Enhanced | Base | Reasoning                                                                                                                |
-|---------------------------------|----------|------|--------------------------------------------------------------------------------------------------------------------------|
-| WikipediaApi.py                 | ✔        | ❌    | By and large bases changes were just uninteresting                                                                       |
+| File                            | Enhanced | Base | Reasoning                                                                                                                 |
+|---------------------------------|----------|------|---------------------------------------------------------------------------------------------------------------------------|
+| WikipediaApi.py                 | ✔        | ❌   | By and large bases changes were just uninteresting                                                                       |
 | UserContextManagement.py        | ✔        | ✔    |                                                                                                                          |
-| Pricing.py                      | 0        | ✔    | Close. But base added a value error while enhanced just added a useful log                                               |
-| NodeDatabaseManagement.py       | ❌        | ✔    | Base suggested try catches for all methods. Enhanced deleted methods                                                     |
+| Pricing.py                      | 0         | ✔    | Close. But base added a value error while enhanced just added a useful log                                               |
+| NodeDatabaseManagement.py       | ❌       | ✔    | Base suggested try catches for all methods. Enhanced deleted methods                                                     |
 | Neo4jDriver.py                  | ✔        | ✔    | Base noticed running optional field should be inside a if statement, enhanced added a good value error to initialisation |
-| EncyclopediaManagementInterface | ❌        | ✔    | Enhanced broke the file.                                                                                                 |
-| CypherQueries.py                | ❌        | ✔    | The base didn't delete necessary constants and pointed out more useful refactorings                                      |
-| Configuration.py                | ❌        | ✔    | Enhanced, mal-forms the function, while base adds a useful try-catch                                                     |
+| EncyclopediaManagementInterface | ❌       | ✔    | Enhanced broke the file.                                                                                                 |
+| CypherQueries.py                | ❌       | ✔    | The base didn't delete necessary constants and pointed out more useful refactorings                                      |
+| Configuration.py                | ❌       | ✔    | Enhanced, mal-forms the function, while base adds a useful try-catch                                                     |
 | CategoryManagement.py           | ✔        | ✔    | Both suggested valuable improvements will also missing details the other picked up                                       |
 
 There's a possible defect in that the base testing set was interrupted due to introduced errors and was split in two runs of the auto workflow
@@ -89,22 +89,22 @@ Note the intention is not to compare set 7 against 8 or 9 but to use it as a ben
 If the base system messages struggle while running on the new model and the updated files it just means it's much harder.
 It is set 8 v 9 that are to be compared against one another. 
 
-| File                  | Base gpt-4o-mini | Base o1-mini | 'enhanced' o1-mini Reasoning |
-|-----------------------|------------------|--------------|------------------------------|
-| FileItem.js           | ✔                | ✔            | womp                         |
-| FilePane.js           | ✔                | ✔            |                              |
-| FileUploadButton.js   | 0                | ✔            |                              |
-| MessageItem.js        | ✔                | 0            |                              |
-| MessagePane.js        | ✔                | ❌            |                              |
-| Navigation.js         | ✔                | ✔            |                              |
-| OutputSection.js      | ✔                | 0            |                              |
-| PersonaSelector.js    | ✔                | ❌            |                              |
-| PromptAugmentation.js | ✔                | 0            |                              |
-| SuggestedQuestions.js | ✔                | ❌            |                              |
-| TagsManager.js        | ✔                | ✔            |                              |
-| TransactionForm.js    | ✔                | ✔            |                              |
-| UserInputForm.js.js   | 0                | ❌            |                              |
-| Workflow.js           | ✔                | 0            |                              |
+| File                  | Base gpt-4o-mini | Base o1-mini | 'enhanced' o1-mini |
+|-----------------------|------------------|--------------|--------------------|
+| FileItem.js           | ✔                | ✔           | womp               |
+| FilePane.js           | ✔                | ✔           |                    |
+| FileUploadButton.js   | 0                | ✔            |                    |
+| MessageItem.js        | ✔                | 0            |                    |
+| MessagePane.js        | ✔                | ❌           |                   |
+| Navigation.js         | ✔                | ✔            |                   |
+| OutputSection.js      | ✔                | 0            |                    |
+| PersonaSelector.js    | ✔                | ❌           |                   |
+| PromptAugmentation.js | ✔                | 0            |                    |
+| SuggestedQuestions.js | ✔                | ❌           |                   |
+| TagsManager.js        | ✔                | ✔            |                   |
+| TransactionForm.js    | ✔                | ✔            |                   |
+| UserInputForm.js.js   | 0                | ❌           |                    |
+| Workflow.js           | ✔                | 0            |                    |
 
 Tragically (for my wallet) There was a failure in categorisation *somewhere* in set 9. The results we're generated but not saved to a category. Despite a category being assigned to eval9.
 This error is un-reproducible. While I would like to start testing system prompts: I'll probably still try it also goes to show that tests of the workflow at scale need to be perfomed and stability improved. 
@@ -151,10 +151,10 @@ This represents a huuuuuuge over-sharing of information. We can see a few blocks
 
 This should be massively cut down by default
 - 1-2 ✅
-- 3-7 (this could be cut down, really only none are needed for the prompt, but its working as intended)
-- 8-17 (this is the *entire* workflow, this would be fine for certain requests, requiring full oversight and knowledge of what the ai itself did, but not by default)
+- 3-7 ✔ (memory)  this could be cut down, you don't *necessarily* need context for these prompts, but its working as intended
+- 8-17 (updated files) (this is the *entire* workflow up to now, this would be fine for certain requests, requiring full oversight and knowledge of what the ai itself did, but not by default)
 What's additionally interesting is the duplication. Really this category should exist, its superfluous.
-- 18-21 (Fine as an option but not by default, should only be the actual file its working on by default)
+- 18-21 (yet to be updated files)
 - 22 ✅
 
 #### Role message log 
