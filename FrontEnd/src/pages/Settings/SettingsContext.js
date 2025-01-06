@@ -53,8 +53,6 @@ export const SettingsProvider = ({ children }) => {
         try {
             const response = await apiFetch(`${FLASK_PORT}/data/config`, {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
             });
             if (response.ok) {
                 const loadedConfig = await response.json();
@@ -83,9 +81,7 @@ export const SettingsProvider = ({ children }) => {
         try {
             const response = await apiFetch(`${FLASK_PORT}/data/config`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ field, value }),
-                credentials: 'include',
             });
 
             if (!response.ok) {

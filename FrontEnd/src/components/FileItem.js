@@ -80,7 +80,6 @@ const FileItem = ({ file, onDelete, onSelect }) => {
     try {
         const response = await apiFetch(`${FLASK_PORT}/file/${file.id}`, {
             method: 'DELETE',
-            credentials: 'include',
         });
 
         if (!response.ok) {

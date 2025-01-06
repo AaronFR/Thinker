@@ -22,7 +22,6 @@ function RootApp() {
       try {
         const response = await apiFetch(`${FLASK_PORT}/auth/validate`, {
             method: "GET",
-            credentials: "include", // Include cookies in the request
         });
 
         setIsAuthenticated(response.ok);

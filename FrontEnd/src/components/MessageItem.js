@@ -42,7 +42,6 @@ const MessageItem = ({ msg, onDelete, onSelect }) => {
         try {
             const response = await apiFetch(`${FLASK_PORT}/messages/${msg.id}`, {
                 method: 'DELETE',
-                credentials: "include",
             });
 
             if (!response.ok) {
