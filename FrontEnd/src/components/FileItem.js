@@ -126,7 +126,6 @@ const FileItem = ({ file, onDelete, onSelect }) => {
         }}
       >
         <p>
-          <strong>File Name:</strong> 
           {isExpanded
             ? getBasename(file.name)
             : shortenText(getBasename(file.name))}

@@ -1,4 +1,4 @@
-import { csrfFetch } from "./authUtils";
+import { apiFetch } from "./authUtils";
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
@@ -9,13 +9,15 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
      * @param {string} endpoint: The API endpoint to send the request to.
      * @param {Object} data: The payload to include in the request body.
      * @returns {Promise<Response>} The fetch response.
+     * @raises {Error} If the fetch request fails.
      */
     const postRequest = async (endpoint, data) => {
         try {
-            const response = await csrfFetch(`${FLASK_PORT}/${endpoint}`, {
+            const response = await apiFetch(`${FLASK_PORT}/${endpoint}`, {
                 method: 'POST',
                 body: JSON.stringify(data),
-            });
+            },
+            false);
             return response;
         } catch (error) {
             console.error(`Error in postRequest to ${endpoint}:`, error);
@@ -23,6 +25,12 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
         }
     };
 
+   /**
+    * Handles user login by sending credentials to the login endpoint.
+    *
+    * @param {string} email - The user's email address.
+    * @param {string} password - The user's password.
+    */
     export const handleLogin = async ( email, password ) => {
         try {
             const response = await postRequest('login', { email, password });
@@ -39,6 +47,12 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
         }
     };
 
+    /**
+     * Handles user registration by sending credentials to the register endpoint.
+     *
+     * @param {string} email - The user's email address.
+     * @param {string} password - The user's password.
+     */
     export const handleRegister = async ( email, password ) => {
         try {
             const response = await postRequest('register', { email, password });
@@ -60,7 +74,7 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
      */
     export const handleLogout = async () => {
         try {
-            const response = await csrfFetch(`${FLASK_PORT}/logout`, {
+            const response = await apiFetch(`${FLASK_PORT}/logout`, {
                 method: "POST",
             });
     

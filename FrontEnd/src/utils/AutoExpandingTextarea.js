@@ -1,33 +1,33 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
+import PropTypes from 'prop-types'
 
 /**
  * AutoExpandingTextarea
  *
  * A React component that renders a textarea which automatically
  * expands its height as the user types, eliminating the need for scrolling.
+ * 
+ * ToDo: rescales -except for new line, why?
  *
- * :props:
- *     - value (string): The current value of the textarea.
- *     - onChange (function): Callback function to handle changes to the textarea's value.
- *     - ...props: Additional props to be passed to the textarea element.
+ * @param {string} value - The current value of the textarea.
+ * @param {function} onChange - Callback function to handle changes to the textarea's value.
+ * @param props - Additional props to be passed to the textarea element.
  */
 const AutoExpandingTextarea = ({ value, onChange, ...props }) => {
     const textareaRef = useRef(null)
     const [text, setText] = useState(value || '')
 
     /**
-     * Sync text state with value prop
+     * Synchronizes the internal text state with the value prop
+     * and adjusts the textarea height based on content.
      */
-    useEffect(() => {
+    useLayoutEffect(() => {
         setText(value || '')
-    }, [value])
-
-    useEffect(() => {
         if (textareaRef.current) {
-            textareaRef.current.style.height = 'auto'
+            textareaRef.current.style.height = 'auto' // Reset height to calculate scrollHeight accurately
             textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
         }
-    }, [text])
+    }, [value, text])
 
     /**
      * handleChange
@@ -35,7 +35,7 @@ const AutoExpandingTextarea = ({ value, onChange, ...props }) => {
      * Handles the change event for the textarea, updating state and
      * invoking the provided onChange callback if available.
      *
-     * :param {Object} e - The event object from the textarea.
+     * @param {Object} e - The event object from the textarea.
      */
     const handleChange = (e) => {
         setText(e.target.value)
@@ -56,6 +56,16 @@ const AutoExpandingTextarea = ({ value, onChange, ...props }) => {
             }}
         />
     )
+}
+
+AutoExpandingTextarea.propTypes = {
+    value: PropTypes.string,
+    onChange: PropTypes.func,
+}
+
+AutoExpandingTextarea.defaultProps = {
+    value: '',
+    onChange: null,
 }
 
 export default AutoExpandingTextarea

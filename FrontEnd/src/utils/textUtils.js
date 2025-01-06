@@ -120,7 +120,7 @@ const CodeBlock = ({ lang, code, index }) => {
       hljs.highlightElement(codeRef.current);
   }, [code]);
 
-  const escapedCode = he.encode(code); // for neutering potentially maliscious code before render
+  const escapedCode = he.encode(code); // for neutering potentially malicious code before render
 
   return (
     <div style={{ position: 'relative' }}>

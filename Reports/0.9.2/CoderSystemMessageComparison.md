@@ -186,3 +186,26 @@ What's additionally interesting is the duplication. Really this category should 
 {'role': 'user', 'content': 'Improve this file\n\nSpecifically focus on TagsManager.js'}], 'model': 'o1-mini', 'n': 1}}
 
 ```
+
+### Changes
+
+Now intead of each step in auto_workflow checking file_reference**s** its [file_reference]
+With that in mind lets confirm or refute if the 'enhanced' workflow I'm working with is lacking.
+
+These sets have a significantly reduced cost $3 -> 0.7 on average. To save time I'm just going to go back to a direct comparison- 
+but with each set side by side.
+
+| File                     | Base o1-mini           | 'enhanced' o1-mini                                           |
+|--------------------------|------------------------|--------------------------------------------------------------|
+| AuthUtils.js             | ✔ (both really useful) | ✔                                                            |
+| AutoExpandingTextarea.js | ✔                      | ✔                                                            |
+| BalanceWarning.js        | 0                      | ✔ (actually useful functionality change)                     |
+| ExpandableElement.js     | ✔ Just docs            | ✔                                                            |
+| LoginUtils.js            | ✔ Just docs            | ✔                                                            |
+| ProgressBar.js           | 0                      | 0                                                             |
+| ResizablePane.js         | ✔                      | ❌ (doesn't work)                                            |
+| TextSizeSlider.js        | ✔ (used more)          | ✔                                                            |
+| TextUtils.js             | ❌                     | ❌ (other than suggested the correct spelling of 'malicious')|
+
+And its even. Infuriating. So much for 'clear indications of poor quality' I'll have to run another set, in another context to see if either or is better. I will say the consistent mentions of improving documentation style and line length are getting annoying.
+

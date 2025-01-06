@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
+
 import './styles/expandableElement.css';
 
 /**
@@ -20,6 +21,11 @@ import './styles/expandableElement.css';
  *   initiallyExpanded={false}
  *   toggleButtonLabel="Toggle View"
  * />
+ * 
+ * @param {node}minContent - The content to display when the element is minimized.
+ * @param {node} maxContent - The content to display when the element is expanded.
+ * @param {bool} initiallyExpanded - Determines if the component is initially expanded. Defaults to false.
+ * @param {string} toggleButtonLabel - (string): Custom label for the toggle button. Defaults to '-' when expanded and '+' when minimized.
  */
 const ExpandableElement = React.memo(({
     minContent,
@@ -29,18 +35,26 @@ const ExpandableElement = React.memo(({
 }) => {
     const [isExpanded, setIsExpanded] = useState(initiallyExpanded);
 
-    const toggleExpansion = () => {
+    /**
+     * Toggles the expansion state of the component.
+     */
+    const toggleExpansion = useCallback(() => {
         setIsExpanded((prev) => !prev);
-    };
+    }, []);
 
+    /**
+     * Determines the label for the toggle button.
+     * Defaults to '+' when collapsed and '-' when expanded if no custom label is provided.
+     */
     const buttonLabel = toggleButtonLabel || (isExpanded ? '-' : '+');
 
     return (
         <div className='expandable-element'>
             {isExpanded ? maxContent : minContent}
             <button
-                onClick={toggleExpansion}
                 className="min-max-button"
+                onClick={toggleExpansion}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleExpansion(); }}
                 aria-expanded={isExpanded}
                 aria-label="Toggle content visibility"
             >
@@ -51,27 +65,11 @@ const ExpandableElement = React.memo(({
 });
 
 ExpandableElement.propTypes = {
-    /**
-     * Content to display when minimized.
-     */
     minContent: PropTypes.node.isRequired,
-
-    /**
-     * Content to display when maximized.
-     */
     maxContent: PropTypes.node.isRequired,
-
-    /**
-     * Determines if the component is expanded on initial render.
-     */
     initiallyExpanded: PropTypes.bool,
-
-    /**
-     * Label for the toggle button.
-     */
     toggleButtonLabel: PropTypes.string,
 };
-
 ExpandableElement.defaultProps = {
     initiallyExpanded: false,
     toggleButtonLabel: '',

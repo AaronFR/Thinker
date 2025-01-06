@@ -20,7 +20,7 @@ import './styles/OutputSection.css';
  * @param {boolean} isProcessing - Boolean flag indicating that the message is being streamed.
  * @return {string} - The modified message, possibly with an extra closing code block.
  */
-const handleIncompleteMessage = (message) => {
+const ensureMarkdownClosingTags = (message) => {
   const tripleBacktickRegex = /```/g;
   const matches = message.match(tripleBacktickRegex);
   const count = matches ? matches.length : 0;
@@ -35,6 +35,8 @@ const handleIncompleteMessage = (message) => {
  * OutputSection Component
  * 
  * Renders the output content, handling both error messages and standard messages.
+ * Conditionally modifies the message if it's in the middle of streaming a code 
+ * block to ensure proper formatting.
  * 
  * @param message: The message string to display. Can contain markdown and code blocks.
  * @param error: Optional error message to display.
@@ -48,7 +50,7 @@ const OutputSection = ({ message, error = '', isProcessing }) => {
       <CodeHighlighter>
         {error 
           ? error
-          : (isProcessing ? handleIncompleteMessage(message) : message)
+          : (isProcessing ? ensureMarkdownClosingTags(message) : message)
         }
       </CodeHighlighter>
     </div>
