@@ -98,6 +98,12 @@ html {
 /* Left Pane */
 .left-pane {
   background-color: var(--color-left-pane-bg);
+  background-image: url('../public/hex-vert-bg.png');
+  background-blend-mode: darken;
+  background-size: cover; /* Ensures the image covers the entire element */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat;
+
   padding: var(--spacing-xs);
   border-right: 0.0625em solid var(--color-border);
   overflow-y: auto;
@@ -106,7 +112,13 @@ html {
   height: 100%; /* Ensure full height */
 }
 body.dark-mode .left-pane {
-  background: var(--color-background-dark);
+  background: rgba(46, 46, 46, 0.1);
+  background-image: url('../public/hex-vert-bg.png');
+  background-blend-mode: darken;
+  background-size: cover; /* Ensures the image covers the entire element */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat;
+
   color: var(--color-text-light);
   transition: background-color var(--transition-normal), color var(--transition-normal);
   border-right: 0.0625em solid var(--color-border-secondary);
@@ -114,8 +126,13 @@ body.dark-mode .left-pane {
 
 /* Right Pane */
 .right-pane {
-  padding: var(--spacing-md);
   background-color: var(--color-right-pane-bg);
+  background-image: url('../public/thinker-bg.png');
+  background-size: cover; /* Ensures the image covers the entire element */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat;
+
+  padding: var(--spacing-md);
   overflow-y: auto;
   display: flex;
   flex-direction: column; /* Stack children vertically */
@@ -123,6 +140,13 @@ body.dark-mode .left-pane {
 }
 body.dark-mode .right-pane {
   background: var(--color-background-dark);
+  background-image: url('../public/thinker-bg.png');
+  background-blend-mode: darken;
+  background-size: cover; /* Ensures the image covers the entire element */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat;
+
+  
   color: var(--color-text-light);
   transition: background-color var(--transition-normal), color var(--transition-normal);
 }
@@ -179,6 +203,9 @@ body.dark-mode .scrollable::-webkit-scrollbar-track {
   width: 100%;
   transition: border-color var(--transition-speed), 
               box-shadow var(--transition-speed);
+}
+body.dark-mode .textarea {
+  background-color: var(--color-input-text);
 }
 
 .textarea:focus {
