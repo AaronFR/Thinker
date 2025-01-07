@@ -32,7 +32,7 @@
   padding: 0 5px;
   border: 1px solid #9aa2ea;
   border-radius: 15px;
-  background-color: #636ed3;
+  background-color: #f4f4f4;
 }
 .tag-item:last-child {
   border-bottom: none;
@@ -50,17 +50,21 @@
 .export-button {
   background-color: #007bff65;
   display: block;
-  margin: 0px 10px;
+  border: 1px solid #f4f4f41c;
   padding: 8px 16px;
   font-size: 20px;
   cursor: pointer;
-  border: none;
   border-radius: 25px;
 }
 
 .add-button {
-  background-color: #007BFF;
+  background-color: #007bff00;
+  /* background: linear-gradient(25deg, #202020, #28a745); */
   color: white;
+}
+.add-button:hover {
+  background: linear-gradient(25deg, #202020, #28a745);
+  border: none
 }
 
 .export-button {
@@ -74,9 +78,9 @@
   flex-direction: column;
   align-items: center;
   font-size: var(--font-size-small-md);
-  border: 1px solid #9aa2ea;
+  border: 1px solid #09914d;
   border-radius: 15px;
-  background-color: #636ed3;
+  background-color: #e4e4e4;
 }
 
 .input-field,

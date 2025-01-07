@@ -194,7 +194,7 @@ const TagsManager = ({ tags, setTags }) => {
                                 <option key={val} value={val} />
                             ))}
                         </datalist>
-                        <button onClick={resetAddForm} className="button cancel-button" type="button">x</button>
+                        <button onClick={resetAddForm} className="button delete-button" type="button">x</button>
                     </div>
                 </div>
             )}

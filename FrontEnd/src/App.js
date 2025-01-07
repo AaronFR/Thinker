@@ -209,11 +209,6 @@ function App () {
           </div>
         
           <div className="scrollable right-pane">
-            <PersonaSelector 
-              selectedPersona={selectedPersona} 
-              setSelectedPersona={setSelectedPersona} 
-              autoDetectedPersona={autoDetectedPersona}
-            />
 
             <LowBalanceWarning balance={balance} />
     
@@ -227,6 +222,8 @@ function App () {
               setSelectedFiles={setSelectedFiles}
               selectedMessages={selectedMessages}
               setSelectedMessages={setSelectedMessages}
+              selectedPersona={selectedPersona}
+              setSelectedPersona={setSelectedPersona}
               tags={tags}
               setTags={setTags}
             />

@@ -3,14 +3,14 @@
   padding: var(--spacing-md);
   font-size: var(--font-size-base);
   border-radius: var(--border-radius-sm);
-  border: 2px solid var(--color-border-active);
+  border: 2px solid var(--color-input-bg-dark);
   outline: none;
   background-color: var(--color-input-bg);
   color: var(--color-input-text);
   transition: border-color var(--transition-fast);
 }
-.dropdown:focus {
-  border-color: var(--color-link-hover); /* Similar focus effect to input */
+.dropdown:hover {
+  border-color: var(--color-border-active); /* Similar focus effect to input */
 }
 body.dark-mode .dropdown {
   background-color: var(--color-input-bg-dark);

@@ -15,10 +15,7 @@ import './styles/PersonaSelector.css';
  */
 const PersonaSelector = ({ selectedPersona, setSelectedPersona, autoDetectedPersona }) => {
     return (
-        <div className="persona-selector" style={{ marginBottom: '20px' }}>
-            <label htmlFor="persona-select" className="visually-hidden">
-                Select Persona:
-            </label>
+        <div className="persona-selector">
             <select 
                 id="persona-select"
                 value={selectedPersona} 

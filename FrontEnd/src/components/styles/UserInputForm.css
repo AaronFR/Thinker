@@ -19,15 +19,19 @@
   font-size: var(--font-size-xl);
   font-weight: bold;
   color: var(--color-white);
-  background: linear-gradient(45deg, var(--color-link-hover), var(--color-border-active));
+  background: linear-gradient(
+    45deg, 
+    var(--color-link), 
+    var(--color-input-bg-dark)
+  );
   border: none;
   border-radius: var(--border-radius-md);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 .submit-button:hover {
-  background: linear-gradient(25deg, var(--color-link-hover), var(--color-border-active));
-  transform: var(--transform-slide-left); /* Adds a sliding effect on hover */
+  background: linear-gradient(25deg, var(--color-input-bg), var(--color-border-active));
+  transform: var(--transform-lift); /* Adds a sliding effect on hover */
 }
 .submit-button:disabled {
   background: var(--color-button-disabled);

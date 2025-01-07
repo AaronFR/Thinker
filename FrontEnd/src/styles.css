@@ -1,47 +1,45 @@
-/* styles.css */
-
 /* ===================== */
 /*    Global Styles     */
 /* ===================== */
 
-/* Apply Times New Roman font to the entire webpage */
 body {
-    font-family: 'Times New Roman', serif; /* Set global font for the app */
-    background-color: #f4f4f4;             /* Light background for contrast */
+    font-family: 'Times New Roman', serif;
+    background-color: #f4f4f4;
+    -webkit-font-smoothing: antialiased; /* For Webkit-based browsers */
+    -moz-osx-font-smoothing: grayscale;  /* For Firefox */
 }
 
 /* ===================== */
 /*    App Container     */
 /* ===================== */
 
-/* Style for the main application container */
 .app {
-    text-align: center;                     /* Center align text */
-    margin-top: 20%;                       /* Space above the content */
+    text-align: center;
+    margin-top: 2rem;
 }
 
 /* ===================== */
 /*      Header Style    */
 /* ===================== */
 
-/* Style for H1 elements */
-h1 {
-    color: #333;                            /* Dark grey for improved readability */
-    font-size: 2rem;                       /* Large font size for prominence */
-    margin: 0;                             /* Remove default margin */
+.header {
+    color: #333;
+    font-size: 2rem;
+    margin: 0;
+    -webkit-text-size-adjust: 100%; /* Prevent font scaling in Safari */
 }
+
 
 /* ===================== */
 /*    Responsive Styles  */
 /* ===================== */
 
-/* Media queries for responsive design */
 @media (max-width: 600px) {
     h1 {
-        font-size: 1.5rem;                 /* Smaller font size on mobile devices */
+        font-size: 1.5rem;
     }
 
     .app {
-        margin-top: 10%;                   /* Adjust margin for smaller screens */
+        margin-top: 10%;
     }
 }

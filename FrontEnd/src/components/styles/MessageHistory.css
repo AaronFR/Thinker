@@ -6,7 +6,7 @@
 }
 
 body.dark-mode .message-history-container {
-  background: var(--background-gradient);
+  background: var(--color-background-dark);
   color: var(--color-text-light);
   transition: background-color var(--transition-duration) var(--transition-ease),
               color var(--transition-duration) var(--transition-ease);

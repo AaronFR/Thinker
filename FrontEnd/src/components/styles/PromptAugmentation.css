@@ -13,14 +13,18 @@
   margin-left: var(--spacing-md);
   font-size: var(--font-size-small-md);
   color: var(--color-white);
-  background: linear-gradient(45deg, var(--color-border-active), var(--color-link-hover));
+  background: linear-gradient(
+    45deg, 
+    var(--color-link), 
+    var(--color-input-bg-dark)
+  );
   border: none;
   border-radius: var(--border-radius-md);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 .augment-button:hover {
-  background: linear-gradient(90deg, var(--color-border-active), var(--color-link-hover));
+  background: linear-gradient(90deg, var(--color-input-bg), var(--color-border-active));
   transform: var(--transform-lift);
 }
 .augment-button:disabled {

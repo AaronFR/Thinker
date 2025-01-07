@@ -7,13 +7,17 @@
   margin-left: var(--spacing-md);
   font-size: var(--font-size-xl);
   color: var(--color-white);
-  background: linear-gradient(45deg, var(--color-link-hover), var(--color-border-active));
+  background: linear-gradient(
+    45deg, 
+    var(--color-link), 
+    var(--color-input-bg-dark)
+  );
   border-radius: var(--border-radius-md);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 .file-upload-button:hover {
-  background: linear-gradient(25deg, var(--color-link-hover), var(--color-border-active));
+  background: linear-gradient(25deg, var(--color-input-bg), var(--color-border-active));
   transform: var(--transform-lift); /* Adds a sliding effect on hover */
 }
 .file-upload-button:active {

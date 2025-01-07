@@ -6,6 +6,7 @@ import TagsManager from './TagsManager';
 import { apiFetch } from '../utils/authUtils';
 import { getBasename } from '../utils/textUtils';
 import AutoExpandingTextarea from '../utils/AutoExpandingTextarea';
+import PersonaSelector from '../components/PersonaSelector'
 
 import './styles/UserInputForm.css';
 
@@ -38,12 +39,15 @@ const UserInputForm = ({
   setSelectedFiles,
   selectedMessages,
   setSelectedMessages,
+  selectedPersona,
+  setSelectedPersona,
   tags,
   setTags
 }) => {
   const [fetchError, setFetchError] = useState('');
   const [uploadCompleted, setUploadCompleted] = useState(true)
 
+  const autoDetectedPersona = 'Coder' // Temporary hardcoded value
   /**
    * Fetches the list of uploaded files from the backend API.
    */
@@ -165,6 +169,11 @@ const UserInputForm = ({
 
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
+          <PersonaSelector 
+              selectedPersona={selectedPersona} 
+              setSelectedPersona={setSelectedPersona}
+              autoDetectedPersona={autoDetectedPersona}
+            />
           <button 
             type="submit"
             className="button submit-button"

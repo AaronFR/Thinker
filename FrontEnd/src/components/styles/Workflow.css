@@ -11,7 +11,7 @@
   background: var(--color-background);
 }
 body.dark-mode .workflow{
-  background: var(--color-background-dark);
+  background: rgba(40, 40, 46, 0.9);
 }
 
 /* Workflow Status States */
@@ -31,11 +31,9 @@ body.dark-mode .workflow{
 .workflow h1 {
   font-size: var(--font-size-large);
   margin-bottom: var(--spacing-sm);
-  color: var(--color-text-dark);
 }
 .workflow p {
   margin: var(--spacing-xs) 0;
-  color: var(--color-text);
 }
 
 /* Steps Section */
@@ -46,7 +44,6 @@ body.dark-mode .workflow{
 .steps h2 {
   font-size: var(--font-size-medium);
   margin-bottom: var(--spacing-md);
-  color: var(--color-text-dark);
 }
 
 /* Individual Step */
@@ -88,16 +85,13 @@ body.dark-mode .step{
 .step h3 {
   font-size: var(--font-size-medium);
   margin-bottom: var(--spacing-xs);
-  color: var(--color-text-dark);
 }
 .step p {
   margin: var(--spacing-xs) 0;
-  color: var(--color-text);
 }
 .step ul {
   margin-top: var(--spacing-xs);
   padding-left: var(--spacing-sm);
-  color: var(--color-text-muted);
 }
 
 /* Status Indicator */
@@ -135,13 +129,11 @@ body.dark-mode .workflow-details{
 .workflow-name {
   flex: 2;
   font-size: var(--font-size-large);
-  color: var(--color-text);
 }
 
 .workflow-id {
   flex: 1;
   font-size: var(--font-size-small);
-  color: var(--color-text-muted);
 }
 
 /* Step Details */
@@ -156,14 +148,12 @@ body.dark-mode .workflow-details{
 .step-index {
   flex: 1;
   font-size: var(--font-size-small);
-  color: var(--color-text);
 }
 
 .response {
   flex: 2;
   text-align: center;
   font-size: var(--font-size-small);
-  color: var(--color-text);
 }
 
 /* Parameters */
@@ -177,7 +167,7 @@ body.dark-mode .workflow-details{
   font-size: var(--font-size-small-lg);
 }
 body.dark-mode .parameters{
-  color: var(--color-text);
+  color: var(--color-text-muted);
 }
 
 

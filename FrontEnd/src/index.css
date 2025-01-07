@@ -15,9 +15,9 @@ code {
 :root {
   /* Colors */
   --font-family-base: 'Montserrat', sans-serif;
+  --color-white: #fff;
   --color-light-bg: #f8f9fa;
   --color-secondary-bg: #e9ecef;
-  --color-white: #fff;
   --color-dark-bg: #222222;
   --color-body-bg-dark: #121212;
   --color-border: #ddd;
@@ -33,8 +33,8 @@ code {
   );
   --color-background-dark: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.04) 100%
+    rgba(22, 22, 22, 0.1) 0%,
+    rgba(255, 255, 255, 0.02) 100%
   );
   --color-border-active: #61dafb;
   --color-border-input: #564dd2;
