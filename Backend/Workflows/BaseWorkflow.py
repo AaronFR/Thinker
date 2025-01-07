@@ -79,6 +79,8 @@ class BaseWorkflow:
         """
         Handles the process of saving files to the staging directory.
 
+        ToDo: If chatgpt fails it shouldn't save (overwrite) the input files
+
         :param iteration: Current iteration number.
         :param process_prompt: Persona function to process user questions.
         :param message: The message to process.

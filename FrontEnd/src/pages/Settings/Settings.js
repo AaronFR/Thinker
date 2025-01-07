@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { handleLogout } from '../../utils/loginUtils';
 import AutoExpandingTextarea from '../../utils/AutoExpandingTextarea';
 import TextSizeSlider from '../../utils/textSizeSlider';
+import Navigation from '../../components/Navigation';
 
 import './Settings.css';
 
@@ -50,10 +51,7 @@ export function Settings() {
 
     return (
       <div className="scrollable settings-container">
-        <nav className="settings-nav">
-          <Link to="/" className="link">Home</Link>
-          <Link to="/pricing" className="link">Pricing</Link>
-        </nav>
+        <Navigation />
 
         <h2 className="settings-heading">User Interface</h2>
         {uiOptions.map(({ label, value, onChange }, index) => (

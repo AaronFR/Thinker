@@ -12,7 +12,7 @@ import './styles/PromptAugmentation.css';
  * Displays augmented prompts and provides an option to copy the augmented prompt.
  * 
  * ToDo: the augmentedPromptsEnabled check should probably be higher up. 
- *  A component should have to worry about disabling itself
+ *  A component should not have to worry about disabling itself
  * 
  * @param {boolean} augmentedPromptsEnabled (boolean): Flag to enable or disable augmented prompts.
  * @param {string} augmentedPrompt (string): The augmented prompt text.

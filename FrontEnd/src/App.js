@@ -9,7 +9,6 @@ import FilePane from './components/FilePane'
 import MessagePane from './components/MessagePane';
 import OutputSection from './components/OutputSection';
 import PromptAugmentation from './components/PromptAugmentation';
-import PersonaSelector from './components/PersonaSelector';
 import UserInputForm from './components/UserInputForm';
 import SuggestedQuestions from './components/SuggestedQuestions';
 import Workflow from './components/Workflow';
@@ -104,9 +103,7 @@ function App () {
       loadBalance()
     }, [formsFilled])
 
-    const handleInputChange = (event, selectedMessages, selectedFiles) => {
-      // ToDo: don't think it respects shift enters, issue for inputting code
-      
+    const handleInputChange = (event, selectedMessages, selectedFiles) => {      
       setUserInput(event.target.value);
       if (typingTimer.current) {
         clearTimeout(typingTimer.current);

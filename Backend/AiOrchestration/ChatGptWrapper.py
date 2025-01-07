@@ -26,8 +26,7 @@ class CostConfiguration:
     """Handles cost configuration for API calls."""
 
     def __init__(self):
-        """Initialize cost settings from environment variables or defaults.
-        ToDo: Off by about 25%?
+        """
         """
         self.input_token_costs = {model: float(os.environ.get(f'INPUT_COST_{model.name}', default)) for model, default in {
             ChatGptModel.CHAT_GPT_4_OMNI_MINI: 0.00000015,  # $/t

@@ -136,7 +136,7 @@ ORDER BY category_name;
 """
 
 # Files
-# ToDo: files shouldn't bother having a id, their name and category folder is their identifier
+# ToDo: files shouldn't bother having a id, their name and category folder is their identifier (but that makes it harder to refactor?)
 
 GET_FILE_BY_ID = """
 MATCH (category:CATEGORY)--(file:FILE)

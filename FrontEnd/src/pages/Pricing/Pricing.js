@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { apiFetch } from '../../utils/authUtils';
 import TransactionForm from '../../components/TransactionForm';
+import Navigation from '../../components/Navigation';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
@@ -77,10 +78,7 @@ export function Pricing() {
 
     return (
         <div className="settings-container">
-            <nav className="settings-nav">
-                <Link to="/" className="link">Home</Link>
-                <Link to="/settings" className="link">Settings</Link>
-            </nav>
+            <Navigation />
 
             <h2>Balance: {FormatPrice(balance)}</h2>
             <h3>Current session: {FormatPrice(sessionCost)}</h3>
