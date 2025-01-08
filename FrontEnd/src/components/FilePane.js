@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import FileItem from './FileItem';
@@ -20,8 +20,9 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
   const [categories, setCategories] = useState([]);
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
   const [fetchError, setFetchError] = useState('');
+  const [loadingFiles, setLoadingFiles] = useState({}); // Track loading for each category
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       setFetchError('')
 
@@ -46,9 +47,11 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
       console.error("Error fetching file categories:", error);
       setFetchError('Unable to load file categories. Please try again later.');
     }
-  };
+  }, []);
 
-  const fetchFilesByCategory = async (categoryName, categoryId) => {
+  const fetchFilesByCategory = useCallback(async (categoryName, categoryId) => {
+    setLoadingFiles(prev => ({ ...prev, [categoryId]: true })); // Start loading for category
+    
     try {
       const response = await apiFetch(`${FLASK_PORT}/files/${categoryName.toLowerCase()}`, {
         method: "GET",
@@ -68,12 +71,11 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
       );
     } catch (error) {
       console.error("Error fetching files:", error);
-      setFetchError(
-        `Unable to load files for ${categoryName}. Please try again later.`
-    );
+      setFetchError(`Unable to load files for ${categoryName}. Please try again later.`);
+    } finally {
+      setLoadingFiles(prev => ({ ...prev, [categoryId]: false })); // End loading for category
     }
-  };
-
+  }, []);
   /**
    * Toggles the expansion of a category.
    * If the category is already expanded, it collapses it.
@@ -82,18 +84,17 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
    * @param {number} id - The ID of the category.
    * @param {string} name - The name of the category.
    */
-  const toggleCategory = async (id, name) => {
+  const toggleCategory = useCallback(async (id, name) => {
     if (expandedCategoryId === id) {
       setExpandedCategoryId(null);
     } else {
-        setExpandedCategoryId(id);
-        const category = categories.find(cat => cat.id === id);
-        if (!category.files.length) {
-            await fetchFilesByCategory(name, id);
-        }
+      setExpandedCategoryId(id);
+      const category = categories.find(cat => cat.id === id);
+      if (!category?.files?.length) {
+          await fetchFilesByCategory(name, id);
+      }
     }
-  };
-
+  }, [expandedCategoryId]);
 
   /**
    * Handles the deletion of a file by updating the state.
@@ -101,17 +102,15 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
    * @param {number} categoryId: The ID of the category containing the file.
    * @param {number} fileId: The ID of the file to delete.
    */
-  const handleDeleteFile = (categoryId, fileId) => {
+  const handleDeleteFile = useCallback((categoryId, fileId) => {
     setCategories(prevCategories =>
-      prevCategories.map(category => {
-        if (category.id === categoryId) {
-          const updatedFiles = category.files.filter(file => file.id !== fileId);
-          return { ...category, files: updatedFiles };
-        }
-        return category;
-      })
+      prevCategories.map(category =>
+        category.id === categoryId 
+          ? { ...category, files: category.files.filter(file => file.id !== fileId) } 
+          : category
+      )
     );
-  };
+  }, []);
 
   /**
    * Fetches categories when the component mounts or when processing state changes.
@@ -145,17 +144,21 @@ const FilePane = ({ onFileSelect, isProcessing }) => {
               </header>
               {expandedCategoryId === category.id && (
                 <div id={`category-${category.id}`} className="file-list">
-                  {category.files.length === 0 ? (
+                  {loadingFiles[category.id] ? (
                     <p>Loading files...</p>
                   ) : (
-                    category.files.map((file) => (
-                      <FileItem
-                        key={file.id}
-                        file={file}
-                        onDelete={() => handleDeleteFile(category.id, file.id)}
-                        onSelect={onFileSelect}
-                      />
-                    ))
+                    category.files.length > 0 ? (
+                      category.files.map((file) => (
+                        <FileItem
+                          key={file.id}
+                          file={file}
+                          onDelete={() => handleDeleteFile(category.id, file.id)}
+                          onSelect={onFileSelect}
+                        />
+                      ))
+                    ) : (
+                      <p>No files available in this category.</p>
+                    )
                   )}
                 </div>
               )}

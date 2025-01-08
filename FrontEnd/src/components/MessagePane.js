@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { apiFetch } from '../utils/authUtils';
@@ -13,67 +13,42 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
 /**
  * MessageHistory Component
  * 
- * Displays a list of messages with options to select, expand, and delete them.
+ * Displays a list of messages, allowing selection, expansion, and deletion.
  * 
- * Props:
- * - isProcessing (boolean): Indicates if the application is currently processing data.
- * - onMessageSelect (function): Callback to handle message selection.
+ * @param {boolean} isProcessing - Indicates if the application is currently processing data.
+ * @param {function} onMessageSelect - Callback to handle message selection.
  */
 const MessageHistory = ({ isProcessing, onMessageSelect }) => {
   const [categories, setCategories] = useState([])
   const [error, setError] = useState('');
-
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
-
-  /**
-   * Toggles the expansion of a category.
-   * If the category is already expanded, it collapses it.
-   * Otherwise, it expands the category and fetches its messages if not already loaded.
-   * 
-   * @param {number} id - The ID of the category.
-   * @param {string} name - The name of the category.
-   */
-  const toggleCategory = async (id, name) => {
-    if (expandedCategoryId === id) {
-      setExpandedCategoryId(null); // Collapse if already expanded
-    } else {
-      setExpandedCategoryId(id); // Expand the clicked category
-
-      // Check if this category already has messages loaded
-      const categoryIndex = categories.findIndex(cat => cat.id === id);
-      if (categories[categoryIndex].messages && categories[categoryIndex].messages.length > 0) {
-        // Messages already loaded, no need to fetch again
-        return;
-      }
-
-      await fetchMessagesByCategory(name, id);
-    }
-  };
-
+  
   /**
    * Fetches message categories from the backend API.
    * 
    * @returns {Promise<void>}
    */
-  const fetchCategories = async () => {
-    const response = await apiFetch(`${FLASK_PORT}/categories`, {
-      method: "GET",
-    });
+  const fetchCategories = useCallback(async () => {
+    try {
+      const response = await apiFetch(`${FLASK_PORT}/categories`, { method: "GET" });
 
-    if (!response.ok) {
-      throw new Error("Failed to get message categories")
+      if (!response.ok) {
+        throw new Error("Failed to fetch message categories");
+      }
+
+      const data = await response.json();
+      const categoriesWithId = data.categories.map((category, index) => ({
+        id: index + 1,
+        name: toTitleCase(category),
+        messages: []
+      }));
+
+      setCategories(categoriesWithId); // Set the categories in state
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      setError("Unable to load message categories. Please try again.");
     }
-
-    const data = await response.json()
-
-    const categoriesWithId = data.categories.map((category, index) => ({
-      id: index + 1, // Assign a unique ID based on the index
-      name: toTitleCase(category),
-      messages: []
-    }));
-
-    setCategories(categoriesWithId)
-  }
+  }, []);
 
   /**
    * Fetches messages for a specific category from the backend API.
@@ -82,7 +57,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
    * @param {number} categoryId - The ID of the category.
    * @returns {Promise<void>}
    */
-  const fetchMessagesByCategory = async (categoryName, categoryId) => {
+  const fetchMessagesByCategory = useCallback(async (categoryName, categoryId) => {
     try {
       console.log(categoryName.toLowerCase())
       const response = await apiFetch(`${FLASK_PORT}/messages/${categoryName.toLowerCase()}`, {
@@ -94,8 +69,6 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
       }
 
       const data = await response.json();
-      console.log(data)
-
       setCategories(prevCetegories => 
         prevCetegories.map(category =>
           category.id === categoryId ? { ...category, messages: data.messages } : category
@@ -105,14 +78,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
       console.error("Error fetching messages:", error)
       setError("Unable to load messages. Please try again.");
     }
-  };
-
-  // Fetch categories when the component mounts
-  useEffect(() => {
-    if (!isProcessing) {
-      fetchCategories();
-    }
-  }, [isProcessing]);
+  }, []);
 
   /**
    * Handles the deletion of a message.
@@ -120,19 +86,44 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
    * @param {number} categoryId - The ID of the category containing the message.
    * @param {number} messageId - The ID of the message to delete.
    */
-  const handleDeleteMessage = (categoryId, messageId) => {
-    // Create a new category list with the updated messages
-    const updatedCategories = categories.map((category) => {
-      if (category.id === categoryId) {
-        // Filter out the deleted message
-        const updatedMessages = category.messages.filter((msg) => msg.id !== messageId);
-        return { ...category, messages: updatedMessages };
-      }
-      return category;
-    });
+  const handleDeleteMessage = useCallback((categoryId, messageId) => {
+    setCategories(prevCategories =>
+      prevCategories.map(category =>
+        category.id === categoryId 
+          ? { ...category, messages: category.messages.filter(msg => msg.id !== messageId) }
+          : category
+      )
+    );
+  }, []);
+  
+  /**
+   * Toggles the expansion of a category.
+   * If the category is already expanded, it collapses it.
+   * Otherwise, it expands the category and fetches its messages if not already loaded.
+   * 
+   * @param {number} id - The ID of the category.
+   * @param {string} name - The name of the category.
+   */
+  const toggleCategory = useCallback(async (id, name) => {
+    if (expandedCategoryId === id) {
+      setExpandedCategoryId(null); // Collapse
+    } else {
+      setExpandedCategoryId(id); // Expand
+      const category = categories.find(cat => cat.id === id);
 
-    setCategories(updatedCategories);
-  };
+      // Fetch messages only if they haven't been loaded yet
+      if (!category.messages.length) {
+        await fetchMessagesByCategory(name, id);
+      }
+    }
+  }, [categories, expandedCategoryId, fetchMessagesByCategory]);
+
+  // Fetch categories when the component mounts
+  useEffect(() => {
+    if (!isProcessing) {
+      fetchCategories();
+    }
+  }, [isProcessing]);
 
   return (
     <div className="message-history-container" style={withLoadingOpacity(isProcessing)}>
@@ -171,7 +162,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
               )}
             </div>
           ))
-        ) : <div />}
+        ) : <p>No categories yet exist.</p>}
       </section>
     </div>
   );

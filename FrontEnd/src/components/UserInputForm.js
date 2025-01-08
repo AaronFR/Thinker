@@ -11,6 +11,7 @@ import PersonaSelector from '../components/PersonaSelector'
 import './styles/UserInputForm.css';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 /**
  * UserInputForm Component
@@ -59,8 +60,7 @@ const UserInputForm = ({
 
         if (!response.ok) {
             const errorData = await response.json();
-            setFetchError(errorData.message || 'Failed to fetch files.');
-            return;
+            throw new Error(errorData.message || 'Failed to fetch files.');
         }
 
         const data = await response.json();
@@ -83,15 +83,13 @@ const UserInputForm = ({
 };
 
   /**
-   * useEffect hook to fetch uploaded files.
+   * fetch uploaded files after successful file upload.
    */
   useEffect(() => {
     if (uploadCompleted) {
       fetchStagedFiles();
     }
   }, [uploadCompleted]);
-
-  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
   /**
    * Handles successful file uploads by updating the selectedFiles state.
@@ -113,16 +111,15 @@ const UserInputForm = ({
    */
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
+      e.preventDefault();  // Prevent form submission
       if (e.shiftKey) {
-        e.preventDefault();  // Prevent form submission and insert a newline.
         const { selectionStart, selectionEnd, value } = e.target;
         e.target.value =
           value.substring(0, selectionStart) + '\n' +
           value.substring(selectionEnd);
         e.target.selectionStart = e.target.selectionEnd = selectionStart + 1;
       } else {
-        e.preventDefault(); // Prevent default Enter behavior.
-        handleSubmit(e);    // Submit the form.
+        handleSubmit(e);
       }
     }
   };

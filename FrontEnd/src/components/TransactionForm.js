@@ -5,6 +5,7 @@ import { apiFetch } from '../utils/authUtils';
 import './styles/TransactionForm.css';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+const AMOUNT_REGEX = /^\d+(\.\d{1,2})?$/; // Two decimal places allowed
 
 /**
  * TransactionForm Component
@@ -28,8 +29,7 @@ const TransactionForm = ({ onSuccess }) => {
      */
     const validateAmount = (value) => {
         const floatValue = parseFloat(value);
-        const regex = /^\d+(\.\d{1,2})?$/; // Two decimal places allowed
-        return !isNaN(floatValue) && floatValue > 0 && regex.test(value);
+        return !isNaN(floatValue) && floatValue > 0 && AMOUNT_REGEX.test(value);
     };
 
     /**
@@ -81,7 +81,7 @@ const TransactionForm = ({ onSuccess }) => {
      */
     const handleAmountChange = (e) => {
         const value = e.target.value;
-        if (/^\d*\.?\d{0,2}$/.test(value)) {
+        if (AMOUNT_REGEX.test(value)) {
             setAmount(value);
             if (error) setError('');
         }

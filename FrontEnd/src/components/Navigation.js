@@ -10,10 +10,10 @@ import './styles/Navigation.css';
  * Renders a centralized navigation bar with multiple links.
  * Provides accessibility features and active link highlighting.
  * 
- * :param navLinks: An array of navigation link objects.
- * :type navLinks: Array<{ name: string, path: string }>
+ * @param {Array} navLinks Array of navigation link objects containing name and path.
  */
 const Navigation = ({ navLinks }) => {
+
     return (
         <nav className="navigation" aria-label="Main Navigation">
             <ul className="nav-list">

@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When run locally user data is stored inside the /UserData directory (not /Backend). Cleaner and also prevents 
    unnecessary restarts when running flask in debug
 - Various bug fixes
+- General misc refactor of code
 
 ### Removed
 

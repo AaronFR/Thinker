@@ -12,9 +12,8 @@ import './styles/OutputSection.css';
  * formatting. 
  * This is an acceptable assumption because:
  * 
- * 1. Even cheap LLMs reliably put code in code blocks
- * 2. This method only operates mid-stream so if the response is malformed from
- *  a malformed code block in the response it is only *temporarily* malformed
+ * 1. Most LLMs reliably structure code within code blocks.
+ * 2. The check occurs mid-stream, so temporary malformations are acceptable.
  * 
  * @param {string} message - The message string to check and possibly modify.
  * @param {boolean} isProcessing - Boolean flag indicating that the message is being streamed.
@@ -41,17 +40,19 @@ const ensureMarkdownClosingTags = (message) => {
  * @param message: The message string to display. Can contain markdown and code blocks.
  * @param error: Optional error message to display.
  * @param isProcessing: Indicates if the message is currently being streamed/processed.
+ * @returns {JSX.Element|null} - Returns the rendered output or null if no content is available.
  */ 
 const OutputSection = ({ message, error = '', isProcessing }) => {
   if (!message && !error && !isProcessing) return null
 
+  const displayMessage = error 
+    ? error 
+    : (isProcessing ? ensureMarkdownClosingTags(message) : message);
+
   return (
     <div className="markdown-output">
       <CodeHighlighter>
-        {error 
-          ? error
-          : (isProcessing ? ensureMarkdownClosingTags(message) : message)
-        }
+        {displayMessage}
       </CodeHighlighter>
     </div>
   );

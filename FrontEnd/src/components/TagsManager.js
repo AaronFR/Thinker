@@ -8,7 +8,8 @@ import './styles/TagsManager.css';
 const DEFAULT_TAGS = {
     model: ['gpt-4o', 'gpt-4o-mini', 'o1-mini', 'o1-preview'],
     category: [],
-    write: ['example.txt']
+    write: ['example.txt'],
+    'best of': [1, 2, 3]
 };
 
 /**
@@ -19,8 +20,7 @@ const DEFAULT_TAGS = {
  */
 const TagsManager = ({ tags, setTags }) => {
     const [isAdding, setIsAdding] = useState(false);
-    const [newField, setNewField] = useState('');
-    const [newValue, setNewValue] = useState('');
+    const [newTag, setNewTag] = useState({ field: '', value: '' });
     const [fieldSuggestions] = useState(Object.keys(DEFAULT_TAGS));
     const [valueSuggestions, setValueSuggestions] = useState([]);
 
@@ -39,9 +39,7 @@ const TagsManager = ({ tags, setTags }) => {
     /**
      * Handles the Add button click to initiate tag addition.
      */
-    const handleAddClick = () => {
-        setIsAdding(true);
-    };
+    const handleAddClick = () => setIsAdding(true);
 
     /**
      * Handles key down events for the field input.
@@ -51,8 +49,8 @@ const TagsManager = ({ tags, setTags }) => {
     const handleFieldKeyDown = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            if (newField.trim()) {
-                const trimmedField = newField.trim();
+            if (newTag.field.trim()) {
+                const trimmedField = newTag.field.fieldtrim();
                 if (DEFAULT_TAGS[trimmedField]) {
                     setValueSuggestions(DEFAULT_TAGS[trimmedField]);
                 } else {
@@ -71,10 +69,10 @@ const TagsManager = ({ tags, setTags }) => {
     const handleValueKeyDown = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
-            if (newValue.trim()) {
+            if (newTag.value.trim()) {
                 setTags((prevTags) => ({
                     ...prevTags,
-                    [newField.trim()]: newValue.trim(),
+                    [newTag.field.trim()]: newTag.value.trim(),
                 }));
                 resetAddForm(); 
             }
@@ -86,8 +84,7 @@ const TagsManager = ({ tags, setTags }) => {
      */
     const resetAddForm = () => {
         setIsAdding(false);
-        setNewField('');
-        setNewValue('');
+        setNewTag({ field: '', value: '' });
         setValueSuggestions([]);
     };
 
@@ -109,12 +106,8 @@ const TagsManager = ({ tags, setTags }) => {
      */
     const handleFieldChange = (e) => {
         const value = e.target.value;
-        setNewField(value);
-        if (DEFAULT_TAGS[value.trim()]) {
-            setValueSuggestions(DEFAULT_TAGS[value.trim()]);
-        } else {
-            setValueSuggestions([]);
-        }
+        setNewTag((prev) => ({ ...prev, field: value }));
+        setValueSuggestions(DEFAULT_TAGS[value.trim()] || []);
     };
 
     /**
@@ -123,7 +116,7 @@ const TagsManager = ({ tags, setTags }) => {
      * @param {object} e - Event object.
      */
     const handleValueChange = (e) => {
-        setNewValue(e.target.value);
+        setNewTag((prev) => ({ ...prev, value: e.target.value }));
     };
 
     return (
@@ -164,7 +157,7 @@ const TagsManager = ({ tags, setTags }) => {
                             type="text"
                             list="field-suggestions"
                             placeholder="Tag"
-                            value={newField}
+                            value={newTag.field}
                             onChange={handleFieldChange}
                             onKeyDown={handleFieldKeyDown}
                             ref={fieldInputRef}
@@ -181,7 +174,7 @@ const TagsManager = ({ tags, setTags }) => {
                             type="text"
                             list="value-suggestions"
                             placeholder="Content"
-                            value={newValue}
+                            value={newTag.value}
                             onChange={handleValueChange}
                             onKeyDown={handleValueKeyDown}
                             ref={valueInputRef}

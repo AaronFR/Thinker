@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { MarkdownRenderer } from '../utils/textUtils';
+import { MarkdownRenderer, withLoadingOpacity } from '../utils/textUtils';
 import ExpandableElement from '../utils/expandableElement';
 
 import './styles/PromptAugmentation.css';
@@ -16,7 +16,7 @@ import './styles/PromptAugmentation.css';
  * 
  * @param {boolean} augmentedPromptsEnabled (boolean): Flag to enable or disable augmented prompts.
  * @param {string} augmentedPrompt (string): The augmented prompt text.
- * @param {string} error (string): Error message to display, if any.
+ * @param {string} [error=''] - Optional error message to display.
  * @param {boolean} isAugmenting (boolean): Indicates if the augmentation process is ongoing.
  * @param {function} copyAugmentedPrompt (function): Function to copy the augmented prompt.
  */
@@ -27,7 +27,25 @@ const PromptAugmentation = ({
   isAugmenting,
   copyAugmentedPrompt,
 }) => {
-  if (!augmentedPromptsEnabled || !augmentedPrompt) return null;
+  // Immediately return null if augmented prompts are not enabled or the prompt is empty
+  if (!augmentedPromptsEnabled) return null;
+
+  // Display loading message if an augmented prompt is not yet ready
+  if (!augmentedPrompt) {
+    return (
+      <div style={withLoadingOpacity(isAugmenting)}>
+        {isAugmenting ? "Engineering prompt..." : ""}
+      </div>
+    );
+  }
+
+  const handleCopyClick = (e) => {
+    e.stopPropagation();
+    copyAugmentedPrompt();
+  };
+
+  const buttonLabel = isAugmenting ? 'Copying augmented prompt...' : 'Copy';
+  const buttonText = isAugmenting ? 'Augmenting...' : 'Copy';
 
   const minContent = (
       <MarkdownRenderer
@@ -40,9 +58,11 @@ const PromptAugmentation = ({
   const maxContent = (
     <div>
       {error ? (
-        <p className="error-message" role="alert">{error}</p>
+        <p className="error-message" role="alert">
+          {error}
+        </p>
       ) : (
-        <>
+        <div className='augmented-container'>
           <MarkdownRenderer
             markdownText={augmentedPrompt}
             className="markdown-augmented"
@@ -50,32 +70,25 @@ const PromptAugmentation = ({
           />
           <button
             className="button augment-button"
-            onClick={(e) => {
-              e.stopPropagation();
-              copyAugmentedPrompt();
-            }}
+            onClick={handleCopyClick}
             disabled={isAugmenting}
-            aria-label={
-              isAugmenting
-                  ? 'Copying augmented prompt...'
-                  : 'Copy augmented prompt'
-            }
+            aria-label={buttonLabel}
           >
-            {isAugmenting ? 'Augmenting...' : 'Copy'}
+            {buttonText}
           </button>
-        </>
+        </div>
       )}
     </div>
   );
 
   return (
       <div className="augmented-container">
-          <ExpandableElement
-              minContent={minContent}
-              maxContent={maxContent}
-              initiallyExpanded={true}
-              toggleButtonLabel=""
-          />
+        <ExpandableElement
+          minContent={minContent}
+          maxContent={maxContent}
+          initiallyExpanded={true}
+          toggleButtonLabel=""
+        />
       </div>
   );
 };

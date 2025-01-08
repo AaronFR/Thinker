@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { shortenText, getBasename, MarkdownRenderer, CodeHighlighter } from '../utils/textUtils';
@@ -58,9 +58,9 @@ const FileItem = ({ file, onDelete, onSelect }) => {
   /**
    * Toggles the expansion state of the file item.
    */
-  const toggleExpansion = () => {
-    setIsExpanded((prev) => !prev);
-  };
+  const toggleExpansion = useCallback(() => {
+    setIsExpanded(prev => !prev);
+  }, []);
 
   /**
      * Handles the deletion of the file by making an API call.
@@ -68,7 +68,7 @@ const FileItem = ({ file, onDelete, onSelect }) => {
      * 
      * @param e: Event object.
      */
-  const handleDelete = async (e) => {
+  const handleDelete = useCallback(async (e) => {
     e.stopPropagation(); // Prevent triggering the toggleExpansion
     if (isDeleting) return; // Prevent multiple deletions
 
@@ -93,7 +93,7 @@ const FileItem = ({ file, onDelete, onSelect }) => {
     } finally {
         setIsDeleting(false);
     }
-};
+}, []);
 
   /**
    * Handles the selection of the file.
@@ -141,13 +141,11 @@ const FileItem = ({ file, onDelete, onSelect }) => {
 
           <p>
             <strong>Content:</strong>{' '}
-            {isLoading && <span>Loading content...</span>}
-            {error && <span className="error">{error}</span>}
-            {!isLoading && !error && (
-              <div className="markdown-output">
-                <CodeHighlighter>{content}</CodeHighlighter>
-              </div>
-            )}
+            {isLoading ? <span>Loading content...</span> 
+              : error ? <span className="error">{error}</span> 
+              : <div className="markdown-output">
+                  <CodeHighlighter>{content}</CodeHighlighter>
+                </div>}
           </p>
         </div>
       )}
@@ -158,13 +156,9 @@ const FileItem = ({ file, onDelete, onSelect }) => {
         className="button delete-button"
         type="button"
         disabled={isDeleting}
-        aria-label={
-            isDeleting
-                ? 'Deleting file'
-                : 'Delete this file'
-        }
+        aria-label={isDeleting ? 'Deleting file' : 'Delete this file'}
       >
-          {isDeleting ? 'Deleting...' : 'Delete'}
+        {isDeleting ? 'Deleting...' : 'Delete'}
       </button>
         <p className="time">
           {new Date(file.time * 1000).toLocaleString()

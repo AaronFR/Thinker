@@ -22,10 +22,8 @@ const useSubmitMessage = (
   const [totalCost, setTotalCost] = useState(null);
   const socketRef = useRef(null);
 
-  // Refs to store the latest userInput and selectedPersona
   const userInputRef = useRef('');
   const selectedPersonaRef = useRef(null);
-
   const pendingSubmitRef = useRef(null);
   const workflowRef = useRef(workflow);
 
@@ -61,38 +59,23 @@ const useSubmitMessage = (
         }
 
         // Update overall workflow status
-        const updatedWorkflow = { ...prevWorkflow };
+        const stepIndex = updateData.step - 1; // 1-indexed to 0-indexed
         if (updateData.type === 'status') {
-          updatedWorkflow.status = updateData.status;
-          console.log("Updated workflow status:", updatedWorkflow.status);
-          return updatedWorkflow;
+          return { ...prevWorkflow, status: updateData.status };
         }
         
-        // update an individual step
-        const stepIndex = updateData.step - 1; // workflows are 1-indexed
-        if (updatedWorkflow.steps[stepIndex]) {
-          const currentStep = updatedWorkflow.steps[stepIndex];
-
-          if (updateData.status) {
-              currentStep.status = updateData.status;
-              console.log("Updated workflow step status:", currentStep);
-          }
-          if (updateData.response) {
-              currentStep.response = updateData.response;
-              console.log("Updated workflow step response:", currentStep);
-          }
-          if (updateData.file_name) {
-            currentStep.parameters.file_name = updateData.file_name;
-            console.log("Updated workflow step response:", currentStep);
-        }
-
-          updatedWorkflow.steps[stepIndex] = currentStep;
-
-          return updatedWorkflow;
-      } else {
+        if (prevWorkflow.steps[stepIndex]) {
+          const currentStep = { ...prevWorkflow.steps[stepIndex], ...updateData };
+          return {
+            ...prevWorkflow,
+            steps: prevWorkflow.steps.map((step, index) =>
+              index === stepIndex ? currentStep : step
+            ),
+          };
+        } else {
           console.error(`Invalid workflow step index: ${stepIndex}`);
           return prevWorkflow;
-      }
+        }
       });
     }
 
@@ -168,18 +151,14 @@ const useSubmitMessage = (
               console.log('Token refreshed successfully');
               socketRef.current.disconnect();
 
-              // Reinitialize the socket and wait for it to connect
-              await initializeSocket();
+              await initializeSocket(); // Reinitialize the socket and wait for it to connect
               console.log('Retrying pending submit:', pendingSubmitRef.current);
               if (pendingSubmitRef.current) {
                 const { userInput, selectedPersona } = pendingSubmitRef.current;
                 pendingSubmitRef.current = null; // Clear pending submit after retrying
                 await handleSubmit(userInput, selectedPersona); // Retry the request
-              } else {
-                console.log('No pending submit to retry.');
               }
             } else {
-              console.log('Token refresh failed');
               setError('Session expired. Please log in again.');
               setIsProcessing(false);
             }

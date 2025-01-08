@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { shortenText, CodeHighlighter } from '../utils/textUtils';
@@ -32,8 +32,8 @@ const MessageItem = ({ msg, onDelete, onSelect }) => {
      */
     const handleDelete = async (e) => {
         e.stopPropagation(); // Prevent triggering the toggleExpansion
-        if (isDeleting) return; // Prevent multiple deletions
         
+        if (isDeleting) return; // Prevent multiple deletions
         if (!window.confirm("Are you sure you want to delete this message?")) return;
 
         setIsDeleting(true);
@@ -60,9 +60,9 @@ const MessageItem = ({ msg, onDelete, onSelect }) => {
     /**
      * Handles the selection of the message.
      */
-    const handleSelect = () => {
+    const handleSelect = useCallback(() => {
         onSelect(msg);
-    };
+    }, [msg, onSelect]);
 
     return (
         <div
@@ -111,9 +111,8 @@ const MessageItem = ({ msg, onDelete, onSelect }) => {
             )}
 
             {error && <p className="error-message" role="alert" style={{ color: 'red' }}>
-                    {error}
-                </p>
-            }
+                {error}
+            </p>}
 
             <div className="message-footer">
                 <button

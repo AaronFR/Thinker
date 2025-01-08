@@ -71,15 +71,8 @@ const SuggestedQuestions = ({
    */
   const parseQuestions = (markdownText) => {
     const tokens = marked.lexer(markdownText);
-    let questions = [];
-
-    tokens.forEach((token) => {
-      if (token.type === 'list') {
-        questions = token.items.map(item => item.text);
-      }
-    });
-
-    return questions.length ? questions : [markdownText];
+    const listToken = tokens.find(token => token.type === 'list');
+    return listToken ? listToken.items.map(item => item.text) : [markdownText];
   };
 
   const questions = parseQuestions(questionsForPrompt);
@@ -113,10 +106,7 @@ const SuggestedQuestions = ({
    */
   const concatenateQA = (questionsList, answers) => {
     return questionsList
-      .map((question, index) => {
-        const answer = answers[index] ? answers[index].trim() : '';
-        return answer ? `${question}: ${answer}` : null;
-      })
+      .map((question, index) => answers[index] ? `${question}: ${answers[index].trim()}` : null)
       .filter(Boolean) // Remove nulls
       .join('\n');
   };

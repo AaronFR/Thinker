@@ -60,16 +60,13 @@ const FileUploadButton = ({ onUploadSuccess }) => {
     const files = Array.from(event.target.files);
 
     if (files.length === 0) {
-      dispatch({
-        type: 'UPLOAD_FAILURE',
-        payload: 'No file selected.',
-      });
+      dispatch({ type: 'UPLOAD_FAILURE', payload: 'No file selected.' });
       return;
     }
 
     dispatch({ type: 'UPLOAD_START' });
 
-    for (const file of files) {
+    const uploadPromises = files.map(async (file) => {
       const formData = new FormData();
       formData.append('file', file);
 
@@ -77,7 +74,6 @@ const FileUploadButton = ({ onUploadSuccess }) => {
       const signal = controller.signal;
 
       try {
-        // ToDo switch to ApiFetch (will require some debugging - backend doesn't detech any files)
         const response = await fetch(`${FLASK_PORT}/file`, {
           method: 'POST',
           body: formData,
@@ -87,14 +83,11 @@ const FileUploadButton = ({ onUploadSuccess }) => {
 
         if (!response.ok) {
           const errorData = await response.json();
-          dispatch({ type: 'UPLOAD_FAILURE', payload: `Upload failed: ${errorData.message || 'Unknown error'}` });
-          console.error('Error uploading file:', errorData);
-          continue;
+          throw new Error(errorData.message || 'Unknown error occurred');
         }
 
         const data = await response.json();
         dispatch({ type: 'UPLOAD_SUCCESS' });
-        console.log('Success:', data);
         if (onUploadSuccess) {
           onUploadSuccess(data);
         }
@@ -102,14 +95,15 @@ const FileUploadButton = ({ onUploadSuccess }) => {
         if (error.name === 'AbortError') {
           console.warn('Upload aborted');
         } else {
-          dispatch({ type: 'UPLOAD_FAILURE', payload: 'File upload failed.' });
+          dispatch({ type: 'UPLOAD_FAILURE', payload: `Upload failed: ${error.message}` });
           console.error('Error uploading file:', error);
         }
       }
-    }
+    });
 
-    event.target.value = null; // Reset the file input after upload
-  }, [onUploadSuccess, dispatch]);
+    await Promise.all(uploadPromises);
+    event.target.value = null; // Reset file input
+  }, [onUploadSuccess]);
 
   return (
     <div className="button file-upload-button">
