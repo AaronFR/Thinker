@@ -131,6 +131,7 @@ class BasePersona:
                        prompt: str,
                        file_references: List[str] = None,
                        selected_message_ids: List[str] = None,
+                       best_of: int = 1,
                        streaming: bool = False,
                        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str:
         """
@@ -159,7 +160,13 @@ class BasePersona:
         logging.info(f"Message content: {messages}")
 
         input_messages = file_content + [prompt]
-        response = self.think(input_messages, messages, streaming, model)
+        response = self.think(
+            input_messages,
+            messages,
+            best_of=best_of,
+            streaming=streaming,
+            model=model
+        )
         self.history.append((prompt, response))
 
         return response
@@ -167,6 +174,7 @@ class BasePersona:
     def think(self,
               user_messages: List[str],
               history_messages: List[str] = None,
+              best_of: int = 1,
               streaming: bool = False,
               model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str:
         """
@@ -202,10 +210,17 @@ class BasePersona:
             recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
         recent_history.extend(history_messages)
 
+        judgement_criteria = (
+            "Pick and choose from your prior answers to create one that best answers the user's initial message *while*"
+            " maintaining a coherency"
+            f"<user_message>{user_messages}</user_message"
+        )
         try:
             output = AiOrchestrator().execute(
                 system_messages,
                 user_messages,
+                rerun_count=best_of,
+                judgement_criteria=[judgement_criteria],  # should be refactored to an obviously plural argument name
                 model=model,
                 assistant_messages=recent_history,
                 streaming=streaming

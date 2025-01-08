@@ -38,6 +38,7 @@ class BaseWorkflow:
         message: str,
         file_references: List[str],
         selected_message_ids: List[str],
+        best_of: int = 1,
         streaming: bool = True,
         model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
     ) -> str:
@@ -49,6 +50,7 @@ class BaseWorkflow:
         :param message: The message to process.
         :param file_references: Optional references to files.
         :param selected_message_ids: Optional selected message IDs for context.
+        :param best_of: how many times to run the prompt and filter for best prompt
         :param streaming: Whether to stream the response.
         :param model: The AI model to use.
         :return: AI's response.
@@ -58,6 +60,7 @@ class BaseWorkflow:
             message,
             file_references,
             selected_message_ids,
+            best_of=best_of,
             streaming=streaming,
             model=model,
         )
@@ -73,6 +76,7 @@ class BaseWorkflow:
         file_references: List[str],
         selected_message_ids: List[str],
         file_name: str,
+        best_of: int = 1,
         model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
         overwrite: bool = True
     ) -> str:
@@ -94,6 +98,7 @@ class BaseWorkflow:
             message,
             file_references,
             selected_message_ids,
+            best_of=best_of,
             model=model,
         )
         response = response + """

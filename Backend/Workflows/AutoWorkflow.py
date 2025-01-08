@@ -44,6 +44,7 @@ class AutoWorkflow(BaseWorkflow):
         """
         try:
             model = find_enum_value(tags.get("model") if tags else None)
+            best_of = int(tags.get("best of", 1)) if tags else 1  # type validation check needed
 
             workflow_data = generate_auto_workflow(
                 file_references=file_references or [],
@@ -65,6 +66,7 @@ class AutoWorkflow(BaseWorkflow):
                     file_references=[file_reference],
                     selected_message_ids=selected_message_ids or [],
                     file_name=file_name,
+                    best_of=best_of,
                     model=model,
                     overwrite=True
                 )

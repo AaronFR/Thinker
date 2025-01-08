@@ -90,7 +90,7 @@ To refine the system's architecture and enhance its capabilities and efficiency,
 
 - **Payment System**: Top up system for updating balance(awaiting stripe integration), ~~log files for each individual cost incurred~~.
 
-- **Best of X**: Let users run multiple prompts in parallel and have the system automatically select/pick and choice to create a superior answer
+- **Best of X**: ~~Let users run multiple prompts in parallel and have the system automatically select/pick and choice to create a superior answer~~
   - Can be customised on preference: Should the other attempts be identical or optimise for different qualities entirely, returning a balanced approach.
 
 - **Programmes**: schedules and programs written on the fly for use by the user, customisable code base.

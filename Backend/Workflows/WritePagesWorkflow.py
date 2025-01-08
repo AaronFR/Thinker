@@ -42,6 +42,7 @@ class WritePagesWorkflow(BaseWorkflow):
         :raises WorkflowExecutionError: If any step in the workflow fails.
         """
         model = find_enum_value(tags.get("model") if tags else None)
+        best_of = int(tags.get("best of", 1)) if tags else 1
 
         # Determine the number of pages to write
         page_count_str = tags.get("pages", "1") if tags else "1"
@@ -89,6 +90,7 @@ class WritePagesWorkflow(BaseWorkflow):
                 message=page_instruction,
                 file_references=file_references or [],
                 selected_message_ids=selected_message_ids or [],
+                best_of=best_of,
                 file_name=file_name,
                 model=model,
                 overwrite=True

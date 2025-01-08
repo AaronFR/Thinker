@@ -50,14 +50,7 @@ class AiOrchestrator:
         messages = generate_messages(system_prompts, user_prompts, assistant_messages, model)
         logging.info(f"Executing LLM call with messages: \n{messages}")
 
-        if streaming:
-            logging.info("Executing streaming response")
-            response = Utility.execute_with_retries(
-                lambda: self.prompter.get_open_ai_streaming_response(messages, model)
-            )
-        else:
-            logging.info("Executing non-streaming response")
-            response = self._handle_rerun(messages, model, rerun_count, judgement_criteria)
+        response = self._handle_rerun(messages, model, rerun_count, judgement_criteria, streaming)
 
         if not response:
             logging.error("No response from OpenAI API.")
@@ -71,22 +64,25 @@ class AiOrchestrator:
             messages: List[Dict[str, str]],
             model: ChatGptModel,
             rerun_count: int,
-            judgement_criteria: List[str]
+            judgement_criteria: List[str],
+            streaming: bool = False
     ) -> str:
         logging.info("🙂 Executing Prompt")
         if rerun_count == 1:
             return Utility.execute_with_retries(
-                lambda: self.prompter.get_open_ai_response(messages, model)
+                lambda: self.prompter.get_open_ai_streaming_response(messages, model) if streaming
+                else self.prompter.get_open_ai_response(messages, model)
             )
 
         responses = Utility.execute_with_retries(
             lambda: self.prompter.get_open_ai_response(messages, model, rerun_count=rerun_count)
         )
-        logging.info(f"Messages({rerun_count}):\n{responses}")
+        logging.info(f"Re-run responses ({rerun_count}) : \n{responses}")
 
         new_messages = generate_messages("", judgement_criteria, responses, model)
         return Utility.execute_with_retries(
-            lambda: self.prompter.get_open_ai_response(new_messages, model)
+            lambda: self.prompter.get_open_ai_streaming_response(new_messages, model) if streaming
+            else self.prompter.get_open_ai_response(new_messages, model)
         )
 
     @handle_errors(raise_errors=True)
@@ -120,8 +116,6 @@ class AiOrchestrator:
 
         logging.info(f"Function evaluated with response: {response}")
         return response
-
-
 
 
 if __name__ == '__main__':

@@ -47,6 +47,8 @@ class WriteWorkflow(BaseWorkflow):
 
         try:
             model = find_enum_value(tags.get("model") if tags else None)
+            best_of = int(tags.get("best of", 1)) if tags else 1
+
             emit("send_workflow",
                  {"workflow": generate_write_workflow(initial_message, file_references, selected_message_ids,
                                                       model.value)})
@@ -69,6 +71,7 @@ class WriteWorkflow(BaseWorkflow):
                     message=plan_file_creation(initial_message, file_name),
                     file_references=file_references or [],
                     selected_message_ids=selected_message_ids or [],
+                    best_of=best_of,
                     streaming=False,
                     model=model,
                 )
