@@ -46,9 +46,9 @@
   cursor: pointer;
 }
 
-.add-button,
-.export-button {
-  background-color: #007bff65;
+.add-button {
+  background-color: #007bff00;
+  color: white;
   display: block;
   border: 1px solid #f4f4f41c;
   padding: 8px 16px;
@@ -56,20 +56,9 @@
   cursor: pointer;
   border-radius: 25px;
 }
-
-.add-button {
-  background-color: #007bff00;
-  /* background: linear-gradient(25deg, #202020, #28a745); */
-  color: white;
-}
 .add-button:hover {
   background: linear-gradient(25deg, #202020, #28a745);
   border: none
-}
-
-.export-button {
-  background-color: #28a745;
-  color: white;
 }
 
 .add-tag-form {

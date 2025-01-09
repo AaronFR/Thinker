@@ -7,7 +7,8 @@
   padding: var(--spacing-md);
   border-radius: var(--border-radius-md);
   box-shadow: var(--box-shadow);
-  transition: box-shadow var(--transition-duration-fast) ease-in-out, background-color var(--transition-duration-fast) ease-in-out;
+  transition: box-shadow var(--transition-duration-fast) ease-in-out, 
+              background-color var(--transition-duration-fast) ease-in-out;
   background: var(--color-background);
 }
 body.dark-mode .workflow{
@@ -40,7 +41,6 @@ body.dark-mode .workflow{
 .steps {
   margin-top: var(--spacing-lg);
 }
-
 .steps h2 {
   font-size: var(--font-size-medium);
   margin-bottom: var(--spacing-md);
@@ -61,18 +61,18 @@ body.dark-mode .step{
 
 /* Step statuses */
 .step.pending {
-  border-left: 5px solid var(--color-border-secondary);
+  border-left: 4px solid var(--color-border-secondary);
 }
 .step.in-progress {
-  border-left: 5px solid var(--color-status-in-progress);
+  border-left: 4px solid var(--color-status-in-progress);
   box-shadow: 0 0 10px rgba(23, 162, 184, 0.2);
 }
 .step.streaming {
-  border-left: 5px solid var(--color-status-streaming);
+  border-left: 4px solid var(--color-status-streaming);
   box-shadow: 0 0 10px rgba(26, 47, 234, 0.2);
 }
 .step.finished {
-  border-left: 5px solid var(--color-border-active);
+  border-left: 4px solid var(--color-border-active);
   box-shadow: var(--box-shadow-deep);
 }
 
@@ -100,6 +100,7 @@ body.dark-mode .step{
   text-align: right;
   font-size: var(--font-size-small);
 }
+
 .status.pending {
   color: var(--color-status-pending)
 }
@@ -158,6 +159,8 @@ body.dark-mode .workflow-details{
 
 /* Parameters */
 .parameters {
+  white-space: pre-line; /* Preserves both new lines and wraps the text */
+  overflow-wrap: break-word; /* Helps break long words if necessary */
   display: block;
   margin-top: var(--spacing-sm);
   text-align: left;
@@ -168,18 +171,14 @@ body.dark-mode .workflow-details{
 }
 body.dark-mode .parameters{
   color: var(--color-text-muted);
-}
+} 
 
 
 
 /* Additional Animations */
 @keyframes fadeIn {
-  from {
-      opacity: 0;
-  }
-  to {
-      opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .workflow,

@@ -49,6 +49,7 @@ const UserInputForm = ({
   const [uploadCompleted, setUploadCompleted] = useState(true)
 
   const autoDetectedPersona = 'Coder' // Temporary hardcoded value
+  
   /**
    * Fetches the list of uploaded files from the backend API.
    */
@@ -164,7 +165,7 @@ const UserInputForm = ({
           aria-label="User prompt input"
         />
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '5px' }}>
+        <div className='palette'>
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
           <PersonaSelector 
               selectedPersona={selectedPersona} 

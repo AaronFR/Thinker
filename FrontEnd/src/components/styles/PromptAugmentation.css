@@ -3,7 +3,6 @@
   align-items: center; /* Vertically centers the items */
   justify-content: center; /* Horizontally centers the items */
   gap: 10px; /* Space between the content and the button */
-  /* Optional: Add padding or margin as needed */
   padding: 10px;
   text-align: center;
 }

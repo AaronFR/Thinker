@@ -13,6 +13,13 @@
   max-width: 98%;
 }
 
+.palette {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
 .submit-button {
   padding: var(--spacing-lg) var(--spacing-xxl);
   margin-left: var(--spacing-md);
@@ -56,11 +63,10 @@
   cursor: pointer;
 }
 
-body.dark-mode .message-item, .file-item {
+body.dark-mode .message-item,
+body.dark-mode .file-item {
   background-color: var(--color-dark-bg);
   color: var(--color-text-light);
-  transition: background-color var(--transition-duration) var(--transition-ease),
-              color var(--transition-duration) var(--transition-ease);
 }
 
 .reference-area {
@@ -71,8 +77,9 @@ body.dark-mode .message-item, .file-item {
   color: red;
 }
 
-.message-item:hover, .file-item:hover {
-  transform: scale(1.02);
+.message-item:hover,
+.file-item:hover {
+  transform: scale(1.001);
   z-index: 20;
   box-shadow: var(--shadow-hover);
 }

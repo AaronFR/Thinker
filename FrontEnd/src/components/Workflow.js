@@ -82,7 +82,7 @@ const StepDetail = ({ step }) => {
           maxContent={
             <>
               <h4>Response</h4>
-              <pre className="parameters">{JSON.stringify(response, null, 2)}</pre>
+              <pre className="parameters">{step.response}</pre>
             </>
           }
           initiallyExpanded={false}

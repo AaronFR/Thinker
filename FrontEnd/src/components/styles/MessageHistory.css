@@ -18,7 +18,6 @@ body.dark-mode .message-history-container {
   flex-direction: column;
   gap: var(--spacing-md);
 }
-
 body.dark-mode .category-list {
   background: var(--background-gradient);
   color: var(--color-text-light);
@@ -35,14 +34,12 @@ body.dark-mode .category-list {
   transition: background-color var(--transition-duration-fast) var(--transition-ease);
   border: 0.0625em solid var(--color-border-secondary);
 }
-
 body.dark-mode .category-item {
   background: var(--background-gradient);
   color: var(--color-text-light);
   transition: background-color var(--transition-duration) var(--transition-ease),
               color var(--transition-duration) var(--transition-ease);
 }
-
 .category-item:hover {
   box-shadow: var(--shadow-hover);
 }
@@ -69,4 +66,18 @@ body.dark-mode .message-list {
   color: var(--color-text-light);
   transition: background-color var(--transition-duration) var(--transition-ease),
               color var(--transition-duration) var(--transition-ease);
+}
+
+@media (max-width: 768px) {
+  .category-title {
+    font-size: var(--font-size-medium); /* Adjusted font size for smaller screens */
+  }
+
+  .category-item {
+    padding: var(--spacing-sm) var(--spacing-md); /* Reduced padding for smaller screens */
+  }
+
+  .message-list {
+    padding: var(--spacing-sm) var(--spacing-xs); /* Adjusted spacing for consistency */
+  }
 }
