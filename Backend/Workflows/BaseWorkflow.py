@@ -1,3 +1,4 @@
+import logging
 from abc import abstractmethod
 from typing import Callable, Any, List
 
@@ -5,6 +6,7 @@ from flask_socketio import emit
 from pathlib import Path
 
 from AiOrchestration.ChatGptModel import ChatGptModel
+from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context
 from Utilities.ErrorHandler import ErrorHandler
@@ -69,6 +71,64 @@ class BaseWorkflow:
         return response
 
     @staticmethod
+    def _summary_step(
+        iteration: int,
+        process_prompt: Callable,
+        message: str,
+        file_references: List[str],
+        selected_message_ids: List[str],
+        best_of: int = 1,
+        streaming: bool = True,
+        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+    ) -> str:
+        """
+        Summarises the results of a workflow.
+
+        ToDo: If the message is set to be critical of the output you *could* use it with the knowledge network to automatically
+        tailor the AI for the user and generally.
+
+        :param iteration: Current iteration number.
+        :param process_prompt: Persona function to process user questions.
+        :param message: The message to process.
+        :param file_references: Optional references to files.
+        :param selected_message_ids: Optional selected message IDs for context.
+        :param best_of: how many times to run the prompt and filter for best prompt
+        :param streaming: Whether to stream the response.
+        :param model: The AI model to use.
+        :return: AI's response.
+        """
+        emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
+        config = Configuration.load_config()
+
+        should_summarize = config['optimization'].get("summarise", False)
+        if should_summarize:
+            summarisation_system_message = config.get('systemMessages', {}).get(
+                "summarisationMessage",
+                "Very quickly summarise what you just wrote and where you wrote it."
+            ) + f"<initial_message>\n{message}\n</initial_message>"
+
+            output = process_prompt(
+                summarisation_system_message,
+                file_references,
+                selected_message_ids,
+                best_of=best_of,
+                streaming=streaming,
+                model=model,
+            )
+            BaseWorkflow.emit_step_completed_events(iteration, streaming, output)
+            if streaming and hasattr(output, '__iter__'):
+                # If streaming and output is a generator, yield each chunk
+                for chunk in output:
+                    yield chunk
+            else:
+                # If not streaming, ensure output is a string and yield it
+                yield {'content': output}
+        else:
+            output = "Workflow finished."
+            yield {'content': output}
+            yield {'stream_end': True}
+
+    @staticmethod
     def _save_file_step(
         iteration: int,
         process_prompt: Callable,
@@ -115,7 +175,8 @@ class BaseWorkflow:
 
     @staticmethod
     def emit_step_completed_events(iteration: int, streaming: bool, response: str):
-        emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "streaming"})
-        if not streaming:
+        if streaming:
+            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "streaming"})
+        else:
             emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
             emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "response": response})

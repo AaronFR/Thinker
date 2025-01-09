@@ -25,7 +25,10 @@ class Writing(enum.Enum):
         if tags and tags.get("write"):
             files = [{
                 "file_name": tags.get("write"),
-                "purpose": "create from scratch"
+                "purpose": (
+                    "This is a new  or possibly pre-existing file, you'll know based on the reference files supplied. "
+                    "Your output will be appended here, so write the file without meta commentary"
+                )
             }]
         else:
             prompt = (

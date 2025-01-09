@@ -76,11 +76,11 @@ class AutoWorkflow(BaseWorkflow):
                 f"Write a very quick summary indicating that each file in {file_references} has been processed "
                 f"according to the initial user message: <user_message>{initial_message}</user_message>"
             )
-            summary = self._chat_step(
+            summary = self._summary_step(
                 iteration=iteration,
                 process_prompt=process_prompt,
                 message=summary_message,
-                file_references=[],
+                file_references=file_references,
                 selected_message_ids=[],
                 streaming=True,
                 model=ChatGptModel.CHAT_GPT_4_OMNI_MINI

@@ -1,6 +1,7 @@
 import logging
 from typing import List, Dict
 
+from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
 
 
@@ -64,36 +65,37 @@ def generate_write_workflow(
     :return: A dictionary representing the write workflow.
     :raises ValueError: If any of the parameters are invalid.
     """
+    config = Configuration.load_config()
 
+    steps = [
+        {
+            "step_id": 1,
+            "module": "Planning Response",
+            "description": "Plan out a solution to the given prompt.",
+            "parameters": {
+                "user_message": initial_message,
+                "file_references": '\n'.join(file_references),
+                "selected_message_ids": '\n'.join(selected_messages),
+                "model": model
+            },
+            "status": "pending",
+            "response": {}
+        },
+        {
+            "step_id": 2,
+            "module": "Writing to File",
+            "description": "Write out solution as a valid file",
+            "parameters": {
+                "file_name": "pending...",
+                "model": model
+            },
+            "status": "pending",
+            "response": {}
+        }
+    ]
 
-    workflow = {
-        "version": "1.0",
-        "workflow_name": "Write Workflow",
-        "steps": [
-            {
-                "step_id": 1,
-                "module": "Planning Response",
-                "description": "Plan out a solution to the given prompt.",
-                "parameters": {
-                    "user_message": initial_message,
-                    "file_references": '\n'.join(file_references),
-                    "selected_message_ids": '\n'.join(selected_messages),
-                    "model": model
-                },
-                "status": "pending",
-                "response": {}
-            },
-            {
-                "step_id": 2,
-                "module": "Writing to File",
-                "description": "Write out solution as a valid file",
-                "parameters": {
-                    "file_name": "pending...",
-                    "model": model
-                },
-                "status": "pending",
-                "response": {}
-            },
+    if config['optimization'].get("summarise", False):
+        steps.append(
             {
                 "step_id": 3,
                 "module": "Summarise",
@@ -104,7 +106,12 @@ def generate_write_workflow(
                 "status": "pending",
                 "response": {}
             }
-        ],
+        )
+
+    workflow = {
+        "version": "1.0",
+        "workflow_name": "Write Workflow",
+        "steps": steps,
         "status": "pending"
     }
     return workflow
@@ -139,7 +146,7 @@ WRITE_TESTS_WORKFLOW = {
         {
             "step_id": 3,
             "description": "Summarising the tests written",
-            "module": "Summarize Tests",
+            "module": "summarise Tests",
             "parameters": {
                 "file_name": "generated_file_name",
                 "file_references": [],
@@ -213,20 +220,21 @@ def generate_write_pages_workflow(
         workflow["steps"].append(save_to_file_step)
         step_id += 1
 
-    summarise_step = {
-    # Summarize step
-        "step_id": step_id,
-        "module": "Summarise",
-        "description": "Quickly summarise the workflow",
-        "parameters": {
-            "file_references": file_references,
-            "selected_message_ids": selected_messages,
-            "model": "gpt-4o-mini"
-        },
-        "status": "pending",
-        "response": {}
-    }
-    workflow["steps"].append(summarise_step)
+    config = Configuration.load_config()
+    if config['optimization'].get("summarise", False):
+        summarise_step = {
+            "step_id": step_id,
+            "module": "Summarise",
+            "description": "Quickly summarise the workflow",
+            "parameters": {
+                "file_references": file_references,
+                "selected_message_ids": selected_messages,
+                "model": "gpt-4o-mini"
+            },
+            "status": "pending",
+            "response": {}
+        }
+        workflow["steps"].append(summarise_step)
 
     return workflow
 
@@ -273,16 +281,18 @@ def generate_auto_workflow(
         step_id += 1
 
     # Step N: Summarise
-    summarise_step = {
-        "step_id": step_id,
-        "module": "Summarise",
-        "description": "Quickly summarise the workflow",
-        "parameters": {
-            "model": "gpt-4o-mini"
-        },
-        "status": "pending",
-        "response": {}
-    }
-    workflow["steps"].append(summarise_step)
+    config = Configuration.load_config()
+    if config['optimization'].get("summarise", False):
+        summarise_step = {
+            "step_id": step_id,
+            "module": "Summarise",
+            "description": "Quickly summarise the workflow",
+            "parameters": {
+                "model": "gpt-4o-mini"
+            },
+            "status": "pending",
+            "response": {}
+        }
+        workflow["steps"].append(summarise_step)
 
     return workflow

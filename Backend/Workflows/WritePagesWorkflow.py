@@ -97,11 +97,10 @@ class WritePagesWorkflow(BaseWorkflow):
             )
             iteration += 1
 
-        # Summarize the workflow execution
-        summary = self._chat_step(
+        summary = self._summary_step(
             iteration=iteration,
             process_prompt=process_prompt,
-            message="Very quickly summarize what you just wrote and where you wrote it.",
+            message="Very quickly summarise what you just wrote and where you wrote it.",
             file_references=[],
             selected_message_ids=[],
             streaming=True,

@@ -21,6 +21,7 @@ export function Settings() {
         toggleDarkMode,
         toggleAugmentedPrompts,
         toggleQuestionUserPrompts,
+        togglesummarisation,
         toggleUserEncyclopedia,
         toggleEncyclopedia,
         toggleMultiFileProcessing,
@@ -95,9 +96,9 @@ export function Settings() {
             checked={settings.augmentedPromptsEnabled}
             onChange={toggleAugmentedPrompts}
           />
-          Generates a copy of your prompt, re-written in line with 'prompt engineering' to produce better responses.
+          Generates a copy of your prompt, re-written in line with 'prompt engineering' standards to produce better responses.
         </label>
-        <p>And the shills told you it would be a career skill...</p>
+        <small>And the shills told you it would be a career skill...</small>
         <p>Use case: simple, plain prompts that can nonetheless benefit from a <em>good</em> well-thought-out response</p>
         <div className='message-settings'>
           <AutoExpandingTextarea
@@ -107,6 +108,24 @@ export function Settings() {
             style={{ opacity: 0.9 }}
           />
         </div>
+
+        <h2>Summaries</h2>
+        <label className="settings-label">
+          <input
+            type="checkbox"
+            className="settings-checkbox"
+            id="summarise-checkbox"
+            checked={settings.summarisationEnabled}
+            onChange={togglesummarisation}
+          />
+          Enables summaries on compatible workflows
+        </label>
+        <AutoExpandingTextarea
+          value={settings.summarisationMessage}
+          className='textarea'
+          onChange={(e) => handleMessageChange('summarisationMessage', e.target.value)}
+          style={{ opacity: 0.9 }}
+        />
 
         <h2 className="settings-heading">🚧 Beta features</h2>
         {betaOptions.map(({ label, value, onChange }, index) => (

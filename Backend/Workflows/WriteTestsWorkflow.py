@@ -58,7 +58,7 @@ class WriteTestsWorkflow(BaseWorkflow):
             f"Assess edge cases and boundary conditions in {file_name}, generating appropriate tests. "
             f"Present the final test cases in {file_name} and comment on coverage and areas needing additional tests.",
 
-            "Very quickly summarize the tests you just wrote and what specifically they aim to test."
+            "Very quickly summarise the tests you just wrote and what specifically they aim to test."
         ]
 
         prompt_messages = test_prompt_messages
@@ -78,7 +78,7 @@ class WriteTestsWorkflow(BaseWorkflow):
                 )
 
             elif iteration == 2:
-                response = self._chat_step(
+                response = self._summary_step(
                     iteration=iteration,
                     process_prompt=process_prompt,
                     message=message,

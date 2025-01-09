@@ -87,15 +87,15 @@ class WriteWorkflow(BaseWorkflow):
                     model=model,
                 )
 
-                summary = self._chat_step(
-                    iteration=3,
-                    process_prompt=process_prompt,
-                    message="Very quickly summarize what you just wrote and where you wrote it.",
-                    file_references=[],
-                    selected_message_ids=[],
-                    streaming=True,
-                    model=ChatGptModel.CHAT_GPT_4_OMNI_MINI,
-                )
+            summary = self._summary_step(
+                iteration=3,
+                process_prompt=process_prompt,
+                message="Very quickly summarise what you just wrote and where you wrote it.",
+                file_references=file_references,
+                selected_message_ids=[],
+                streaming=True,
+                model=ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+            )
 
             return summary
         except Exception as e:

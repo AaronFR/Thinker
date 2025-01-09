@@ -80,6 +80,7 @@ class AiOrchestrator:
         logging.info(f"Re-run responses ({rerun_count}) : \n{responses}")
 
         new_messages = generate_messages("", judgement_criteria, responses, model)
+
         return Utility.execute_with_retries(
             lambda: self.prompter.get_open_ai_streaming_response(new_messages, model) if streaming
             else self.prompter.get_open_ai_response(new_messages, model)

@@ -24,12 +24,14 @@ export const SettingsProvider = ({ children }) => {
         augmentedPromptsEnabled: false,
         questionUserPromptsEnabled: false,
         userEncyclopediaEnabled: false,
+        summarisationEnabled: false,
         encyclopediaEnabled: false,
         multiFileProcessingEnabled: false,
         promptAugmentationMessage: 'Default prompt augmentation message...',
         promptQuestioningMessage: 'Default prompt questioning message...',
         coderPersonaMessage: 'Default coder persona message...',
         categorisationMessage: 'Default categorisation message...',
+        summarisationMessage: 'Default summarisation message...'
     };
 
     const [settings, setSettings] = useState(initialSettings);
@@ -104,6 +106,8 @@ export const SettingsProvider = ({ children }) => {
                         loadedConfig.beta_features.augmented_prompts_enabled ?? initialSettings.augmentedPromptsEnabled,
                     questionUserPromptsEnabled:
                         loadedConfig.beta_features.question_user_prompts_enabled ?? initialSettings.questionUserPromptsEnabled,
+                    summarisationEnabled:
+                        loadedConfig.optimization.summarise ?? initialSettings.summarisationEnabled,
                     userEncyclopediaEnabled:
                         loadedConfig.beta_features.user_context_enabled ?? initialSettings.userEncyclopediaEnabled,
                     encyclopediaEnabled:
@@ -118,6 +122,8 @@ export const SettingsProvider = ({ children }) => {
                         loadedConfig.systemMessages.coderPersonaMessage || initialSettings.coderPersonaMessage,
                     categorisationMessage:
                         loadedConfig.systemMessages.categorisationMessage || initialSettings.categorisationMessage,
+                    summarisationMessage:
+                        loadedConfig.systemMessages.summarisationMessage || initialSettings.summarisationMessage,
                 }));
             }
         };
@@ -181,6 +187,11 @@ export const SettingsProvider = ({ children }) => {
                     toggleSetting(
                         'beta_features.question_user_prompts_enabled',
                         'questionUserPromptsEnabled'
+                    ),
+                togglesummarisation: () =>
+                    toggleSetting(
+                        'optimization.summarise',
+                        'summarisationEnabled'
                     ),
                 toggleUserEncyclopedia: () =>
                     toggleSetting(

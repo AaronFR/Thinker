@@ -119,16 +119,16 @@ class EncyclopediaManagementInterface:
         return str(additional_context)
 
     def selectively_process_entry(self, term_name: str, specifics: str) -> str:
-        """Processes a specific encyclopedia entry to summarize information.
+        """Processes a specific encyclopedia entry to summarise information.
 
         :param term_name: The term to search for in encyclopedia data.
         :param specifics: The specifics about what to explore regarding the term.
-        :return: A summarized version of the encyclopedia file content.
+        :return: A summarised version of the encyclopedia file content.
         """
         entry_dict = self.encyclopedia.get(term_name)
         output = AiOrchestrator().execute(
             [
-                "Summarize the following information while retaining essential details."
+                "summarise the following information while retaining essential details."
             ],
             [
                 term_name + ": " + specifics,
