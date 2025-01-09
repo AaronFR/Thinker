@@ -34,8 +34,8 @@ def generate_chat_workflow(
                 "description": "Respond to the prompt and any additional files or reference messages",
                 "parameters": {
                     "user_message": initial_message,
-                    "file_references": file_references,
-                    "selected_message_ids": selected_messages,
+                    "file_references": '\n'.join(file_references),
+                    "selected_message_ids": '\n'.join(selected_messages),
                     "model": model
                 },
                 "status": "pending",
@@ -76,8 +76,8 @@ def generate_write_workflow(
                 "description": "Plan out a solution to the given prompt.",
                 "parameters": {
                     "user_message": initial_message,
-                    "file_references": file_references,
-                    "selected_message_ids": selected_messages,
+                    "file_references": '\n'.join(file_references),
+                    "selected_message_ids": '\n'.join(selected_messages),
                     "model": model
                 },
                 "status": "pending",
@@ -188,8 +188,8 @@ def generate_write_pages_workflow(
         "description": "Writes out a list of instructions for how to write each iteration",
         "parameters": {
             "user_message": initial_message,
-            "file_references": file_references,
-            "selected_message_ids": selected_messages,
+            "file_references": '\n'.join(file_references),
+            "selected_message_ids": '\n'.join(selected_messages),
             "model": model
         },
         "status": "pending",
@@ -263,7 +263,7 @@ def generate_auto_workflow(
             "description": "Processing file in accordance with user's initial message.",
             "parameters": {
                 "file_reference": file_reference,
-                "selected_message_ids": selected_messages,
+                "selected_message_ids": '\n'.join(selected_messages),
                 "model": model
             },
             "status": "pending",
