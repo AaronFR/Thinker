@@ -1,7 +1,5 @@
 .dropdown {
-  margin-top: var(--spacing-md);
   padding: var(--spacing-md);
-  font-size: var(--font-size-base);
   border-radius: var(--border-radius-sm);
   border: 2px solid var(--color-input-bg-dark);
   outline: none;

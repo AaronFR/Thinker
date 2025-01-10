@@ -42,6 +42,8 @@ const UserInputForm = ({
   setSelectedMessages,
   selectedPersona,
   setSelectedPersona,
+  generateAugmentedPrompt,
+  generateQuestionsForPrompt,
   tags,
   setTags
 }) => {
@@ -167,11 +169,29 @@ const UserInputForm = ({
 
         <div className='palette'>
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
+          <button 
+            type="button"
+            className="button submit-button"
+            onClick={() => generateAugmentedPrompt(userInput)}
+            disabled={isProcessing}
+            aria-busy={isProcessing}
+          >
+            {'Auto-Engineer'}
+          </button>
           <PersonaSelector 
               selectedPersona={selectedPersona} 
               setSelectedPersona={setSelectedPersona}
               autoDetectedPersona={autoDetectedPersona}
             />
+          <button 
+            type="button"
+            className="button submit-button"
+            onClick={() => generateQuestionsForPrompt(userInput, selectedMessages, selectedFiles)}
+            disabled={isProcessing}
+            aria-busy={isProcessing}
+          >
+            {'Question'}
+          </button>
           <button 
             type="submit"
             className="button submit-button"

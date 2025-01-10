@@ -221,6 +221,8 @@ function App () {
               setSelectedMessages={setSelectedMessages}
               selectedPersona={selectedPersona}
               setSelectedPersona={setSelectedPersona}
+              generateAugmentedPrompt={generateAugmentedPrompt}
+              generateQuestionsForPrompt={generateQuestionsForPrompt}
               tags={tags}
               setTags={setTags}
             />
