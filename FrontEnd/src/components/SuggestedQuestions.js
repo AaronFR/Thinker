@@ -43,8 +43,6 @@ const SuggestedQuestions = ({
     setConcatenatedQA(''); // Clear concatenatedQA
   }, [resetResponsesTrigger]);
 
-  if (!questionUserPromptsEnabled) return null;
-
   if (error) {
     return (
       <div className="markdown-questions-for-prompt" style={withLoadingOpacity(isQuestioning)}>

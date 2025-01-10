@@ -21,8 +21,8 @@ export const SettingsProvider = ({ children }) => {
     const initialSettings = {
         darkMode: false,
         language: 'en',
-        augmentedPromptsEnabled: false,
-        questionUserPromptsEnabled: false,
+        augmentedPromptsEnabled: "off",
+        questionUserPromptsEnabled: "off",
         userEncyclopediaEnabled: false,
         summarisationEnabled: false,
         encyclopediaEnabled: false,
@@ -143,6 +143,12 @@ export const SettingsProvider = ({ children }) => {
             return { ...prev, [key]: newValue };
         });
     }, []);
+    const changeSetting = useCallback((field, value, settingKey) => {
+        setSettings((prev) => {
+            saveConfig(field, value);
+            return { ...prev, [settingKey]: value };
+        });
+    }, []);
 
     /**
      * Handles changes to message settings with debounce.
@@ -176,18 +182,9 @@ export const SettingsProvider = ({ children }) => {
         <SettingsContext.Provider
             value={{
                 settings,
+                changeSetting,
                 toggleDarkMode: () =>
                     toggleSetting('interface.dark_mode', 'darkMode'),
-                toggleAugmentedPrompts: () =>
-                    toggleSetting(
-                        'beta_features.augmented_prompts_enabled',
-                        'augmentedPromptsEnabled'
-                    ),
-                toggleQuestionUserPrompts: () =>
-                    toggleSetting(
-                        'beta_features.question_user_prompts_enabled',
-                        'questionUserPromptsEnabled'
-                    ),
                 togglesummarisation: () =>
                     toggleSetting(
                         'optimization.summarise',

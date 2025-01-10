@@ -119,10 +119,10 @@ function App () {
     const handleTyping = (value, selectedMessages, selectedFiles) => {
       const currentSettings = settingsRef.current;
       
-      if (currentSettings.augmentedPromptsEnabled) {
+      if (currentSettings.augmentedPromptsEnabled  === "auto") {
         generateAugmentedPrompt(value);
       }
-      if (currentSettings.questionUserPromptsEnabled && !formsFilled) {
+      if (currentSettings.questionUserPromptsEnabled  === "auto" && !formsFilled) {
         generateQuestionsForPrompt(value, selectedMessages, selectedFiles);
       }
     };
@@ -186,7 +186,6 @@ function App () {
            return messageExists 
                ? prevMessages.filter((f) => f.prompt !== message.prompt)
                : [...prevMessages, message];
-        
       });
     };
 

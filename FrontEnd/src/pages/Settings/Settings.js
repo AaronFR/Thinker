@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
 
 import { handleLogout } from '../../utils/loginUtils';
 import AutoExpandingTextarea from '../../utils/AutoExpandingTextarea';
@@ -10,6 +9,13 @@ import './Settings.css';
 
 import { SettingsContext } from './SettingsContext';
 
+const FUNCTIONALITY_STATES = {
+  OFF: 'off',
+  ON: 'on',
+  AUTO: 'auto',
+};
+
+
 /**
  * Settings Component
  *
@@ -18,9 +24,8 @@ import { SettingsContext } from './SettingsContext';
 export function Settings() {
     const { 
         settings,
+        changeSetting,
         toggleDarkMode,
-        toggleAugmentedPrompts,
-        toggleQuestionUserPrompts,
         togglesummarisation,
         toggleUserEncyclopedia,
         toggleEncyclopedia,
@@ -68,13 +73,19 @@ export function Settings() {
         
         <h2>Prompt Questioning</h2>
         <label className="settings-label">
-          <input 
-            type="checkbox"
-            className="settings-checkbox"
-            id="prompt-questioning-checkbox"
-            checked={settings.questionUserPromptsEnabled}
-            onChange={toggleQuestionUserPrompts}
-          />
+          <select
+            className="settings-select"
+            id="prompt-questioning-select"
+            value={settings.questionUserPromptsEnabled} // current setting value
+            onChange={(e) => changeSetting(
+              'beta_features.question_user_prompts_enabled',
+              e.target.value,
+              'questionUserPromptsEnabled')} // update setting
+          >
+            <option value={FUNCTIONALITY_STATES.OFF}>Off</option>
+            <option value={FUNCTIONALITY_STATES.ON}>On</option>
+            <option value={FUNCTIONALITY_STATES.AUTO}>Auto</option>
+          </select>
           Generates questions against the users prompt and reference material, giving suggestions for the user to think about their prompt in detail
         </label>
         <p>Use case: Difficult, 'knotty' technical questions where the extra details can help formulate solutions. Not so useful when you <em>just</em> want any answer from the AI</p>
@@ -89,13 +100,19 @@ export function Settings() {
 
         <h2>Auto Prompt Engineering</h2>
         <label className="settings-label">
-          <input
-            type="checkbox"
-            className="settings-checkbox"
-            id="auto-prompt-engineering-checkbox"
-            checked={settings.augmentedPromptsEnabled}
-            onChange={toggleAugmentedPrompts}
-          />
+          <select
+            className="settings-select"
+            id="prompt-augmenting-select"
+            value={settings.augmentedPromptsEnabled} // current setting value
+            onChange={(e) => changeSetting(
+              'beta_features.augmented_prompts_enabled',
+              e.target.value,
+              'augmentedPromptsEnabled')} // update setting
+          >
+            <option value={FUNCTIONALITY_STATES.OFF}>Off</option>
+            <option value={FUNCTIONALITY_STATES.ON}>On</option>
+            <option value={FUNCTIONALITY_STATES.AUTO}>Auto</option>
+          </select>
           Generates a copy of your prompt, re-written in line with 'prompt engineering' standards to produce better responses.
         </label>
         <small>And the shills told you it would be a career skill...</small>
@@ -104,7 +121,9 @@ export function Settings() {
           <AutoExpandingTextarea
             value={settings.promptAugmentationMessage}
             className='textarea'
-            onChange={(e) => handleMessageChange('promptAugmentationMessage', e.target.value)}
+            onChange={(e) => 
+              handleMessageChange('promptAugmentationMessage', e.target.value
+            )}
             style={{ opacity: 0.9 }}
           />
         </div>

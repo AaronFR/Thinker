@@ -27,8 +27,6 @@ const PromptAugmentation = ({
   isAugmenting,
   copyAugmentedPrompt,
 }) => {
-  // Immediately return null if augmented prompts are not enabled or the prompt is empty
-  if (!augmentedPromptsEnabled) return null;
 
   // Display loading message if an augmented prompt is not yet ready
   if (!augmentedPrompt) {

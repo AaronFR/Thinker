@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update base text size in settings
 - More coherent visuals
 - 'Best of' Feature: Run a prompt multiple times in parallel then compare the results to improve performance.
-- Can toggle summarisation on workflows off and change the summarisation system message
+- Can toggle summarisation of workflows off and change the summarisation system message
 
 
 ### Changed
@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    unnecessary restarts when running flask in debug
 - Various bug fixes
 - General misc refactor of code
+- Optimise and auto enginnering of prompts can be toggled off - not present at all, on - can be triggered manually and auto - automatically triggers if the prompt updates.
 
 ### Removed
 

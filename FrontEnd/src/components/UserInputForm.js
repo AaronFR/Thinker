@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 
 import FileUploadButton from './FileUploadButton';
@@ -9,6 +9,8 @@ import AutoExpandingTextarea from '../utils/AutoExpandingTextarea';
 import PersonaSelector from '../components/PersonaSelector'
 
 import './styles/UserInputForm.css';
+
+import { SettingsContext } from '../pages/Settings/SettingsContext';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -49,6 +51,8 @@ const UserInputForm = ({
 }) => {
   const [fetchError, setFetchError] = useState('');
   const [uploadCompleted, setUploadCompleted] = useState(true)
+
+  const { settings } = useContext(SettingsContext);
 
   const autoDetectedPersona = 'Coder' // Temporary hardcoded value
   
@@ -169,7 +173,7 @@ const UserInputForm = ({
 
         <div className='palette'>
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
-          <button 
+          {settings.augmentedPromptsEnabled != 'off' && <button 
             type="button"
             className="button submit-button"
             onClick={() => generateAugmentedPrompt(userInput)}
@@ -177,13 +181,13 @@ const UserInputForm = ({
             aria-busy={isProcessing}
           >
             {'Auto-Engineer'}
-          </button>
+          </button>}
           <PersonaSelector 
               selectedPersona={selectedPersona} 
               setSelectedPersona={setSelectedPersona}
               autoDetectedPersona={autoDetectedPersona}
             />
-          <button 
+          {settings.questionUserPromptsEnabled != 'off' &&<button // settings.promptQuestioningMessage != 'off'
             type="button"
             className="button submit-button"
             onClick={() => generateQuestionsForPrompt(userInput, selectedMessages, selectedFiles)}
@@ -191,7 +195,7 @@ const UserInputForm = ({
             aria-busy={isProcessing}
           >
             {'Question'}
-          </button>
+          </button>}
           <button 
             type="submit"
             className="button submit-button"
