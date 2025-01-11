@@ -36,8 +36,10 @@ request.
 
 ## Current Limitations
 
-- **Limited workflows**: Currently the Thinker can create code classes, test classes and write general reports for a given topic.
-- **Inability to bring things together**: The thinker uses multiple files to determine different types of context for the prompt
+- **Limited workflows**: The thinker can process an arbitrary number of files and generate a document of arbitrary length,
+   but there's not a lot of specification, workflows could benefit from switches based on certain events occuring. And more detailed, 
+   more tailored workflows.
+- **Context**: The thinker uses multiple files to determine different types of context for the prompt
  changing this to a more unified (graph) database, could improve program coherency and contextual awareness while reducing
  costs and simplifying outputs.
 - **Polish**: As of yet there is still a lot of work to do to make every interaction with the UI tolerable and pleasant, 
@@ -66,81 +68,65 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 To refine the system's architecture and enhance its capabilities and efficiency, several key features are intended for implementation:
 
+### Functionality
+
 - **Auto-select messages**: After a message the option exists to automatically select that one for the next prompt.
-  - **prompt-chains**: instead of storing individual prompts store chains, first prompt to final in one set, simplifies organisation and reduces visual
-   clutter
-
-- **Expand Workflows**: More workflows for more use-cases, improving on the quality of existing workflows.
-  - **Modular Workflows**: In write_workflow for coder there's always a step for improving code quality/
-    writing documentation this should actually be a switch depending on the context.
-    Many workflows should consist of switch logic that allows for intelligent processing of a given request without needless details.
-
-  - **'Boss' Personas**: Large tasks should be enabled by 'boss' personas, e.g. a 'Coder' persona can write and update a file,
-     but a 'Team Lead' persona could manage several coder's to improve or write an entire application. 
-     (These types of arbitrarily large tasks are the **central** point of this whole project)
-  
-  - **Workflow Feedback**: The coder module can and should actually check that its code works and try and improve upon itself if it doesn't.
-   even if it can only try a fixed number of times and worst case scenario explains to the user that its solution is invalid
-   and this is the best it can do, this is a huge improvement in value.
-
-  - **Mathematician/Engineer/Physicist**: LLMs are bad at math the same way Humans are bad at math, neurons are just not well
+- **Payment System**: Top up system for updating balance(awaiting stripe integration)
+  - Attach receipts to prompts, workflows and features. So the user always knows how much they've spent and on what.
+- **Category descriptions**: input is cheap and a small description would probably significantly increase selection 
+   relevance
+- **Memory System**: In beta, needs to be made reliable: That means 'remembering' less useless information, storing it better and reading it better
+  - Descriptions for knowledge node concepts? Same idea for improving category specificity?
+- **Modular Workflows**: The coder module can and should actually check that its code works and try and improve upon itself if it doesn't.
+   even if it can only try a fixed number of times and worst case scenario explains to the user that its solution is invalid.
+   Many workflows should consist of switch logic that allows for intelligent processing of a given request without needless details.
+- **Best of X**: ~~Let users run multiple prompts in parallel and have the system automatically select/pick and choice to create a superior answer~~
+  - Can be customised on preference: Should the other attempts be identical or optimise for different qualities entirely, returning a balanced approach.
+- **Internet access**: Adding internet access for workflows based on context, including the ability to expand the
+ encyclopedia with web-sourced data.
+  - general knowledge shared nodes (e.g. information on a technology or recent event)
+  - Coder github integration
+- **API Integrations**: Integrate additional AI models to leverage the most appropriate based on context
+- **Loop Workflows**: Say you want to 'Optimise a file', the thing is you can actually keep doing that. A setting should be added to run the prompt
+  multiple times in a row, possibly based on various different qualities. [First general refactor, then readability, then performance for example]
+- **Programmes**: schedules and programs written on the fly for use by the user, customisable code base.
+- **'Boss' Personas**: Large tasks should be enabled by 'boss' personas, e.g. a 'Coder' persona can write and update a file,
+     but a 'Team Lead' persona could manage several coder's to improve or write an entire application.
+- **Micro thoughts**: Generated even while the prompt is being written. Question -> answer
+  - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
+  - Auto select workflow
+- **Mathematician/Engineer/Physicist**: LLMs are bad at math the same way Humans are bad at math, neurons are just not well
    suited to counting and arithmetic operations compared to binary functions. However, unlike humans their *terrible* at **spatial reasoning**
    But why does that need to be a limitation? If we let it connect to tools that help it simulate the world while it ""thinks"" in words
    we can have the best of both worlds. Unlocking a lot of capability/accuracy.
-
-- **Payment System**: Top up system for updating balance(awaiting stripe integration), ~~log files for each individual cost incurred~~.
-
-- **Best of X**: ~~Let users run multiple prompts in parallel and have the system automatically select/pick and choice to create a superior answer~~
-  - Can be customised on preference: Should the other attempts be identical or optimise for different qualities entirely, returning a balanced approach.
-
-- **Programmes**: schedules and programs written on the fly for use by the user, customisable code base.
-
-- **Micro thoughts**: Generated even while the prompt is being written. Question -> answer
-  - ~~Generate list of questions in regard to prompt, if appropriate ask user~~, otherwise pull from memory.
-  - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
-
-- **QOL**:
-  - categories should be listed according to date of their latest message
-  - messages and files show when they are selected, categories holding selected files are also visually identified
-  - Can deselect a message or file from the main view area rather than their item
-  - Q&A can be malformed at times
-  - openAI can reject prompts and the user will never know
-  - Ability to terminate a mid-process prompt
-  - Prompts can fail and the user doesn't know why, it just stalls at 'Processing..'
-  - It's hard to select a file vs expanding it for review (solved if that means the same thing though..)
-  - (optional) automatic category colourisation
-  - ~~files and messages should display in the large main section not tucked into the corner~~
+- **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.
 
 - **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can
  actually write its own tests automatically to full standard.
   - Long due that specific "integration" user tests where created to test that the system can satisfactorily answer the user,
    avoid hallucinations, provide scores of high value, asses performance against tests and benchmarks etc.
 
-- **Internet access**: Adding internet access for workflows based on context, including the ability to expand the
- encyclopedia with web-sourced data.
+### UI
 
+- **Messages Page**: Mobile friendly messages/files pages. Cluttered and hard to use on smartphones.
+- **Message Stacks**: Messages are displayed one at a time. Organising prompts that are referenceing each other in a chain into
+  a singular stack would make navigation easier
+- **Visual Feedback Mechanisms**: Indicate selected messages and files visibly to enhance clarity. Provide an option to deselect
+  messages and files.
+- **QOL**:
+  - categories should be listed according to date of their latest message
+  - Can deselect a message or file from the main view area rather than their item
+  - Q&A can be malformed at times
+  - Ability to terminate a mid-process prompt
+  - Prompts can fail and the user doesn't know why, it just stalls at 'Processing..'
+  - It's hard to select a file vs expanding it for review (solved if that means the same thing though..)
+  - (optional) automatic category colourisation
+  - Ability to undo changes to files
 - **User Configuration Profile**: Profiles the user can easily select from the prompt screen and are clearly visible, e.g
  "expensive request", "private mode", "work", "humorous mode", etc so the user can quickly swap out configuration as they want
   - e.g. I would prefer if coder displayed all code changes as 'before and after' rather than the entire file, additionally I prefer if
    if it aims to implement the feature I'm asking for with the *minimum* amount of changes to the existing functionality.
 - **Persona Configuration**: Left to the user as much as possible.
 
-- **Files design**: Files management needs to be planned specifically when its certain how things should be arranged
-   e.g. should front end file data objects include their folder and use it or should we rely on abstractions and let 
-   only the backend manage folder ids?
-  - **Undo Changes Files**: e.g. to files
 
-- **Graph Database Implementation**: A lot of work was put into creating functionality which now needs to be done with a 
- graph based methodology
-  - general knowledge (? Internet search will have to be implemented first to see the exact utility..)
-  - ~~user knowledge~~
-  - configuration (changes)
-  - Connecting relevant messages to the current prompt -> chain of messages displayed on the main section
-  - sub-categories (possibly)
 
-- **Category descriptions**: input is cheap and a small description would probably significantly increase selection 
-   relevance
-
-- **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.
-
-- **API Integrations**: Integrate additional AI models to leverage the most appropriate based on context

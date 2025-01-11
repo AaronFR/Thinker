@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - 'Quantity is a Quality of its own'
+## [0.9.2] - 2025-01-11 'Quantity is a Quality of its own'
 
 ### Added
 
@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - When run locally user data is stored inside the /UserData directory (not /Backend). Cleaner and also prevents 
    unnecessary restarts when running flask in debug
 - Various bug fixes
-- General misc refactor of code
+- General misc refactor of code (via Auto workflow)
 - Optimise and auto enginnering of prompts can be toggled off - not present at all, on - can be triggered manually and auto - automatically triggers if the prompt updates.
 
 ### Removed

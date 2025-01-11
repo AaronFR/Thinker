@@ -218,7 +218,7 @@ class BasePersona:
             best_of_system_message +
             f"<user_message>{user_messages}</user_message"
         )
-        
+
         try:
             output = AiOrchestrator().execute(
                 system_messages,
