@@ -81,5 +81,4 @@ if __name__ == '__main__':
     config = Configuration()
     config_items = config.load_config()
     print(config_items)
-    print(config_items['documentation']['style'])  # Output: reStructuredText
-    print(config_items['writing'])
+    print(config_items['systemMessages']['categorisationMessage'])

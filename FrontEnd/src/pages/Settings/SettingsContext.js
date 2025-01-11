@@ -30,7 +30,9 @@ export const SettingsProvider = ({ children }) => {
         promptAugmentationMessage: 'Default prompt augmentation message...',
         promptQuestioningMessage: 'Default prompt questioning message...',
         coderPersonaMessage: 'Default coder persona message...',
+        writerPersonaMessage: 'Default writer persona message...',
         categorisationMessage: 'Default categorisation message...',
+        bestOfMessage: 'Default best of judgement criteria...',
         summarisationMessage: 'Default summarisation message...'
     };
 
@@ -120,8 +122,12 @@ export const SettingsProvider = ({ children }) => {
                         loadedConfig.systemMessages.promptQuestioningMessage || initialSettings.promptQuestioningMessage,
                     coderPersonaMessage:
                         loadedConfig.systemMessages.coderPersonaMessage || initialSettings.coderPersonaMessage,
+                    writerPersonaMessage:
+                        loadedConfig.systemMessages.writerPersonaMessage || initialSettings.writerPersonaMessage,
                     categorisationMessage:
                         loadedConfig.systemMessages.categorisationMessage || initialSettings.categorisationMessage,
+                    bestOfMessage:
+                        loadedConfig.systemMessages.bestOfMessage || initialSettings.bestOfMessage,
                     summarisationMessage:
                         loadedConfig.systemMessages.summarisationMessage || initialSettings.summarisationMessage,
                 }));

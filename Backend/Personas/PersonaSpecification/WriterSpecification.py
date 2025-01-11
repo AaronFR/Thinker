@@ -1,3 +1,5 @@
+import logging
+
 from Personas.PersonaSpecification.PersonaConstants import WRITER
 from Data.Configuration import Configuration
 
@@ -5,11 +7,11 @@ from Data.Configuration import Configuration
 def load_configuration() -> str:
     config = Configuration.load_config()
 
-    return f"""Following the following guidelines when writing text.
-    general tone: {config['writing']['tone']}
-    write for the following audience: {config['writing']['audience']}
-    vocabulary focus: {config['writing']['preferred_vocabulary']}
-    """
+    return config.get("systemMessages", {}).get(
+        "writerPersonaMessage",
+        "You are a talented and charming writer. Work on users instructions without commentary providing: "
+        "insightful, impactful, concise, clear, interesting, and if context provides for it charming/humorous content."
+    )
 
 
 WRITER_INSTRUCTIONS = "Just think through the question, step by step, prioritizing the most recent user prompt."

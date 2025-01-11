@@ -210,11 +210,15 @@ class BasePersona:
             recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
         recent_history.extend(history_messages)
 
+        best_of_system_message = config['systemMessages'].get(
+            "bestOfMessage",
+            "Pick and choose from your prior answers to create the best possible answer to the users initial user_message"
+        )
         judgement_criteria = (
-            "Pick and choose from your prior answers to create one that best answers the user's initial message *while*"
-            " maintaining a coherency"
+            best_of_system_message +
             f"<user_message>{user_messages}</user_message"
         )
+        
         try:
             output = AiOrchestrator().execute(
                 system_messages,

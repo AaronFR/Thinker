@@ -157,7 +157,7 @@ export function Settings() {
         <h2 className="settings-heading">System Messages</h2>
         <div className="message-settings">
           <label className="message-label">
-            Coder Persona:
+            Coder Persona
             <AutoExpandingTextarea
               value={settings.coderPersonaMessage}
               className='textarea'
@@ -166,11 +166,29 @@ export function Settings() {
             />
           </label>
           <label className="message-label">
-            Categorisation:
+            Writer Persona
+            <AutoExpandingTextarea
+              value={settings.writerPersonaMessage}
+              className='textarea'
+              onChange={(e) => handleMessageChange('writerPersonaMessage', e.target.value)}
+              style={{ opacity: 0.9 }}
+            />
+          </label>
+          <label className="message-label">
+            Categorisation
             <AutoExpandingTextarea
               value={settings.categorisationMessage}
               className='textarea'
               onChange={(e) => handleMessageChange('categorisationMessage', e.target.value)}
+              style={{ opacity: 0.9 }}
+            />
+          </label>
+          <label className="message-label">
+            Best Of - Judgement Criteria
+            <AutoExpandingTextarea
+              value={settings.bestOfMessage}
+              className='textarea'
+              onChange={(e) => handleMessageChange('bestOfMessage', e.target.value)}
               style={{ opacity: 0.9 }}
             />
           </label>
