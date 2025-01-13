@@ -114,7 +114,6 @@ To refine the system's architecture and enhance its capabilities and efficiency,
 - **Visual Feedback Mechanisms**: Indicate selected messages and files visibly to enhance clarity. Provide an option to deselect
   messages and files.
 - **QOL**:
-  - categories should be listed according to date of their latest message
   - Can deselect a message or file from the main view area rather than their item
   - Q&A can be malformed at times
   - Ability to terminate a mid-process prompt

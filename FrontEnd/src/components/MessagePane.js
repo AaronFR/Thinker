@@ -26,6 +26,8 @@ const MessageHistory = ({ isProcessing, onMessageSelect }) => {
   /**
    * Fetches message categories from the backend API.
    * 
+   * ToDo: should re-sort alphabetically if the user prefers
+   * 
    * @returns {Promise<void>}
    */
   const fetchCategories = useCallback(async () => {

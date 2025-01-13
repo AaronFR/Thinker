@@ -129,10 +129,30 @@ RETURN DISTINCT category.name AS category_name
 ORDER BY category_name;
 """
 
+LIST_CATEGORIES_BY_LATEST_MESSAGE= """
+MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)
+OPTIONAL MATCH (category)<-[:BELONGS_TO]-(message:USER_PROMPT)
+RETURN DISTINCT category.name AS category_name, max(message.time) AS latest_time
+ORDER BY 
+    CASE WHEN latest_time IS NULL THEN 1 ELSE 0 END, 
+    latest_time DESC,
+    category_name ASC;
+"""
+
 LIST_CATEGORIES_WITH_FILES = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)--(file:FILE)
 RETURN DISTINCT category.name AS category_name
 ORDER BY category_name;
+"""
+
+LIST_CATEGORIES_WITH_FILES_BY_LATEST_FILE = """
+MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)--(file:FILE)
+OPTIONAL MATCH (category)<-[:BELONGS_TO]-(file:FILE)
+RETURN DISTINCT category.name AS category_name, max(file.time) AS latest_time
+ORDER BY 
+    CASE WHEN latest_time IS NULL THEN 1 ELSE 0 END, 
+    latest_time DESC,
+    category_name ASC;
 """
 
 # Files

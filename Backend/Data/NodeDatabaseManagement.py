@@ -265,24 +265,20 @@ class NodeDatabaseManagement:
     def list_categories(self) -> List[str]:
         """Lists all unique categories associated with the user.
 
-        ToDo: Might be better to order by number of messages associated to category or latest datetime for the messages
-         of each category
-
         :return: A list of category names.
         """
         parameters = {"user_id": get_user_context()}
 
-        result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES, parameters)
+        result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES_BY_LATEST_MESSAGE, parameters)
         return [record["category_name"] for record in result]
 
     def list_categories_with_files(self) -> List[str]:
         """
         List all unique categories associated with the user which have files attached
         """
-        parameters = {
-            "user_id": get_user_context()
-        }
-        result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES_WITH_FILES, parameters)
+        parameters = {"user_id": get_user_context()}
+
+        result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES_WITH_FILES_BY_LATEST_FILE, parameters)
         categories = [record["category_name"] for record in result]
         return categories
 

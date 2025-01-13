@@ -9,12 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-
 - 
 
 ### Changed
 
-- 
+- Categories are listed according to their latest component
 
 ### Removed
 
