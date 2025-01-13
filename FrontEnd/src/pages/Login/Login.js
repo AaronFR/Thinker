@@ -128,7 +128,7 @@ export function Login() {
 
 
             <button onClick={handleLogout} className="logout-button">Logout</button>
-            <p className='version-number'>v0.9.2</p>
+            <p className='version-number'>v0.9.3</p>
         </div>
     );
 }
