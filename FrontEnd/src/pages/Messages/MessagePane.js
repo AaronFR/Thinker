@@ -40,8 +40,9 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => 
 
       const data = await response.json();
       const categoriesWithId = data.categories.map((category, index) => ({
-        id: index + 1,
-        name: toTitleCase(category),
+        id: index + 1, // Assign a unique ID based on the index
+        name: toTitleCase(category.name),
+        colour: category.colour ? category.colour : null,
         messages: []
       }));
 
@@ -61,7 +62,6 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => 
    */
   const fetchMessagesByCategory = useCallback(async (categoryName, categoryId) => {
     try {
-      console.log(categoryName.toLowerCase())
       const response = await apiFetch(`${FLASK_PORT}/messages/${categoryName.toLowerCase()}`, {
         method: "GET",
       })
@@ -134,7 +134,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => 
       <section className="category-list">
         {categories.length > 0 ? (
           categories.map((category) => (
-            <div key={category.id} className="category-item">
+            <div key={category.id} className="category-item" style={{ backgroundColor: category.colour}}>
               <header
                 className="button category-title"
                 onClick={() => toggleCategory(category.id, category.name)}

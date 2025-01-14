@@ -20,6 +20,7 @@ export const SettingsContext = createContext();
 export const SettingsProvider = ({ children }) => {
     const initialSettings = {
         darkMode: false,
+        aiColour: false,
         language: 'en',
         augmentedPromptsEnabled: "off",
         questionUserPromptsEnabled: "off",
@@ -104,6 +105,7 @@ export const SettingsProvider = ({ children }) => {
                 setSettings((prevSettings) => ({
                     ...prevSettings,
                     darkMode: loadedConfig.interface.dark_mode ?? initialSettings.darkMode,
+                    aiColour: loadedConfig.interface.ai_colour ?? initialSettings.aiColour,
                     augmentedPromptsEnabled:
                         loadedConfig.beta_features.augmented_prompts_enabled ?? initialSettings.augmentedPromptsEnabled,
                     questionUserPromptsEnabled:
@@ -191,6 +193,8 @@ export const SettingsProvider = ({ children }) => {
                 changeSetting,
                 toggleDarkMode: () =>
                     toggleSetting('interface.dark_mode', 'darkMode'),
+                toggleAiColourisation: () =>
+                    toggleSetting('interface.ai_colour', 'aiColour'),
                 togglesummarisation: () =>
                     toggleSetting(
                         'optimization.summarise',

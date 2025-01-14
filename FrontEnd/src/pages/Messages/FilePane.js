@@ -38,7 +38,8 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles }) => {
 
       const categoriesWithId = data.categories.map((category, index) => ({
         id: index + 1, // Assign a unique ID based on the index
-        name: toTitleCase(category),
+        name: toTitleCase(category.name),
+        colour: category.colour ? category.colour : null,
         files: []
       }));
 
@@ -128,7 +129,7 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles }) => {
       <section className="category-list">
         {categories.length > 0 ? (
           categories.map((category) => (
-            <div key={category.id} className="category-item">
+            <div key={category.id} className="category-item" style={{ backgroundColor: category.colour}}>
               <header
                 className="button category-title"
                 onClick={() => toggleCategory(category.id, category.name)}

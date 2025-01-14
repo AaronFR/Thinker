@@ -227,10 +227,11 @@ class NodeDatabaseManagement:
     # Categories
 
     @handle_errors()
-    def create_category(self, category_name: str) -> None:
+    def create_category(self, category_name: str, colour: str = "#111111") -> None:
         """Creates a new category in the database.
 
         :param category_name: The name of the new category.
+        :param colour: the HEX colour assigned to the category
         """
         category_id = str(shortuuid.uuid())
         logging.info(f"Creating new category [{category_id}]: {category_name}")
@@ -238,7 +239,8 @@ class NodeDatabaseManagement:
         parameters = {
             "user_id": get_user_context(),
             "category_name": category_name.lower(),
-            "category_id": category_id
+            "category_id": category_id,
+            "colour": colour
         }
 
         self.neo4jDriver.execute_write(
@@ -262,24 +264,40 @@ class NodeDatabaseManagement:
         return category_id
 
     @handle_errors()
-    def list_categories(self) -> List[str]:
-        """Lists all unique categories associated with the user.
+    def list_category_names(self) -> List[Dict[str, str]]:
+        """Lists the names of categories
 
         :return: A list of category names.
         """
         parameters = {"user_id": get_user_context()}
 
-        result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES_BY_LATEST_MESSAGE, parameters)
+        result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES, parameters)
         return [record["category_name"] for record in result]
 
-    def list_categories_with_files(self) -> List[str]:
+    @handle_errors()
+    def list_categories(self) -> List[Dict[str, str]]:
+        """
+        Lists all unique categories associated with the user and their associated data.
+        e.g. Assigned colour
+
+        :return: A list of category and associated data.
+        """
+        parameters = {"user_id": get_user_context()}
+
+        result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES_BY_LATEST_MESSAGE, parameters)
+        categories = [{"name": record["category_name"], "colour": record["colour"]} for record in result]
+
+        return categories
+
+    def list_categories_with_files(self) -> List[Dict[str, str]]:
         """
         List all unique categories associated with the user which have files attached
         """
         parameters = {"user_id": get_user_context()}
 
         result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES_WITH_FILES_BY_LATEST_FILE, parameters)
-        categories = [record["category_name"] for record in result]
+        categories = [{"name": record["category_name"], "colour": record["colour"]} for record in result]
+
         return categories
 
     # Files

@@ -32,7 +32,7 @@ RETURN user.id;
 CREATE_CATEGORY = """
 MATCH (user:USER {id: $user_id})
 WITH user
-MERGE (category:CATEGORY {name: $category_name})
+MERGE (category:CATEGORY {name: $category_name, colour: $colour})
 ON CREATE SET category.id = $category_id
 MERGE (user)-[:HAS_CATEGORY]->(category)
 RETURN category.id AS category_id;
@@ -132,7 +132,7 @@ ORDER BY category_name;
 LIST_CATEGORIES_BY_LATEST_MESSAGE= """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)
 OPTIONAL MATCH (category)<-[:BELONGS_TO]-(message:USER_PROMPT)
-RETURN DISTINCT category.name AS category_name, max(message.time) AS latest_time
+RETURN DISTINCT category.name AS category_name, category.colour AS colour, max(message.time) AS latest_time
 ORDER BY 
     CASE WHEN latest_time IS NULL THEN 1 ELSE 0 END, 
     latest_time DESC,
@@ -148,7 +148,7 @@ ORDER BY category_name;
 LIST_CATEGORIES_WITH_FILES_BY_LATEST_FILE = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)--(file:FILE)
 OPTIONAL MATCH (category)<-[:BELONGS_TO]-(file:FILE)
-RETURN DISTINCT category.name AS category_name, max(file.time) AS latest_time
+RETURN DISTINCT category.name AS category_name, category.colour AS colour, max(file.time) AS latest_time
 ORDER BY 
     CASE WHEN latest_time IS NULL THEN 1 ELSE 0 END, 
     latest_time DESC,

@@ -26,6 +26,7 @@ export function Settings() {
         settings,
         changeSetting,
         toggleDarkMode,
+        toggleAiColourisation,
         togglesummarisation,
         toggleUserEncyclopedia,
         toggleEncyclopedia,
@@ -35,6 +36,7 @@ export function Settings() {
 
     const uiOptions = [
         { label: "Dark Mode", value: settings.darkMode, onChange: toggleDarkMode },
+        { label: "New Category Colourisation via LLM Prompt", value: settings.aiColour, onChange: toggleAiColourisation }
     ];
 
     const betaOptions = [

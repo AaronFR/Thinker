@@ -7,6 +7,7 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
+from Utilities import Colour
 from Utilities.Decorators import handle_errors
 
 
@@ -45,7 +46,7 @@ class CategoryManagement:
         :param llm_response: The optional llm response for additional context
         :return: Name of the selected category.
         """
-        categories = nodeDB().list_categories()
+        category_names = nodeDB().list_category_names()
         config = Configuration.load_config()
 
         user_categorisation_instructions = config.get('systemMessages', {}).get(
@@ -53,12 +54,12 @@ class CategoryManagement:
             "Given the following prompt-response pair, think through step by step and explain your reasoning."
         )
         instruction_template = (
-            f"LIGHTLY suggested existing categories, you DONT need to follow: {str(categories)} "
+            f"LIGHTLY suggested existing categories, you DONT need to follow: {str(category_names)} "
             f"{user_categorisation_instructions} "
             "and categorize the data with the most suitable single-word answer."
             "Write it as <result=\"(your_selection)\""
         )
-        categorisation_instructions = instruction_template.format(categories)
+        categorisation_instructions = instruction_template.format(category_names)
 
         categorisation_input = CategoryManagement.CATEGORIZATION_TEMPLATE.format(user_prompt, llm_response or "")
 
@@ -81,10 +82,11 @@ class CategoryManagement:
         :return: The existing or newly created category.
         """
         sanitized_category = CategoryManagement.sanitise_category_name(category)
-        categories = nodeDB().list_categories()
+        categories = nodeDB().list_category_names()
 
         if sanitized_category not in categories:
-            nodeDB().create_category(sanitized_category)
+            color = CategoryManagement.generate_colour(sanitized_category)
+            nodeDB().create_category(sanitized_category, color)
 
         return sanitized_category
 
@@ -158,6 +160,36 @@ class CategoryManagement:
             return category
 
         return tag_category
+
+    @staticmethod
+    def generate_colour(category_name: str) -> Optional[str]:
+        """
+        Generate a meaningful color based on the category name using AI.
+
+        :param category_name: The name of the category.
+        :return: A string representing a color in HEX format or None if AI call fails.
+        """
+        system_prompts = [
+            "You are a color expert."
+            "Assign a HEX color code that best represents the given category name."
+            "Provide only the HEX code without any additional text."
+        ]
+        user_prompts = [f"Category Name: {category_name}"]
+
+        config = Configuration.load_config()
+        use_ai = config['interface'].get("ai_colour", False)
+        try:
+            if use_ai:
+                ai_response = AiOrchestrator().execute(system_prompts, user_prompts)
+                ai_color = ai_response.strip()
+                if Colour.is_valid_hex_color(ai_color):
+                    logging.info(f"AI assigned color '{ai_color}' for category '{category_name}'.")
+                    return ai_color
+
+            return Colour.generate_random_colour()
+        except Exception as e:
+            logging.error(f"AI color assignment failed for category '{category_name}': {e}")
+            return None
 
 
 if __name__ == '__main__':

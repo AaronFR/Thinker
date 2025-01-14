@@ -118,7 +118,6 @@ To refine the system's architecture and enhance its capabilities and efficiency,
   - Ability to terminate a mid-process prompt
   - Prompts can fail and the user doesn't know why, it just stalls at 'Processing..'
   - It's hard to select a file vs expanding it for review (solved if that means the same thing though..)
-  - (optional) automatic category colourisation
   - Ability to undo changes to files
 - **User Configuration Profile**: Profiles the user can easily select from the prompt screen and are clearly visible, e.g
  "expensive request", "private mode", "work", "humorous mode", etc so the user can quickly swap out configuration as they want
