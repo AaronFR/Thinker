@@ -50,11 +50,8 @@
 
 /* Message Item */
 
-.selected {
-  border-radius: var(--border-radius-sm);
-  border: 2px solid var(--color-border-active);
-}
 
+/* ToDo: Will need to change it so the border is always present just not highlighted */
 .message-item,
 .file-item {
   padding: var(--spacing-md);
@@ -82,6 +79,10 @@ body.dark-mode .file-item {
 .message-item strong {
   color: var(--color-text-dark);
 }
+.file-item.selected, 
+.message-item.selected {
+  border-left: 3px solid var(--color-border-active);
+}
 
 .reference-area {
   margin-bottom: '20px';
@@ -91,6 +92,16 @@ body.dark-mode .file-item {
   color: red;
 }
 
+.deselect-button {
+  padding: 5px 5px;
+  margin-left: 5px;
+  font-size: xx-small;
+  opacity: 30%;
+}
+.deselect-button:hover {
+  opacity: 100;
+  background-color: red;
+}
 
 
 /* Footer containing the delete button and timestamp */

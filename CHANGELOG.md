@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Messages pages - for displaying user prompt - responses and files to the user
 - Files and messages are highlighted visually when selected as reference
+- Files and messages can be de-selected from the display area over the prompt
 
 ### Changed
 

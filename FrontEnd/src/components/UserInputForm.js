@@ -111,6 +111,26 @@ const UserInputForm = ({
     setUploadCompleted(true);
   };
 
+  const onDeselectFile = (file) => {
+    setSelectedFiles((prevFiles) => {
+      // ToDo: should filter by id not name
+      if (prevFiles.some((f) => f.name === file.name)) {
+        // If the file is already selected, filter it out
+        return prevFiles.filter((f) => f.name !== file.name);
+      }
+    })
+  };
+
+  const onDeselectMessage = (message) => {
+    setSelectedMessages((prevMessages) => {
+      // ToDo: should filter by id not name
+      if (prevMessages.some((m) => m.prompt === message.prompt)) {
+        // If the file is already selected, filter it out
+        return prevMessages.filter((m) => m.prompt !== message.prompt);
+      }
+    })
+  };
+
   /**
    * Handles key down events for the textarea.
    *
@@ -137,8 +157,15 @@ const UserInputForm = ({
       <div className='reference-area'>
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {selectedMessages.map((message, index) => (
-            <li key={index}>
+            <li key={index} className="selected-item">
               <span role="img" aria-label="message">✉</span> {message.prompt}
+              <button
+                className="deselect-button"
+                onClick={() => onDeselectMessage(message)}
+                aria-label={`Deselect this message`}
+              >
+                ✖️
+              </button>
             </li>
           ))}
         </ul>
@@ -150,8 +177,15 @@ const UserInputForm = ({
         {selectedFiles.length === 0 && !fetchError}
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {selectedFiles.map((file, index) => (
-            <li key={index}>
+            <li key={index} className="selected-item">
               <span role="img" aria-label="file">📄</span> {file.name}
+              <button
+                className="deselect-button"
+                onClick={() => onDeselectFile(file)}
+                aria-label={`Deselect this file`}
+              >
+                ✖️
+              </button>
             </li>
           ))}
         </ul>

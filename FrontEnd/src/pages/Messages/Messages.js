@@ -39,7 +39,7 @@ export function Messages() {
    */
   const handleFileSelect = useCallback((file) => {
     setSelectedFiles((prevFiles) => {
-      // ToDo: should filter by id not name, but uploaded files aren't setup for that yet
+      // ToDo: should filter by id not name
       if (prevFiles.some((f) => f.name === file.name)) {
         // If the file is already selected, filter it out
         return prevFiles.filter((f) => f.name !== file.name);
@@ -59,7 +59,7 @@ export function Messages() {
    */
   const handleMessageSelect = useCallback((message) => {
     setSelectedMessages((prevMessages) => {
-      // ToDo: should filter by id not prompt, but uploaded files aren't setup for that yet
+      // ToDo: should filter by id not prompt
       const messageExists = prevMessages.some((f) => f.prompt === message.prompt);
          return messageExists 
              ? prevMessages.filter((f) => f.prompt !== message.prompt)
