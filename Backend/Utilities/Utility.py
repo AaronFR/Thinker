@@ -55,9 +55,16 @@ class Utility:
         else:
             output = list_or_string
 
-        if not isinstance(output, list) or not all(isinstance(sp, str) for sp in output):
-            raise ValueError("""List is invalid, one or more elements is not a list. 
-                    Please ensure compliance with this expected structure for proper functionality.""")
+        if not isinstance(output, list):
+            raise ValueError(f"""The supplied parameter is a {type(list_or_string)} not a list.
+                                Please ensure compliance with this expected structure for proper functionality.""")
+        if not all(isinstance(sp, str) for sp in output):
+            for sp in output:
+                if not isinstance(sp, str):
+                    raise ValueError(
+                        f"""INVALID: {sp} element is a {type(sp)} not a string!
+                        Please ensure compliance with this expected structure for proper functionality."""
+                    )
 
         return output
 
