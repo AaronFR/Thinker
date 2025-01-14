@@ -108,7 +108,6 @@ To refine the system's architecture and enhance its capabilities and efficiency,
 
 ### UI
 
-- **Messages Page**: Mobile friendly messages/files pages. Cluttered and hard to use on smartphones.
 - **Message Stacks**: Messages are displayed one at a time. Organising prompts that are referenceing each other in a chain into
   a singular stack would make navigation easier
 - **Visual Feedback Mechanisms**: Indicate selected messages and files visibly to enhance clarity. Provide an option to deselect

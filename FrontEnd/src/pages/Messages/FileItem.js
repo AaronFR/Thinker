@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { shortenText, getBasename, MarkdownRenderer, CodeHighlighter } from '../utils/textUtils';
-import { apiFetch } from '../utils/authUtils';
+import { shortenText, getBasename, MarkdownRenderer, CodeHighlighter } from '../../utils/textUtils';
+import { apiFetch } from '../../utils/authUtils';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 

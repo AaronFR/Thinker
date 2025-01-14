@@ -11,6 +11,7 @@ ReactDOM.render(
       <Route path="/" element={<App />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="/pricing" element={<Pricing />} />
+      <Route path="/messages" element={<Messages />} />
     </Routes>
   </BrowserRouter>,
   

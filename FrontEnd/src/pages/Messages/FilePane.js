@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import FileItem from './FileItem';
-import { withLoadingOpacity, toTitleCase } from '../utils/textUtils';
-import { apiFetch } from '../utils/authUtils';
+import { withLoadingOpacity, toTitleCase } from '../../utils/textUtils';
+import { apiFetch } from '../../utils/authUtils';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
@@ -16,7 +16,7 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
  * @param onFileSelect: Callback function to handle file selection.
  * @param isProcessing: Indicates if the app is currently processing data.
  */
-const FilePane = ({ onFileSelect, isProcessing }) => {
+const FilePane = ({ onFileSelect, isProcessing, selectedFiles }) => {
   const [categories, setCategories] = useState([]);
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
   const [fetchError, setFetchError] = useState('');

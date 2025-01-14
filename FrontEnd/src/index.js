@@ -11,6 +11,7 @@ import Login from './pages/Login/Login';
 import { apiFetch } from "./utils/authUtils";
 
 import 'highlight.js/styles/atom-one-dark.css';
+import Messages from "./pages/Messages/Messages";
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
@@ -50,6 +51,7 @@ function RootApp() {
           <Route path="/" element={isAuthenticated ? <App /> : <Navigate to="/login" />} />
           <Route path="/settings" element={isAuthenticated ? <Settings /> : <Navigate to="/login" />} />
           <Route path="/pricing" element={isAuthenticated ? <Pricing /> : <Navigate to="/login" />} />
+          <Route path="/messages" element={isAuthenticated ? <Messages /> : <Navigate to="/login" />} />
         </Routes>
       </BrowserRouter>
     </SettingsProvider>

@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- 
+- Messages pages - for displaying user prompt - responses and files to the user
 
 ### Changed
 

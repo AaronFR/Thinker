@@ -17,7 +17,7 @@ body.dark-mode {
   background: var(--color-settings-bg);
   box-shadow: var(--box-shadow-settings);
   border-radius: var(--border-radius-lg-md);
-  font-family: var(--font-family-base); /* Consistent modern look */
+  font-family: var(--font-family-base);
 }
 
 /* Headings */

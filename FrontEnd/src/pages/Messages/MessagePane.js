@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { apiFetch } from '../utils/authUtils';
-import { withLoadingOpacity, toTitleCase} from '../utils/textUtils';
+import { apiFetch } from '../../utils/authUtils';
+import { withLoadingOpacity, toTitleCase} from '../../utils/textUtils';
 
-import MessageItem from './MessageItem';
+import MessageItem from '../../components/MessageItem';
 
 import './styles/MessageHistory.css';
 
@@ -18,7 +18,7 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
  * @param {boolean} isProcessing - Indicates if the application is currently processing data.
  * @param {function} onMessageSelect - Callback to handle message selection.
  */
-const MessageHistory = ({ isProcessing, onMessageSelect }) => {
+const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => {
   const [categories, setCategories] = useState([])
   const [error, setError] = useState('');
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);

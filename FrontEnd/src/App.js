@@ -5,8 +5,8 @@ import debounce from 'lodash.debounce';
 import { SettingsContext } from './pages/Settings/SettingsContext';
 
 import ResizablePane from './utils/resizeablePane';
-import FilePane from './components/FilePane'
-import MessagePane from './components/MessagePane';
+import FilePane from './pages/Messages/FilePane'
+import MessagePane from './pages/Messages/MessagePane';
 import OutputSection from './components/OutputSection';
 import PromptAugmentation from './components/PromptAugmentation';
 import UserInputForm from './components/UserInputForm';
