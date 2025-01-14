@@ -197,10 +197,12 @@ function App () {
             <FilePane 
               onFileSelect={handleFileSelect}
               isProcessing={isProcessing}
+              selectedFiles={selectedFiles}
             />
             <MessagePane 
               isProcessing={isProcessing}
               onMessageSelect={handleMessageSelect}
+              selectedMessages={selectedMessages}
             />
           </div>
         

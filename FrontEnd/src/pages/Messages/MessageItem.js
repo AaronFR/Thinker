@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { shortenText, CodeHighlighter } from '../utils/textUtils';
-import { apiFetch } from '../utils/authUtils';
+import { shortenText, CodeHighlighter } from '../../utils/textUtils';
+import { apiFetch } from '../../utils/authUtils';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
@@ -15,7 +15,7 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
  * @param {Function} onDelete : Callback function to handle message deletion.
  * @param {Function} onSelect : Callback function to handle message selection.
  */
-const MessageItem = ({ msg, onDelete, onSelect }) => {
+const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState(null);
@@ -66,7 +66,7 @@ const MessageItem = ({ msg, onDelete, onSelect }) => {
 
     return (
         <div
-            className="message-item"
+            className={`message-item ${isSelected ? 'selected' : ''}`}
             onClick={handleSelect}
             style={{ cursor: 'pointer', opacity: isDeleting ? 0.5 : 1 }}
             role="button"
@@ -143,6 +143,7 @@ MessageItem.propTypes = {
     }).isRequired,
     onSelect: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
+    isSelected: PropTypes.bool.isRequired,
 };
 
 export default React.memo(MessageItem);

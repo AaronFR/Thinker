@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { apiFetch } from '../../utils/authUtils';
 import { withLoadingOpacity, toTitleCase} from '../../utils/textUtils';
 
-import MessageItem from '../../components/MessageItem';
+import MessageItem from './MessageItem';
 
 import './styles/MessageHistory.css';
 
@@ -157,6 +157,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => 
                         msg={msg} 
                         onDelete={() => handleDeleteMessage(category.id, msg.id)}
                         onSelect={onMessageSelect}
+                        isSelected={selectedMessages?.some(selectedMessage => selectedMessage.id === msg.id)}
                       />
                     ))
                   )}

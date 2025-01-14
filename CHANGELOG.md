@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Messages pages - for displaying user prompt - responses and files to the user
+- Files and messages are highlighted visually when selected as reference
 
 ### Changed
 
@@ -40,11 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    unnecessary restarts when running flask in debug
 - Various bug fixes
 - General misc refactor of code (via Auto workflow)
-- Optimise and auto enginnering of prompts can be toggled off - not present at all, on - can be triggered manually and auto - automatically triggers if the prompt updates.
-
-### Removed
-
-- 
+- Optimise and auto engineering of prompts can be toggled off - not present at all, on - can be triggered manually and auto - automatically triggers if the prompt updates.
 
 ## [0.9.1] - 2024-12-22 - Getting ready for β
 

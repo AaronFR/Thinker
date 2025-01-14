@@ -154,6 +154,7 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles }) => {
                           file={file}
                           onDelete={() => handleDeleteFile(category.id, file.id)}
                           onSelect={onFileSelect}
+                          isSelected={selectedFiles?.some(selectedFile => selectedFile.id === file.id)}
                         />
                       ))
                     ) : (

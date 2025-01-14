@@ -50,6 +50,11 @@
 
 /* Message Item */
 
+.selected {
+  border-radius: var(--border-radius-sm);
+  border: 2px solid var(--color-border-active);
+}
+
 .message-item,
 .file-item {
   padding: var(--spacing-md);
@@ -62,19 +67,10 @@
   position: relative;
   cursor: pointer;
 }
-
 body.dark-mode .message-item,
 body.dark-mode .file-item {
   background-color: var(--color-dark-bg);
   color: var(--color-text-light);
-}
-
-.reference-area {
-  margin-bottom: '20px';
-}
-
-.error-message {
-  color: red;
 }
 
 .message-item:hover,
@@ -86,6 +82,16 @@ body.dark-mode .file-item {
 .message-item strong {
   color: var(--color-text-dark);
 }
+
+.reference-area {
+  margin-bottom: '20px';
+}
+
+.error-message {
+  color: red;
+}
+
+
 
 /* Footer containing the delete button and timestamp */
 .message-footer {

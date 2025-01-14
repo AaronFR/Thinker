@@ -39,13 +39,14 @@ export function Messages() {
    */
   const handleFileSelect = useCallback((file) => {
     setSelectedFiles((prevFiles) => {
-      const fileExists = prevFiles.some((f) => f.id === file.id);
-      const updatedFiles = fileExists
-        ? prevFiles.filter((f) => f.id !== file.id)
-        : [...prevFiles, file];
-      
-      //onFileSelect(updatedFiles);
-      return updatedFiles;
+      // ToDo: should filter by id not name, but uploaded files aren't setup for that yet
+      if (prevFiles.some((f) => f.name === file.name)) {
+        // If the file is already selected, filter it out
+        return prevFiles.filter((f) => f.name !== file.name);
+      } else {
+        // Otherwise, add new the new file to the list of selectedFiles
+        return [...prevFiles, file];
+      }
     });
   }, []);  //onFileSelect
 
@@ -58,13 +59,11 @@ export function Messages() {
    */
   const handleMessageSelect = useCallback((message) => {
     setSelectedMessages((prevMessages) => {
-      const messageExists = prevMessages.some((m) => m.id === message.id);
-      const updatedMessages = messageExists
-        ? prevMessages.filter((m) => m.id !== message.id)
-        : [...prevMessages, message];
-      
-      //onMessageSelect(updatedMessages);
-      return updatedMessages;
+      // ToDo: should filter by id not prompt, but uploaded files aren't setup for that yet
+      const messageExists = prevMessages.some((f) => f.prompt === message.prompt);
+         return messageExists 
+             ? prevMessages.filter((f) => f.prompt !== message.prompt)
+             : [...prevMessages, message];
     });
   }, []);  //onMessageSelect
 

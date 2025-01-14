@@ -15,7 +15,7 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
  * @param onDelete: Callback function to handle file deletion. * 
  * @param onSelect: Callback function to handle file selection.
  */
-const FileItem = ({ file, onDelete, onSelect }) => {
+const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [content, setContent] = useState(file.content || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -104,7 +104,7 @@ const FileItem = ({ file, onDelete, onSelect }) => {
 
   return (
     <div
-      className="file-item"
+    className={`file-item ${isSelected ? 'selected' : ''}`}  //isSelected ? 'selected' : ''
       onClick={handleSelect}
       style={{ cursor: 'pointer', opacity: isLoading ? 0.5 : 1 }}
       role="button"
@@ -179,6 +179,7 @@ FileItem.propTypes = {
   }).isRequired,
   onDelete: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
+  isSelected: PropTypes.bool.isRequired,
 };
 
 export default FileItem;
