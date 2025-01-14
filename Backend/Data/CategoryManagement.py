@@ -71,14 +71,15 @@ class CategoryManagement:
             logging.warning("Failure to categorize! Invalid category provided.")
             return None
 
-        return CategoryManagement.possibly_create_category(category)
+        return CategoryManagement.possibly_create_category(category, category_reasoning)
 
     @staticmethod
-    def possibly_create_category(category: str) -> str:
+    def possibly_create_category(category: str, additional_context: str = None) -> str:
         """
         Creates a category in the database if it does not already exist.
 
         :param category: The category to potentially add to the node database.
+        :param additional_context: Additional context for determining parameters
         :return: The existing or newly created category.
         """
         sanitized_category = CategoryManagement.sanitise_category_name(category)
@@ -86,7 +87,11 @@ class CategoryManagement:
 
         if sanitized_category not in categories:
             color = CategoryManagement.generate_colour(sanitized_category)
-            nodeDB().create_category(sanitized_category, color)
+            description = CategoryManagement.generate_category_description(
+                sanitized_category,
+                additional_context
+            )
+            nodeDB().create_category(sanitized_category, description, color)
 
         return sanitized_category
 
@@ -162,6 +167,28 @@ class CategoryManagement:
         return tag_category
 
     @staticmethod
+    def is_valid_description(description: str) -> bool:
+        """
+        Validates the AI-generated description.
+
+        :param description: The description to validate.
+        :return: True if valid, False otherwise.
+        """
+        return bool(re.match(r'^.*\.$', description))
+
+    @staticmethod
+    def default_description(category_name: str) -> str:
+        """
+        Provides a default description for the category if AI fails.
+
+        :param category_name: The name of the category.
+        :return: A default description.
+        """
+        default = f"A category for {category_name.lower()} related items."
+        logging.debug(f"Default description for '{category_name}': {default}")
+        return default
+
+    @staticmethod
     def generate_colour(category_name: str) -> Optional[str]:
         """
         Generate a meaningful color based on the category name using AI.
@@ -190,6 +217,46 @@ class CategoryManagement:
         except Exception as e:
             logging.error(f"AI color assignment failed for category '{category_name}': {e}")
             return None
+
+    @staticmethod
+    def generate_category_description(category_name: str, additional_context: str = "") -> str:
+        """
+        Generates a short description for the given category name using AI.
+
+        :param category_name: The name of the category to describe.
+        :param additional_context: Optionally add the user prompt for additional context
+        :return: A short description of the category.
+        """
+        user_prompts = []
+        if additional_context:
+            user_prompts.append(additional_context)
+
+        system_messages = [
+            (
+                "You are an assistant that provides very concise, short general category descriptions."
+                "These descriptions help others tell if this category is the right one to file their data into"
+            )
+        ]
+        user_prompts = [
+            additional_context,
+            f"Generate a concise and relevant description for the category: {category_name}"
+        ]
+
+        try:
+            description = AiOrchestrator().execute(system_messages, user_prompts)
+            description = description.strip()
+
+            if CategoryManagement.is_valid_description(description):
+                logging.debug(f"AI-generated description for '{category_name}': {description}")
+                return description
+            else:
+                logging.warning(
+                    f"AI response '{description}' is not a valid description. Using default description."
+                )
+                return CategoryManagement.default_description(category_name)
+        except Exception as e:
+            logging.error(f"Failed to generate description for category '{category_name}': {e}")
+            return CategoryManagement.default_description(category_name)
 
 
 if __name__ == '__main__':

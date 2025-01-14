@@ -227,18 +227,20 @@ class NodeDatabaseManagement:
     # Categories
 
     @handle_errors()
-    def create_category(self, category_name: str, colour: str = "#111111") -> None:
+    def create_category(self, category_name: str, category_description: str, colour: str = "#111111") -> None:
         """Creates a new category in the database.
 
         :param category_name: The name of the new category.
+        :param category_description: A concise one sentence description of the new category
         :param colour: the HEX colour assigned to the category
         """
         category_id = str(shortuuid.uuid())
-        logging.info(f"Creating new category [{category_id}]: {category_name}")
+        logging.info(f"Creating new category [{category_id}]: {category_name} - {category_description}")
 
         parameters = {
             "user_id": get_user_context(),
             "category_name": category_name.lower(),
+            "category_description": category_description,
             "category_id": category_id,
             "colour": colour
         }
@@ -285,7 +287,7 @@ class NodeDatabaseManagement:
         parameters = {"user_id": get_user_context()}
 
         result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES_BY_LATEST_MESSAGE, parameters)
-        categories = [{"name": record["category_name"], "colour": record["colour"]} for record in result]
+        categories = [{"name": record["category_name"], "description": record.get("description"), "colour": record["colour"]} for record in result]
 
         return categories
 

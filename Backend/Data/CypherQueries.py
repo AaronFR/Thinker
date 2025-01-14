@@ -32,7 +32,7 @@ RETURN user.id;
 CREATE_CATEGORY = """
 MATCH (user:USER {id: $user_id})
 WITH user
-MERGE (category:CATEGORY {name: $category_name, colour: $colour})
+MERGE (category:CATEGORY {name: $category_name, description: $category_description, colour: $colour})
 ON CREATE SET category.id = $category_id
 MERGE (user)-[:HAS_CATEGORY]->(category)
 RETURN category.id AS category_id;
@@ -132,7 +132,7 @@ ORDER BY category_name;
 LIST_CATEGORIES_BY_LATEST_MESSAGE= """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)
 OPTIONAL MATCH (category)<-[:BELONGS_TO]-(message:USER_PROMPT)
-RETURN DISTINCT category.name AS category_name, category.colour AS colour, max(message.time) AS latest_time
+RETURN DISTINCT category.name AS category_name, category.colour AS colour, category.description as description, max(message.time) AS latest_time
 ORDER BY 
     CASE WHEN latest_time IS NULL THEN 1 ELSE 0 END, 
     latest_time DESC,

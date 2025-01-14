@@ -43,6 +43,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => 
         id: index + 1, // Assign a unique ID based on the index
         name: toTitleCase(category.name),
         colour: category.colour ? category.colour : null,
+        description: category.description ? category.description : null,
         messages: []
       }));
 
@@ -135,8 +136,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => 
         {categories.length > 0 ? (
           categories.map((category) => (
             <div key={category.id} className="category-item" style={{ backgroundColor: category.colour}}>
-              <header
-                className="button category-title"
+              <div
                 onClick={() => toggleCategory(category.id, category.name)}
                 tabIndex={0}
                 role="button"
@@ -144,8 +144,16 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => 
                 aria-expanded={expandedCategoryId === category.id}
                 aria-controls={`category-${category.id}`}
               >
-                {category.name}
-              </header>
+                <header
+                  className="button category-title"
+                >
+                  {category.name}
+                </header>
+                <small style={{opacity: '80%'}}>
+                  {category.description}
+                </small>
+              </div>
+              
               {expandedCategoryId === category.id && (
                 <div id={`category-${category.id}`} className="message-list">
                   {category.messages.length === 0 ? (
