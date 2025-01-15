@@ -61,7 +61,6 @@ class ChatGptWrapper:
     def __init__(self):
         ErrorHandler.setup_logging()
 
-    @handle_errors(debug_logging=True, raise_errors=True)
     def get_open_ai_response(
             self,
             messages: List[Dict[str, str]],
@@ -74,14 +73,21 @@ class ChatGptWrapper:
         :param rerun_count: number of times to rerun the prompt
         :return: The content of the response from OpenAI or an error message to inform the next Executor
         """
-        chat_completion = self.open_ai_client.chat.completions.create(
-            model=model.value, messages=messages, n=rerun_count
-        )
-        self.calculate_prompt_cost(
-            chat_completion.usage.prompt_tokens,
-            chat_completion.usage.completion_tokens,
-            model
-        )
+        try:
+            chat_completion = self.open_ai_client.chat.completions.create(
+                model=model.value, messages=messages, n=rerun_count
+            )
+            self.calculate_prompt_cost(
+                chat_completion.usage.prompt_tokens,
+                chat_completion.usage.completion_tokens,
+                model
+            )
+        except BadRequestError:
+            logging.exception("OpenAi ChatGpt Flagged user request as Inappropriate")
+            return "OpenAi ChatGpt Server Flagged Your Request as Inappropriate. Try again, it does this alot."
+        except Exception as e:
+            logging.exception("OpenAi server failure")
+            raise e
 
         responses = [choice.message.content for choice in chat_completion.choices]
         return responses[0] if rerun_count == 1 else responses or None
@@ -97,37 +103,41 @@ class ChatGptWrapper:
         :param model: the actual llm being called
         :return: The content of the response from OpenAI or an error message to inform the next Executor
         """
-        response_content = []
+        try:
+            response_content = []
 
-        chat_completion = self.open_ai_client.chat.completions.create(
-            model=model.value,
-            messages=messages,
-            stream=True
-        )
+            chat_completion = self.open_ai_client.chat.completions.create(
+                model=model.value,
+                messages=messages,
+                stream=True
+            )
 
-        for chunk in chat_completion:
-            delta = chunk.choices[0].delta
-            content = getattr(delta, 'content', None)
+            for chunk in chat_completion:
+                delta = chunk.choices[0].delta
+                content = getattr(delta, 'content', None)
 
-            if content:
-                response_content.append(content)
-                yield {'content': content}
+                if content:
+                    response_content.append(content)
+                    yield {'content': content}
 
-            # ToDo: Check for user termination condition here
-            # if user_requested_stop():  # Placeholder for actual stop condition
-            #     user_terminated = True
-            #     break  # Exit the loop if user interrupts
+                # ToDo: Check for user termination condition here
+                # if user_requested_stop():  # Placeholder for actual stop condition
+                #     user_terminated = True
+                #     break  # Exit the loop if user interrupts
 
-        # Combine all parts of the response for final cost calculation
-        full_response = ''.join(response_content)
-        final_message = [{"content": full_response}]
-        self.calculate_prompt_cost(
-            Utility.calculate_tokens_used(messages, model),
-            Utility.calculate_tokens_used(final_message, model),
-            model
-        )
-
-        yield {'stream_end': True}
+            # Combine all parts of the response for final cost calculation
+            full_response = ''.join(response_content)
+            final_message = [{"content": full_response}]
+            self.calculate_prompt_cost(
+                Utility.calculate_tokens_used(messages, model),
+                Utility.calculate_tokens_used(final_message, model),
+                model
+            )
+        except Exception as e:
+            emit('response', {'content': e})
+            logging.exception("Failed to stream")
+        finally:
+            yield {'stream_end': True}
         # ToDo: ideally workflow_step_finished events should be sent here
         #  Could change the prior event to 'Streaming' and this new one to complete
 
