@@ -11,20 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Messages pages - for displaying user prompt - responses and files to the user
 - Files and messages are highlighted visually when selected as reference
-- Files and messages can be de-selected from the display area over the prompt
+- Files and messages can be de-selected from the display area over the prompt textarea
 - Categories are automatically assigned a random colour with an option for an LLM assigned colour
-- Messages display incurred cost in their footer
-- Workflow is automatically selected based on the users prompt (While small this now means if you tell the application to write a file it will use a supplied file name
-   or comeup with one on its own and do so)
+- Messages display incurred cost at the bottom
+- Workflow is automatically selected based on user prompt (While small this now means if you tell the application to write a file it will use a supplied file name
+   or come up with one on its own and do so)
+- Persona is automatically selected based on user prompt
 
 ### Changed
 
 - Categories are listed according to their latest component
-- Workflow is selected from the 'workflow' tag, not interopolated from 'write' or 'auto' if they exist.
+- Workflow is selected from the 'workflow' tag, not interpolated from the 'write' or 'auto' tag if they exist.
 
 ### Removed
 
-- Receipt nodes have been removed, instead costs are saved against messages themselves (I'm billed by the node)
+- Receipt nodes have been removed, instead costs are saved against messages themselves (*I'm* billed by the node)
 
 ## [0.9.2] - 2025-01-11 'Quantity is a Quality of its own'
 

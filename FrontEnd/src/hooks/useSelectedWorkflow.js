@@ -18,16 +18,12 @@ const useSelectedWorkflow = () => {
    * @param {Array|string} tags - Relevant tags associated with the prompt.
    */
   const selectWorkflow = async (userPrompt, tags) => {
-    console.log("Selecting workflow with:", userPrompt, tags);
     setIsLoading(true);
     setError(null);
 
     try {
       const response = await apiFetch(`${FLASK_PORT}/augmentation/select_workflow`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           user_prompt: userPrompt,
           tags: tags

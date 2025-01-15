@@ -12,7 +12,48 @@ class Workflow(Enum):
     AUTO = "auto"
 
 
+class Persona(Enum):
+    CODER = "coder"
+    WRITER = "writer"
+
+
 class Augmentation:
+    @staticmethod
+    def select_persona(user_prompt: str) -> Persona:
+        """
+        Selects a persona based on the user prompt.
+
+        :param user_prompt: The initial prompt provided by the user.
+        :returns Persona: The selected persona based on the content of the user prompt.
+        """
+        config = Configuration.load_config()
+        persona_selection_system_message = config.get('systemMessages', {}).get(
+            "personaSelectionMessage",
+            """You are an assistant that selects an appropriate persona based on the user's prompt.
+            Choose one of the following personas: 'coder' or 'writer'.
+            Respond with only the persona name in lowercase."""
+        )
+
+        try:
+            llm_response = AiOrchestrator().execute(
+                [persona_selection_system_message],
+                [f"user prompt: \"\"\"\n{user_prompt}\n\"\"\""]
+            ).strip().lower()
+
+            logging.info(f"LLM selected persona: {llm_response}")
+
+            if llm_response == Persona.CODER.value:
+                return Persona.CODER
+            elif llm_response == Persona.WRITER.value:
+                return Persona.WRITER
+            else:
+                logging.warning(f"Unexpected persona '{llm_response}' returned by LLM. Defaulting to 'coder'.")
+                return Persona.CODER  # Default persona
+
+        except Exception as e:
+            logging.error(f"Error selecting persona: {e}. Defaulting to 'coder'.")
+            return Persona.CODER  # Default persona in case of error
+
     @staticmethod
     def select_workflow(user_prompt: str, tags: Dict[str, str] = None) -> Workflow:
         """

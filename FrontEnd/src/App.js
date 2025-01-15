@@ -23,6 +23,7 @@ import LowBalanceWarning from './utils/BalanceWarning';
 import { apiFetch } from './utils/authUtils';
 
 import './App.css';
+import useSelectedPersona from './hooks/useSelectedPersona';
 /**
  * App component
  * 
@@ -74,7 +75,8 @@ function App () {
     const { message, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(concatenatedQA, selectedFiles, selectedMessages, tags, workflow, setWorkflow);
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt();
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions(FLASK_PORT);
-    const { selectedWorkflow, isLoading, error, selectWorkflow } = useSelectedWorkflow();
+    const { selectedWorkflow, workflowIsLoading, selectMessageError, selectWorkflow } = useSelectedWorkflow();
+    const { automaticallySelectedPersona, personaIsLoading, selectPersonaError, selectPersona } = useSelectedPersona();
 
     // Form State
     const [formsFilled, setFormsFilled] = useState(false);
@@ -109,6 +111,10 @@ function App () {
       setTags(prevTags => ({ ...prevTags, workflow: selectedWorkflow }));
     }, [selectedWorkflow]);
 
+    useEffect(() => {
+      setSelectedPersona(automaticallySelectedPersona);
+    }, [automaticallySelectedPersona]);
+
     const handleInputChange = (event, selectedMessages, selectedFiles, tags) => {      
       setUserInput(event.target.value);
       if (typingTimer.current) {
@@ -125,6 +131,7 @@ function App () {
     const handleTyping = (value, selectedMessages, selectedFiles, tags) => {
       const currentSettings = settingsRef.current;
       
+      selectPersona(value)
       selectWorkflow(value, tags)
       if (currentSettings.augmentedPromptsEnabled  === "auto") {
         generateAugmentedPrompt(value);
