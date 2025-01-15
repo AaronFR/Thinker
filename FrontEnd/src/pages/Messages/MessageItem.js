@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { shortenText, CodeHighlighter } from '../../utils/textUtils';
+import { formatPrice } from '../../utils/numberUtils';
 import { apiFetch } from '../../utils/authUtils';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
@@ -126,6 +127,9 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
                 >
                     {isDeleting ? 'Deleting...' : 'Delete'}
                 </button>
+                <small>
+                    {formatPrice(msg.cost)}
+                </small>
                 <p className='time'>
                     {new Date(msg.time * 1000).toLocaleString()}
                 </p>

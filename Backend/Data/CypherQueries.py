@@ -70,11 +70,22 @@ ORDER BY id(user_topic) DESC
 RETURN user_topic.name AS name;
 """
 
-CREATE_USER_PROMPT_NODES = """
+CREATE_USER_PROMPT_NODE = """
 MATCH (user:USER {id: $user_id})
 WITH user
 MATCH (category:CATEGORY {name: $category})<-[:HAS_CATEGORY]-(user)
-CREATE (user_prompt:USER_PROMPT {id: $message_id, prompt: $prompt, response: $response, time: $time})
+CREATE (user_prompt:USER_PROMPT {id: $message_id})
+MERGE (user)-[:HAS_CATEGORY]->(category)
+MERGE (user_prompt)-[:BELONGS_TO]->(category)
+RETURN user_prompt.id AS user_prompt_id;
+"""
+
+POPULATE_USER_PROMPT_NODE = """
+MATCH (user:USER {id: $user_id})
+WITH user
+MATCH (category:CATEGORY {name: $category})<-[:HAS_CATEGORY]-(user)
+MERGE (user_prompt:USER_PROMPT {id: $message_id})
+SET user_prompt.prompt = $prompt, user_prompt.response = $response, user_prompt.time = $time
 MERGE (user)-[:HAS_CATEGORY]->(category)
 MERGE (user_prompt)-[:BELONGS_TO]->(category)
 RETURN user_prompt.id AS user_prompt_id;
@@ -102,7 +113,7 @@ RETURN user_prompt.id AS id, user_prompt.prompt AS prompt, user_prompt.response 
 GET_MESSAGES = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY {name: $category_name})
     <-[:BELONGS_TO]-(user_prompt:USER_PROMPT)
-RETURN user_prompt.id AS id, user_prompt.prompt AS prompt, user_prompt.response AS response, user_prompt.time AS time
+RETURN user_prompt.id AS id, user_prompt.prompt AS prompt, user_prompt.response AS response, user_prompt.time AS time, user_prompt.cost as cost
 ORDER BY user_prompt.time DESC;
 """
 
@@ -187,6 +198,13 @@ RETURN user.balance AS balance;
 UPDATE_USER_BALANCE = """
 MATCH (user:USER {id: $user_id})
 SET user.balance = user.balance + $amount;
+"""
+
+# Will create the node if it doesn't already yet exist
+EXPENSE_NODE = """
+MERGE (n {id: $node_id})
+SET n.cost = COALESCE(n.cost, 0) + $amount
+RETURN n;
 """
 
 CREATE_RECEIPT = """

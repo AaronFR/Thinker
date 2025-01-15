@@ -5,11 +5,12 @@ from flask_socketio import emit
 
 from Data.CategoryManagement import CategoryManagement
 from Data.Files.StorageMethodology import StorageMethodology
+from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 from Functionality.Organising import Organising
 from Personas.Coder import Coder
 from Personas.Writer import Writer
 from Utilities.AuthUtils import login_required_ws
-from Utilities.Contexts import set_message_context, get_message_context
+from Utilities.Contexts import set_message_context, get_message_context, add_to_expensed_nodes
 from Utilities.CostingUtils import balance_required
 from Utilities.Routing import parse_and_validate_data
 
@@ -48,7 +49,6 @@ def init_process_message_ws(socketio):
                 user_prompt += f"\nAdditional Q&A context: \n{parsed_data['additionalQA']}"
 
             tags = parsed_data["tags"]
-
             files = parsed_data["files"]
             messages = parsed_data["messages"]
 
@@ -57,7 +57,12 @@ def init_process_message_ws(socketio):
             category = CategoryManagement.determine_category(user_prompt, tags.get("category"))
             selected_persona = get_selected_persona(data)
 
-            set_message_context(str(shortuuid.uuid()))
+            message_uuid = str(shortuuid.uuid())
+            set_message_context(message_uuid)
+            NodeDB().create_user_prompt_node(category)
+
+            add_to_expensed_nodes(message_uuid)
+
             response_message = selected_persona.query(
                 user_prompt,
                 file_references,

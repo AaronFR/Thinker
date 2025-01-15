@@ -2,29 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 import { apiFetch } from '../../utils/authUtils';
+import { formatPrice } from '../../utils/numberUtils';
 import TransactionForm from '../../components/TransactionForm';
 import Navigation from '../../components/Navigation';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
-
-/**
- * FormatPrice
- *
- * Converts a price value into a formatted string for display.
- *
- * @param {number} price - The price value to format.
- * @returns {string} The formatted price string.
- */
-function FormatPrice(price) {
-    const scale = 100
-    if (price < 1) {
-        const cents = Math.round(price * 100 * scale) / scale
-        return `¢ ${cents}`;
-    } else {
-        const roundedPrice = parseFloat(price.toPrecision(4))
-        return `$${roundedPrice}`;
-    }
-}
 
 export function Pricing() {
     const [balance, setBalance] = useState(0.0);
@@ -80,8 +62,8 @@ export function Pricing() {
         <div className="settings-container">
             <Navigation />
 
-            <h2>Balance: {FormatPrice(balance)}</h2>
-            <h3>Current session: {FormatPrice(sessionCost)}</h3>
+            <h2>Balance: {formatPrice(balance)}</h2>
+            <h3>Current session: {formatPrice(sessionCost)}</h3>
 
             {/* Pass loadBalance as a prop to TransactionForm */}
             <TransactionForm onSuccess={loadBalance} />

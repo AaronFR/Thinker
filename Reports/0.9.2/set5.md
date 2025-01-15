@@ -411,6 +411,7 @@ if __name__ == '__main__':
 ```
 
 ## NodeDatabaseManagement.py
+
 ```python
 import logging
 import threading
@@ -600,7 +601,7 @@ class NodeDatabaseManagement:
 
         try:
             user_prompt_id = self.neo4jDriver.execute_write(
-                CypherQueries.CREATE_USER_PROMPT_NODES,
+                CypherQueries.POPULATE_USER_PROMPT_NODE,
                 parameters,
                 "user_prompt_id"
             )
@@ -755,7 +756,8 @@ class NodeDatabaseManagement:
                 "structure": "PROTOTYPING"
             }
 
-            logging.info(f"Creating file node: {category}/{file_name} against prompt [{user_prompt_id}]\nSummary: {summary}")
+            logging.info(
+                f"Creating file node: {category}/{file_name} against prompt [{user_prompt_id}]\nSummary: {summary}")
             self.neo4jDriver.execute_write(CypherQueries.CREATE_FILE_NODE, parameters)
         except Exception as e:
             logging.exception(f"Failed to save file node, error: {e}")
@@ -845,7 +847,8 @@ class NodeDatabaseManagement:
             except Exception as e:
                 logging.error(f"Error creating user topic node: {term}, error: {e}")
 
-    def search_for_user_topic_content(self, term: str, synonyms: Optional[List[str]] = None) -> Optional[Dict[str, Any]]:
+    def search_for_user_topic_content(self, term: str, synonyms: Optional[List[str]] = None) -> Optional[
+        Dict[str, Any]]:
         """Searches for user topic content in the database.
 
         :param term: The term to search for.
@@ -956,7 +959,8 @@ class NodeDatabaseManagement:
         :param output_costs: The output costs incurred.
         :param mode: The transaction mode.
         """
-        logging.info(f"Logging receipt: {input_costs}, {output_costs}, {mode}, user ID: {get_user_context()}, message ID: {get_message_context()}")
+        logging.info(
+            f"Logging receipt: {input_costs}, {output_costs}, {mode}, user ID: {get_user_context()}, message ID: {get_message_context()}")
 
         parameters = {
             "user_id": get_user_context(),

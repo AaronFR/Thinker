@@ -38,7 +38,7 @@ class Organising:
             category = CategoryManagement.categorise_prompt_input(user_prompt, response_message)
         else:
             category = CategoryManagement.possibly_create_category(category)
-        nodeDB().create_user_prompt_node(category, user_prompt, response_message)
+        nodeDB().populate_user_prompt_node(category, user_prompt, response_message)
 
         if config['beta_features']['user_context_enabled']:
             terms = UserContextManagement.extract_terms_from_input([user_prompt])

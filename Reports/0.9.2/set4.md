@@ -409,6 +409,7 @@ class Pricing:
 ```
 
 ## NodeDatabaseManagement.py
+
 ```python
 import logging
 import threading
@@ -573,20 +574,20 @@ class NodeDatabaseManagement:
         }
 
         user_prompt_id = self.neo4jDriver.execute_write(
-            CypherQueries.CREATE_USER_PROMPT_NODES,
+            CypherQueries.POPULATE_USER_PROMPT_NODE,
             parameters,
             "user_prompt_id"
         )
 
         self.create_file_nodes_for_user_prompt(user_prompt_id, category)
         return category
-    
+
     # REVIEW: get_messages_by_category was deleted for no reason???
-    
+
     # REVIEW: delete_message_by_id was deleted for no reason???
 
     # Categories Handling
-    
+
     def create_category(self, category_name: str) -> None:
         """Creates a new category in the database.
         
@@ -626,7 +627,7 @@ class NodeDatabaseManagement:
         parameters = {"user_id": get_user_context()}
         records = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES, parameters)
         return [record["category_name"] for record in records]
-    
+
     # REVIEW: list_categories_with_files was deleted for no reason??? Probably because the context limit is too small for mini
 
     # Files Handling
@@ -668,11 +669,13 @@ class NodeDatabaseManagement:
                 "structure": "PROTOTYPING"
             }
 
-            logging.info(f"Creating file node: {category}/{file_name} against prompt [{user_prompt_id}]\nsummary: {summary}")
+            logging.info(
+                f"Creating file node: {category}/{file_name} against prompt [{user_prompt_id}]\nsummary: {summary}")
 
             self.neo4jDriver.execute_write(CypherQueries.CREATE_FILE_NODE, parameters)
         except Exception as e:
             logging.exception("Failed to save file node", exc_info=e)
+
 
 if __name__ == '__main__':
     pass  # Placeholder if you want to execute testing

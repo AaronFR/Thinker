@@ -4,10 +4,12 @@ import logging
 import os
 from typing import List, Dict
 
-from openai import OpenAI
+from flask_socketio import emit
+from openai import OpenAI, BadRequestError
 
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Utilities import Globals
+from Utilities.Contexts import get_expensed_nodes, set_expensed_nodes
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
@@ -30,17 +32,17 @@ class CostConfiguration:
         Initialize cost settings from environment variables or defaults.
         """
         self.input_token_costs = {model: float(os.environ.get(f'INPUT_COST_{model.name}', default)) for model, default in {
-            ChatGptModel.CHAT_GPT_4_OMNI_MINI: 0.00000015,  # $/t
-            ChatGptModel.CHAT_GPT_4_OMNI: 0.0000025,  # $/t
-            ChatGptModel.CHAT_GPT_O1_MINI: 0.000003,  # $/t
-            ChatGptModel.CHAT_GPT_O1_PREVIEW: 0.000015,  # $/t
+            ChatGptModel.CHAT_GPT_4_OMNI_MINI: 0.00000015,  # $/token
+            ChatGptModel.CHAT_GPT_4_OMNI: 0.0000025,  # $/token
+            ChatGptModel.CHAT_GPT_O1_MINI: 0.000003,  # $/token
+            ChatGptModel.CHAT_GPT_O1_PREVIEW: 0.000015,  # $/token
         }.items()}
 
         self.output_token_costs = {model: float(os.environ.get(f'OUTPUT_COST_{model.name}', default)) for model, default in {
-            ChatGptModel.CHAT_GPT_4_OMNI_MINI: 0.0000006,  # $/t
-            ChatGptModel.CHAT_GPT_4_OMNI: 0.00001,  # $/t
-            ChatGptModel.CHAT_GPT_O1_MINI: 0.000012,  # $/t
-            ChatGptModel.CHAT_GPT_O1_PREVIEW: 0.00006,  # $/t
+            ChatGptModel.CHAT_GPT_4_OMNI_MINI: 0.0000006,  # $/token
+            ChatGptModel.CHAT_GPT_4_OMNI: 0.00001,  # $/token
+            ChatGptModel.CHAT_GPT_O1_MINI: 0.000012,  # $/token
+            ChatGptModel.CHAT_GPT_O1_PREVIEW: 0.00006,  # $/token
         }.items()}
 
 
@@ -169,20 +171,18 @@ class ChatGptWrapper:
         :param model: the specific OpenAI model being used, the non Mini version is *very* expensive,
         and should be used rarely
         """
-        logging.info("🙃 Calculating prompt costs")
-
         input_cost = input_tokens * self.cost_config.input_token_costs[model]
         output_cost = output_tokens * self.cost_config.output_token_costs[model]
         total_cost = (input_cost + output_cost)
         Globals.current_request_cost += total_cost
 
-        NodeDB().create_receipt(
-            input_cost,
-            output_cost,
-            model.value
-        )
-
         NodeDB().deduct_from_user_balance(total_cost)
+
+        expensed_nodes = get_expensed_nodes()
+        for expensed_node_uuid in expensed_nodes:
+            logging.info(f"Expensing ${total_cost} to Node[{expensed_node_uuid}]")
+            NodeDB().expense_node(expensed_node_uuid, total_cost)
+        set_expensed_nodes([])  # wipe after transactions have been expensed
 
         logging.info(
             f"Request cost [{model}] - Input tokens: {input_tokens}, Output tokens: {output_tokens}, "

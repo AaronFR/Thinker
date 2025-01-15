@@ -23,11 +23,11 @@ If it can successfully implement even 20% of the pages included that's ~4 featur
 | AutoWorkflow_ParallelProcessing.py           | ✔               |                  |
 | CategoryManagement_AutomaticColourisation.py | ✔               | ✅                |
 | CategoryManagement_categoryDescription.py    | ✔               | ✅                |
-| ChatGptWrapper_RemoveReceipts.py             | ✔               |                  |
+| ChatGptWrapper_RemoveReceipts.py             | ✔               | ✔                |
 | InternetSearch.py                            | ✔               |                  |
 | Messages_rewrite.js                          | ✔               | ✅                |
 | Messages.js                                  | ❎               | ✅                |
-| NodeDatabaseManagement_EditGetCategory.py    | ✔               |  ✅                 |
+| NodeDatabaseManagement_EditGetCategory.py    | ✔               | ✅                |
 | process_message_ws_modularWorkflows.py       | ✔               |                  |
 | S3Manager_ManageFileRevisions.py             | ✔               |                  |
 | SugestedQuestions_MobileFriendly.js          | ❎               |                  |
@@ -38,7 +38,7 @@ If it can successfully implement even 20% of the pages included that's ~4 featur
 | WriteWorkflow_CompileCheck.py                | -               |                  |
 | WriteWorkflow_ModularWorkflows.py            | 🆗              |                  |
 | WriteWorkflow_PhysicsMathIntegration.py      | 🆗              |                  |
-| Writing_ExtensionCheck.py                    | ✔               | ✅                  |
+| Writing_ExtensionCheck.py                    | ✔               | ✅                |
 
 
 ### 1 - Review Task
@@ -106,7 +106,7 @@ Now lets see what I got for my money.
 | AutoWorkflow_ParallelProcessing.py           |                                                                                                                                                                                                                                                                     |
 | CategoryManagement_AutomaticColourisation.py | ⭐⭐⭐ The work I needed to do was taking the colour generating code and correcting the database handling code, the frontend code handling list category responses and the actual displaying of the new information                                                    |
 | CategoryManagement_categoryDescription.py    | ⭐⭐⭐ Only rating 3 stars because it took an hour+, but it wrote most of the necessary code. Could have benefited from knowing more about how CategoryManagement.py is used and less about CategoryMangement.py itself.                                               |
-| ChatGptWrapper_RemoveReceipts.py             |                                                                                                                                                                                                                                                                     |
+| ChatGptWrapper_RemoveReceipts.py             | ⭐ A lot of the poor score is in me realising I could update any node just by its UUID id parameter rather than trying to arbitrarily track different types of functionality. Instead scanning over the files and coming to a plan may have been more useful         |
 | InternetSearch.py                            |                                                                                                                                                                                                                                                                     |
 | Messages_rewrite.js                          | ⭐⭐ Already done (by bleeding in) to Messages.js. Did spend a notable amount of time there debugging due to the LLM changing a state variable to a set (which isn't passed from component to component and back)                                                     |
 | Messages.js                                  | ⭐⭐⭐⭐ Works, I think the use of onFileSelect/onMessageSelect is a bit confused but it did manage to just copy the existing app.js jsx to its own page (so not that hard). Also appears to be some unwanted bleed-in from Messages_rewrite.js                         |

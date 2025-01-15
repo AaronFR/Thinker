@@ -72,7 +72,7 @@ To refine the system's architecture and enhance its capabilities and efficiency,
 
 - **Auto-select messages**: After a message the option exists to automatically select that one for the next prompt.
 - **Payment System**: Top up system for updating balance(awaiting stripe integration)
-  - Attach receipts to prompts, workflows and features. So the user always knows how much they've spent and on what.
+  - Attach receipts to ~~prompts~~, workflows and features. So the user always knows how much they've spent and on what.
 - **Category descriptions**: input is cheap and a small description would probably significantly increase selection 
    relevance
 - **Memory System**: In beta, needs to be made reliable: That means 'remembering' less useless information, storing it better and reading it better
@@ -108,12 +108,9 @@ To refine the system's architecture and enhance its capabilities and efficiency,
 
 ### UI
 
-- **Message Stacks**: Messages are displayed one at a time. Organising prompts that are referenceing each other in a chain into
+- **Message Stacks**: Messages are displayed one at a time. Organising prompts that are referencing each other in a chain into
   a singular stack would make navigation easier
-- **Visual Feedback Mechanisms**: Indicate selected messages and files visibly to enhance clarity. Provide an option to deselect
-  messages and files.
 - **QOL**:
-  - Can deselect a message or file from the main view area rather than their item
   - Q&A can be malformed at times
   - Ability to terminate a mid-process prompt
   - Prompts can fail and the user doesn't know why, it just stalls at 'Processing..'
