@@ -151,6 +151,19 @@ body.dark-mode .right-pane {
   transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
+@media (max-width: 768px) {
+  .left-pane {
+    display: none; /* Hide the left pane */
+  }
+  .resizer {
+    display: none;
+  }
+
+  .right-pane {
+    width: 100%; /* Make right pane occupy full width */
+  }
+}
+
 /* Scrolling */
 
 .scrollable::-webkit-scrollbar {
