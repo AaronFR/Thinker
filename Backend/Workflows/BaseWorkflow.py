@@ -8,7 +8,7 @@ from pathlib import Path
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
-from Utilities.Contexts import get_user_context
+from Utilities.Contexts import get_user_context, add_to_expensed_nodes, get_message_context
 from Utilities.ErrorHandler import ErrorHandler
 
 UPDATE_WORKFLOW_STEP = "update_workflow_step"
@@ -58,6 +58,8 @@ class BaseWorkflow:
         :return: AI's response.
         """
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
+        add_to_expensed_nodes(get_message_context())
+
         response = process_prompt(
             message,
             file_references,
@@ -102,6 +104,8 @@ class BaseWorkflow:
 
         should_summarize = config['optimization'].get("summarise", False)
         if should_summarize:
+            add_to_expensed_nodes(get_message_context())
+
             summarisation_system_message = config.get('systemMessages', {}).get(
                 "summarisationMessage",
                 "Very quickly summarise what you just wrote and where you wrote it."
@@ -154,6 +158,7 @@ class BaseWorkflow:
         :return: AI's response.
         """
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
+        add_to_expensed_nodes(get_message_context())
         response = process_prompt(
             message,
             file_references,

@@ -1,10 +1,65 @@
 import logging
+from enum import Enum
+from typing import Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
 
 
+class Workflow(Enum):
+    CHAT = "chat"
+    WRITE = "write"
+    AUTO = "auto"
+
+
 class Augmentation:
+    @staticmethod
+    def select_workflow(user_prompt: str, tags: Dict[str, str] = None) -> Workflow:
+        """
+        Automatically selects a workflow based on the user prompt using AI deliberation.
+
+        :param user_prompt: The initial prompt provided by the user.
+        :param tags: User supplied tags that can be used to automatically select a workflow based on appropriateness
+        :returns Workflow: The selected workflow based on the content of the user prompt.
+        """
+        if tags:
+            if tags.get("write"):
+                return Workflow.WRITE
+            if tags.get("auto"):
+                return Workflow.AUTO
+
+        config = Configuration.load_config()
+        workflow_selection_system_message = config.get('systemMessages', {}).get(
+            "workflowSelectionMessage",
+            """You are an assistant that selects the most appropriate workflow for processing a user prompt.
+            Choose one of the following workflows: 'chat', 'write', or 'auto'.
+            Chat is for simply responding to the uesr, write writes the output to a given file and auto processes input files one by one.
+            Respond with only the workflow name in lowercase."""
+        )
+
+        try:
+            # Execute the LLM call to determine the workflow
+            llm_response = AiOrchestrator().execute(
+                [workflow_selection_system_message],
+                [f"user prompt: \"\"\"\n{user_prompt}\n\"\"\""]
+            ).strip().lower()
+
+            logging.info(f"LLM selected workflow: {llm_response}")
+
+            # Validate the response and map it to the Workflow enum
+            if llm_response == Workflow.CHAT.value:
+                return Workflow.CHAT
+            elif llm_response == Workflow.WRITE.value:
+                return Workflow.WRITE
+            elif llm_response == Workflow.AUTO.value:
+                return Workflow.AUTO
+            else:
+                logging.warning(f"Unexpected workflow '{llm_response}' returned by LLM. Defaulting to 'chat'.")
+                return Workflow.CHAT  # Default workflow
+
+        except Exception as e:
+            logging.error(f"Error selecting workflow: {e}. Defaulting to 'chat'.")
+            return Workflow.CHAT  # Default workflow in case of error
 
     @staticmethod
     def augment_prompt(initial_prompt: str):

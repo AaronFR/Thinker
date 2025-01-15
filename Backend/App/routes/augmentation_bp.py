@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Dict
 
 from flask import Blueprint, jsonify, request
 
@@ -18,6 +18,10 @@ QUESTION_PROMPT_SCHEMA = {
     "user_prompt": {"required": True, "type": str},
     "selected_messages": {"required": False, "type": List},
     "selected_files": {"required": False, "type": List},
+}
+SELECT_WORKFLOW_SCHEMA = {
+    "user_prompt": {"required": True, "type": str},
+    "tags": {"required": False, "type": Dict},
 }
 
 
@@ -99,4 +103,30 @@ def question_user_prompt():
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
         logging.exception("Failed to generate questions for message")
+        return jsonify({"error": str(e)}), 500
+
+
+@augmentation_bp.route('/augmentation/select_workflow', methods=['POST'])
+@login_required
+@balance_required
+def select_workflow():
+    """
+    Will select a workflow automatically, either based on tags or failing that an llm call
+
+    :return: A JSON object representing the selected workflow
+    """
+    try:
+        data = request.get_json()
+        parsed_data = parse_and_validate_data(data, SELECT_WORKFLOW_SCHEMA)
+        user_prompt = parsed_data.get("user_prompt")
+        tags = parsed_data.get("tags")
+
+        selected_workflow = Augmentation.select_workflow(user_prompt, tags).value
+
+        return jsonify({"workflow": selected_workflow})
+    except ValueError as ve:
+        logging.error("Value error: %s", str(ve))
+        return jsonify({"error": str(ve)}), 400
+    except Exception as e:
+        logging.exception("Failed to augment message")
         return jsonify({"error": str(e)}), 500

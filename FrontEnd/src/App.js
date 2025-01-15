@@ -17,6 +17,7 @@ import Navigation from './components/Navigation';
 import useSubmitMessage from './hooks/useSubmitMessage';
 import useAugmentedPrompt from './hooks/useAugmentedPrompt';
 import useSuggestedQuestions from './hooks/useSuggestedQuestions';
+import useSelectedWorkflow from './hooks/useSelectedWorkflow';
 import LowBalanceWarning from './utils/BalanceWarning';
 
 import { apiFetch } from './utils/authUtils';
@@ -73,6 +74,7 @@ function App () {
     const { message, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(concatenatedQA, selectedFiles, selectedMessages, tags, workflow, setWorkflow);
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt();
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions(FLASK_PORT);
+    const { selectedWorkflow, isLoading, error, selectWorkflow } = useSelectedWorkflow();
 
     // Form State
     const [formsFilled, setFormsFilled] = useState(false);
@@ -103,7 +105,11 @@ function App () {
       loadBalance()
     }, [formsFilled])
 
-    const handleInputChange = (event, selectedMessages, selectedFiles) => {      
+    useEffect(() => {
+      setTags(prevTags => ({ ...prevTags, workflow: selectedWorkflow }));
+    }, [selectedWorkflow]);
+
+    const handleInputChange = (event, selectedMessages, selectedFiles, tags) => {      
       setUserInput(event.target.value);
       if (typingTimer.current) {
         clearTimeout(typingTimer.current);
@@ -113,12 +119,13 @@ function App () {
       event.target.style.height = "auto"; // Reset height to calculate scroll height properly
       event.target.style.height = `${Math.min(event.target.scrollHeight, 8 * 24)}px`;
 
-      debouncedHandleTyping(event.target.value, selectedMessages, selectedFiles);
+      debouncedHandleTyping(event.target.value, selectedMessages, selectedFiles, tags);
     };
 
-    const handleTyping = (value, selectedMessages, selectedFiles) => {
+    const handleTyping = (value, selectedMessages, selectedFiles, tags) => {
       const currentSettings = settingsRef.current;
       
+      selectWorkflow(value, tags)
       if (currentSettings.augmentedPromptsEnabled  === "auto") {
         generateAugmentedPrompt(value);
       }
@@ -128,7 +135,7 @@ function App () {
     };
 
     const debouncedHandleTyping = useRef(
-      debounce((value, selectedMessages, selectedFiles) => handleTyping(value, selectedMessages, selectedFiles), idleTime)
+      debounce((value, selectedMessages, selectedFiles, tags) => handleTyping(value, selectedMessages, selectedFiles, tags), idleTime)
     ).current;
     
     // Clean up the debounce on unmount

@@ -4,6 +4,7 @@ from typing import Callable, Optional, List, Dict
 from flask_socketio import emit
 
 from AiOrchestration.ChatGptModel import find_enum_value
+from Utilities.Contexts import add_to_expensed_nodes, get_message_context
 from Utilities.Decorators import return_for_error
 from Workflows.BaseWorkflow import BaseWorkflow
 from Workflows.Workflows import generate_chat_workflow
@@ -50,6 +51,7 @@ class ChatWorkflow(BaseWorkflow):
         )
         emit("send_workflow", {"workflow": workflow_details})
 
+        add_to_expensed_nodes(get_message_context())
         response = self._chat_step(
             iteration=1,
             process_prompt=process_prompt,

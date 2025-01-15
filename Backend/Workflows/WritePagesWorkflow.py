@@ -7,6 +7,7 @@ from flask_socketio import emit
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import find_enum_value, ChatGptModel
 from Functionality.Writing import Writing
+from Utilities.Contexts import add_to_expensed_nodes, get_message_context
 from Utilities.Decorators import return_for_error
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
 from Workflows.Instructions import plan_pages_to_write
@@ -126,6 +127,7 @@ class WritePagesWorkflow(BaseWorkflow):
         :return: List of page instruction messages.
         """
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
+        add_to_expensed_nodes(get_message_context())
 
         response = AiOrchestrator().execute(
             [plan_pages_to_write(page_count)],

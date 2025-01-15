@@ -197,7 +197,7 @@ const UserInputForm = ({
           id='prompt-input'
           value={userInput}
           onKeyDown={handleKeyDown}
-          onChange={(event) => handleInputChange(event, selectedMessages, selectedFiles)}
+          onChange={(event) => handleInputChange(event, selectedMessages, selectedFiles, tags)}
           placeholder='Enter your prompt'
           className="textarea prompt-input"
           rows="2"

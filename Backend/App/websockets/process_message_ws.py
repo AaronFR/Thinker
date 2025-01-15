@@ -61,8 +61,6 @@ def init_process_message_ws(socketio):
             set_message_context(message_uuid)
             NodeDB().create_user_prompt_node(category)
 
-            add_to_expensed_nodes(message_uuid)
-
             response_message = selected_persona.query(
                 user_prompt,
                 file_references,
