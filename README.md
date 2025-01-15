@@ -37,17 +37,17 @@ request.
 ## Current Limitations
 
 - **Limited workflows**: The thinker can process an arbitrary number of files and generate a document of arbitrary length,
-   but there's not a lot of specification, workflows could benefit from switches based on certain events occuring. And more detailed, 
+   but there's not a lot of specification, workflows could benefit from switches based on certain events occurring. And more detailed, 
    more tailored workflows.
 - **Context**: The thinker uses multiple files to determine different types of context for the prompt
  changing this to a more unified (graph) database, could improve program coherency and contextual awareness while reducing
  costs and simplifying outputs.
-- **Polish**: As of yet there is still a lot of work to do to make every interaction with the UI tolerable and pleasant, 
+- **Polish**: Yet there is still a lot of work to do to make every interaction with the UI tolerable and pleasant, 
  in particular showing messages and *especially* folders takes far to long/manual refreshes
 
 ## Features
 
-- **Prompt optimisation**: User prompts will automatically be enhanced side by side with the Prompt Enginering standards,giving the user ideas for how to improve their prompt or just to run the augmented prompt instead for better results. Questions are automatically generated and presented to the user, that help the AI provide a more relevant answer.
+- **Prompt optimisation**: User prompts will automatically be enhanced side by side with the Prompt Engineering standards,giving the user ideas for how to improve their prompt or just to run the augmented prompt instead for better results. Questions are automatically generated and presented to the user, that help the AI provide a more relevant answer.
 - **Workflows**: A user prompt is fed into a persona and evaluated for one of its workflows, a workflow representing a
  series of prompts to be run to achieve an ideal outcome for the given task type.
 - **Pre-Prompt-Processing**: 'sub-conscious' processes, referencing contextual information as required by context in advance of an

@@ -93,17 +93,15 @@ class BasePersona:
             tags
         )
 
-    def _determine_workflow_key(self, tags: Dict[str, str]) -> str | None:
+    @staticmethod
+    def _determine_workflow_key(tags: Dict[str, str]) -> str | None:
         """
         Determines the workflow key based on tags.
 
         :param tags: A dictionary of tags provided by the user.
         :return: The key of the selected workflow or None if not found.
         """
-        for key in self.WORKFLOWS.keys():
-            if tags.get(key):
-                return key
-        return None
+        return tags.get("workflow", None)
 
     def execute_workflow(self, name: str, *args, **kwargs) -> Any:
         """
@@ -139,7 +137,7 @@ class BasePersona:
 
         :param prompt: The user's question.
         :param file_references: List of file paths referenced for context.
-        :param selected_message_ids: UUIDs of previously selected relevant messages.
+        :param selected_message_ids: UUIDs of previously selected relevant messages result.
         :param streaming: Whether to stream the response.
         :param model: The model to use for generating responses.
         :return: Generated response.

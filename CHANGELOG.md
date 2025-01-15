@@ -13,19 +13,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Files and messages are highlighted visually when selected as reference
 - Files and messages can be de-selected from the display area over the prompt
 - Categories are automatically assigned a random colour with an option for an LLM assigned colour
+- Messages display incurred cost in their footer
+- Workflow is automatically selected based on the users prompt (While small this now means if you tell the application to write a file it will use a supplied file name
+   or comeup with one on its own and do so)
 
 ### Changed
 
 - Categories are listed according to their latest component
+- Workflow is selected from the 'workflow' tag, not interopolated from 'write' or 'auto' if they exist.
 
 ### Removed
 
-- 
+- Receipt nodes have been removed, instead costs are saved against messages themselves (I'm billed by the node)
 
 ## [0.9.2] - 2025-01-11 'Quantity is a Quality of its own'
 
 ### Added
-
 
 - Auto workflow: In coder, select 'auto' in the tags -> 1 prompt is applied to all file references individually
 - Writer Persona ✍ : When writing to a file, specify 'pages' to a number in the tags and the llm will respond that many
