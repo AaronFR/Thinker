@@ -191,30 +191,7 @@ export const SettingsProvider = ({ children }) => {
             value={{
                 settings,
                 changeSetting,
-                toggleDarkMode: () =>
-                    toggleSetting('interface.dark_mode', 'darkMode'),
-                toggleAiColourisation: () =>
-                    toggleSetting('interface.ai_colour', 'aiColour'),
-                togglesummarisation: () =>
-                    toggleSetting(
-                        'optimization.summarise',
-                        'summarisationEnabled'
-                    ),
-                toggleUserEncyclopedia: () =>
-                    toggleSetting(
-                        'beta_features.user_context_enabled',
-                        'userEncyclopediaEnabled'
-                    ),
-                toggleEncyclopedia: () =>
-                    toggleSetting(
-                        'beta_features.encyclopedia_enabled',
-                        'encyclopediaEnabled'
-                    ),
-                toggleMultiFileProcessing: () =>
-                    toggleSetting(
-                        'beta_features.multi_file_processing_enabled',
-                        'multiFileProcessingEnabled'
-                    ),
+                toggleSetting,
                 handleMessageChange,
                 fontSize,
                 setFontSize,

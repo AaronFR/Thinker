@@ -25,14 +25,16 @@ export function Settings() {
     const { 
         settings,
         changeSetting,
-        toggleDarkMode,
-        toggleAiColourisation,
-        togglesummarisation,
-        toggleUserEncyclopedia,
-        toggleEncyclopedia,
-        toggleMultiFileProcessing,
+        toggleSetting,
         handleMessageChange
     } = useContext(SettingsContext);
+
+    const toggleDarkMode = () => toggleSetting('interface.dark_mode', 'darkMode');
+    const toggleAiColourisation = () => toggleSetting('interface.ai_colour', 'aiColour')
+    const toggleUserEncyclopedia = () => toggleSetting('beta_features.user_context_enabled', 'userEncyclopediaEnabled')
+    const toggleEncyclopedia = () => toggleSetting('beta_features.encyclopedia_enabled', 'encyclopediaEnabled') 
+    const toggleMultiFileProcessing = () => toggleSetting('beta_features.multi_file_processing_enabled', 'multiFileProcessingEnabled')
+    const togglesummarisation = () => toggleSetting('optimization.summarise', 'summarisationEnabled')
 
     const uiOptions = [
         { label: "Dark Mode", value: settings.darkMode, onChange: toggleDarkMode },
@@ -43,7 +45,7 @@ export function Settings() {
         { 
             label: "User knowledge - The thinker will remember details about the user and their preferences (user preferences and facts are accumulated when enabled but not currently used when prompting)",
             value: settings.userEncyclopediaEnabled, 
-            onChange: toggleUserEncyclopedia 
+            onChange: toggleUserEncyclopedia
         },
         { 
             label: "Reference knowledge - The thinker will look up details online (Wikipedia currently) and use them in reference to your prompt where appropriate",
@@ -53,7 +55,7 @@ export function Settings() {
         { 
             label: "Multi file processing - personas can operate on multiple files at once (unstable)",
             value: settings.multiFileProcessingEnabled, 
-            onChange: toggleMultiFileProcessing 
+            onChange: toggleMultiFileProcessing
         },
     ];
 
