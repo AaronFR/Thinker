@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Workflow is automatically selected based on user prompt (While small this now means if you tell the application to write a file it will use a supplied file name
    or come up with one on its own and do so)
 - Persona is automatically selected based on user prompt
+- Selecting messages or files in one tab will instantly affect other tabs
 
 ### Changed
 

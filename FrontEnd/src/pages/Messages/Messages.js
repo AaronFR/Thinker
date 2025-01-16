@@ -1,6 +1,6 @@
 // src/pages/Messages.js
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import FilePane from './FilePane';
@@ -24,20 +24,15 @@ import './styles/Messages.css';
  */
 // const Messages = ({ onFileSelect, onMessageSelect }) => {
 export function Messages() {
-  // State to manage selected files
   const isProcessing = false;
 
-  // State to manage selected messages
+  // Manage selected file / message context
   const { 
     selectedFiles, 
     toggleFileSelection, 
     selectedMessages,
-    setSelectedMessages,
     toggleMessageSelection 
   } = useSelection();
-
-
-
 
   return (
     <div className="scrollable messages-page-container">

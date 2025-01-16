@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useCallback, useEffect, useMemo } from 'react';
+import React, { createContext, useState, useContext, useCallback, useRef, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 // Create the SelectionContext
@@ -26,23 +26,68 @@ export const SelectionProvider = ({ children }) => {
     return savedMessages ? JSON.parse(savedMessages) : [];
   });
 
-  useEffect(() => {
-    console.log("SelectionContext updated:", selectedMessages);
-
-    localStorage.setItem('selectedMessages', JSON.stringify(selectedMessages));
-
-  }, [selectedMessages]);
+  const broadcastChannelRef = useRef(null);
+  
+  // Ref to prevent echoing messages back
+  const isBroadcasting = useRef(false);
 
   useEffect(() => {
-    console.log("Selected Files Updated:", selectedFiles);
+    // Initialize BroadcastChannel
+    broadcastChannelRef.current = new BroadcastChannel('selection_update_channel');
+
+    // Handler for incoming messages
+    const handleBroadcast = (event) => {
+      const { type, data } = event.data;
+
+      // Prevent broadcasting updates received from the channel
+      isBroadcasting.current = true;
+
+      if (type === 'selectedFiles') {
+        setSelectedFiles(data);
+      } else if (type === 'selectedMessages') {
+        setSelectedMessages(data);
+      }
+
+      // Reset the broadcasting flag after handling
+      setTimeout(() => {
+        isBroadcasting.current = false;
+      }, 0);
+    };
+
+    // Listen for messages from the channel
+    broadcastChannelRef.current.onmessage = handleBroadcast;
+
+    // Cleanup on unmount
+    return () => {
+      if (broadcastChannelRef.current) {
+        broadcastChannelRef.current.close();
+      }
+    };
+  }, []);
+
+  // Effect to broadcast selectedFiles changes
+  useEffect(() => {
+    if (isBroadcasting.current) return;
     localStorage.setItem('selectedFiles', JSON.stringify(selectedFiles));
+    if (broadcastChannelRef.current) {
+      broadcastChannelRef.current.postMessage({
+        type: 'selectedFiles',
+        data: selectedFiles,
+      });
+    }
   }, [selectedFiles]);
-  
+
+  // Effect to broadcast selectedMessages changes
   useEffect(() => {
-    console.log("Selected Messages Updated:", selectedMessages);
+    if (isBroadcasting.current) return;
     localStorage.setItem('selectedMessages', JSON.stringify(selectedMessages));
+    if (broadcastChannelRef.current) {
+      broadcastChannelRef.current.postMessage({
+        type: 'selectedMessages',
+        data: selectedMessages,
+      });
+    }
   }, [selectedMessages]);
-  
 
   /**
    * Adds a file to the selectedFiles state.
