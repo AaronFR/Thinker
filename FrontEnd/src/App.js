@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import debounce from 'lodash.debounce';
 
 import { SettingsContext } from './pages/Settings/SettingsContext';
+import { SelectionContext } from './pages/Messages/SelectionContext';
 
 import ResizablePane from './utils/resizeablePane';
 import FilePane from './pages/Messages/FilePane'
@@ -24,6 +25,8 @@ import { apiFetch } from './utils/authUtils';
 
 import './App.css';
 import useSelectedPersona from './hooks/useSelectedPersona';
+
+
 /**
  * App component
  * 
@@ -62,11 +65,13 @@ function App () {
       { model: "gpt-4o-mini" }  // e.g. write: "example.txt" category: "example"
     );
 
-    // File management
-    const [selectedFiles, setSelectedFiles] = useState([]);
-
-    // Message management
-    const [selectedMessages, setSelectedMessages] = useState([])
+    // Context Selected Items
+    const { 
+      selectedMessages,
+      toggleMessageSelection,
+      selectedFiles,
+      toggleFileSelection,
+    } = useContext(SelectionContext);
 
     // Workflow display
     const [workflow, setWorkflow] = useState()
@@ -180,42 +185,18 @@ function App () {
       return () => clearTimeout(typingTimer.current);
     }, []);
 
-    const handleFileSelect = (file) => {
-      setSelectedFiles((prevFiles) => {
-        // ToDo: should filter by id not name, but uploaded files aren't setup for that yet
-        if (prevFiles.some((f) => f.name === file.name)) {
-          // If the file is already selected, filter it out
-          return prevFiles.filter((f) => f.name !== file.name);
-        } else {
-          // Otherwise, add new the new file to the list of selectedFiles
-          return [...prevFiles, file];
-        }
-      });
-    };
-
-    const handleMessageSelect = (message) => {
-      setSelectedMessages((prevMessages) => {
-        // ToDo: should filter by id not prompt, but uploaded files aren't setup for that yet
-        const messageExists = prevMessages.some((f) => f.prompt === message.prompt);
-           return messageExists 
-               ? prevMessages.filter((f) => f.prompt !== message.prompt)
-               : [...prevMessages, message];
-      });
-    };
-
-
     return (
       <div className="app-container">
         <ResizablePane>
           <div className="scrollable left-pane">
             <FilePane 
-              onFileSelect={handleFileSelect}
               isProcessing={isProcessing}
+              onFileSelect={toggleFileSelection}
               selectedFiles={selectedFiles}
             />
             <MessagePane 
               isProcessing={isProcessing}
-              onMessageSelect={handleMessageSelect}
+              onMessageSelect={toggleMessageSelection}
               selectedMessages={selectedMessages}
             />
           </div>
@@ -230,10 +211,6 @@ function App () {
               handleInputChange={handleInputChange}
               userInput={userInput}
               isProcessing={isProcessing}
-              selectedFiles={selectedFiles}
-              setSelectedFiles={setSelectedFiles}
-              selectedMessages={selectedMessages}
-              setSelectedMessages={setSelectedMessages}
               selectedPersona={selectedPersona}
               setSelectedPersona={setSelectedPersona}
               generateAugmentedPrompt={generateAugmentedPrompt}

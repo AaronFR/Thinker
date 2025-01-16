@@ -1,13 +1,15 @@
 // src/pages/Messages.js
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import FilePane from './FilePane';
 import MessageHistory from './MessagePane';
+import Navigation from '../../components/Navigation';
+import { useSelection } from './SelectionContext';
 
 import './styles/Messages.css';
-import Navigation from '../../components/Navigation';
+
 
 /**
  * Messages Page Component
@@ -23,49 +25,19 @@ import Navigation from '../../components/Navigation';
 // const Messages = ({ onFileSelect, onMessageSelect }) => {
 export function Messages() {
   // State to manage selected files
-  const [selectedFiles, setSelectedFiles] = useState([]);
   const isProcessing = false;
 
   // State to manage selected messages
-  const [selectedMessages, setSelectedMessages] = useState([]);
+  const { 
+    selectedFiles, 
+    toggleFileSelection, 
+    selectedMessages,
+    setSelectedMessages,
+    toggleMessageSelection 
+  } = useSelection();
 
 
-  /**
-   * Handles the selection of a file.
-   * Adds or removes the file from the selectedFiles state based on its current selection state.
-   * Communicates the selection back to the parent component.
-   * 
-   * @param {Object} file - The file object to select/deselect.
-   */
-  const handleFileSelect = useCallback((file) => {
-    setSelectedFiles((prevFiles) => {
-      // ToDo: should filter by id not name
-      if (prevFiles.some((f) => f.name === file.name)) {
-        // If the file is already selected, filter it out
-        return prevFiles.filter((f) => f.name !== file.name);
-      } else {
-        // Otherwise, add new the new file to the list of selectedFiles
-        return [...prevFiles, file];
-      }
-    });
-  }, []);  //onFileSelect
 
-  /**
-   * Handles the selection of a message.
-   * Adds or removes the message from the selectedMessages state based on its current selection state.
-   * Communicates the selection back to the parent component.
-   * 
-   * @param {Object} message - The message object to select/deselect.
-   */
-  const handleMessageSelect = useCallback((message) => {
-    setSelectedMessages((prevMessages) => {
-      // ToDo: should filter by id not prompt
-      const messageExists = prevMessages.some((f) => f.prompt === message.prompt);
-         return messageExists 
-             ? prevMessages.filter((f) => f.prompt !== message.prompt)
-             : [...prevMessages, message];
-    });
-  }, []);  //onMessageSelect
 
   return (
     <div className="scrollable messages-page-container">
@@ -73,12 +45,12 @@ export function Messages() {
       <h1>Messages and Files</h1>
       <div className="panes-container">
         <FilePane 
-          onFileSelect={handleFileSelect}
+          onFileSelect={toggleFileSelection}
           isProcessing={isProcessing}
           selectedFiles={selectedFiles}
         />
         <MessageHistory 
-          onMessageSelect={handleMessageSelect}
+          onMessageSelect={toggleMessageSelection}
           isProcessing={isProcessing}
           selectedMessages={selectedMessages}
         />

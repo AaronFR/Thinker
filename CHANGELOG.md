@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Messages pages - for displaying user prompt - responses and files to the user
+- Messages pages - for displaying prior messages and files to the user and for selection as reference
 - Files and messages are highlighted visually when selected as reference
 - Files and messages can be de-selected from the display area over the prompt textarea
 - Categories are automatically assigned a random colour with an option for an LLM assigned colour
@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Categories are listed according to their latest component
 - Workflow is selected from the 'workflow' tag, not interpolated from the 'write' or 'auto' tag if they exist.
+- Selected messages and files are persisted on a device, meaning you can leave the site and come back to the same selected items
 
 ### Removed
 

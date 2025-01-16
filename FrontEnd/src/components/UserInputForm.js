@@ -11,6 +11,7 @@ import PersonaSelector from '../components/PersonaSelector'
 import './styles/UserInputForm.css';
 
 import { SettingsContext } from '../pages/Settings/SettingsContext';
+import { useSelection, SelectionProvider } from '../pages/Messages/SelectionContext';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -26,10 +27,10 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
  * @param {function} handleInputChange - Function to handle changes in user input.
  * @param {string} userInput - Current value of the user input.
  * @param {boolean} isProcessing - Indicates if the form is in a processing state.
- * @param {Array} selectedFiles - Currently selected files for upload.
- * @param {function} setSelectedFiles - Set function for selected files.
- * @param {Array} selectedMessages - Currently selected messages.
- * @param {function} setSelectedMessages - Set function for selected messages.
+ * @param {String} selectedPersona - Currently selected persona.
+ * @param {function} setSelectedPersona - Set new persona
+ * @param {function} generateAugmentedPrompt - Trigger a new auto-prompt-engineer of the users prompt
+ * @param {function} generateQuestionsForPrompt - Trigger a new set of questions against the users prompt
  * @param {Array} tags - Current tags.
  * @param {function} setTags - Set function for tags.
  */
@@ -38,10 +39,6 @@ const UserInputForm = ({
   handleInputChange,
   userInput,
   isProcessing,
-  selectedFiles,
-  setSelectedFiles,
-  selectedMessages,
-  setSelectedMessages,
   selectedPersona,
   setSelectedPersona,
   generateAugmentedPrompt,
@@ -53,6 +50,14 @@ const UserInputForm = ({
   const [uploadCompleted, setUploadCompleted] = useState(true)
 
   const { settings } = useContext(SettingsContext);
+  //const { selectedMessages } = useContext(SelectionProvider)
+  const { 
+    selectedFiles,
+    setSelectedFiles,
+    toggleFileSelection, 
+    selectedMessages,
+    toggleMessageSelection 
+  } = useSelection();
 
   const autoDetectedPersona = 'Coder' // Temporary hardcoded value
   
@@ -111,26 +116,6 @@ const UserInputForm = ({
     setUploadCompleted(true);
   };
 
-  const onDeselectFile = (file) => {
-    setSelectedFiles((prevFiles) => {
-      // ToDo: should filter by id not name
-      if (prevFiles.some((f) => f.name === file.name)) {
-        // If the file is already selected, filter it out
-        return prevFiles.filter((f) => f.name !== file.name);
-      }
-    })
-  };
-
-  const onDeselectMessage = (message) => {
-    setSelectedMessages((prevMessages) => {
-      // ToDo: should filter by id not name
-      if (prevMessages.some((m) => m.prompt === message.prompt)) {
-        // If the file is already selected, filter it out
-        return prevMessages.filter((m) => m.prompt !== message.prompt);
-      }
-    })
-  };
-
   /**
    * Handles key down events for the textarea.
    *
@@ -161,7 +146,7 @@ const UserInputForm = ({
               <span role="img" aria-label="message">✉</span> {message.prompt}
               <button
                 className="deselect-button"
-                onClick={() => onDeselectMessage(message)}
+                onClick={() => toggleMessageSelection(message)}
                 aria-label={`Deselect this message`}
               >
                 ✖️
@@ -181,7 +166,7 @@ const UserInputForm = ({
               <span role="img" aria-label="file">📄</span> {file.name}
               <button
                 className="deselect-button"
-                onClick={() => onDeselectFile(file)}
+                onClick={() => toggleFileSelection(file)}
                 aria-label={`Deselect this file`}
               >
                 ✖️
@@ -207,7 +192,7 @@ const UserInputForm = ({
 
         <div className='palette'>
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
-          {settings.augmentedPromptsEnabled != 'off' && <button 
+          {settings.augmentedPromptsEnabled !== 'off' && <button 
             type="button"
             className="button submit-button"
             onClick={() => generateAugmentedPrompt(userInput)}
@@ -221,7 +206,7 @@ const UserInputForm = ({
               setSelectedPersona={setSelectedPersona}
               autoDetectedPersona={autoDetectedPersona}
             />
-          {settings.questionUserPromptsEnabled != 'off' &&<button // settings.promptQuestioningMessage != 'off'
+          {settings.questionUserPromptsEnabled !== 'off' &&<button // settings.promptQuestioningMessage != 'off'
             type="button"
             className="button submit-button"
             onClick={() => generateQuestionsForPrompt(userInput, selectedMessages, selectedFiles)}
