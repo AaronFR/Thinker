@@ -41,7 +41,7 @@ RETURN category.id AS category_id;
 CREATE_USER_TOPIC = """
 MATCH (user:USER {{id: $user_id}})
 WITH user
-MERGE (user_topic:USER_TOPIC {{name: $node_name}})
+MERGE (user_topic:USER_TOPIC {{_name_: $node_name}})
 SET user_topic.{parameter} = $content
 MERGE (user_topic)-[:RELATES_TO]->(user)
 RETURN id(user_topic) AS user_topic_id;
@@ -56,7 +56,7 @@ def format_create_user_topic_query(parameter: str) -> str:
 SEARCH_FOR_USER_TOPIC = """
 MATCH (user:USER {id: $user_id})
 WITH user
-MATCH (user_topic:USER_TOPIC {name: $node_name})
+MATCH (user_topic:USER_TOPIC {_name_: $node_name})
 RETURN properties(user_topic) AS all_properties;
 """
 
@@ -67,7 +67,7 @@ WITH user
 MATCH (user_topic:USER_TOPIC)
 WITH user_topic
 ORDER BY id(user_topic) DESC
-RETURN user_topic.name AS name;
+RETURN user_topic._name_ AS name;
 """
 
 CREATE_USER_PROMPT_NODE = """
@@ -207,15 +207,3 @@ SET n.cost = COALESCE(n.cost, 0) + $amount
 RETURN n;
 """
 
-CREATE_RECEIPT = """
-CREATE (receipt:RECEIPT { input_costs: $input_costs, output_costs: $output_costs, mode: $mode })
-WITH receipt
-MATCH (user:USER {id: $user_id})
-CREATE (receipt)-[:BELONGS_TO]->(user)
-WITH receipt
-OPTIONAL MATCH (prompt:USER_PROMPT {id: $message_id})
-FOREACH(_ IN CASE WHEN prompt IS NOT NULL THEN [1] ELSE [] END |
-    CREATE (prompt)-[:ASSOCIATES_WITH]->(receipt)
-)
-RETURN receipt;
-"""

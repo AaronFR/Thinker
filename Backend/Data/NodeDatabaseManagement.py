@@ -560,28 +560,3 @@ class NodeDatabaseManagement:
             parameters
         )
         logging.info(f"Node with UUID [{node_id}] updated by [{amount}] - {status}")
-
-    @handle_errors()
-    def create_receipt(self, input_costs: float, output_costs: float, mode: str) -> None:
-        """Creates a transaction receipt for the user.
-
-        :param input_costs: The input costs incurred.
-        :param output_costs: The output costs incurred.
-        :param mode: how the cost was incurred.
-        """
-        logging.info(f"Logging receipt: {input_costs}, {output_costs}, {mode}, user ID: {get_user_context()}, "
-                     f"message ID: {get_message_context()}")
-
-        parameters = {
-            "user_id": get_user_context(),
-            "message_id": get_message_context(),
-            "input_costs": input_costs,
-            "output_costs": output_costs,
-            "mode": mode
-        }
-
-        self.neo4jDriver.execute_write(
-            CypherQueries.CREATE_RECEIPT,
-            parameters
-        )
-        logging.info("Receipt created successfully.")

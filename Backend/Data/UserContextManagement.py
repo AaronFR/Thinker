@@ -5,6 +5,9 @@ from typing import List, Dict, Any
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
+from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
+
+ENCYCLOPEDIA_NAME = "User Context"
 
 
 class UserContextManagement(EncyclopediaManagementInterface):
@@ -22,6 +25,19 @@ class UserContextManagement(EncyclopediaManagementInterface):
         r'<(?P<node_name>[a-zA-Z_]+)\s+parameter="(?P<parameter>[^"]+)"\s+content="(?P<content>[^"]+)"\s*/>'
     )
 
+    def __init__(self):
+        super().__init__()
+        self.instructions = (
+            "You are an assistant designed to intelligently navigate a node memory system to extract context "
+            "based on provided node names. When a request is made, analyze the given list of context nodes and deduce "
+            "which one likely contains the relevant information. You should prioritize the most specific and pertinent "
+            "nodes related to the inquiry"
+            "For example, if asked for a user's name, consider the nodes provided and ascertain which one, "
+            "such as 'personal', is most likely to contain this data. "
+            "Focus on following succinct, logical conclusions based on the structural relationships of the nodes "
+            "presented."
+        )
+
     def __new__(cls) -> "UserContextManagement":
         """Ensures a single instance of UserContextManagement."""
         if cls._instance is None:
@@ -38,16 +54,26 @@ class UserContextManagement(EncyclopediaManagementInterface):
         :param user_input: The input text provided by the user.
         :return: A list of dictionaries containing extracted terms and their respective content.
         """
+        existing_nodes = NodeDB().list_user_topics()
+
         instructions = (
-            "For the given prompt, explain your reasoning step by step. "
-            "Identify and return an array of specific, concise items that describe personal context that can be inferred "
-            "Only infer information if it seems beneficial to the user’s question or future questions. "
-            "node_name and parameter should ideally be singular words; if not, must have underscores, not spaces. "
-            "Your chosen name should reflect the root semantic concept rather than specific details. "
-            "Finally, write the potential user topics as "
-            "<your_selected_single_word_node_name parameter=\"(your_selected_single_word_parameter_name)\" "
-            "content=\"(the content you want to note)\" />"
-            "Required: tag name, parameter, content, all 3 must be included"
+            "You are an assistant that helps store helpful information about the user to long term memory in a "
+            "prescribed format."
+            "This information is used as context in future prompts, so you prioritise ensuring the information is "
+            "relevant to the user and correct. \n"
+            "You prefer writing to one single meaningful topic node name instead of creating new but overly-similar "
+            "nodes."
+            "Identify and return an array of specific, concise items that describe context that can be inferred"
+            " node_name and parameter should ideally be singular words; if not, must have underscores, not spaces. "
+            "Format. fields in brackets are placeholders and should be filled, include the words parameter and content "
+            "they are not to be replaced"
+            "<(topic_name) parameter=\"(sub_topic_name)\" "
+            "content=\"(the content you want to note on that sub_topic)\" />"
+            "Required: (topic_name), (sub_topic_name), (content), all 3 must be included."
+            "Don't actually write the ( brackets.\n"
+            "Example format:\n"
+            "<movies parameter=\"favorite\" content=\"Ikiru\" />"
+            f"\n\nPRE-EXISTING NODES: {existing_nodes}"
         )
 
         try:
