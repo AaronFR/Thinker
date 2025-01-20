@@ -9,7 +9,8 @@ from typing import Dict, Optional, List
 from Data.Files.FileManagement import FileManagement
 from Utilities.Decorators import handle_errors
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), '../../UserData/DataStores')
+# ToDo: Adapt for StorageMethodology.py
+# DATA_PATH = os.path.join(os.path.dirname(__file__), '../../UserData/DataStores')
 WIKI_API_URL = "https://en.wikipedia.org/w/api.php"
 USER_AGENT = 'ThinkerBot (https://github.com/AaronFR/Thinker)'
 

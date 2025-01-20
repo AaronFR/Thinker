@@ -26,34 +26,57 @@ class ErrorHandler:
         :param logger_name: An optional name for the logger. If None, the base logger is used.
         :param format_scheme: The formatting scheme for log messages.
         """
-        logs_directory = os.path.join(os.path.dirname(__file__), '../../UserData', 'Logs')
-        os.makedirs(logs_directory, exist_ok=True)
-
-        log_file_location = os.path.join(logs_directory, log_file)
         logger = logging.getLogger(logger_name) if logger_name else logging.getLogger()
 
-        # Clear any existing handlers
         if logger.hasHandlers():
             logger.handlers.clear()
 
         logger.setLevel(logging.DEBUG)
 
-        # Set up file handler with defined encoding
-        file_handler = logging.FileHandler(log_file_location, encoding=Constants.DEFAULT_ENCODING)
+        # Set up file handler
+        if os.getenv("STORAGE_TYPE") == "local":
+            file_handler = ErrorHandler.setup_file_handler(log_file, format_scheme)
+            if file_handler:
+                file_handler.setLevel(logging.DEBUG)
+                logger.addHandler(file_handler)
+
+        # Set up console handler
         console_handler = logging.StreamHandler(codecs.getwriter(Constants.DEFAULT_ENCODING)(sys.stdout.buffer))
-
-        # Set level for handlers
-        file_handler.setLevel(logging.DEBUG)
         console_handler.setLevel(logging.INFO)
-
-        # Create formatter and add it to the handlers
         formatter = logging.Formatter(format_scheme)
-        file_handler.setFormatter(formatter)
         console_handler.setFormatter(formatter)
-
-        # Add handlers to the logger
-        logger.addHandler(file_handler)
         logger.addHandler(console_handler)
+
+    @staticmethod
+    def setup_file_handler(log_file: str, format_scheme: str):
+        """
+        Sets up the file handler for logging, including creating the logs directory.
+        Only to be used when run locally
+
+        :param log_file: The name of the log file to be created or overwritten.
+        :param format_scheme: The formatting scheme for log messages.
+        :return: Configured FileHandler or None if setup fails.
+        """
+        try:
+            script_directory = os.path.dirname(os.path.abspath(__file__))
+            logs_directory = os.path.join(script_directory, '../../UserData', 'Logs')
+
+            os.makedirs(logs_directory, exist_ok=True)
+            logging.debug(f"Logs directory ensured at: {logs_directory}")
+
+            log_file_location = os.path.join(logs_directory, log_file)
+            logging.debug(f"Log file location set to: {log_file_location}")
+
+            file_handler = logging.FileHandler(log_file_location, encoding=Constants.DEFAULT_ENCODING)
+            formatter = logging.Formatter(format_scheme)
+            file_handler.setFormatter(formatter)
+
+            logging.debug("File handler successfully created.")
+            return file_handler
+
+        except Exception as e:
+            logging.error(f"Failed to create file handler: {e}")
+            return None
 
 
 if __name__ == '__main__':

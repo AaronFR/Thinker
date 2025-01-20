@@ -40,8 +40,6 @@ class EncyclopediaManagementInterface:
 
             self.encyclopedia_path = "To Define"
             self.redirect_encyclopedia_path = "To Define"
-
-            self.data_path = os.path.join(os.path.dirname(__file__), '../../UserData/DataStores')
             self.initialized = True
 
     @handle_errors()
