@@ -76,6 +76,7 @@
   color: #fff;
   border-color: #87CEEB;
   transform: scale(1.1);
+  z-index: 3;
 }
 .toggle-button:not(:last-child) {
   border-right: none; /* Remove double borders between buttons */
