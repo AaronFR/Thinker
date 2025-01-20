@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 
+
+### Changed
+
+- 
+
+### Removed
+
+- 
+
+## [0.9.3] - 2025-01-20 'It certainly is'
+
+### Added
+
 - Messages pages - for displaying prior messages and files to the user and for selection as reference
 - Files and messages are highlighted visually when selected as reference
 - Files and messages can be de-selected from the display area over the prompt textarea
@@ -24,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Categories are listed according to their latest component
 - Workflow is selected from the 'workflow' tag, not interpolated from the 'write' or 'auto' tag if they exist.
 - Selected messages and files are persisted on a device, meaning you can leave the site and come back to the same selected items
+- More accurate search of user knowledge
 
 ### Removed
 
@@ -40,7 +55,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - More coherent visuals
 - 'Best of' Feature: Run a prompt multiple times in parallel then compare the results to improve performance.
 - Can toggle summarisation of workflows off and change the summarisation system message
-
 
 ### Changed
 
