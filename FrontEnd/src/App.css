@@ -151,7 +151,7 @@ body.dark-mode .right-pane {
   transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) or (orientation: portrait)  {
   .left-pane {
     display: none; /* Hide the left pane */
   }
