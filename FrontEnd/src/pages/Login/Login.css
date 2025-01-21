@@ -28,15 +28,25 @@
 }
 
 .thinker {
-  font-size: 10em;
+  font-size: 10rem;
   font-family: 'Montserrat';
   color: #bbbbbb;
 }
-
-.ai {
-  font-size: 5em;
-  font-family:monospace;
-  color: #c2c2c2;
+@media (max-width: 1024px) {
+  .thinker {
+    font-size: 7rem; /* Adjust font size for mobile */
+  }
+  .beta-symbol {
+    font-size: 8rem;
+  }
+}
+@media (max-width: 768px) {
+  .thinker {
+    font-size: 3rem; /* Adjust font size for mobile */
+  }
+  .beta-symbol {
+    font-size: 4rem;
+  }
 }
 
 .auth-nav {

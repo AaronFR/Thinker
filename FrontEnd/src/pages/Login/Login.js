@@ -36,8 +36,7 @@ export function Login() {
             <div className="auth-container">
                 <div className='logo'>
                     <div className='beta-symbol'>β</div>
-                    <div className='thinker'>The Thinker</div>
-                    <div className='ai'>AI</div>
+                    <div className='thinker'>The Thinker AI</div>
                 </div>
 
                 <h1>
