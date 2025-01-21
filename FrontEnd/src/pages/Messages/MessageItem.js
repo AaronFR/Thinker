@@ -93,7 +93,7 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
             >
                 <div className="markdown-output">
                     <CodeHighlighter>
-                        {isExpanded ? msg.prompt : shortenText(msg.prompt)}
+                        {isExpanded ? msg.prompt : shortenText(msg.prompt, 120)}
                     </CodeHighlighter>
                 </div>
             </div>
@@ -116,7 +116,7 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
             </p>}
 
             <div className="message-footer">
-                <button
+                {(isSelected || isExpanded) && <button
                     onClick={handleDelete}
                     className="button delete-button"
                     type="button"
@@ -126,7 +126,7 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
                     }
                 >
                     {isDeleting ? 'Deleting...' : 'Delete'}
-                </button>
+                </button>}
                 <small>
                     {formatPrice(msg.cost)}
                 </small>

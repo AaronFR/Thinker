@@ -151,7 +151,7 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
       )}
 
       <div className="message-footer">
-      <button
+      {(isSelected || isExpanded) &&<button
         onClick={handleDelete}
         className="button delete-button"
         type="button"
@@ -159,10 +159,11 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
         aria-label={isDeleting ? 'Deleting file' : 'Delete this file'}
       >
         {isDeleting ? 'Deleting...' : 'Delete'}
-      </button>
-        <p className="time">
-          {new Date(file.time * 1000).toLocaleString()
-        }</p>
+      </button>}
+      
+      <p className="time">
+        {new Date(file.time * 1000).toLocaleString()
+      }</p>
       </div>
     </div>
   );
