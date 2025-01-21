@@ -1,0 +1,9 @@
+.centered {
+  justify-content: center;
+  display: flex;
+  white-space: nowrap; 
+}
+
+.centered i {
+  margin: 0 0.2em;
+}

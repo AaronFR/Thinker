@@ -21,6 +21,11 @@ body.dark-mode .app-container {
   transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
+.container {
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
 /* Heading styles for error or message */
 .app-heading {
   font-size: var(--font-size-large);

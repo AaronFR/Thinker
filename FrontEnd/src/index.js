@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Settings from './pages/Settings/Settings';
 import Pricing from './pages/Pricing/Pricing';
 import Login from './pages/Login/Login';
+import Guide from './pages/Guide/Guide';
 import { apiFetch } from "./utils/authUtils";
 
 import { SettingsProvider } from "./pages/Settings/SettingsContext";
@@ -49,6 +50,7 @@ function RootApp() {
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={<Login />} />
+            <Route path="/guide" element={<Guide />} />
 
             {/* Protected Routes */}
             <Route path="/messages" element={isAuthenticated ? <Messages /> : <Navigate to="/login" />} />

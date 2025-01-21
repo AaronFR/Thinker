@@ -3,10 +3,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
   overflow-x: hidden;
+  overflow-y: auto;
   width: 100%;
-  background-color: #222222;
   font-family: Arial, sans-serif;
 }
 
@@ -30,12 +29,12 @@
 
 .thinker {
   font-size: 10em;
-  font-family: 'Dancing Script';
+  font-family: 'Montserrat';
   color: #bbbbbb;
 }
 
 .ai {
-  font-size: 7em;
+  font-size: 5em;
   font-family:monospace;
   color: #c2c2c2;
 }
@@ -140,7 +139,6 @@ button:hover {
   display: flex;
   justify-content: space-between;
   padding: 50px;
-  width: 100%;
 }
 
 .card {

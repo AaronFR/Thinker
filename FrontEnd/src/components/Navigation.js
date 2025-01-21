@@ -49,6 +49,7 @@ Navigation.propTypes = {
  */
 Navigation.defaultProps = {
     navLinks: [
+        { name: 'Guide', path: '/guide'},
         { name: 'Messages', path: '/messages'},
         { name: 'Home', path: '/' },
         { name: 'Settings', path: '/settings' },
