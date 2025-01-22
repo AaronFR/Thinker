@@ -10,7 +10,7 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
  */
 const useSubmitMessage = (
   concatenatedQA,
-  filesForPrompt,
+  selectedFiles,
   selectedMessages,
   tags,
   workflow,
@@ -154,9 +154,9 @@ const useSubmitMessage = (
               await initializeSocket(); // Reinitialize the socket and wait for it to connect
               console.log('Retrying pending submit:', pendingSubmitRef.current);
               if (pendingSubmitRef.current) {
-                const { userInput, selectedPersona } = pendingSubmitRef.current;
+                const { userInput, selectedPersona, selectedMessages, selectedFiles, tags } = pendingSubmitRef.current;
                 pendingSubmitRef.current = null; // Clear pending submit after retrying
-                await handleSubmit(userInput, selectedPersona); // Retry the request
+                await handleSubmit(userInput, selectedPersona, selectedMessages, selectedFiles, tags); // Retry the request
               }
             } else {
               setError('Session expired. Please log in again.');
@@ -196,7 +196,7 @@ const useSubmitMessage = (
   }, [initializeSocket]);
 
   // Function to handle message submission
-  const handleSubmit = useCallback(async (userInput, selectedPersona) => {
+  const handleSubmit = useCallback(async (userInput, selectedPersona, selectedMessages, selectedFiles, tags) => {
       userInputRef.current = userInput;
       selectedPersonaRef.current = selectedPersona;
 
@@ -206,15 +206,15 @@ const useSubmitMessage = (
       setTotalCost(null); // Reset cost for new request
       setWorkflow(null); // Clear the previous workflow diagram
 
-      console.log('Storing pending submit:', { userInput, selectedPersona });
-      pendingSubmitRef.current = { userInput, selectedPersona };
+      console.log('Storing pending submit:', { userInput, selectedPersona, tags });
+      pendingSubmitRef.current = { userInput, selectedPersona, selectedMessages, selectedFiles, tags };
 
       try {
         if (socketRef.current && socketRef.current.connected) {
           socketRef.current.emit('start_stream', {
             prompt: userInput,
             additionalQA: concatenatedQA,
-            files: filesForPrompt,
+            files: selectedFiles,
             messages: selectedMessages, // consider sending just IDs if needed
             persona: selectedPersona,
             tags: tags
@@ -227,7 +227,7 @@ const useSubmitMessage = (
         setIsProcessing(false);
       }
     },
-    [concatenatedQA, filesForPrompt, selectedMessages, tags]
+    [concatenatedQA, selectedMessages, selectedFiles, tags]
   );
 
   return { message, totalCost, error, isProcessing, handleSubmit };

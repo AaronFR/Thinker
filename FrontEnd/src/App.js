@@ -160,7 +160,7 @@ function App () {
     const handleFormSubmit = async (event) => {
       event.preventDefault(); // Always prevent default if event exists
       try {
-        await handleSubmit(userInput, selectedPersona);
+        await handleSubmit(userInput, selectedPersona, selectedMessages, selectedFiles, tags);
         setUserInput(''); 
         setAugmentedPrompt('');
         setQuestionsForPrompt('');
