@@ -1,7 +1,7 @@
 .centered {
   justify-content: center;
   display: flex;
-  white-space: nowrap; 
+  white-space: initial; 
 }
 
 .centered i {

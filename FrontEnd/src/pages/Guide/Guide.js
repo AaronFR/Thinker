@@ -5,9 +5,9 @@ import './Guide.css'
 export const About = () => {
   return (
     <div>
-      <div>
+      <div className="centered">
 
-        <h2 className="centered">
+        <h2 >
           🚧 In beta - Beta testers wanted! Enquire and get to use the app <i>for free</i> 🚧
         </h2>
       </div>
