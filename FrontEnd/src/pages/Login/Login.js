@@ -32,7 +32,7 @@ export function Login() {
     }, [isLoginMode, email, password]);
 
     return (
-        <div className='scrollable container'>
+        <div className='scrollable container background'>
             <div className="auth-container">
                 <div className='logo'>
                     <div className='beta-symbol'>β</div>
