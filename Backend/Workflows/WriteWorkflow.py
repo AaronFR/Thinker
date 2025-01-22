@@ -81,8 +81,8 @@ class WriteWorkflow(BaseWorkflow):
                     process_prompt=process_prompt,
                     message=write_code_file(file_name, purpose) if Coding.is_coding_file(file_name)
                     else write_file(file_name, purpose),
-                    file_references=[],
-                    selected_message_ids=[],
+                    file_references=file_references or [],
+                    selected_message_ids=selected_message_ids or [],
                     file_name=file_name,
                     model=model,
                 )

@@ -102,8 +102,8 @@ class WritePagesWorkflow(BaseWorkflow):
             iteration=iteration,
             process_prompt=process_prompt,
             message="Very quickly summarise what you just wrote and where you wrote it.",
-            file_references=[],
-            selected_message_ids=[],
+            file_references=file_references or [],
+            selected_message_ids=selected_message_ids or [],
             streaming=True,
             model=ChatGptModel.CHAT_GPT_4_OMNI_MINI
         )
