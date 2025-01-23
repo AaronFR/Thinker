@@ -44,7 +44,11 @@ class AutoWorkflow(BaseWorkflow):
         """
         try:
             model = find_enum_value(tags.get("model") if tags else None)
-            best_of = int(tags.get("best of", 1)) if tags else 1  # type validation check needed
+            best_of = int(tags.get("best of", 1))  # type validation check needed
+
+            if not file_references:
+                logging.warning("No file references provided. Exiting AutoWorkflow.")
+                return "No files to process."
 
             workflow_data = generate_auto_workflow(
                 file_references=file_references or [],
