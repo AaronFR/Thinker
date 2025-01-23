@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Left Pane (message and file reference) is only enabled on desktop
+- Dark mode set to default
 
 ### Removed
 
