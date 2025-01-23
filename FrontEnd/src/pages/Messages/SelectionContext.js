@@ -10,6 +10,12 @@ export const SelectionContext = createContext();
  * This component wraps around parts of the application that need access to
  * the selection state for files and messages. It provides functionalities
  * to add, remove, and toggle selections.
+ * 
+ * Its actually possible to store files and messages and then logout and login 
+ * to a different account, its hard to tell if this is a bug or a feature. On 
+ * one hand why not let the user do that? On the other this could badly confuse
+ * relational structures in the database - A message node will be attached to
+ * messages the api refuses to read, as they belong to another user.
  *
  * @param {Object} props - The component props.
  * @param {React.ReactNode} props.children - The child components.

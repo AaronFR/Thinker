@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- 
+- Loop workflow - will run through the same prompt multiple times with a seperate quality factor considered on each loop
 
 ### Changed
 
