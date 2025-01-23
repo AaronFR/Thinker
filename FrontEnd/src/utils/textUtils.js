@@ -34,6 +34,10 @@ export function toTitleCase(input) {
  * @returns {string} - The shortened text with ellipsis if it exceeds maxLength.
  */
 export const shortenText = (text, maxLength = 160) => {
+  if (!text) {
+    return NaN
+  }
+
   return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 };
 
