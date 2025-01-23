@@ -9,7 +9,8 @@ const DEFAULT_TAGS = {
     model: ['gpt-4o', 'gpt-4o-mini', 'o1-mini', 'o1-preview'],
     category: [],
     write: ['example.txt'],
-    'best of': [1, 2, 3]
+    'best of': [1, 2, 3],
+    workflow: ['chat', 'write', 'auto', 'loop'],
 };
 
 /**

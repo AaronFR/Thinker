@@ -296,3 +296,63 @@ def generate_auto_workflow(
         workflow["steps"].append(summarise_step)
 
     return workflow
+
+
+def generate_loop_workflow(
+    file_references: List[str],
+    selected_messages: List[str],
+    model: str,
+    n_loops: int
+) -> Dict:
+    """
+    Generate a workflow dictionary for automatic processing of multiple files.
+
+    :param file_references: A list of file references.
+    :param selected_messages: A list of selected message IDs.
+    :param model: The model to be used.
+    :param n_loops: The number of loops to be performed by the workflow
+    :return: A dictionary representing the auto workflow.
+    :raises ValueError: If any of the parameters are invalid.
+    """
+    workflow = {
+        "version": "1.0",
+        "workflow_name": "Loop Workflow",
+        "steps": [],
+        "status": "pending",
+    }
+
+    step_id = 1
+
+    # Dynamic Steps: Process file (repeated based on number of file references)
+    for iteration in range(1, n_loops + 1):
+        chat_step = {
+            "step_id": step_id,
+            "module": f"Loop improving on response",
+            "description": "Processing file in accordance with user's initial message.",
+            "parameters": {
+                "file_reference": file_references,
+                "selected_message_ids": '\n'.join(selected_messages),
+                "model": model
+            },
+            "status": "pending",
+            "response": {}
+        }
+        workflow["steps"].append(chat_step)
+        step_id += 1
+
+    # Step N: Summarise
+    final_output = {
+        "step_id": step_id,
+        "module": "Final Output",
+        "description": "Bring together the improvements in each loop into one response",
+        "parameters": {
+            "file_reference": file_references,
+            "selected_message_ids": '\n'.join(selected_messages),
+            "model": model
+        },
+        "status": "pending",
+        "response": {}
+    }
+    workflow["steps"].append(final_output)
+
+    return workflow

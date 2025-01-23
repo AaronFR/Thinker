@@ -4,7 +4,9 @@ from typing import List, Dict, Any
 from Utilities.ErrorHandler import ErrorHandler
 from Personas.PersonaSpecification import WriterSpecification
 from Personas.BasePersona import BasePersona
+from Workflows.AutoWorkflow import AutoWorkflow
 from Workflows.ChatWorkflow import ChatWorkflow
+from Workflows.LoopWorkflow import LoopWorkflow
 from Workflows.WritePagesWorkflow import WritePagesWorkflow
 
 
@@ -15,9 +17,12 @@ class Writer(BasePersona):
     This persona handles tasks such as creating new documents or appending to existing files.
     """
 
+    # ToDo: Obviously later this should be updated later to just update the base workflows from BasePersona
     WORKFLOWS: Dict[str, Dict[str, Any]] = {
-        'write': WritePagesWorkflow(),
         'chat': ChatWorkflow(),
+        'write': WritePagesWorkflow(),
+        'auto': AutoWorkflow(),
+        'loop': LoopWorkflow(),
     }
 
     def __init__(self, name):

@@ -1,10 +1,10 @@
-import logging
 from typing import List, Dict, Any
 from Personas.BasePersona import BasePersona
 from Personas.PersonaSpecification import CoderSpecification
 from Utilities.ErrorHandler import ErrorHandler
 from Workflows.AutoWorkflow import AutoWorkflow
 from Workflows.ChatWorkflow import ChatWorkflow
+from Workflows.LoopWorkflow import LoopWorkflow
 from Workflows.WriteWorkflow import WriteWorkflow
 
 
@@ -14,9 +14,10 @@ class Coder(BasePersona):
     """
 
     WORKFLOWS: Dict[str, Dict[str, Any]] = {
-        'write': WriteWorkflow(),
         'chat': ChatWorkflow(),
-        'auto': AutoWorkflow()
+        'write': WriteWorkflow(),
+        'auto': AutoWorkflow(),
+        'loop': LoopWorkflow(),
     }
 
     def __init__(self, name: str) -> None:
