@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Left Pane (message and file reference) is only enabled on desktop
 - Dark mode set to default
+- Auto workflow is much faster by processing all files in parallel 
 
 ### Removed
 

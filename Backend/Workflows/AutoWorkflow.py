@@ -1,13 +1,15 @@
 import logging
 import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Callable, Optional, List, Dict
 
+from flask import copy_current_request_context
 from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import find_enum_value, ChatGptModel
 from Data.Files.StorageMethodology import StorageMethodology
-from Utilities.Contexts import add_to_expensed_nodes, get_message_context
+from Utilities.Contexts import add_to_expensed_nodes, get_message_context, get_user_context
 from Utilities.Decorators import return_for_error
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
 from Workflows.Workflows import generate_auto_workflow
@@ -20,6 +22,8 @@ class AutoWorkflow(BaseWorkflow):
     Note:
         Saving files may take some time.
     """
+
+    USE_PARALLEL_PROCESSING = True
 
     @return_for_error("An error occurred during the write workflow.", debug_logging=True)
     def execute(
@@ -42,57 +46,172 @@ class AutoWorkflow(BaseWorkflow):
         :return: AI's response.
         :raises WorkflowExecutionError: If any step in the workflow fails.
         """
-        try:
-            model = find_enum_value(tags.get("model") if tags else None)
-            best_of = int(tags.get("best of", 1))  # type validation check needed
+        model = find_enum_value(tags.get("model", None) if tags else None)
+        best_of = int(tags.get("best of", 1)) if tags else 1  # type validation check needed
 
-            if not file_references:
-                logging.warning("No file references provided. Exiting AutoWorkflow.")
-                return "No files to process."
+        if not file_references:
+            logging.warning("No file references provided. Exiting AutoWorkflow.")
+            return "No files to process."
 
-            workflow_data = generate_auto_workflow(
-                file_references=file_references or [],
-                selected_messages=selected_message_ids or [],
-                model=model.value
+        workflow_data = generate_auto_workflow(
+            file_references=file_references or [],
+            selected_messages=selected_message_ids or [],
+            model=model.value
+        )
+        emit("send_workflow", {"workflow": workflow_data})
+
+        if not file_references:
+            logging.warning("No file references provided. Exiting AutoWorkflow.")
+            return "No files to process."
+
+        if self.USE_PARALLEL_PROCESSING:
+            self._execute_parallel(
+                process_prompt, initial_message, file_references, selected_message_ids, best_of, model
             )
-            emit("send_workflow", {"workflow": workflow_data})
-
-            iteration = 1
-            for file_reference in file_references or []:
-                file_name = StorageMethodology().extract_file_name(file_reference)
-                logging.info(f"Processing file reference: {file_reference} (Extracted name: {file_name})")
-
-                prompt_message = f"{initial_message}\n\nSpecifically focus on {file_name}"
-                self._save_file_step(
-                    iteration=iteration,
-                    process_prompt=process_prompt,
-                    message=prompt_message,
-                    file_references=[file_reference],
-                    selected_message_ids=selected_message_ids or [],
-                    file_name=file_name,
-                    best_of=best_of,
-                    model=model,
-                    overwrite=True
-                )
-                iteration += 1
-
-            summary_message = (
-                f"Write a very quick summary indicating that each file in {file_references} has been processed "
-                f"according to the initial user message: <user_message>{initial_message}</user_message>"
+        else:
+            self._execute_sequential(
+                process_prompt, initial_message, file_references, selected_message_ids, best_of, model
             )
-            summary = self._summary_step(
-                iteration=iteration,
+
+        summary_message = (
+            f"Write a very quick summary indicating that each file in {file_references} has been processed "
+            f"according to the initial user message: <user_message>{initial_message}</user_message>"
+        )
+        summary = self._summary_step(
+            iteration=len(file_references) + 1,
+            process_prompt=process_prompt,
+            message=summary_message,
+            file_references=file_references,
+            selected_message_ids=[],
+            streaming=True,
+            model=ChatGptModel.CHAT_GPT_4_OMNI_MINI
+        )
+
+        return summary
+
+    def _execute_parallel(
+            self,
+            process_prompt: Callable[[str, List[str], Dict[str, str]], str],
+            initial_message: str,
+            file_references: List[str],
+            selected_message_ids: List[str],
+            best_of: int,
+            model: ChatGptModel,
+    ):
+        """
+        Executes the workflow steps in parallel.
+
+        :param process_prompt: Function to process user prompts.
+        :param initial_message: The user's prompt.
+        :param file_references: List of file references.
+        :param selected_message_ids: List of selected message IDs for context.
+        :param best_of: Number indicating how many completions to generate server-side.
+        :param model: The model to use for AI interactions.
+        :return: Aggregated summary of all processing results.
+        """
+        message_id = get_message_context()
+        user_id = get_user_context()
+
+        @copy_current_request_context
+        def wrapped_process_file(file_ref, iteration_id):
+            return self._process_file(process_prompt, initial_message, file_ref, selected_message_ids, best_of, model,
+                                      iteration_id, message_id, user_id)
+
+        with ThreadPoolExecutor(max_workers=len(file_references)) as executor:
+            future_to_file = {
+                executor.submit(wrapped_process_file, file_ref, iteration_id + 1): file_ref
+                for iteration_id, file_ref in enumerate(file_references)
+            }
+
+            for future in as_completed(future_to_file):
+                file_ref = future_to_file[future]
+                try:
+                    iteration_id, response = future.result()
+                    logging.info(f"Processed file '{file_ref}' successfully (Iteration {iteration_id}).")
+                except Exception as e:
+                    logging.error(f"Error processing file '{file_ref}': {e}")
+
+    def _execute_sequential(
+            self,
+            process_prompt: Callable[[str, List[str], Dict[str, str]], str],
+            initial_message: str,
+            file_references: List[str],
+            selected_message_ids: List[str],
+            best_of: int,
+            model: ChatGptModel,
+    ):
+        """
+        Executes the workflow steps sequentially.
+
+        :param process_prompt: Function to process user prompts.
+        :param initial_message: The user's prompt.
+        :param file_references: List of file references.
+        :param selected_message_ids: List of selected message IDs for context.
+        :param best_of: Number indicating how many completions to generate server-side.
+        :param model: The model to use for AI interactions.
+        :return: Aggregated summary of all processing results.
+        """
+        results = []
+        for iteration_id, file_reference in enumerate(file_references, start=1):
+            file_name = StorageMethodology().extract_file_name(file_reference)
+            logging.info(
+                f"Processing file '{file_reference}' (Extracted name: '{file_name}') - Iteration {iteration_id}.")
+
+            prompt_message = f"{initial_message}\n\nSpecifically focus on {file_name}."
+            response = self._save_file_step(
+                iteration=iteration_id,
                 process_prompt=process_prompt,
-                message=summary_message,
-                file_references=file_references,
-                selected_message_ids=[],
-                streaming=True,
-                model=ChatGptModel.CHAT_GPT_4_OMNI_MINI
+                message=prompt_message,
+                file_references=[file_reference],
+                selected_message_ids=selected_message_ids or [],
+                file_name=file_name,
+                best_of=best_of,
+                model=model,
+                overwrite=True
             )
+            results.append(f"Iteration {iteration_id} for '{file_reference}': {response}")
+            logging.debug(f"Response for iteration {iteration_id} on '{file_reference}': {response}")
 
-            return summary
-        except Exception:
-            logging.exception("Failed to process write workflow")
+    def _process_file(
+            self,
+            process_prompt: Callable[[str, List[str], Dict[str, str]], str],
+            initial_message: str,
+            file_reference: str,
+            selected_message_ids: List[str],
+            best_of: int,
+            model: ChatGptModel,
+            iteration_id: int,
+            message_id: str = None,
+            user_id: str = None,
+    ) -> (int, str):
+        """
+        Helper method to process a single file in the workflow with a unique iteration ID.
+
+        :param process_prompt: Function to process user prompts.
+        :param initial_message: The user's prompt.
+        :param file_reference: The file reference to process.
+        :param selected_message_ids: List of selected message IDs for context.
+        :param best_of: Number indicating how many completions to generate server-side.
+        :param model: The model to use for AI interactions.
+        :param iteration_id: Unique iteration ID for the processing step.
+        :return: A tuple of iteration_id and the AI's response.
+        """
+        file_name = StorageMethodology().extract_file_name(file_reference)
+        prompt_message = f"{initial_message}\n\nSpecifically focus on {file_name} for iteration #{iteration_id}."
+        response = self._save_file_step(
+            iteration=iteration_id,
+            process_prompt=process_prompt,
+            message=prompt_message,
+            file_references=[file_reference],
+            selected_message_ids=selected_message_ids or [],
+            file_name=file_name,
+            best_of=best_of,
+            model=model,
+            overwrite=True,
+            message_id=message_id,
+            user_id=user_id
+        )
+        return iteration_id, response
 
     def _determine_pages_step(
         self,

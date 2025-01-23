@@ -88,7 +88,7 @@ The words "Do NOT actually try and answer this task" contain the words " try and
 Completed @16:36 2025/01/13
 Cost: $4.93 (Well the good news is that the openAi billing and your own estimates match almost exactly)
 
-That's very high cost, I anticipated 2-3 euro. The previous large workflow cost about this but ran for only 11 files. 
+That's very high cost, I anticipated 2-3 euro. Though, the previous large workflow cost about this but ran for only 11 files. 
 ToDo: Check the logs to ensure tokens aren't being wasted somewhere.
 (in typical fashion the o1-responses are twice as long, which explains why they cost 30 x 2 times more than than the gpt-4-mini responses)
 (also in the last response with the issue with ALL file references being sent to each individual step, input costs where 1.5x times higher than output costs, 
@@ -103,7 +103,7 @@ Now lets see what I got for my money.
 | Augmentation_AutoSelectWorkflow.py           | ⭐⭐⭐ Backend component worked great. In future you will also have to ask for the *frontend* changes as well, which where the majority of the work here. In general I think you really need to go detail by detail, describing what you *think* needs to change       |
 | AutoWorkflow_BossPersonaAttempt.py           |                                                                                                                                                                                                                                                                     |
 | AutoWorkflow_loopWorkflow.py                 | ⭐⭐⭐ Needed to be refactored to follow how I want my workflows structured but served as a good basis. Like a lot of requests would have been better if I included more, focused references (e.g. the workflows schema methods)                                       |
-| AutoWorkflow_ParallelProcessing.py           |                                                                                                                                                                                                                                                                     |
+| AutoWorkflow_ParallelProcessing.py           | ⭐⭐⭐ Had to be redesigned -due to trying to use contextVars while multi-threading within flask, passing the variables along it works fine (other than continually not understanding that I want _summary_step run itself not a string)                               |
 | CategoryManagement_AutomaticColourisation.py | ⭐⭐⭐ The work I needed to do was taking the colour generating code and correcting the database handling code, the frontend code handling list category responses and the actual displaying of the new information                                                    |
 | CategoryManagement_categoryDescription.py    | ⭐⭐⭐ Only rating 3 stars because it took an hour+, but it wrote most of the necessary code. Could have benefited from knowing more about how CategoryManagement.py is used and less about CategoryMangement.py itself.                                               |
 | ChatGptWrapper_RemoveReceipts.py             | ⭐ A lot of the poor score is in me realising I could update any node just by its UUID id parameter rather than trying to arbitrarily track different types of functionality. Instead scanning over the files and coming to a plan may have been more useful         |

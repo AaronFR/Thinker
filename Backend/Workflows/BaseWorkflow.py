@@ -142,7 +142,9 @@ class BaseWorkflow:
         file_name: str,
         best_of: int = 1,
         model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
-        overwrite: bool = True
+        overwrite: bool = True,
+        message_id: str = None,
+        user_id: str = None,
     ) -> str:
         """
         Handles the process of saving files to the staging directory.
@@ -158,7 +160,12 @@ class BaseWorkflow:
         :return: AI's response.
         """
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
-        add_to_expensed_nodes(get_message_context())
+        if not message_id:
+            message_id = get_message_context()
+        if not user_id:
+            user_id = get_user_context()
+
+        add_to_expensed_nodes(message_id)
         response = process_prompt(
             message,
             file_references,
@@ -170,7 +177,6 @@ class BaseWorkflow:
         
         """  # Otherwise when the next section is appended on it won't be on a new line
 
-        user_id = get_user_context()
         file_path = Path(user_id).joinpath(file_name)
 
         StorageMethodology.select().save_file(response, str(file_path), overwrite=overwrite)
