@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 import { handleLogin, handleRegister, handleLogout } from '../../utils/loginUtils';
 import { About, Tutorial } from '../Guide/Guide';
@@ -11,10 +11,26 @@ export function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    
+
+    // Effect to set initial mode based on localStorage
+    useEffect(() => {
+        const hasAccount = localStorage.getItem('hasAccount');
+        if (hasAccount === 'true') {
+            setIsLoginMode(true);
+        } else {
+            setIsLoginMode(false);
+        }
+    }, []);
+
     const handleSwitch = () => {
-        setIsLoginMode(!isLoginMode)
-        setError('');  // Clear any previous errors when switching
+        // If user already has an account, restrict switching to Register mode
+        const hasAccount = localStorage.getItem('hasAccount');
+        if (hasAccount === 'true' && isLoginMode) {
+            // Already in Login mode and has account, do nothing.
+            return;
+        }
+        setIsLoginMode(!isLoginMode);
+        setError('');
     }
 
     // Handles login or registration based on the current mode
@@ -22,8 +38,11 @@ export function Login() {
         try {
             if (isLoginMode) {
                 await handleLogin(email, password);
+                localStorage.setItem('hasAccount', 'true');
             } else {
                 await handleRegister(email, password);
+                localStorage.setItem('hasAccount', 'true');
+                setIsLoginMode(true);
             }
             setError('');  // Clear error on successful login or registration
         } catch (err) {
