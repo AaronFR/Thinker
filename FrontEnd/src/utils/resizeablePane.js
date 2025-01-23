@@ -41,7 +41,7 @@ const ResizablePane = ({ children, className }) => {
 
             const containerRect = containerRef.current.getBoundingClientRect()
             let newWidth = ((clientX - containerRect.left) / containerRect.width) * 100 // Convert to percentage
-            newWidth = Math.max(10, Math.min(newWidth, 90)) // Restrict between 10% and 90%
+            newWidth = Math.max(0, Math.min(newWidth, 90)) // Restrict between 10% and 90%
             setPaneWidth(newWidth)
         },
         [isDragging]
