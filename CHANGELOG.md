@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Loop workflow - will run through the same prompt multiple times with a seperate quality factor considered on each loop
+- Loop workflow - will run through the same prompt multiple times with a separate quality factor considered on each loop
+- Internet search, each step will now search the internet for any relevant context, 
+   currently just a rough overview of the top 3 results
 
 ### Changed
 

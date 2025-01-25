@@ -8,6 +8,7 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Configuration import Configuration
 from Data.EncyclopediaManagement import EncyclopediaManagement
+from Data.InternetSearch import InternetSearch
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Data.UserContextManagement import UserContextManagement
@@ -154,6 +155,11 @@ class BasePersona:
                 message = nodeDB().get_message_by_id(message_id)
                 content = message["prompt"] + " : \n\n" + message["response"]
                 messages.append(content)
+        INTERNET_SEARCH_ENABLED = True
+        if INTERNET_SEARCH_ENABLED:
+            internet_search_results = InternetSearch().search_internet_based_on_prompt(prompt)
+            for search_result in internet_search_results:
+                messages.append(str(search_result))
 
         logging.info(f"Message content: {messages}")
 
