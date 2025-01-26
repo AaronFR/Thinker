@@ -14,6 +14,7 @@ import './styles/UserInputForm.css';
 
 import { SettingsContext } from '../pages/Settings/SettingsContext';
 import { useSelection, SelectionProvider } from '../pages/Messages/SelectionContext';
+import BestOfSelector from './Selectors/BestOfSelector';
 import LoopsSelector from './Selectors/LoopsSelector';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
@@ -238,6 +239,12 @@ const UserInputForm = ({
             selectedModel={tags.model}
             setTags={setTags}
           />
+
+          <BestOfSelector
+            bestOf={tags.bestOf}
+            setTags={setTags}
+          />
+          
         </div>
 
         <TagsManager tags={tags} setTags={setTags} />
