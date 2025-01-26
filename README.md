@@ -75,31 +75,23 @@ To refine the system's architecture and enhance its capabilities and efficiency,
   - Attach receipts to ~~prompts~~, workflows and features. So the user always knows how much they've spent and on what.
 - **Category descriptions**: input is cheap and a small description would probably significantly increase selection 
    relevance
-- **Memory System**: In beta, needs to be made reliable: That means 'remembering' less useless information, storing it better and reading it better
-  - Descriptions for knowledge node concepts? Same idea for improving category specificity?
 - **Modular Workflows**: The coder module can and should actually check that its code works and try and improve upon itself if it doesn't.
    even if it can only try a fixed number of times and worst case scenario explains to the user that its solution is invalid.
    Many workflows should consist of switch logic that allows for intelligent processing of a given request without needless details.
 - **Best of X**: ~~Let users run multiple prompts in parallel and have the system automatically select/pick and choice to create a superior answer~~
   - Can be customised on preference: Should the other attempts be identical or optimise for different qualities entirely, returning a balanced approach.
-- **Internet access**: Adding internet access for workflows based on context, including the ability to expand the
+- **Internet access**: ~~Adding internet access for workflows based on context~~, including the ability to expand the
  encyclopedia with web-sourced data.
   - general knowledge shared nodes (e.g. information on a technology or recent event)
   - Coder github integration
 - **API Integrations**: Integrate additional AI models to leverage the most appropriate based on context
-- **Loop Workflows**: Say you want to 'Optimise a file', the thing is you can actually keep doing that. A setting should be added to run the prompt
-  multiple times in a row, possibly based on various different qualities. [First general refactor, then readability, then performance for example]
 - **Programmes**: schedules and programs written on the fly for use by the user, customisable code base.
 - **'Boss' Personas**: Large tasks should be enabled by 'boss' personas, e.g. a 'Coder' persona can write and update a file,
      but a 'Team Lead' persona could manage several coder's to improve or write an entire application.
-- **Micro thoughts**: Generated even while the prompt is being written. Question -> answer
-  - Auto select persona to describe which persona will be selected for a given prompt, workflow to be suggested in advance
-  - Auto select workflow
 - **Mathematician/Engineer/Physicist**: LLMs are bad at math the same way Humans are bad at math, neurons are just not well
    suited to counting and arithmetic operations compared to binary functions. However, unlike humans their *terrible* at **spatial reasoning**
    But why does that need to be a limitation? If we let it connect to tools that help it simulate the world while it ""thinks"" in words
    we can have the best of both worlds. Unlocking a lot of capability/accuracy.
-- **Parallel Processing**: Implement parallel processing to handle multiple tasks simultaneously, improving performance and reducing task completion time.
 
 - **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can
  actually write its own tests automatically to full standard.

@@ -6,9 +6,9 @@ import TagsManager from './TagsManager';
 import { apiFetch } from '../utils/authUtils';
 import { getBasename } from '../utils/textUtils';
 import AutoExpandingTextarea from '../utils/AutoExpandingTextarea';
-import PersonaSelector from '../components/PersonaSelector'
-import WorkflowSelector from './WorkflowSelector';
-import ModelSelector from './ModelSelector';
+import PersonaSelector from './Selectors/PersonaSelector'
+import WorkflowSelector from './Selectors/WorkflowSelector';
+import ModelSelector from './Selectors/ModelSelector';
 
 import './styles/UserInputForm.css';
 

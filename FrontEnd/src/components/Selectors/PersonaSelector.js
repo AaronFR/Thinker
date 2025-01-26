@@ -18,7 +18,6 @@ const PersonaSelector = React.memo(({ selectedPersona, setSelectedPersona }) => 
     const personas = [
         { value: "coder", label: "💻 Coder" },
         { value: "writer", label: "✍ Writer" },
-        // Additional personas can be added here
     ];
 
     const handleChange = useCallback((event) => {
