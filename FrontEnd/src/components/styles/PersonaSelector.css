@@ -1,5 +1,5 @@
 .dropdown {
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
   border-radius: var(--border-radius-sm);
   border: 2px solid var(--color-input-bg-dark);
   outline: none;
@@ -16,3 +16,73 @@ body.dark-mode .dropdown {
   color: var(--color-input-text-dark);
   transition: background-color var(--transition-normal), color var(--transition-normal);
 }
+
+/* React Select Styles */
+.react-select__control {
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  border: 2px solid var(--color-input-bg-dark);
+  background-color: var(--color-input-bg);
+  color: var(--color-input-text);
+  transition: border-color var(--transition-fast);
+  min-height: 30px; /* Ensures consistent height */
+}
+
+.react-select__control:hover,
+.react-select__control:focus {
+  border-color: var(--color-border-active); /* Similar focus effect to input */
+}
+
+.body.dark-mode .react-select__control {
+  border: 2px solid var(--color-input-bg-dark);
+  background-color: var(--color-input-bg-dark);
+  color: var(--color-input-text);
+  transition: border-color var(--transition-fast);
+}
+
+.react-select__single-value {
+  font-size: 12px;
+}
+
+.react-select__dropdown-indicator {
+  padding: 4px;
+  font-size: 12px;
+}
+
+.react-select__clear-indicator {
+  padding: 4px;
+  font-size: 12px;
+}
+
+.react-select__indicator-separator {
+  display: none;
+}
+
+.react-select__indicators {
+  height: 30px;
+}
+
+
+.react-select__menu {
+  z-index: 9999; /* Ensure the dropdown appears on top */
+  font-size: 12px;
+}
+.react-select__multi-value {
+  border-radius: 0px; /* Use CSS variable for multi-value border radius if needed */
+  padding: 0rem;
+}
+
+.option-logo {
+  width: 20px;
+  margin-right: 10px;
+}
+
+.react-select__control--is-focused {
+  border-color: var(--color-border-active);
+}
+
+.body.dark-mode .react-select__menu {
+  background-color: var(--color-input-bg-dark);
+  color: var(--color-input-text-dark);
+}
+

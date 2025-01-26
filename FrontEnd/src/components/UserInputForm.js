@@ -7,6 +7,8 @@ import { apiFetch } from '../utils/authUtils';
 import { getBasename } from '../utils/textUtils';
 import AutoExpandingTextarea from '../utils/AutoExpandingTextarea';
 import PersonaSelector from '../components/PersonaSelector'
+import WorkflowSelector from './WorkflowSelector';
+import ModelSelector from './ModelSelector';
 
 import './styles/UserInputForm.css';
 
@@ -58,8 +60,6 @@ const UserInputForm = ({
     selectedMessages,
     toggleMessageSelection 
   } = useSelection();
-
-  const autoDetectedPersona = 'Coder' // Temporary hardcoded value
   
   /**
    * Fetches the list of uploaded files from the backend API.
@@ -201,11 +201,6 @@ const UserInputForm = ({
           >
             {'Auto-Engineer'}
           </button>}
-          <PersonaSelector 
-              selectedPersona={selectedPersona} 
-              setSelectedPersona={setSelectedPersona}
-              autoDetectedPersona={autoDetectedPersona}
-            />
           {settings.questionUserPromptsEnabled !== 'off' &&<button // settings.promptQuestioningMessage != 'off'
             type="button"
             className="button submit-button"
@@ -223,6 +218,21 @@ const UserInputForm = ({
           >
             {isProcessing ? 'Processing...' : 'Enter'}
           </button>
+        </div>
+
+        <div className='palette'>
+        <PersonaSelector 
+            selectedPersona={selectedPersona} 
+            setSelectedPersona={setSelectedPersona}
+          />
+          <WorkflowSelector
+            selectedWorkflow={tags.workflow}
+            setTags={setTags}
+          />
+          <ModelSelector
+            selectedModel={tags.model}
+            setTags={setTags}
+          />
         </div>
 
         <TagsManager tags={tags} setTags={setTags} />

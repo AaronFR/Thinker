@@ -1,6 +1,8 @@
 import React, {useCallback} from 'react';
 import PropTypes from 'prop-types';
 
+import Select, { components } from 'react-select';
+
 import './styles/PersonaSelector.css';
 
 /**
@@ -11,35 +13,42 @@ import './styles/PersonaSelector.css';
  * 
  * @param {string} selectedPersona - Current selected persona.
  * @param {function} setSelectedPersona - Function to update the selected persona.
- * @param {function} autoDetectedPersona - The auto-detected persona label to display.
  */
-const PersonaSelector = React.memo(({ selectedPersona, setSelectedPersona, autoDetectedPersona }) => {
+const PersonaSelector = React.memo(({ selectedPersona, setSelectedPersona }) => {
     const personas = [
-        { value: "auto", label: `Auto - ${autoDetectedPersona || 'Not detected'}` },
         { value: "coder", label: "💻 Coder" },
         { value: "writer", label: "✍ Writer" },
         // Additional personas can be added here
     ];
 
     const handleChange = useCallback((event) => {
-        setSelectedPersona(event.target.value);
+        setSelectedPersona(event.value);
     }, [setSelectedPersona]);
+
+    const customStyles = {
+    option: (provided, state) => ({
+        ...provided,
+        display: 'flex',
+        alignItems: 'center',
+        color: 'var(--color-input-text)',
+        padding: '6px 8px',
+        fontSize: '12px',
+    }),
+    };
     
     return (
         <div className="persona-selector">
-            <select 
+            <Select
+                value={personas.find(personas => personas.value === selectedPersona)}
+                options={personas}
+                placeholder="Speciality"
                 id="persona-select"
-                value={selectedPersona} 
                 onChange={handleChange}
-                className="dropdown"
+                styles={customStyles}
                 aria-label="Select a persona"
-            >
-                {personas.map((persona) => (
-                    <option key={persona.value} value={persona.value}>
-                        {persona.label}
-                    </option>
-                ))}
-            </select>
+                className="dropdown"
+                classNamePrefix="react-select"
+            />
         </div>
     );
 });
@@ -47,7 +56,6 @@ const PersonaSelector = React.memo(({ selectedPersona, setSelectedPersona, autoD
 PersonaSelector.propTypes = {
     selectedPersona: PropTypes.string.isRequired,
     setSelectedPersona: PropTypes.func.isRequired,
-    autoDetectedPersona: PropTypes.string.isRequired,
 };
 
 export default PersonaSelector;
