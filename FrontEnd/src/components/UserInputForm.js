@@ -254,7 +254,7 @@ const UserInputForm = ({
           
         </div>
 
-        <TagsManager tags={tags} setTags={setTags} />
+        {settings.debug === true && <TagsManager tags={tags} setTags={setTags} />}
       </form>
     </div>
   );

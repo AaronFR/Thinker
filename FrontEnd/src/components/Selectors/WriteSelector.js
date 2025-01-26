@@ -159,7 +159,7 @@ const WriteSelector = React.memo(({ write, setTags }) => {
                     type="button"
                     aria-label="Add Write Tag"
                 >
-                    + Add Write Tag
+                    + Select Filename
                 </button>
             )}
         </div>

@@ -31,6 +31,7 @@ export function Settings() {
       handleMessageChange
   } = useContext(SettingsContext);
 
+  const toggleDebug = () => toggleSetting('interface.debug', 'debug');
   const toggleDarkMode = () => toggleSetting('interface.dark_mode', 'darkMode');
   const toggleAiColourisation = () => toggleSetting('interface.ai_colour', 'aiColour')
   const toggleUserEncyclopedia = () => toggleSetting('beta_features.user_context_enabled', 'userEncyclopediaEnabled')
@@ -178,6 +179,16 @@ export function Settings() {
 
       {/* Beta Features Section */}
       <h2 className="settings-heading">🚧 Beta features</h2>
+      <label className="settings-label" style={{"paddingBottom": "30px"}}>
+        <input
+          type="checkbox"
+          className="settings-checkbox"
+          id="debug-checkbox"
+          checked={settings.debug}
+          onChange={toggleDebug}
+        />
+        Enable debug view (Directly view prompt tags)
+      </label>
       {betaOptions.map(({ label, value, onChange }, index) => (
         <label key={index} className="settings-label">
           <input type="checkbox" checked={value} onChange={onChange} className="settings-checkbox" />

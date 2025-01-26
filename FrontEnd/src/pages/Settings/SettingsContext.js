@@ -19,6 +19,7 @@ export const SettingsContext = createContext();
  */
 export const SettingsProvider = ({ children }) => {
     const initialSettings = {
+        debug: false,
         darkMode: true,
         aiColour: false,
         language: 'en',
