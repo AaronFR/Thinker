@@ -14,6 +14,7 @@ import './styles/UserInputForm.css';
 
 import { SettingsContext } from '../pages/Settings/SettingsContext';
 import { useSelection, SelectionProvider } from '../pages/Messages/SelectionContext';
+import LoopsSelector from './Selectors/LoopsSelector';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -229,6 +230,10 @@ const UserInputForm = ({
             selectedWorkflow={tags.workflow}
             setTags={setTags}
           />
+          {tags.workflow == 'loop' && <LoopsSelector
+            selectedNumberOfLoops={tags.loops}
+            setTags={setTags}
+          />}
           <ModelSelector
             selectedModel={tags.model}
             setTags={setTags}
