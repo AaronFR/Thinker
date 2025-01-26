@@ -9,6 +9,8 @@ import './Settings.css';
 
 import { SettingsContext } from './SettingsContext';
 
+import { Tooltip } from 'react-tooltip';
+
 const FUNCTIONALITY_STATES = {
   OFF: 'off',
   ON: 'on',
@@ -32,7 +34,12 @@ const UserInterfaceSettings = ({ settings, toggleDarkMode, toggleAiColourisation
       />
       Dark Mode
     </label>
-    <label className="settings-label">
+    <label 
+      className="settings-label"
+      data-tooltip-id="tooltip"
+      data-tooltip-content="This means that when a new category is created a LLM call on the inexpensive model (gpt-4o-mini) will be run to generate an *appropriate* colour for the category."
+      data-tooltip-place="bottom"
+    >
       <input
         type="checkbox"
         checked={settings.aiColour}
@@ -108,8 +115,14 @@ const PromptQuestioningSection = ({
       </select>
       Generates questions against the user's prompt and reference material.
     </label>
-    <p>Use case: Difficult, 'knotty' technical questions.</p>
-    <AutoExpandingTextarea
+    <p>👍 Difficult, 'knotty' technical questions, where extra context can help clarify the problem - for the machine and potentially for <i>you</i></p>
+    <p>👎 When you <i>just</i> want an answer quickly</p>
+    <div
+      data-tooltip-id="tooltip"
+      data-tooltip-content="When generating questions, the user prompt, selected files AND messages are referenced. (As of yet it does not reference user knowledge)"
+      data-tooltip-place="bottom"
+    >
+      <AutoExpandingTextarea
       value={promptMessage}
       className="textarea"
       onChange={(e) =>
@@ -117,6 +130,8 @@ const PromptQuestioningSection = ({
       }
       style={{ opacity: 0.9 }}
     />
+    </div>
+    
   </div>
 );
 
@@ -151,15 +166,24 @@ const AutoPromptEngineeringSection = ({
       </select>
       Generates a copy of your prompt that meets 'prompt engineering' standards.
     </label>
-    <p>Use case: simple prompts that can-benefit from refinement.</p>
-    <AutoExpandingTextarea
-      value={promptMessage}
-      className="textarea"
-      onChange={(e) =>
-        handleMessageChange('promptAugmentationMessage', e.target.value)
-      }
-      style={{ opacity: 0.9 }}
-    />
+    <p>👍 Simple prompts</p>
+    <p>👎 Complex, specific and precisely worded prompts with exacting long references</p>
+    <div
+      data-tooltip-id="tooltip"
+      data-tooltip-content="When generating a 'prompt engineering' copy the application only reads the users prompt. It does not reference selected files or messages."
+      data-tooltip-place="bottom"
+    >
+      <AutoExpandingTextarea
+        value={promptMessage}
+        className="textarea"
+        onChange={(e) =>
+          handleMessageChange('promptAugmentationMessage', e.target.value)
+        }
+        style={{ opacity: 0.9 }}
+      />
+    </div>
+    <small>And the shills told you it would be a career skill...</small>
+    
   </div>
 );
 
@@ -185,14 +209,21 @@ const SummariesSettings = ({
       />
       Enables summaries on compatible workflows
     </label>
-    <AutoExpandingTextarea
-      value={settings.summarisationMessage}
-      className="textarea"
-      onChange={(e) =>
-        handleMessageChange('summarisationMessage', e.target.value)
-      }
-      style={{ opacity: 0.9 }}
-    />
+    <div
+      data-tooltip-id="tooltip"
+      data-tooltip-content="Summaries will be provided with every single file and message reference supplied originally, this means a For All workflow can see each re-written file"
+      data-tooltip-place="bottom"
+    >
+      <AutoExpandingTextarea
+        value={settings.summarisationMessage}
+        className="textarea"
+        onChange={(e) =>
+          handleMessageChange('summarisationMessage', e.target.value)
+        }
+        style={{ opacity: 0.9 }}
+      />
+    </div>
+    
   </div>
 );
 
@@ -228,8 +259,7 @@ const BetaFeaturesSettings = ({
         onChange={toggleUserEncyclopedia}
         className="settings-checkbox"
       />
-      User knowledge - The thinker will remember details about the user and their preferences (user
-      preferences and facts are accumulated when enabled but not currently used when prompting)
+      User knowledge - The thinker will remember details about the user and their preferences
     </label>
 
     <label className="settings-label">
@@ -293,27 +323,41 @@ const SystemMessagesSettings = ({ settings, handleMessageChange }) => (
       {/* Categorisation Message */}
       <label className="message-label">
         Categorisation Message
-        <AutoExpandingTextarea
-          value={settings.categorisationMessage}
-          className="textarea"
-          onChange={(e) =>
-            handleMessageChange('categorisationMessage', e.target.value)
-          }
-          style={{ opacity: 0.9 }}
-        />
+        <div
+          data-tooltip-id="tooltip"
+          data-tooltip-content="Categorisation occurs at the end of a workflow, referencing initial prompt and response. It only creates a new category if it doesn't think any of the existing are suitable (in theory)"
+          data-tooltip-place="bottom"
+        >
+          <AutoExpandingTextarea
+            value={settings.categorisationMessage}
+            className="textarea"
+            onChange={(e) =>
+              handleMessageChange('categorisationMessage', e.target.value)
+            }
+            style={{ opacity: 0.9 }}
+          />
+        </div>
+        
       </label>
 
       {/* Best Of Message */}
       <label className="message-label">
         Best Of Message
-        <AutoExpandingTextarea
-          value={settings.bestOfMessage}
-          className="textarea"
-          onChange={(e) =>
-            handleMessageChange('bestOfMessage', e.target.value)
-          }
-          style={{ opacity: 0.9 }}
-        />
+        <div
+          data-tooltip-id="tooltip"
+          data-tooltip-content="The LLM at this point is supplied with the generated responses in a list AND the original user prompt for comparison. It will use this system message to select a 'best of'"
+          data-tooltip-place="bottom"
+        >
+          <AutoExpandingTextarea
+            value={settings.bestOfMessage}
+            className="textarea"
+            onChange={(e) =>
+              handleMessageChange('bestOfMessage', e.target.value)
+            }
+            style={{ opacity: 0.9 }}
+          />
+        </div>
+        
       </label>
     </div>
   </div>
@@ -393,6 +437,7 @@ export function Settings() {
           Logout
         </button>
       </div>
+      <Tooltip id="tooltip" />
     </div>
   );
 }
