@@ -12,6 +12,13 @@ code {
     monospace;
 }
 
+/* Tool Tip */
+div.react-tooltip.core-styles-module_tooltip__3vRRp {
+  flex-wrap: wrap;
+  opacity: 0.85; /* Correct opacity value */
+  z-index: 9999;
+}
+
 :root {
   /* Colors */
   --font-family-base: 'Montserrat', sans-serif;

@@ -18,6 +18,8 @@ import BestOfSelector from './Selectors/BestOfSelector';
 import LoopsSelector from './Selectors/LoopsSelector';
 import WriteSelector from './Selectors/WriteSelector';
 
+import { Tooltip } from 'react-tooltip';
+
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
@@ -201,15 +203,22 @@ const UserInputForm = ({
             onClick={() => generateAugmentedPrompt(userInput)}
             disabled={isProcessing}
             aria-busy={isProcessing}
+            data-tooltip-id="tooltip"
+            data-tooltip-content="Generates a copy of your prompt, but omptimised so LLMs *should* be able to understand the request better and provide a better response"
+            data-tooltip-place="bottom"
           >
             {'Auto-Engineer'}
           </button>}
-          {settings.questionUserPromptsEnabled !== 'off' &&<button // settings.promptQuestioningMessage != 'off'
+          {settings.questionUserPromptsEnabled !== 'off' &&
+          <button // settings.promptQuestioningMessage != 'off'
             type="button"
             className="button submit-button"
             onClick={() => generateQuestionsForPrompt(userInput, selectedMessages, selectedFiles)}
             disabled={isProcessing}
             aria-busy={isProcessing}
+            data-tooltip-id="tooltip"
+            data-tooltip-content="The application will ask questions it has about your prompt, you can fill them for extra context on the prompt or just for rubber ducking 🦆"
+            data-tooltip-place="bottom"
           >
             {'Question'}
           </button>}
@@ -218,6 +227,10 @@ const UserInputForm = ({
             className="button submit-button"
             disabled={isProcessing}
             aria-busy={isProcessing}
+            data-tooltip-id="tooltip"
+            data-tooltip-content={isProcessing ? "Currently processing... if its stuck that means something went wrong on our end.. we haven't implemented a terminate button so you'll just have to refresh your tab 😅" :
+            ""}
+            data-tooltip-place="bottom"
           >
             {isProcessing ? 'Processing...' : 'Enter'}
           </button>
@@ -255,6 +268,7 @@ const UserInputForm = ({
         </div>
 
         {settings.debug === true && <TagsManager tags={tags} setTags={setTags} />}
+        <Tooltip id="tooltip" />
       </form>
     </div>
   );

@@ -100,6 +100,11 @@ const CopyCodeButton = ({ code }) => {
       onClick={handleCopy}
       style={{ position: 'absolute', top: 8, right: 8 }}
       aria-label="Copy code to clipboard"
+      div 
+      className='loops-selector'
+      data-tooltip-id="tooltip"
+      data-tooltip-content="Copy to clipboard"
+      data-tooltip-place="bottom"
     >
       📋
     </button>

@@ -22,13 +22,20 @@ const BestOfSelector = React.memo(({ selectedRuns, setTags }) => {
   ];
 
   return (
-    <TagSelector
-      selectedValue={selectedRuns}
-      setTags={setTags}
-      options={runOptions}
-      placeholder="Best of"
-      className="best-of-selector"
-    />
+    <div 
+      className='loops-selector-container'
+      data-tooltip-id="tooltip"
+      data-tooltip-content="If enabled each step will run multiple times, a LLM call will be then used to review the various outputs and select for the best one. You can change the selection criteria system message in the settings"
+      data-tooltip-place="bottom"
+    >
+      <TagSelector
+        selectedValue={selectedRuns}
+        setTags={setTags}
+        options={runOptions}
+        placeholder="Best of"
+        className="best-of-selector"
+      />
+    </div>
   );
 });
 

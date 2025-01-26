@@ -2,6 +2,7 @@ import React, { useReducer, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import ProgressBar from '../utils/ProgressBar';
+import { Tooltip } from 'react-tooltip';
 
 import './styles/FileUploadButton.css';
 
@@ -124,6 +125,9 @@ const FileUploadButton = ({ onUploadSuccess }) => {
         role="button"
         tabIndex={0}
         aria-label="Upload files"
+        data-tooltip-id="tooltip"
+        data-tooltip-content="Upload file(s) as reference for your prompt"
+        data-tooltip-place="bottom"
       >
         📂 {/* Upload Emoji */}
       </label>

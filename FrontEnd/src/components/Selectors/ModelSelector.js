@@ -33,14 +33,27 @@ const ModelSelector = React.memo(({ selectedModel, setTags }) => {
   ];
 
   return (
-    <TagSelector
-      selectedValue={selectedModel}
-      setTags={setTags}
-      options={models}
-      placeholder="model"
-      CustomOption={CustomOption}
+    <div
       className="model-selector"
-    />
+      data-tooltip-id="tooltip"
+      data-tooltip-html={`
+        LLM (Large Language Model), this is what makes the AI response, cheapest first, 
+        at the top, getting more powerful - and much more expensive down the list.<br>
+        Note: Only "important" operations within workflow steps are impacted, the bulk 
+        of The Thinkers operations are run on the most inexpensive model (gpt-4o-mini)
+      `}
+      data-tooltip-place="bottom"
+    >
+      <TagSelector
+        selectedValue={selectedModel}
+        setTags={setTags}
+        options={models}
+        placeholder="model"
+        CustomOption={CustomOption}
+        className="model-selector"
+        
+      />
+    </div>
   );
 });
 
