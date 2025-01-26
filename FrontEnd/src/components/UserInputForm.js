@@ -16,6 +16,7 @@ import { SettingsContext } from '../pages/Settings/SettingsContext';
 import { useSelection, SelectionProvider } from '../pages/Messages/SelectionContext';
 import BestOfSelector from './Selectors/BestOfSelector';
 import LoopsSelector from './Selectors/LoopsSelector';
+import WriteSelector from './Selectors/WriteSelector';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -227,6 +228,7 @@ const UserInputForm = ({
             selectedPersona={selectedPersona} 
             setSelectedPersona={setSelectedPersona}
           />
+
           <WorkflowSelector
             selectedWorkflow={tags.workflow}
             setTags={setTags}
@@ -235,6 +237,11 @@ const UserInputForm = ({
             selectedNumberOfLoops={tags.loops}
             setTags={setTags}
           />}
+          {tags.workflow == 'write' && <WriteSelector
+            write={tags.write}
+            setTags={setTags}
+          />}
+
           <ModelSelector
             selectedModel={tags.model}
             setTags={setTags}

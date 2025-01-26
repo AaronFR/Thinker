@@ -1,0 +1,82 @@
+.write-selector-container {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.write-selector-tag {
+  display: flex;
+  align-items: center;
+  background-color: var(--tag-background, #f0f0f0);
+  border-radius: 4px;
+  padding: 5px 10px;
+}
+
+.write-selector-tag-label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.write-selector-tag-value {
+  cursor: pointer;
+  margin-right: 10px;
+  color: var(--tag-value-color, #333);
+}
+
+.write-selector-delete-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--delete-button-color, #ff4d4f);
+}
+
+.write-selector-add-button {
+  background-color: var(--add-button-background, #1890ff);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.write-selector-add-button:hover {
+  background-color: var(--add-button-hover, #40a9ff);
+}
+
+.write-selector-input-container {
+  display: flex;
+  align-items: center;
+}
+
+.write-selector-input {
+  padding: 5px;
+  border: 1px solid var(--input-border, #d9d9d9);
+  border-radius: 4px;
+  margin-right: 5px;
+  font-size: 14px;
+  width: 200px;
+}
+
+.write-selector-input:focus {
+  outline: none;
+  border-color: var(--input-focus-border, #40a9ff);
+}
+
+.write-selector-submit-button,
+.write-selector-cancel-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-right: 5px;
+}
+
+.write-selector-submit-button {
+  color: var(--submit-button-color, #52c41a);
+}
+
+.write-selector-cancel-button {
+  color: var(--cancel-button-color, #ff4d4f);
+}
