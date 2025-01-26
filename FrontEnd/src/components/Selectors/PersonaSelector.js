@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Select, { components } from 'react-select';
 
-import './styles/PersonaSelector.css';
+
 
 /**
  * PersonaSelector Component

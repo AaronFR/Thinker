@@ -1,8 +1,8 @@
-// TagSelector.js
-
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Select, { components } from 'react-select';
+
+import './styles/Selector.css';
 
 /**
  * TagSelector Component

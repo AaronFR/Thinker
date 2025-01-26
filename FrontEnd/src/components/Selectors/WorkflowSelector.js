@@ -2,7 +2,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import TagSelector from '../TagsSelector';
+import TagSelector from './TagsSelector';
 
 /**
  * WorkflowSelector Component

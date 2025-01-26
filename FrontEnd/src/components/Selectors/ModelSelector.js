@@ -4,7 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { components } from 'react-select';
 
-import TagSelector from '../TagsSelector';
+import TagSelector from './TagsSelector';
 
 import openAiLogo from './styles/openAiLogo.png';
 
