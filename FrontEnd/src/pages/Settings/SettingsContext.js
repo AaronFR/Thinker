@@ -105,6 +105,7 @@ export const SettingsProvider = ({ children }) => {
             if (loadedConfig) {
                 setSettings((prevSettings) => ({
                     ...prevSettings,
+                    debug: loadedConfig.interface.debug ?? initialSettings.debug,
                     darkMode: loadedConfig.interface.dark_mode ?? initialSettings.darkMode,
                     aiColour: loadedConfig.interface.ai_colour ?? initialSettings.aiColour,
                     augmentedPromptsEnabled:
