@@ -1,5 +1,8 @@
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict
+
+from flask import copy_current_request_context, current_app
 
 from AiOrchestration.ChatGptWrapper import ChatGptWrapper
 from AiOrchestration.ChatGptModel import ChatGptModel
@@ -13,6 +16,16 @@ class AiOrchestrator:
     """Manages interactions with a given large language model (LLM), specifically designed for processing user input and
     generating appropriate responses.
     """
+
+    DIFFERENTIATED_RESPONSES = True
+    RERUN_SYSTEM_MESSAGES = [
+        "",  # First rerun: No additions
+        "prioritize coherency",
+        "prioritize creativity",
+        "prioritize intelligent and well thought out solutions",
+        "prioritize thinking out your response FIRST and responding LAST",
+        "prioritize non-linear thinking, utilise niche deductions to make an unusual but possibly insightful solution"
+    ]
 
     def __init__(self):
         """
@@ -74,6 +87,71 @@ class AiOrchestrator:
                 else self.prompter.get_open_ai_response(messages, model)
             )
 
+        if self.DIFFERENTIATED_RESPONSES and rerun_count > 1:
+            logging.info("Parallel reruns are enabled. Executing differentiated parallel rerun logic.")
+            return self._handle_differentiated_reruns(messages, model, rerun_count, judgement_criteria, streaming)
+        else:
+            logging.info("Parallel reruns are enabled. Executing non-differentiated parallel rerun logic.")
+            return self._handle_reruns(messages, model, rerun_count, judgement_criteria, streaming)
+
+    def _handle_differentiated_reruns(
+            self,
+            messages: List[Dict[str, str]],
+            model: ChatGptModel,
+            rerun_count: int,
+            judgement_criteria: List[str],
+            streaming: bool = False
+    ) -> str:
+        capped_rerun_count = min(rerun_count, len(self.RERUN_SYSTEM_MESSAGES))
+
+        # Prepare modified messages for each rerun based on predefined system messages
+        modified_messages_list = []
+        for i in range(capped_rerun_count):
+            modified_messages = messages.copy()
+            system_message = self.RERUN_SYSTEM_MESSAGES[i]
+            if system_message:
+                modified_messages.insert(0, {"role": "system", "content": system_message})
+            modified_messages_list.append(modified_messages)
+
+        responses = []
+
+        @copy_current_request_context
+        def process_rerun(modified_messages, model):
+            with current_app.app_context():
+                return self.prompter.get_open_ai_response(modified_messages, model)
+
+        with ThreadPoolExecutor(max_workers=capped_rerun_count) as executor:
+            future_to_rerun = {
+                executor.submit(process_rerun, modified_messages, model): idx
+                for idx, modified_messages in enumerate(modified_messages_list, start=1)
+            }
+
+            for future in as_completed(future_to_rerun):
+                idx = future_to_rerun[future]
+                try:
+                    response = future.result()
+                    logging.info(f"Rerun {idx} response: {response}")
+                    responses.append(response)
+                except Exception as exc:
+                    logging.exception(f"Rerun {idx} generated an exception: {exc}")
+                    responses.append(f"Rerun {idx} failed: {exc}")
+
+        new_messages = generate_messages("", judgement_criteria, responses, model)
+        final_response = Utility.execute_with_retries(
+            lambda: self.prompter.get_open_ai_streaming_response(new_messages, model) if streaming
+            else self.prompter.get_open_ai_response(new_messages, model)
+        )
+        logging.info(f"Final quality-checked response: {final_response}")
+        return final_response
+
+    def _handle_reruns(
+            self,
+            messages: List[Dict[str, str]],
+            model: ChatGptModel,
+            rerun_count: int,
+            judgement_criteria: List[str],
+            streaming: bool = False
+    ) -> str:
         responses = Utility.execute_with_retries(
             lambda: self.prompter.get_open_ai_response(messages, model, rerun_count=rerun_count)
         )
