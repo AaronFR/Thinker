@@ -42,7 +42,7 @@ const ModelSelector = React.memo(({ selectedModel, setTags }) => {
         Note: Only "important" operations within workflow steps are impacted, the bulk 
         of The Thinkers operations are run on the most inexpensive model (gpt-4o-mini)
       `}
-      data-tooltip-place="bottom"
+      data-tooltip-place="top"
     >
       <TagSelector
         selectedValue={selectedModel}

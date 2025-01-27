@@ -25,7 +25,7 @@ const WorkflowSelector = React.memo(({ selectedWorkflow, setTags }) => {
       className='workflow-selector-container'
       data-tooltip-id="tooltip"
       data-tooltip-content="Select workflow, workflows determine how your prompt is answered, each workflow consists of steps where each step typically contains *at least* one call to an LLM"
-      data-tooltip-place="bottom"
+      data-tooltip-place="top"
     >
       <TagSelector
         selectedValue={selectedWorkflow}

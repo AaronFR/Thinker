@@ -25,7 +25,7 @@ const LoopsSelector = React.memo(({ selectedNumberOfLoops, setTags }) => {
       className='loops-selector-container'
       data-tooltip-id="tooltip"
       data-tooltip-content="Number of times the loop workflow will iterate over your prompt, reviewing and re-writing it each time."
-      data-tooltip-place="bottom"
+      data-tooltip-place="top"
     >
       <TagSelector
         selectedValue={selectedNumberOfLoops}

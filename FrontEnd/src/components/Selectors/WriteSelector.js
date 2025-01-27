@@ -158,6 +158,9 @@ const WriteSelector = React.memo(({ write, setTags }) => {
                     className="write-selector-add-button"
                     type="button"
                     aria-label="Add Write Tag"
+                    data-tooltip-id="tooltip"
+                    data-tooltip-content="Explicitly define the filename to write to, otherwise filename(s) will be selected based on the user prompt automatically."
+                    data-tooltip-place="top"
                 >
                     + Select Filename
                 </button>

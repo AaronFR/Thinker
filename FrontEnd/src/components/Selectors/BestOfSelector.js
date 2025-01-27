@@ -26,7 +26,7 @@ const BestOfSelector = React.memo(({ selectedRuns, setTags }) => {
       className='loops-selector-container'
       data-tooltip-id="tooltip"
       data-tooltip-content="If enabled each step will run multiple times, a LLM call will be then used to review the various outputs and select for the best one. You can change the selection criteria system message in the settings"
-      data-tooltip-place="bottom"
+      data-tooltip-place="top"
     >
       <TagSelector
         selectedValue={selectedRuns}
