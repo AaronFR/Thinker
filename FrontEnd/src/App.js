@@ -179,7 +179,7 @@ function App () {
 
     const copyAugmentedPrompt = () => {
       setUserInput(augmentedPrompt); // Copy augmentedPrompt into userInput
-      if (questionUserPromptsEnabled && !formsFilled) {
+      if (questionUserPromptsEnabled && !formsFilled && settings.questionUserPromptsEnabled == 'auto') {
         generateQuestionsForPrompt(augmentedPrompt, selectedMessages, selectedFiles); // Retrigger questions for prompt
         setResetResponsesTrigger(prev => prev + 1);
       }
