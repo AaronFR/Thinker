@@ -19,6 +19,7 @@ const TooltipConstants = {
   bestOfSelector: "Enable to run each step multiple times and run an additional time for the AI to select the best output (e.g. best of two means x3 more prompts).<br>Adjust selection criteria in settings",
   loopsSelector: "Set the number of times the workflow will iterate over your prompt, refining it each time",
   writeSelector: "Specify a filename for the output. If left blank, filenames are generated based on your prompt automatically",
+  pagesSelector: "Please select the number of pages long this document will be.<br>Each page will be planned out and an LLM given the instructions for that page, page by page",
 
   /* Toggles */
   categoryColoursisationToggle: "This means that when a new category is created a LLM call on the inexpensive model (gpt-4o-mini) will be run to generate an *appropriate* colour for the category.",

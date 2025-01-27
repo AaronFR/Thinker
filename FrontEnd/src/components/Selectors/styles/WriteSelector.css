@@ -1,10 +1,10 @@
-.write-selector-container {
+.selector-container {
   display: flex;
   align-items: center;
   margin: 5px 0;
 }
 
-.write-selector-tag {
+.selector-tag {
   display: flex;
   align-items: center;
   background-color: var(--tag-background, #f0f0f0);
@@ -12,18 +12,17 @@
   padding: 5px 10px;
 }
 
-.write-selector-tag-label {
+.selector-tag-label {
   font-weight: bold;
   margin-right: 5px;
 }
 
-.write-selector-tag-value {
+.selector-tag-value {
   cursor: pointer;
   margin-right: 10px;
-  color: var(--tag-value-color, #333);
 }
 
-.write-selector-delete-button {
+.selector-delete-button {
   background: none;
   border: none;
   cursor: pointer;
@@ -31,7 +30,7 @@
   color: var(--delete-button-color, #ff4d4f);
 }
 
-.write-selector-add-button {
+.selector-add-button {
   background-color: var(--add-button-background, #1890ff);
   color: white;
   border: none;
@@ -41,42 +40,42 @@
   font-size: 14px;
 }
 
-.write-selector-add-button:hover {
+.selector-add-button:hover {
   background-color: var(--add-button-hover, #40a9ff);
 }
 
-.write-selector-input-container {
+.input-container {
   display: flex;
   align-items: center;
 }
 
-.write-selector-input {
+.input {
   padding: 5px;
   border: 1px solid var(--input-border, #d9d9d9);
   border-radius: 4px;
   margin-right: 5px;
-  font-size: 14px;
+  font-size: 1.05rem;
   width: 200px;
 }
 
-.write-selector-input:focus {
+.selector-input:focus {
   outline: none;
   border-color: var(--input-focus-border, #40a9ff);
 }
 
-.write-selector-submit-button,
-.write-selector-cancel-button {
+.selector-submit-button,
+.selector-cancel-button {
+  padding: 5px 5px;
   background: none;
   border: none;
   cursor: pointer;
   font-size: 16px;
-  margin-right: 5px;
 }
 
-.write-selector-submit-button {
+.selector-submit-button {
   color: var(--submit-button-color, #52c41a);
 }
 
-.write-selector-cancel-button {
+.selector-cancel-button {
   color: var(--cancel-button-color, #ff4d4f);
 }

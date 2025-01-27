@@ -1,22 +1,23 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import TooltipConstants from '../../constants/tooltips';
 
 import './styles/WriteSelector.css'; // Ensure this path matches your project structure
 
 /**
- * WriteSelector Component
+ * PagesSelector Component
  * 
- * Allows the user to input any alphanumeric filename.
- * Updates the tags with the entered filename in the format { "write": "filename.txt" }.
- * Visually consistent with TagSelector components.
+ * Allows the user to input an integer value determining the number of pages.
+ * Provides validation to ensure only positive integers are accepted.
+ * Incorporates editing functionality similar to WriteSelector.
  * 
- * @param {string} write - Current value of the write tag.
- * @param {function} setTags - Function to update the tags.
+ * @param {number} pages - Current number of pages.
+ * @param {function} setTags - Function to update the prompts tags.
  */
-const WriteSelector = React.memo(({ write, setTags }) => {
+const PagesSelector = React.memo(({ pages, setTags }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [inputValue, setInputValue] = useState(write || '');
+    const [inputValue, setInputValue] = useState(pages || '');
+    const [error, setError] = useState('');
     const inputRef = useRef(null);
 
     /**
@@ -29,32 +30,31 @@ const WriteSelector = React.memo(({ write, setTags }) => {
     }, [isEditing]);
 
     /**
-     * Handles input value changes.
+     * Handles input value changes and validates the input.
      *
      * @param {object} e - Event object.
      */
     const handleChange = (e) => {
-        setInputValue(e.target.value);
+        const { value } = e.target;
+        setInputValue(value);
+
+        // Validate input: It should be a positive integer
+        if (value === '' || /^[1-9]\d*$/.test(value)) {
+            setError(''); // Clear error
+        } else {
+            setError('Please enter a valid positive integer'); // Set error
+        }
     };
 
     /**
-     * Commits the input value to the tags.
+     * Commits the input value if valid to the pages state.
      */
     const commitValue = () => {
-        const trimmedValue = inputValue.trim();
-        if (trimmedValue) {
+        if (error === '' && inputValue !== '') {
             setTags(prevTags => ({
                 ...prevTags,
-                write: trimmedValue,
+                pages: Number(inputValue),
             }));
-            setIsEditing(false);
-        } else {
-            // If input is empty, remove the "write" tag
-            setTags(prevTags => {
-                const updatedTags = { ...prevTags };
-                delete updatedTags.write;
-                return updatedTags;
-            });
             setIsEditing(false);
         }
     };
@@ -63,12 +63,13 @@ const WriteSelector = React.memo(({ write, setTags }) => {
      * Cancels the editing and resets the input value.
      */
     const cancelEdit = () => {
-        setInputValue(write || '');
+        setInputValue(pages || '');
+        setError('');
         setIsEditing(false);
     };
 
     /**
-     * Handles key down events for committing or cancelling.
+     * Handles submitting the input on Enter key.
      *
      * @param {object} e - Keyboard event object.
      */
@@ -82,12 +83,12 @@ const WriteSelector = React.memo(({ write, setTags }) => {
     };
 
     /**
-     * Handles the deletion of the write tag.
+     * Handles the deletion of the pages tag.
      */
     const handleDelete = () => {
         setTags(prevTags => {
             const updatedTags = { ...prevTags };
-            delete updatedTags.write;
+            delete updatedTags.pages;
             return updatedTags;
         });
     };
@@ -100,24 +101,24 @@ const WriteSelector = React.memo(({ write, setTags }) => {
     };
 
     /**
-     * Renders the input field for editing or adding a write tag.
+     * Renders the input field for editing or adding pages count.
      */
     const renderInput = () => (
         <div className="input-container">
             <input
                 type="text"
-                placeholder="Enter filename"
+                placeholder="Enter number of pages"
                 value={inputValue}
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
                 ref={inputRef}
-                className="input"
-                aria-label="Write Tag Input"
+                className={`input ${error ? 'error' : ''}`}
+                aria-label="Pages Input"
             />
             <button
                 onClick={commitValue}
                 className="selector-submit-button"
-                aria-label="Submit Write Tag"
+                aria-label="Submit Pages Count"
                 type="button"
             >
                 ✔️
@@ -125,11 +126,12 @@ const WriteSelector = React.memo(({ write, setTags }) => {
             <button
                 onClick={cancelEdit}
                 className="selector-cancel-button"
-                aria-label="Cancel Write Tag Editing"
+                aria-label="Cancel Pages Count Editing"
                 type="button"
             >
                 ❌
             </button>
+            {error && <span className="error-message">{error}</span>}
         </div>
     );
 
@@ -137,14 +139,14 @@ const WriteSelector = React.memo(({ write, setTags }) => {
      * Renders the tag display with edit and delete options.
      */
     const renderTag = () => (
-        <div className="write-selector-tag">
+        <div className="pages-selector-tag">
             <span className="selector-tag-value" onClick={handleTagClick}>
-                {write}
+                {pages} Pages
             </span>
             <button
                 onClick={handleDelete}
                 className="selector-delete-button"
-                aria-label="Delete Write Tag"
+                aria-label="Delete Pages Count"
                 type="button"
             >
                 &times;
@@ -154,30 +156,30 @@ const WriteSelector = React.memo(({ write, setTags }) => {
 
     return (
         <div className="selector-container">
-            {isEditing ? renderInput() : write ? renderTag() : (
+            {isEditing ? renderInput() : pages ? renderTag() : (
                 <button
                     onClick={() => setIsEditing(true)}
                     className="selector-add-button"
                     type="button"
-                    aria-label="Add Write Tag"
+                    aria-label="Add Pages Count"
                     data-tooltip-id="tooltip"
-                    data-tooltip-content={TooltipConstants.writeSelector}
+                    data-tooltip-html={TooltipConstants.pagesSelector}
                     data-tooltip-place="top"
                 >
-                    + Select Filename
+                    + Add Pages
                 </button>
             )}
         </div>
     );
 });
 
-WriteSelector.propTypes = {
-    write: PropTypes.string,
+PagesSelector.propTypes = {
+    pages: PropTypes.number,
     setTags: PropTypes.func.isRequired,
 };
 
-WriteSelector.defaultProps = {
-    write: '',
+PagesSelector.defaultProps = {
+    pages: 0,
 };
 
-export default WriteSelector;
+export default PagesSelector;

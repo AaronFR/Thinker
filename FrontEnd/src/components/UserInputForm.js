@@ -17,6 +17,7 @@ import { useSelection, SelectionProvider } from '../pages/Messages/SelectionCont
 import BestOfSelector from './Selectors/BestOfSelector';
 import LoopsSelector from './Selectors/LoopsSelector';
 import WriteSelector from './Selectors/WriteSelector';
+import PagesSelector from './Selectors/PagesSelector';
 
 import { Tooltip } from 'react-tooltip';
 import TooltipConstants from '../constants/tooltips';
@@ -253,6 +254,10 @@ const UserInputForm = ({
           />}
           {tags.workflow == 'write' && <WriteSelector
             write={tags.write}
+            setTags={setTags}
+          />}
+          {selectedPersona == 'writer' && tags.workflow == 'write' && <PagesSelector
+            pages={tags.pages}
             setTags={setTags}
           />}
 
