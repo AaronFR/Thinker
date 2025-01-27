@@ -24,11 +24,6 @@ export function Login() {
 
     const handleSwitch = () => {
         // If user already has an account, restrict switching to Register mode
-        const hasAccount = localStorage.getItem('hasAccount');
-        if (hasAccount === 'true' && isLoginMode) {
-            // Already in Login mode and has account, do nothing.
-            return;
-        }
         setIsLoginMode(!isLoginMode);
         setError('');
     }
