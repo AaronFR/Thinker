@@ -1,8 +1,8 @@
-// LoopsSelector.js
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import TagSelector from './TagsSelector';
+
+import TooltipConstants from '../../constants/tooltips';
 
 /**
  * LoopsSelector Component
@@ -24,7 +24,7 @@ const LoopsSelector = React.memo(({ selectedNumberOfLoops, setTags }) => {
     <div 
       className='loops-selector-container'
       data-tooltip-id="tooltip"
-      data-tooltip-content="Number of times the loop workflow will iterate over your prompt, reviewing and re-writing it each time."
+      data-tooltip-content={TooltipConstants.loopsSelector}
       data-tooltip-place="top"
     >
       <TagSelector

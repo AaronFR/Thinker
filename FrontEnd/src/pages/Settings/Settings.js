@@ -4,6 +4,7 @@ import { handleLogout } from '../../utils/loginUtils';
 import AutoExpandingTextarea from '../../utils/AutoExpandingTextarea';
 import TextSizeSlider from '../../utils/textSizeSlider';
 import Navigation from '../../components/Navigation';
+import TooltipConstants from '../../constants/tooltips';
 
 import './Settings.css';
 
@@ -37,7 +38,7 @@ const UserInterfaceSettings = ({ settings, toggleDarkMode, toggleAiColourisation
     <label 
       className="settings-label"
       data-tooltip-id="tooltip"
-      data-tooltip-content="This means that when a new category is created a LLM call on the inexpensive model (gpt-4o-mini) will be run to generate an *appropriate* colour for the category."
+      data-tooltip-content={TooltipConstants.categoryColoursisationToggle}
       data-tooltip-place="bottom"
     >
       <input
@@ -119,7 +120,7 @@ const PromptQuestioningSection = ({
     <p>👎 When you <i>just</i> want an answer quickly</p>
     <div
       data-tooltip-id="tooltip"
-      data-tooltip-content="When generating questions, the user prompt, selected files AND messages are referenced. (As of yet it does not reference user knowledge)"
+      data-tooltip-content={TooltipConstants.questioningSystemMessage}
       data-tooltip-place="bottom"
     >
       <AutoExpandingTextarea
@@ -170,7 +171,7 @@ const AutoPromptEngineeringSection = ({
     <p>👎 Complex, specific and precisely worded prompts with exacting long references</p>
     <div
       data-tooltip-id="tooltip"
-      data-tooltip-content="When generating a 'prompt engineering' copy the application only reads the users prompt. It does not reference selected files or messages."
+      data-tooltip-content={TooltipConstants.autoPromptEngigneeringSystemMessage}
       data-tooltip-place="bottom"
     >
       <AutoExpandingTextarea
@@ -211,7 +212,7 @@ const SummariesSettings = ({
     </label>
     <div
       data-tooltip-id="tooltip"
-      data-tooltip-content="Summaries will be provided with every single file and message reference supplied originally, this means a For All workflow can see each re-written file"
+      data-tooltip-content={TooltipConstants.summarisationSystemMessage}
       data-tooltip-place="bottom"
     >
       <AutoExpandingTextarea
@@ -321,11 +322,11 @@ const SystemMessagesSettings = ({ settings, handleMessageChange }) => (
       </label>
 
       {/* Categorisation Message */}
-      <label className="message-label">
+      <label className="message-label">data-tooltip-content
         Categorisation Message
         <div
           data-tooltip-id="tooltip"
-          data-tooltip-content="Categorisation occurs at the end of a workflow, referencing initial prompt and response. It only creates a new category if it doesn't think any of the existing are suitable (in theory)"
+          data-tooltip-content={TooltipConstants.categorisationSystemMessage}
           data-tooltip-place="bottom"
         >
           <AutoExpandingTextarea
@@ -345,7 +346,7 @@ const SystemMessagesSettings = ({ settings, handleMessageChange }) => (
         Best Of Message
         <div
           data-tooltip-id="tooltip"
-          data-tooltip-content="The LLM at this point is supplied with the generated responses in a list AND the original user prompt for comparison. It will use this system message to select a 'best of'"
+          data-tooltip-content={TooltipConstants.bestOfSystemMessage}
           data-tooltip-place="bottom"
         >
           <AutoExpandingTextarea

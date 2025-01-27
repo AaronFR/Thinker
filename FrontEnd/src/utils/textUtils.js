@@ -4,6 +4,8 @@ import DOMPurify from 'dompurify';
 import hljs from 'highlight.js';
 import he from 'he';
 
+import TooltipConstants from '../constants/tooltips';
+
 /**
  * Strips the folder path from a given file path and returns the basename with extension.
  *
@@ -103,8 +105,8 @@ const CopyCodeButton = ({ code }) => {
       div 
       className='loops-selector'
       data-tooltip-id="tooltip"
-      data-tooltip-content="Copy to clipboard"
-      data-tooltip-place="bottom"
+      data-tooltip-content={TooltipConstants.copyButton}
+      data-tooltip-place="top"
     >
       📋
     </button>

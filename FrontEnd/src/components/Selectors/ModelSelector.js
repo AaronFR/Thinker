@@ -7,6 +7,7 @@ import { components } from 'react-select';
 import TagSelector from './TagsSelector';
 
 import openAiLogo from './styles/openAiLogo.png';
+import TooltipConstants from '../../constants/tooltips';
 
 /**
  * CustomOption Component
@@ -36,12 +37,7 @@ const ModelSelector = React.memo(({ selectedModel, setTags }) => {
     <div
       className="model-selector"
       data-tooltip-id="tooltip"
-      data-tooltip-html={`
-        LLM (Large Language Model), this is what makes the AI response, cheapest first, 
-        at the top, getting more powerful - and much more expensive down the list.<br>
-        Note: Only "important" operations within workflow steps are impacted, the bulk 
-        of The Thinkers operations are run on the most inexpensive model (gpt-4o-mini)
-      `}
+      data-tooltip-html={TooltipConstants.modelSelector}
       data-tooltip-place="top"
     >
       <TagSelector

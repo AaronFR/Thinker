@@ -2,9 +2,10 @@ import React, { useReducer, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import ProgressBar from '../utils/ProgressBar';
-import { Tooltip } from 'react-tooltip';
 
 import './styles/FileUploadButton.css';
+
+import TooltipConstants from '../constants/tooltips';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
@@ -126,7 +127,7 @@ const FileUploadButton = ({ onUploadSuccess }) => {
         tabIndex={0}
         aria-label="Upload files"
         data-tooltip-id="tooltip"
-        data-tooltip-content="Upload file(s) as reference for your prompt"
+        data-tooltip-content={TooltipConstants.fileUploadButton}
         data-tooltip-place="bottom"
       >
         📂 {/* Upload Emoji */}

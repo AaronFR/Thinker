@@ -3,6 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TagSelector from './TagsSelector';
+import TooltipConstants from '../../constants/tooltips';
 
 /**
  * BestOfSelector Component
@@ -25,7 +26,7 @@ const BestOfSelector = React.memo(({ selectedRuns, setTags }) => {
     <div 
       className='loops-selector-container'
       data-tooltip-id="tooltip"
-      data-tooltip-content="If enabled each step will run multiple times, a LLM call will be then used to review the various outputs and select for the best one. You can change the selection criteria system message in the settings"
+      data-tooltip-html={TooltipConstants.bestOfSelector}
       data-tooltip-place="top"
     >
       <TagSelector

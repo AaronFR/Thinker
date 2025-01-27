@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Tooltip } from 'react-tooltip';
 
 import Select, { components } from 'react-select';
+import TooltipConstants from '../../constants/tooltips';
 
 
 
@@ -41,7 +42,7 @@ const PersonaSelector = React.memo(({ selectedPersona, setSelectedPersona }) => 
         <div 
             className="persona-selector"
             data-tooltip-id="tooltip"
-            data-tooltip-content="Select Focus. Focus determines both how the application will respond and 'think' about your response but also how workflows are structured and run against your prompt"
+            data-tooltip-content={TooltipConstants.personaSelector}
             data-tooltip-place="top"
         >
             <Select

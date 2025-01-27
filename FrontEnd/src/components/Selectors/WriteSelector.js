@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './styles/WriteSelector.css'; // Ensure this path matches your project structure
+import TooltipConstants from '../../constants/tooltips';
 
 /**
  * WriteSelector Component
@@ -159,7 +160,7 @@ const WriteSelector = React.memo(({ write, setTags }) => {
                     type="button"
                     aria-label="Add Write Tag"
                     data-tooltip-id="tooltip"
-                    data-tooltip-content="Explicitly define the filename to write to, otherwise filename(s) will be selected based on the user prompt automatically."
+                    data-tooltip-content={TooltipConstants.writeSelector}
                     data-tooltip-place="top"
                 >
                     + Select Filename
