@@ -174,7 +174,7 @@ export const CodeHighlighter = ({ children }) => {
   const parts = useMemo(() => {
     const elements = [];
     let lastIndex = 0;
-    const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+    const codeBlockRegex = /\n```(\w+)?\n([\s\S]*?)```\n/g;
     let match;
 
     while ((match = codeBlockRegex.exec(children)) !== null) {

@@ -26,7 +26,7 @@ const ensureMarkdownClosingTags = (message) => {
 
   // Append closing code block if the count of opening and closing backticks is odd
   return (count % 2 !== 0 && !message.endsWith("```")) 
-  ? message + "\n```" 
+  ? message + "\n```\n" 
   : message;
 };
 
