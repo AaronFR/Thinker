@@ -13,7 +13,7 @@ import ModelSelector from './Selectors/ModelSelector';
 import './styles/UserInputForm.css';
 
 import { SettingsContext } from '../pages/Settings/SettingsContext';
-import { useSelection, SelectionProvider } from '../pages/Messages/SelectionContext';
+import { useSelection } from '../pages/Messages/SelectionContext';
 import BestOfSelector from './Selectors/BestOfSelector';
 import LoopsSelector from './Selectors/LoopsSelector';
 import WriteSelector from './Selectors/WriteSelector';
@@ -248,15 +248,15 @@ const UserInputForm = ({
             selectedWorkflow={tags.workflow}
             setTags={setTags}
           />
-          {tags.workflow == 'loop' && <LoopsSelector
+          {tags.workflow === 'loop' && <LoopsSelector
             selectedNumberOfLoops={tags.loops}
             setTags={setTags}
           />}
-          {tags.workflow == 'write' && <WriteSelector
+          {tags.workflow === 'write' && <WriteSelector
             write={tags.write}
             setTags={setTags}
           />}
-          {selectedPersona == 'writer' && tags.workflow == 'write' && <PagesSelector
+          {selectedPersona === 'writer' && tags.workflow === 'write' && <PagesSelector
             pages={tags.pages}
             setTags={setTags}
           />}
@@ -266,10 +266,10 @@ const UserInputForm = ({
             setTags={setTags}
           />
 
-          <BestOfSelector
+          {settings.bestOfEnabled !== 'off' && <BestOfSelector
             bestOf={tags.bestOf}
             setTags={setTags}
-          />
+          />}
           
         </div>
 

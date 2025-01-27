@@ -67,6 +67,14 @@ const FunctionalitySettings = ({
   <div>
     <h2 className="settings-heading">Functionality</h2>
 
+    {/* Auto Prompt Engineering Subsection */}
+    <AutoPromptEngineeringSection
+      currentValue={settings.augmentedPromptsEnabled}
+      onChange={changeSetting}
+      promptMessage={settings.promptAugmentationMessage}
+      handleMessageChange={handleMessageChange}
+    />
+
     {/* Prompt Questioning Subsection */}
     <PromptQuestioningSection
       currentValue={settings.questionUserPromptsEnabled}
@@ -75,13 +83,14 @@ const FunctionalitySettings = ({
       handleMessageChange={handleMessageChange}
     />
 
-    {/* Auto Prompt Engineering Subsection */}
-    <AutoPromptEngineeringSection
-      currentValue={settings.augmentedPromptsEnabled}
+    <BestOfSection 
+      currentValue={settings.bestOfEnabled}
+      promptMessage={settings.bestOfMessage}
       onChange={changeSetting}
-      promptMessage={settings.promptAugmentationMessage}
       handleMessageChange={handleMessageChange}
     />
+
+    
   </div>
 );
 
@@ -184,6 +193,63 @@ const AutoPromptEngineeringSection = ({
       />
     </div>
     <small>And the shills told you it would be a career skill...</small>
+    
+  </div>
+);
+
+/**
+ * BestOfSection Component
+ *
+ * Renders settings for 'Best of' multiple reruns functionality.
+ */
+const BestOfSection = ({
+  currentValue,
+  onChange,
+  promptMessage,
+  handleMessageChange,
+}) => (
+  <div>
+    <h3>Best of multiple runs</h3>
+    <label className="settings-label">
+      <select
+        className="settings-select"
+        value={currentValue}
+        onChange={(e) =>
+          onChange(
+            'features.multiple_reruns_enabled',
+            e.target.value,
+            'bestOfEnabled'
+          )
+        }
+      >
+        <option value={FUNCTIONALITY_STATES.OFF}>Off</option>
+        <option value={FUNCTIONALITY_STATES.ON}>On</option>
+        <option value="differentiated">Differentiated</option>
+      </select>
+      For a given step runs multiple prompts in parrallel, running an additional call to select for the best response.
+    </label>
+    <p>
+      If you select 'differentiated' each response will be instructed to focus on different factors: quality, creativity, etc<br/>
+      Otherwise each run is supplied the same information but will vary randomly.
+    </p>
+
+    <p>👍 Improving response coherency or any other selected metric</p>
+    <p>👍 Helping inexpensive models compete against more expensive ones</p>
+    <p>👎 Keeping costs low while running expensive models.</p>
+    <div
+      data-tooltip-id="tooltip"
+      data-tooltip-content={TooltipConstants.bestOfSystemMessage}
+      data-tooltip-place="bottom"
+    >
+      <AutoExpandingTextarea
+        value={promptMessage}
+        className="textarea"
+        onChange={(e) =>
+          handleMessageChange('bestOfMessage', e.target.value)
+        }
+        style={{ opacity: 0.9 }}
+      />
+    </div>
     
   </div>
 );
@@ -322,7 +388,7 @@ const SystemMessagesSettings = ({ settings, handleMessageChange }) => (
       </label>
 
       {/* Categorisation Message */}
-      <label className="message-label">data-tooltip-content
+      <label className="message-label">
         Categorisation Message
         <div
           data-tooltip-id="tooltip"
@@ -334,26 +400,6 @@ const SystemMessagesSettings = ({ settings, handleMessageChange }) => (
             className="textarea"
             onChange={(e) =>
               handleMessageChange('categorisationMessage', e.target.value)
-            }
-            style={{ opacity: 0.9 }}
-          />
-        </div>
-        
-      </label>
-
-      {/* Best Of Message */}
-      <label className="message-label">
-        Best Of Message
-        <div
-          data-tooltip-id="tooltip"
-          data-tooltip-content={TooltipConstants.bestOfSystemMessage}
-          data-tooltip-place="bottom"
-        >
-          <AutoExpandingTextarea
-            value={settings.bestOfMessage}
-            className="textarea"
-            onChange={(e) =>
-              handleMessageChange('bestOfMessage', e.target.value)
             }
             style={{ opacity: 0.9 }}
           />

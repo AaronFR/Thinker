@@ -12,14 +12,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Loop workflow - will run through the same prompt multiple times with a separate quality factor considered on each loop
 - Internet search, each step will now search the internet for any relevant context, 
    currently just a rough overview of the top 3 results
-- The tags that can selected are now made explictely clear for the user in the 'palette' directly under the prompt window
+- The tags that can selected are now made explicitly clear for the user in the 'palette' directly under the prompt window
   - Tag selectors will appear as applicable to the users prompt
+- Best of: 'Differentiated' option, this means when running multiple prompts at once each run prioritises a different 
+   quality e.g. coherency, creativity, etc
 
 ### Changed
 
 - Left Pane (message and file reference) is only enabled on desktop
 - Dark mode set to default
 - Auto workflow is much faster by processing all files in parallel 
+- Tags redesign: User is prompted to enter values for tags as the context of a prompt is defined. More intuitive and self-explanatory
+  - Tags values hidden behind 'debug view' mode
 
 ### Removed
 

@@ -25,6 +25,7 @@ export const SettingsProvider = ({ children }) => {
         language: 'en',
         augmentedPromptsEnabled: "off",
         questionUserPromptsEnabled: "off",
+        bestOfEnabled: 'on',
         userEncyclopediaEnabled: false,
         summarisationEnabled: false,
         encyclopediaEnabled: false,
@@ -112,6 +113,8 @@ export const SettingsProvider = ({ children }) => {
                         loadedConfig.beta_features.augmented_prompts_enabled ?? initialSettings.augmentedPromptsEnabled,
                     questionUserPromptsEnabled:
                         loadedConfig.beta_features.question_user_prompts_enabled ?? initialSettings.questionUserPromptsEnabled,
+                    bestOfEnabled:
+                        loadedConfig.features.multiple_reruns_enabled ?? initialSettings.bestOfEnabled,
                     summarisationEnabled:
                         loadedConfig.optimization.summarise ?? initialSettings.summarisationEnabled,
                     userEncyclopediaEnabled:

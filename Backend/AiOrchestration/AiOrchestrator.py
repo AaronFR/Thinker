@@ -7,6 +7,7 @@ from flask import copy_current_request_context, current_app
 from AiOrchestration.ChatGptWrapper import ChatGptWrapper
 from AiOrchestration.ChatGptModel import ChatGptModel
 from AiOrchestration.ChatGptMessageBuilder import generate_messages
+from Data.Configuration import Configuration
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
@@ -16,8 +17,6 @@ class AiOrchestrator:
     """Manages interactions with a given large language model (LLM), specifically designed for processing user input and
     generating appropriate responses.
     """
-
-    DIFFERENTIATED_RESPONSES = True
     RERUN_SYSTEM_MESSAGES = [
         "",  # First rerun: No additions
         "prioritize coherency",
@@ -80,14 +79,20 @@ class AiOrchestrator:
             judgement_criteria: List[str],
             streaming: bool = False
     ) -> str:
-        logging.info("🙂 Executing Prompt")
+        logging.info("🤔... Executing Prompt")
         if rerun_count == 1:
             return Utility.execute_with_retries(
                 lambda: self.prompter.get_open_ai_streaming_response(messages, model) if streaming
                 else self.prompter.get_open_ai_response(messages, model)
             )
 
-        if self.DIFFERENTIATED_RESPONSES and rerun_count > 1:
+        config = Configuration.load_config()
+        differentiated_reruns = config.get('features', {}).get(
+            "multiple_reruns_enabled",
+            False
+        )
+
+        if differentiated_reruns == 'differentiated' and rerun_count > 1:
             logging.info("Parallel reruns are enabled. Executing differentiated parallel rerun logic.")
             return self._handle_differentiated_reruns(messages, model, rerun_count, judgement_criteria, streaming)
         else:

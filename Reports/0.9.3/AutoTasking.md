@@ -15,16 +15,16 @@ If it can successfully implement even 20% of the pages included that's ~4 featur
 
 | file                                         | 1 - Review Task | 2 - Attempt task |
 |----------------------------------------------|-----------------|------------------|
-| AiOrchestrator_RerunLogic.py                 | ❌               |                  |
-| Augmentation_AutoSelectPersona.py            | ❎               |                  |
-| Augmentation_AutoSelectWorkflow.py           | ❎               |                  |
-| AutoWorkflow_BossPersonaAttempt.py           | ✔               |                  |
-| AutoWorkflow_loopWorkflow.py                 | ✔               |                  |
-| AutoWorkflow_ParallelProcessing.py           | ✔               |                  |
+| AiOrchestrator_RerunLogic.py                 | ❌               | ✅                |
+| Augmentation_AutoSelectPersona.py            | ❎               | ✅                |
+| Augmentation_AutoSelectWorkflow.py           | ❎               | ✅                |
+| AutoWorkflow_BossPersonaAttempt.py           | ✔               | ❌                |
+| AutoWorkflow_loopWorkflow.py                 | ✔               | ✅                |
+| AutoWorkflow_ParallelProcessing.py           | ✔               | ✅                |
 | CategoryManagement_AutomaticColourisation.py | ✔               | ✅                |
 | CategoryManagement_categoryDescription.py    | ✔               | ✅                |
 | ChatGptWrapper_RemoveReceipts.py             | ✔               | ✔                |
-| InternetSearch.py                            | ✔               |                  |
+| InternetSearch.py                            | ✔               | ✅                |
 | Messages_rewrite.js                          | ✔               | ✅                |
 | Messages.js                                  | ❎               | ✅                |
 | NodeDatabaseManagement_EditGetCategory.py    | ✔               | ✅                |
@@ -32,12 +32,12 @@ If it can successfully implement even 20% of the pages included that's ~4 featur
 | S3Manager_ManageFileRevisions.py             | ✔               |                  |
 | SugestedQuestions_MobileFriendly.js          | ❎               |                  |
 | UserContextManagement_ExistingContext.py     | ✔               |                  |
-| UserContextManagement_NodeDescription.py     | ✔               |                  |
+| UserContextManagement_NodeDescription.py     | ✔               | ✖                |
 | UserInputForm_Deselect.js                    | ✔               | ✅                |
 | WriteWorkflow_AddGithubIntegration.py        | ✔               |                  |
-| WriteWorkflow_CompileCheck.py                | -               |                  |
-| WriteWorkflow_ModularWorkflows.py            | 🆗              |                  |
-| WriteWorkflow_PhysicsMathIntegration.py      | 🆗              |                  |
+| WriteWorkflow_CompileCheck.py                | -               | ✖                |
+| WriteWorkflow_ModularWorkflows.py            | 🆗              | ✖                |
+| WriteWorkflow_PhysicsMathIntegration.py      | 🆗              | ✖                |
 | Writing_ExtensionCheck.py                    | ✔               | ✅                |
 
 
@@ -98,7 +98,7 @@ Now lets see what I got for my money.
 
 | file                                         | Review                                                                                                                                                                                                                                                              |
 |----------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| AiOrchestrator_RerunLogic.py                 |                                                                                                                                                                                                                                                                     |
+| AiOrchestrator_RerunLogic.py                 | ⭐⭐⭐ Lots of work needed to adapt, 2 errors: first it replaced the default behaviour, instead of creating a switch not so bad, but secondly it removed the last step for comparing responses, neutering the feature.                                                 |
 | Augmentation_AutoSelectPersona.py            | ⭐⭐⭐⭐ Similar to AutoSelectWorkflow, except I could use that for reference. Funnily enough placeholder I laid at the start for automated persona selection won't quite work I don't think. A problem for later                                                       |
 | Augmentation_AutoSelectWorkflow.py           | ⭐⭐⭐ Backend component worked great. In future you will also have to ask for the *frontend* changes as well, which where the majority of the work here. In general I think you really need to go detail by detail, describing what you *think* needs to change       |
 | AutoWorkflow_BossPersonaAttempt.py           | ❌ Not surprising, its a pretty hard task, likely I could have really added a lot more details as to what I wanted as its a very specific vision, but this simply isn't salvageable.                                                                                 |
@@ -115,12 +115,12 @@ Now lets see what I got for my money.
 | S3Manager_ManageFileRevisions.py             |                                                                                                                                                                                                                                                                     |
 | SuggestedQuestions_MobileFriendly.js         |                                                                                                                                                                                                                                                                     |
 | UserContextManagement_ExistingContext.py     | Added a bunch of methods I had no use for, did help me remember I had already made a 'list_user_topics' method and just needed to plug it in to context creation and retrieval.                                                                                     |
-| UserContextManagement_NodeDescription.py     | ✖ Cancelled                                                                                                                                                                                                                                                         |
+| UserContextManagement_NodeDescription.py     | ✖ Cancelled (I've implemented changes in how the user memory node system works and now it might not be so useful to have node descriptions                                                                                                                          |
 | UserInputForm_Deselect.js                    | ⭐⭐ That tick only means I was able to implement the feature. Huge amounts of salvaging.                                                                                                                                                                             |
 | WriteWorkflow_AddGithubIntegration.py        |                                                                                                                                                                                                                                                                     |
-| WriteWorkflow_CompileCheck.py                |                                                                                                                                                                                                                                                                     |
-| WriteWorkflow_ModularWorkflows.py            |                                                                                                                                                                                                                                                                     |
-| WriteWorkflow_PhysicsMathIntegration.py      |                                                                                                                                                                                                                                                                     |
+| WriteWorkflow_CompileCheck.py                | ✖ Cancelled (If a file needs to make reference to other user files, as it will in the majority of cases when working on a project? It will fail needlessly)                                                                                                         |
+| WriteWorkflow_ModularWorkflows.py            | ✖ Cancelled (See above. There could be a case made latter if a AI check was made to see if a code can and should be compiled but its not a priority currently.)                                                                                                     |
+| WriteWorkflow_PhysicsMathIntegration.py      | ✖ Cancelled (Not bad, but when faced with having to input a wolframalpha api id, its just *not* a priority at the current moment. Aside from that again more bleed in, compile checks where added where they really didn't need to be)                              |
 | Writing_ExtensionCheck.py                    | ⭐⭐⭐ Works with some modification. Also suggests changes to the rest of the code. In future, the real part of this<br/> will be to somehow split out the exact code that's actually needed with cheap LLM's and feed the key, minimised info in for an expensive LLM |
 
 While there's some evidence gpt-4-mini benefited from the extra context by having a memory of prior tasks, o4-mini did not. Frequent bleed in and confusion. Next time specifically tell it to focus on the task at hand not optimise.
