@@ -68,8 +68,10 @@ function App () {
     // Context Selected Items
     const { 
       selectedMessages,
+      setSelectedMessages,
       toggleMessageSelection,
       selectedFiles,
+      setSelectedFiles,
       toggleFileSelection,
     } = useContext(SelectionContext);
 
@@ -161,6 +163,9 @@ function App () {
       event.preventDefault(); // Always prevent default if event exists
       try {
         await handleSubmit(userInput, selectedPersona, selectedMessages, selectedFiles, tags);
+        setSelectedFiles([])
+        setSelectedMessages([])
+
         setUserInput(''); 
         setAugmentedPrompt('');
         setQuestionsForPrompt('');

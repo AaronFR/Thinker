@@ -32,4 +32,3 @@ const TooltipConstants = {
 };
 
 export default TooltipConstants;
-  
