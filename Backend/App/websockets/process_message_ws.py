@@ -1,7 +1,7 @@
 import logging
 
 import shortuuid
-from flask_socketio import emit
+from flask_socketio import emit, SocketIO
 
 from Data.CategoryManagement import CategoryManagement
 from Data.Files.StorageMethodology import StorageMethodology
@@ -24,7 +24,12 @@ PROCESS_MESSAGE_SCHEMA = {
 }
 
 
-def init_process_message_ws(socketio):
+def init_process_message_ws(socketio: SocketIO):
+    """
+    Initializes the SocketIO event handlers for processing and terminating messages.
+
+    :param socketio: The Flask-SocketIO instance.
+    """
     @socketio.on('start_stream')
     @login_required_ws
     @balance_required
@@ -45,6 +50,9 @@ def init_process_message_ws(socketio):
             parsed_data = parse_and_validate_data(data, PROCESS_MESSAGE_SCHEMA)
 
             user_prompt = parsed_data["prompt"]
+            if not user_prompt:
+                raise Exception(ERROR_NO_PROMPT)
+
             if parsed_data["additionalQA"]:
                 user_prompt += f"\nAdditional Q&A context: \n{parsed_data['additionalQA']}"
 

@@ -40,7 +40,6 @@ function App () {
     // User Input States
     const [userInput, setUserInput] = useState('')
     const [selectedPersona, setSelectedPersona] = useState('auto');
-    const autoDetectedPersona = 'Coder' // Temporary hardcoded value
 
     // Debounce timer reference to optimize input handling
     const idleTime = 1500; // milliseconds
@@ -224,7 +223,7 @@ function App () {
               setTags={setTags}
             />
             
-            <SuggestedQuestions 
+            <SuggestedQuestions
               questionUserPromptsEnabled={questionUserPromptsEnabled}
               questionsForPrompt={questionsForPrompt}
               error={questionsError}

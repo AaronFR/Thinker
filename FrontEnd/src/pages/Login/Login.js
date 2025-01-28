@@ -54,7 +54,7 @@ export function Login() {
                 </div>
 
                 <h1>
-                    🧰 A toolbox for AI 🧰
+                    🧰 An AI toolkit 🧰
                 </h1>
 
                 <div className="card-container">

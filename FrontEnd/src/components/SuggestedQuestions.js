@@ -14,14 +14,13 @@ import './styles/SuggestedQuestions.css';
  * Renders a list of suggested questions extracted from a markdown prompt.
  * Allows users to input responses to each question and concatenates the answers.
  * 
- * Props:
- * - questionUserPromptsEnabled (boolean): Flag to enable or disable prompting.
- * - questionsForPrompt (string): Markdown string containing the questions.
- * - error (string): Error message to display, if any.
- * - isQuestioning (boolean): Indicates if a questioning process is ongoing.
- * - onFormsFilled (function): Callback to notify parent when forms are filled.
- * - setConcatenatedQA (function): Function to set the concatenated Q&A.
- * - resetResponsesTrigger (any): Dependency to trigger resetting responses.
+ * @param {boolean} questionUserPromptsEnabled - Flag to enable or disable prompting.
+ * @param {string} questionsForPrompt - Markdown string containing the questions.
+ * @param {string} error - Error message to display, if any.
+ * @param {boolean} isQuestioning - Indicates if a questioning process is ongoing.
+ * @param {function} onFormsFilled - Callback to notify parent when forms are filled.
+ * @param {function} setConcatenatedQA - Function to set the concatenated Q&A.
+ * @param {any} resetResponsesTrigger - Dependency to trigger resetting responses.
  */
 const SuggestedQuestions = ({
   questionUserPromptsEnabled,
