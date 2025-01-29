@@ -12,7 +12,7 @@
 
 ## About
 
-'The Thinker' is orientated towards bringing more complex, continuous and iterative agentic workflows to the average everyday
+'The Thinker' is an open source toolkit for AI bringing powerful workflows through a highly customisable interface to the average everyday
 user, filling the middle ground between simple LLM wrapper applications and advanced Enterprise-orientated AI products.
 
 A powerful, general purpose AI application
@@ -24,10 +24,16 @@ by the base model,
 utilising multiple LLM calls to be able to iterate and evaluate prompts with quality and scaling to any arbitrary size of 
 request.
 
+This project aims to create an intelligent system for using AI: using AI to automate using AI itself as much as possible and 
+using as many AI calls and additional functionalities as the user wants to improve responses based on various metrics
+
 - Automate Problem-Solving: To provide a system that can evaluate and generate solutions for various tasks without
  extensive manual intervention.
-- Role driven: Users can utilise roles that specialise in a specific domain -or themselves can delegate and instruct other
- roles as required to complete its given
+- Pre-defined workflows: Instead of trying to get current day LLMs to somehow manage the task of defining custom workflows for 
+  each task as they are given them, pre-defined workflows are selected/can be selected based on their suitabilities for the 
+  users task. Ensuring a coherent and consistent response.
+- Role: Structured to think in terms of 'personas' affecting how the system responds to each step in a given workflow and how those 
+  workflows are them selves structures.
 - Flexible and useful memory and configuration system: The system learns the users preferences *once* and can
  continually refer to them or any appropriate internal or external reference material as required.
 - Hallucination avoidance/minimisation through pre- and post-process analysis, feeding the system the appropriate reference
@@ -36,14 +42,13 @@ request.
 
 ## Current Limitations
 
-- **Limited workflows**: The thinker can process an arbitrary number of files and generate a document of arbitrary length,
-   but there's not a lot of specification, workflows could benefit from switches based on certain events occurring. And more detailed, 
-   more tailored workflows.
-- **Context**: The thinker uses multiple files to determine different types of context for the prompt
- changing this to a more unified (graph) database, could improve program coherency and contextual awareness while reducing
- costs and simplifying outputs.
-- **Polish**: Yet there is still a lot of work to do to make every interaction with the UI tolerable and pleasant, 
- in particular showing messages and *especially* folders takes far to long/manual refreshes
+- **Limited workflows**: Currently there are only four workflows Chat, Write, For Each and Loop. These workflows are 
+  *general* purpose rather than being targeted at specific use cases. Feedback/ideas wanted!
+- **Polish**: Yet there is still a lot of work to do to make every interaction with the UI tolerable and pleasant
+  - **Mobile friendly**: While the site has been made responsive the project has been primarily developed with desktop
+    use in mind, mobile use is unnecessarily clunky.
+- **More settings, more overview**: There are still features e.g automatic categorisation that cannot yet be disabled in 
+  settings. At the same time, it is currently not possible to see external data like memory.
 
 ## Features
 
@@ -52,6 +57,9 @@ request.
  series of prompts to be run to achieve an ideal outcome for the given task type.
 - **Pre-Prompt-Processing**: 'sub-conscious' processes, referencing contextual information as required by context in advance of an
  actual LLM call
+- **Memory**: If enabled, the system will note details about the user, their prompts and preferences, and use them for 
+   ~~selling them ads~~ providing a consistent context to their prompts. (though seriously we WONT sell data, eventually
+   messages, files and memory need to be encrypted when the option to run private models is available)
 
 ## Architecture
 
@@ -66,53 +74,40 @@ The project's architecture is designed with modularity in mind, allowing for the
 
 ## Planned
 
-To refine the system's architecture and enhance its capabilities and efficiency, several key features are intended for implementation:
+v0.9.5 needs to iron out many of the existing bugs and introduce QOL features for making the site comfortable to use, as well as
+adding a paywall before public beta (sorry 😅)
+
+Some of the features planned for the next few releases..
 
 ### Functionality
 
-- **Auto-select messages**: After a message the option exists to automatically select that one for the next prompt.
-- **Payment System**: Top up system for updating balance(awaiting stripe integration)
+- **Response options**: After a response is output the option exists to reference it immediately, with settings for automatic reference
+   or to make saving a message a manual selection rather an automatic process.
+- **Write Workflow**: Needs to be reviewed, tested and optimised, frequently doesn't have anything to do with prompt
+- **Payment System**: Top up system for updating balance (via stripe)
   - Attach receipts to ~~prompts~~, workflows and features. So the user always knows how much they've spent and on what.
-- **Category descriptions**: input is cheap and a small description would probably significantly increase selection 
-   relevance
-- **Modular Workflows**: The coder module can and should actually check that its code works and try and improve upon itself if it doesn't.
-   even if it can only try a fixed number of times and worst case scenario explains to the user that its solution is invalid.
-   Many workflows should consist of switch logic that allows for intelligent processing of a given request without needless details.
-- **Best of X**: ~~Let users run multiple prompts in parallel and have the system automatically select/pick and choice to create a superior answer~~
-  - Can be customised on preference: Should the other attempts be identical or optimise for different qualities entirely, returning a balanced approach.
-- **Internet access**: ~~Adding internet access for workflows based on context~~, including the ability to expand the
- encyclopedia with web-sourced data.
-  - general knowledge shared nodes (e.g. information on a technology or recent event)
-  - Coder github integration
-- **API Integrations**: Integrate additional AI models to leverage the most appropriate based on context
-- **Programmes**: schedules and programs written on the fly for use by the user, customisable code base.
-- **'Boss' Personas**: Large tasks should be enabled by 'boss' personas, e.g. a 'Coder' persona can write and update a file,
-     but a 'Team Lead' persona could manage several coder's to improve or write an entire application.
-- **Mathematician/Engineer/Physicist**: LLMs are bad at math the same way Humans are bad at math, neurons are just not well
-   suited to counting and arithmetic operations compared to binary functions. However, unlike humans their *terrible* at **spatial reasoning**
-   But why does that need to be a limitation? If we let it connect to tools that help it simulate the world while it ""thinks"" in words
-   we can have the best of both worlds. Unlocking a lot of capability/accuracy.
-
-- **Automated test writing**: Tests are non-existent in the prototyping stage, hopefully when ready the application can
- actually write its own tests automatically to full standard.
-  - Long due that specific "integration" user tests where created to test that the system can satisfactorily answer the user,
-   avoid hallucinations, provide scores of high value, asses performance against tests and benchmarks etc.
+- **Internet access**: Rather than just reading a related summary of a search actually read the content of the first few 
+  pages of each internet search
+  - Settings to disable automatic internet searches and specify pages to search through
+  - Visual display in workflow of pages visited
+- **Deepseek R1**: And other AI models
+  - Option for selecting the 'default' model (internally and for workflow steps)
+- **Reference/File message optimisation**: Optimised with regards to the prompt referencing them, this could both minimise
+  confusion when using a lot of reference material and also serve as basically a 2nd step in the 'though process' of responding
+  to a given prompt
 
 ### UI
 
-- **Message Stacks**: Messages are displayed one at a time. Organising prompts that are referencing each other in a chain into
-  a singular stack would make navigation easier
 - **QOL**:
-  - Q&A can be malformed at times
+  - Visual redesign of pages and messages, make messages and files viewable at the end of a workflow response
+    - Add option to manually specify if a file should be overwritten or a new version created
+  - Delete selected items button
+  - Delete category button
+  - Message cost displayed to the user appears to be underestimated by x100..
   - Ability to terminate a mid-process prompt
   - Prompts can fail and the user doesn't know why, it just stalls at 'Processing..'
   - It's hard to select a file vs expanding it for review (solved if that means the same thing though..)
   - Ability to undo changes to files
-- **User Configuration Profile**: Profiles the user can easily select from the prompt screen and are clearly visible, e.g
- "expensive request", "private mode", "work", "humorous mode", etc so the user can quickly swap out configuration as they want
-  - e.g. I would prefer if coder displayed all code changes as 'before and after' rather than the entire file, additionally I prefer if
-   if it aims to implement the feature I'm asking for with the *minimum* amount of changes to the existing functionality.
-- **Persona Configuration**: Left to the user as much as possible.
 
 
 

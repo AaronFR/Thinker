@@ -5,7 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - 
+## [Unreleased]
+
+### Added
+
+- 
+
+### Changed
+
+- 
+
+### Removed
+
+- 
+
+## [0.9.4] - 2025-01-29 - Self-Expository
 
 ### Added
 
@@ -14,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    currently just a rough overview of the top 3 results
 - The tags that can selected are now made explicitly clear for the user in the 'palette' directly under the prompt window
   - Tag selectors will appear as applicable to the users prompt
+  - Tooltip comments to help the user understand how the website works
 - Best of: 'Differentiated' option, this means when running multiple prompts at once each run prioritises a different 
    quality e.g. coherency, creativity, etc
 
@@ -25,11 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tags redesign: User is prompted to enter values for tags as the context of a prompt is defined. More intuitive and self-explanatory
   - Tags values hidden behind 'debug view' mode
 
-### Removed
-
-- 
-
-## [0.9.3] - 2025-01-20 'It certainly is'
+## [0.9.3] - 2025-01-20 - It certainly is
 
 ### Added
 
@@ -54,7 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Receipt nodes have been removed, instead costs are saved against messages themselves (*I'm* billed by the node)
 
-## [0.9.2] - 2025-01-11 'Quantity is a Quality of its own'
+## [0.9.2] - 2025-01-11 - Quantity is a Quality of its own
 
 ### Added
 
