@@ -86,7 +86,7 @@ def login():
 
         response = make_response(jsonify({"message": "Login successful"}))
         response.set_cookie(ACCESS_TOKEN_COOKIE, access_token, httponly=True, secure=True, samesite="None")
-        response.set_cookie(REFRESH_TOKEN_COOKIE, refresh_token, httponly=True, secure=True, samesite="None")  # samesite="Strict"
+        response.set_cookie(REFRESH_TOKEN_COOKIE, refresh_token, max_age=604800, httponly=True, secure=True, samesite="None")  # samesite="Strict"
         return response
     except Exception as e:
         logging.exception("Failed to login")
