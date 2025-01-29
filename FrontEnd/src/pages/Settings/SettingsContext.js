@@ -30,6 +30,7 @@ export const SettingsProvider = ({ children }) => {
         summarisationEnabled: false,
         encyclopediaEnabled: false,
         multiFileProcessingEnabled: false,
+        multiple_reruns_enabled: "off",
         promptAugmentationMessage: 'Default prompt augmentation message...',
         promptQuestioningMessage: 'Default prompt questioning message...',
         coderPersonaMessage: 'Default coder persona message...',
