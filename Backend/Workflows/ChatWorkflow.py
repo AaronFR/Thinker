@@ -51,7 +51,6 @@ class ChatWorkflow(BaseWorkflow):
         )
         emit("send_workflow", {"workflow": workflow_details})
 
-        add_to_expensed_nodes(get_message_context())
         response = self._chat_step(
             iteration=1,
             process_prompt=process_prompt,

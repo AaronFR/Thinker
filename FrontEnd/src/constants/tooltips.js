@@ -1,6 +1,13 @@
 
 
 const TooltipConstants = {
+  /* Login page */
+  bountyDetails: `
+    Website would probably have to see *some* use first, I plan to pay myself at the same rate eventually: 
+    <br>393 hrs and counting at time of writing...
+    <br>But I would definetely plan to <b>thank</b> contributers first.
+  `,
+
   /* Buttons */
   copyButton: "Copy to clipboard",
   fileUploadButton: "Upload file(s) as reference for your prompt",

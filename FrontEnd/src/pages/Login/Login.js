@@ -68,23 +68,23 @@ export function Login({ isAuthenticated }) {
                             <span className="emoji">¢</span>
                         </div>
                         <p>Pay as you go: Pay for what you <i>actually</i> use. Try it out with no recurring fees</p>
-                        <p>We want you to use AI as much as possible 😉. No qouta's, no limits</p>
+                        <p id="😉">We want you to use AI as much as possible. No qouta's, no limits but the ones you set</p>
                     </div>
                     <div className="card left-card">
                         <div className='header'>
                             <h3>User Friendly</h3>
                             <span className="emoji">😘</span>
                         </div>
-                        <p>Automatically sorted by category, automatic prompt engineering, questions against prompts..</p>
-                        <p style={{opacity: 0.3}}>All fully configurable</p>
-                        <p>🚧 WIP</p>
+                        <p>Use AI to help use AI with automated helper functionality</p>
+                        <p>Activate/De-activate or customise any feature you want enabled</p>
+                        <p id="fully, later">All configurable, with more options and settings to come</p>
                     </div>
                     <div className="card right-card">
                         <div className='header'>
                             <h3>Powerful</h3>
                             <span className="emoji">💪</span>
                         </div>
-                        <p>Utilise agentic workflows to make requests of <b><i>any</i></b> size.</p>
+                        <p>Utilise AI workflows to make requests of <b><i>any</i></b> size</p>
                         <p style={{opacity: 0.3}}>From a typical one answer prompt to generating an entire book, code base, *anything*</p>
                         <p>🚧 WIP</p>
                     </div>

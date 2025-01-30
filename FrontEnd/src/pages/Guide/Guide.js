@@ -2,15 +2,6 @@ import Navigation from "../../components/Navigation";
 import '../../App.css';
 import './Guide.css'
 
-export const BetaBanner = () => {
-  return (
-    <div className="centered beta-banner">
-      <h2 >
-        🚧 In beta - β testers wanted! Enquire and get to use the app <i>for free</i>
-      </h2>
-    </div>
-  )
-}
 import TooltipConstants from '../../constants/tooltips';
 
 export const About = () => {
@@ -46,10 +37,13 @@ export const About = () => {
           the entire, up to date human canon inside a statistical algorithm?
         </ul>
         <ul>
+          Why do I have to deal with these limits and restrictions, why can't <i>I</i> set the limits?
+        </ul>
+        <ul>
           And where can I get them without having to pay for another damn subscription?
         </ul>
         <ul>
-          There are products designed for enterprise, but where is an application for the average person?
+          There are products designed for enterprise, but where is something for the average person?
         </ul>
         
         
@@ -63,7 +57,7 @@ export const About = () => {
         <h3>Reasonably Priced</h3>
 
         <p>
-          If you plan on using or even just experimenting with AI, The Thinker would be a great place to start because it's <b>pay as you go</b>
+          If you plan on using or even just experimenting with AI, The Thinker would be a great place to start because it's <b>pay as you go</b>.
         </p>
         <p>
           No monthly subscription, no running costs, no qoutas, no limits. While your also provided with workflows and optional functions that can help
@@ -83,10 +77,20 @@ export const About = () => {
           </ul>
 
         <p>
-          The cost of the application will be our costs per LLM api call plus a small percentage to pay for server costs and salary 
-          (Hopefully around +10-20%, but for now its at cost -so at a loss)
+          Prices will be our own costs per AI resource we pay for, plus a small percentage to pay for server costs and salary 
+          (Hopefully around +10-20%, but for now its at cost -so at a loss).
         </p>
         <p>And if you want to use it locally and just use your own API keys you can.</p>
+    </div>
+  )
+}
+
+export const BetaBanner = () => {
+  return (
+    <div className="centered beta-banner">
+      <h2 >
+        🚧 In beta - β testers wanted! Enquire and get to use the site <i>for free</i>
+      </h2>
     </div>
   )
 }
@@ -115,6 +119,9 @@ export const Pitch = () => {
           <ul hidden>
             🥴 Hallucinates and is generally unreliable
           </ul>
+          <ul hidden>
+            👁‍🗨 Explicetely (sometimes) tell you they will use your data for their own purposes
+          </ul>
           <ul id="because 'fuck you, pay me' right?">
             🔐 - Closed source, unexpandable, uncheckable, a <b>dead end</b>
           </ul>
@@ -126,7 +133,7 @@ export const Pitch = () => {
             😃 - Utilises workflows and optional functionalities, one prompt can trigger as many AI calls as you want/need.
           </ul>
           <ul>
-            ⚙ - Fully customisable. Don't like a feature? Just turn it off.
+            ⚙ - Fully customisable. Don't like a feature? Just turn it off
           </ul>
           <ul>
             🤖 - Uses AI... to automate using AI
@@ -137,11 +144,14 @@ export const Pitch = () => {
               🤏 Put in a small amount, and give it a shot! ($0.30 fee)
             </ul>
           </ul>
-          <ul id="Well. I mean that's the idea anyway">
-            ∞ - No Rate limits! Use as much as you can as quickly as you want
+          <ul id="Well. That's the idea anyway">
+            🦅 - No Rate limits! Use as much as you can as quickly as you want
           </ul>
           <ul hidden id="WIP, though the workflow part is true">
             🤔 Workflows are designed by a humnan, with (optional) internet search every step of the way to minimise inaccuracies
+          </ul>
+          <ul hidden id="Currently we *can* see user messages, I need to implement privately hosted models that encyrpt/do not log user requests, otherwise as far as I'm concerned saying I encrypt user data - but then send it on to a 3rd party api, would be *false privacy*">
+            🚧 (WIP) Option to select a privately hosted model that does not log your messages, encypted secure messages
           </ul>
           <ul>
             👐 - Open Source, providing a tool for the whole community
@@ -168,7 +178,7 @@ export const Tutorial = () => {
         `Writer`'s will act like writers creating an article and so on.
       </p>
       <p>
-        Workflows dictate how the applciation will respond and what it will output
+        Workflows dictate how responses and actions taken
       </p>
         <ul>
           Chat - Your typical prompt -{'>'} response
