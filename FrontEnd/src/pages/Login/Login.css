@@ -129,14 +129,12 @@ body.dark-mode .background:before {
 .form-group {
   margin-bottom: 15px;
 }
-
 .form-group label {
   margin-bottom: 5px;
   display: block;
   font-weight: bold;
   color: #d4d4d4;
 }
-
 .form-group input {
   padding: 10px;
   border: 1px solid #ddd;

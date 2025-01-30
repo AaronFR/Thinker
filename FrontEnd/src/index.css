@@ -15,8 +15,19 @@ code {
 /* Tool Tip */
 div.react-tooltip.core-styles-module_tooltip__3vRRp {
   flex-wrap: wrap;
-  opacity: 0.85; /* Correct opacity value */
+  opacity: 0.95;
   z-index: 9999;
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+  padding: 10px;
+  max-width: 600px;
+}
+@media (max-width: 600px) {
+  div.react-tooltip.core-styles-module_tooltip__3vRRp {
+    max-width: 90%;
+    font-size: 1rem;
+  }
 }
 
 :root {
