@@ -30,6 +30,21 @@ const TooltipConstants = {
   autoPromptEngigneeringSystemMessage: "When generating a 'prompt engineering' copy the application only reads the users prompt. It does not reference selected files or messages.",
   summarisationSystemMessage: "The summarisation step will be provided with every single file and message reference supplied originally, this means a For All workflow can see each re-written file",
   bestOfSystemMessage: "The AI compares all generated responses with your original prompt request to select the best response",
+
+  /* Explanations */
+  llmDetails: `
+    Large Language Model, sometimes for advanced models you'll see LRM (Large <i>Reasoning</i> Model)
+    <br>LLMs are the foundation of "Artificial Intelligence"
+    <br>Simply, a LLM is a statistical function that predicts which character should be ouput next in responding to a set of inputs.
+    <br>Letter by letter, until a full response is generated.
+    <br>
+    <br>We may be called 'The Thinker AI' but you'll be better off using AI/LLMs if you understand that they do NOT think
+    <br>It guesses at correct answers statistically, and sometimes these guesses can be far removed from anything resembling actual thought
+  `,
+  minFeeDetails: `
+    Which we have to pay and will pass on directly rather than indirectly by increasing prices
+    <br><i class="sarcasm">Ahhh the joy of cash-free transactions am I right</i>?
+  `,
 };
 
 export default TooltipConstants;

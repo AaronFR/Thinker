@@ -3,6 +3,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { handleLogin, handleRegister, handleLogout } from '../../utils/loginUtils';
 import { About, BetaBanner, Pitch } from '../Guide/Guide';
 
+import { Tooltip } from 'react-tooltip';
+import TooltipConstants from '../../constants/tooltips';
+
 import './Login.css';
 
 
@@ -89,8 +92,14 @@ export function Login() {
                             <h3>Open Source</h3>
                             <span className="emoji-large">👐</span>
                         </div>
-                        <p>Developing a robust tool for the community, not for hype profiteering. Review our development process and contribute.</p>
-                        <p style={{opacity: 0.1}}>Bounties in future at $30/hr (<b><i>subject to review</i></b>), I dunno message me</p>
+                        <p>Developing a robust tool for the community, not for profiteering off 'hype'. Review our development process and contribute</p>
+                        <p  style={{opacity: 0.1}}
+                            data-tooltip-id="tooltip"
+                            data-tooltip-html={TooltipConstants.bountyDetails}
+                            data-tooltip-place="bottom"
+                        >
+                            Bounties in future at $30/hr (<b><i>subject to review</i></b>), I dunno message me
+                        </p>
                     </div>
                 </div>
 
@@ -148,7 +157,9 @@ export function Login() {
             </div>
             <BetaBanner />
             <Pitch />
-            <About />          
+            <About />
+
+            <Tooltip id="tooltip" />          
         </div>
     );
 }

@@ -11,13 +11,22 @@ export const BetaBanner = () => {
     </div>
   )
 }
+import TooltipConstants from '../../constants/tooltips';
 
 export const About = () => {
   return (
     <div className="about">
       <p>
-        Hey, thanks for checking this application out! 'The Thinker' is designed to be a low fuss, low BS tool for iteracting with LLMs and using them
-        in your day to day life and work. Without being ripped off by 'AI Hype' grifters and idiots.
+        'The Thinker' is designed to be a low fuss, low BS tool for iteracting with <u
+          id="not currently anyway"
+          className="explanation"
+          data-tooltip-id="tooltip"
+          data-tooltip-html={TooltipConstants.llmDetails}
+          data-tooltip-place="bottom"
+        >
+          LLMs 
+        </u>  and using them
+        in your day to day life and work. Without being ripped off by 'AI Hype' grifters.
       </p>
       <p>
         I've been looking at the state of AI since before gpt-2 and for the last 2 years I've been thinking: "Okay cool.. is <i>this</i> it? 
@@ -61,7 +70,13 @@ export const About = () => {
           you make the most of AI in your day to day.
         </p>
           <ul>
-            You can put in an amount as low as <b>$1 (US)</b> (There is a $0.30 per transaction fee we have to pay) to get started and if you use the default, <s>cheap</s> economical models that can actually last a bit.
+            You can put in an amount as low as <b>$1 (US)</b> (There is a <u
+              id="not currently anyway"
+              className="explanation"
+              data-tooltip-id="tooltip"
+              data-tooltip-html={TooltipConstants.minFeeDetails}
+              data-tooltip-place="bottom"
+            >$0.30 fee per transaction</u> we have to pay) to get started and if you use the default, economical models that can actually last a bit.
           </ul>
           <ul>
             No running fees. Put in any amount and come back and use it whenever you want. The next day, the next month, the next year. Whenever.

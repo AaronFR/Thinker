@@ -190,6 +190,10 @@ body.dark-mode .scrollable::-webkit-scrollbar-track {
   background: #555; /* Color of the scrollbar thumb on hover */
 }
 
+/* Explanations */
+.explanation {
+  color: var(--color-border-focus);
+}
 
 /* Buttons */
 
