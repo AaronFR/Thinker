@@ -170,7 +170,7 @@ button:hover {
 .card-container {
   display: flex;
   justify-content: space-between;
-  padding: 50px;
+  padding: 2%;
 }
 
 .card {

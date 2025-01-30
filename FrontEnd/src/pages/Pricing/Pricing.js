@@ -5,6 +5,7 @@ import { apiFetch } from '../../utils/authUtils';
 import { formatPrice } from '../../utils/numberUtils';
 import TransactionForm from '../../components/TransactionForm';
 import Navigation from '../../components/Navigation';
+import { BetaBanner } from '../Guide/Guide';
 
 const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
@@ -61,6 +62,8 @@ export function Pricing() {
     return (
         <div className="settings-container">
             <Navigation />
+
+            <BetaBanner />
 
             <h2>Balance: {formatPrice(balance)}</h2>
             <h3>Current session: {formatPrice(sessionCost)}</h3>

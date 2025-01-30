@@ -2,17 +2,19 @@ import Navigation from "../../components/Navigation";
 import '../../App.css';
 import './Guide.css'
 
+export const BetaBanner = () => {
+  return (
+    <div className="centered beta-banner">
+      <h2 >
+        🚧 In beta - β testers wanted! Enquire and get to use the app <i>for free</i>
+      </h2>
+    </div>
+  )
+}
+
 export const About = () => {
   return (
-    <div>
-      <div className="centered">
-
-        <h2 >
-          🚧 In beta - Beta testers wanted! Enquire and get to use the app <i>for free</i> 🚧
-        </h2>
-      </div>
-      
-
+    <div className="about">
       <p>
         Hey, thanks for checking this application out! 'The Thinker' is designed to be a low fuss, low BS tool for iteracting with LLMs and using them
         in your day to day life and work. Without being ripped off by 'AI Hype' grifters and idiots.
@@ -59,7 +61,7 @@ export const About = () => {
           you make the most of AI in your day to day.
         </p>
           <ul>
-            You can put in an amount as low as <b>$0.10 (US)</b> to get started and if you use the default, <s>cheap</s> economical models that can actually last a bit.
+            You can put in an amount as low as <b>$1 (US)</b> (There is a $0.30 per transaction fee we have to pay) to get started and if you use the default, <s>cheap</s> economical models that can actually last a bit.
           </ul>
           <ul>
             No running fees. Put in any amount and come back and use it whenever you want. The next day, the next month, the next year. Whenever.
@@ -74,9 +76,70 @@ export const About = () => {
   )
 }
 
-export const Tutorial = () => {
+export const Pitch = () => {
   return (
     <div>
+      <div className="card-container">
+        <div className="card">
+          Popular AI applications
+          <ul id="giving 'wrappers' a bad name">
+            😑 - <i>Very</i> simple wrappers, one prompt -{`>`} one response
+          </ul>
+          <ul>
+            🗿 - You can maybe change the instructions or the tone - which does nothing usually
+          </ul>
+          <ul id="I can see people saying 'well I never have this problem', but I dunno this stuff REALLY annoyed me, personally">
+            😠 Constantly sorting long stacks of messages to find that message you wanted to look at now..
+          </ul>
+          <ul id="because 'f### you, pay me' right?" style={{paddingBottom: "1rem"}}>
+            🤑 - Subscription models, costing the same amount of money regardless of how little you use the application in a given month, if at all
+          </ul>
+          <ul>
+            🐢 - Rate limits to ensure your not dipping into those profit margins
+          </ul>
+          <ul hidden>
+            🥴 Hallucinates and is generally unreliable
+          </ul>
+          <ul id="because 'fuck you, pay me' right?">
+            🔐 - Closed source, unexpandable, uncheckable, a <b>dead end</b>
+          </ul>
+        
+        </div>
+        <div className="card">
+          The Thinker AI
+          <ul>
+            😃 - Utilises workflows and optional functionalities, one prompt can trigger as many AI calls as you want/need.
+          </ul>
+          <ul>
+            ⚙ - Fully customisable. Don't like a feature? Just turn it off.
+          </ul>
+          <ul>
+            🤖 - Uses AI... to automate using AI
+          </ul>
+          <ul id="I'm hoping break even with budget for contribution bounties can be reached at 10-20% margin. That may be naive honestly.">
+            ¢ - Pay as you go, pay for what you want as you want, with a small margin (0% in beta, w/ ¢30 fee) going to funding the development of this application
+            <ul id="">
+              🤏 Put in a small amount, and give it a shot! ($0.30 fee)
+            </ul>
+          </ul>
+          <ul id="Well. I mean that's the idea anyway">
+            ∞ - No Rate limits! Use as much as you can as quickly as you want
+          </ul>
+          <ul hidden id="WIP, though the workflow part is true">
+            🤔 Workflows are designed by a humnan, with (optional) internet search every step of the way to minimise inaccuracies
+          </ul>
+          <ul>
+            👐 - Open Source, providing a tool for the whole community
+          </ul>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export const Tutorial = () => {
+  return (
+    <div className="tutorial">
       <h2 className="centered">How do I use it?</h2>
 
       <h3>Home Page</h3>

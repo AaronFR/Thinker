@@ -7,3 +7,12 @@
 .centered i {
   margin: 0 0.2em;
 }
+
+.about,
+.tutorial {
+  padding-left: 1.5rem;
+}
+
+.beta-banner {
+  width: 100%;
+}

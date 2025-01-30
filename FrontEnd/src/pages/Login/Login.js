@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
 import { handleLogin, handleRegister, handleLogout } from '../../utils/loginUtils';
-import { About, Tutorial } from '../Guide/Guide';
+import { About, BetaBanner, Pitch } from '../Guide/Guide';
 
 import './Login.css';
 
@@ -54,7 +54,7 @@ export function Login() {
                 </div>
 
                 <h1>
-                    🧰 An AI toolkit 🧰
+                    🧰 AI toolkit 🧰
                 </h1>
 
                 <div className="card-container">
@@ -146,8 +146,9 @@ export function Login() {
                 <button onClick={handleLogout} className="logout-button">Logout</button>
                 <p className='version-number'>v0.9.4</p>
             </div>
-            <About />
-            <Tutorial />            
+            <BetaBanner />
+            <Pitch />
+            <About />          
         </div>
     );
 }
