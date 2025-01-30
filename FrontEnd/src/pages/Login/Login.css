@@ -9,7 +9,7 @@
   background-image: url('../../../public/gates-of-hell-bg.png');
   background-size: cover;
   background-repeat: no-repeat;
-  opacity: 25%;
+  opacity: 20%;
   background-blend-mode: darken;
 }
 body.dark-mode .background:before {
