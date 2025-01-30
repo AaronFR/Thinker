@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 
 import { handleLogin, handleRegister, handleLogout } from '../../utils/loginUtils';
 import { About, BetaBanner, Pitch } from '../Guide/Guide';
@@ -9,7 +10,7 @@ import TooltipConstants from '../../constants/tooltips';
 import './Login.css';
 
 
-export function Login() {
+export function Login({ isAuthenticated }) {
     const [isLoginMode, setIsLoginMode] = useState(true); // Toggles between Login and Register
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -106,53 +107,59 @@ export function Login() {
                 {/** Error message display */}
                 {error && <p className="error-message">{error}</p>}
 
-                <div className="auth-toggle">
-                    <button 
-                        className={`toggle-button ${isLoginMode ? 'active' : ''}`} 
-                        onClick={handleSwitch}>
-                        Login
-                    </button>
-                    <button 
-                        className={`toggle-button ${!isLoginMode ? 'active' : ''}`} 
-                        onClick={handleSwitch}>
-                        Register
-                    </button>
-                </div>
 
-                <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
-                    <div className="form-group">
-                        <label htmlFor="email">Email:</label>
-                        <input 
-                            id="email"
-                            type="email" 
-                            value={email} 
-                            onChange={(e) => setEmail(e.target.value)} 
-                            required 
-                        />
-                    </div>
+                {!isAuthenticated ? (
+                    <div>
+                        <div className="centered auth-toggle">
+                            <button 
+                                className={`toggle-button ${isLoginMode ? 'active' : ''}`} 
+                                onClick={handleSwitch}>
+                                Login
+                            </button>
+                            <button 
+                                className={`toggle-button ${!isLoginMode ? 'active' : ''}`} 
+                                onClick={handleSwitch}>
+                                Register
+                            </button>
+                        </div>
 
-                    <div className="form-group">
-                        <label htmlFor="password">Password:</label>
-                        <input 
-                            id="password"
-                            type="password" 
-                            value={password} 
-                            onChange={(e) => setPassword(e.target.value)} 
-                            required 
-                        />
-                    </div>
+                        <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+                            <div className="form-group">
+                                <label htmlFor="email">Email:</label>
+                                <input 
+                                    id="email"
+                                    type="email" 
+                                    value={email} 
+                                    onChange={(e) => setEmail(e.target.value)} 
+                                    required 
+                                />
+                            </div>
 
-                    <button 
-                        type="button" 
-                        onClick={handleButtonClick}>
-                        {isLoginMode ? 'Login' : 'Register'}
-                    </button>
-                </form>
+                            <div className="form-group">
+                                <label htmlFor="password">Password:</label>
+                                <input 
+                                    id="password"
+                                    type="password" 
+                                    value={password} 
+                                    onChange={(e) => setPassword(e.target.value)} 
+                                    required 
+                                />
+                            </div>
+
+                            <button
+                                className='login-button'
+                                type="button" 
+                                onClick={handleButtonClick}>
+                                {isLoginMode ? 'Login' : 'Register'}
+                            </button>
+                        </form>
+                    </div>) : (
+                        <button onClick={handleLogout} className="logout-button">Logout</button>
+                )}
 
 
 
                 
-                <button onClick={handleLogout} className="logout-button">Logout</button>
                 <p className='version-number'>v0.9.4</p>
             </div>
             <BetaBanner />
@@ -163,5 +170,9 @@ export function Login() {
         </div>
     );
 }
+
+Login.propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+};
 
 export default Login;

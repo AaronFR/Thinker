@@ -49,7 +49,7 @@ function RootApp() {
         <BrowserRouter>
           <Routes>
             {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<Login isAuthenticated={isAuthenticated}  />} />
             <Route path="/guide" element={<Guide />} />
 
             {/* Protected Routes */}

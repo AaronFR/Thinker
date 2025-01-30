@@ -85,7 +85,7 @@ body.dark-mode .background:before {
 
 .auth-toggle {
   display: flex;
-  margin-bottom: 20px;
+  margin-bottom: 3px;
 }
 
 .toggle-button {
@@ -121,6 +121,9 @@ body.dark-mode .background:before {
   display: flex;
   flex-direction: column;
   width: 300px;
+  border: 1px solid #3434342d;
+  padding: 25px;
+  border-radius: 15px;
 }
 
 .form-group {
@@ -135,7 +138,6 @@ body.dark-mode .background:before {
 }
 
 .form-group input {
-  width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -155,6 +157,15 @@ button {
 
 button:hover {
   opacity: 0.9;
+}
+
+.login-button {
+  margin-top: 7%;
+  margin-left: 20%;
+  margin-right: 20%;
+}
+.login-button:hover {
+  background-color: #cbcbcb;
 }
 
 .logout-button {
