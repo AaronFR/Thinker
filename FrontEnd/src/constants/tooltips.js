@@ -11,7 +11,7 @@ const TooltipConstants = {
   /* Buttons */
   copyButton: "Copy to clipboard",
   fileUploadButton: "Upload file(s) as reference for your prompt",
-  augmentButton: "Generates a copy of your prompt, omptimised to be more machine readable/provide a better response",
+  augmentButton: "Generates a more detailed copy of your prompt. <br>Optimised to be more machine readable/provide a better response",
   questionButton: "The app will ask questions it has about your prompt.<br>Provide answers for additional context or just use it for rubber ducking 🦆",
   submitButton_whileProcessing: "Processing prompt... if its stuck that means something went wrong and we haven't implemented a terminate button yet.. so you'll just have to refresh your page 😅",
 

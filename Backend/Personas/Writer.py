@@ -33,7 +33,6 @@ class Writer(BasePersona):
         ErrorHandler.setup_logging()
 
 
-
 if __name__ == '__main__':
     """Suggestions: 
     - Write a detailed report about the future of tidal technology, what innovations and possible disruptions could occur

@@ -71,7 +71,7 @@ def generate_write_workflow(
         {
             "step_id": 1,
             "module": "Planning Response",
-            "description": "Plan out a solution to the given prompt.",
+            "description": "Plan out a Response",
             "parameters": {
                 "user_message": initial_message,
                 "file_references": '\n'.join(file_references),
@@ -118,7 +118,7 @@ def generate_write_workflow(
 
 
 WRITE_TESTS_WORKFLOW = {
-    "version": "1.0",
+    "version": "1.0.1",
     "workflow_name": "Write Tests Workflow",
     "steps": [
         {

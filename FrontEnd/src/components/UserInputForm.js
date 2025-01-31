@@ -206,7 +206,7 @@ const UserInputForm = ({
             disabled={isProcessing}
             aria-busy={isProcessing}
             data-tooltip-id="tooltip"
-            data-tooltip-content={TooltipConstants.augmentButton}
+            data-tooltip-html={TooltipConstants.augmentButton}
             data-tooltip-place="bottom"
           >
             {'Auto-Engineer'}

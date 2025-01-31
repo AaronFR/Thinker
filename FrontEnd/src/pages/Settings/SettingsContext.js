@@ -156,7 +156,7 @@ export const SettingsProvider = ({ children }) => {
             saveConfig(field, newValue);
             return { ...prev, [key]: newValue };
         });
-    }, []);
+    }, [saveConfig]);
     const changeSetting = useCallback((field, value, settingKey) => {
         setSettings((prev) => {
             saveConfig(field, value);
@@ -185,7 +185,11 @@ export const SettingsProvider = ({ children }) => {
     // Apply Dark Mode to Document Body
     useEffect(() => {
         document.body.classList.toggle('dark-mode', settings.darkMode);
+        return () => {
+            document.body.classList.remove('dark-mode');
+        };
     }, [settings.darkMode]);
+    
 
     // Apply Font Size to Document
     useEffect(() => {

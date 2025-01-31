@@ -42,6 +42,9 @@ def write_code_file(file_name: str, purpose: str):
         "Making sure that the file imports as necessary, referencing the appropriate classes. "
         "DO NOT OVERWRITE THIS FILE WITH A SUMMARY, do not include the contents of another file. "
         "Unless explicitly requested, the file's content must be preserved by default."
+        "Finally, understand what you did or did not do, if you can see a file in your history that was they way they"
+        "WERE, its YOUR job to change the file in line with the users prompt, not act like you've written code you "
+        "haven't."
     )
 
     return statement
