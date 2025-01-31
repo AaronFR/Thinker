@@ -133,11 +133,11 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
       
       {isExpanded && (
         <div className="file-details" style={{ padding: '10px 0' }}>
-          <p><strong>Description:</strong> 
-            <MarkdownRenderer>
-              {file.summary || 'No description available.'}
-            </MarkdownRenderer>
-          </p>
+          {file.summary && <div>
+              <p><strong>Summary</strong></p>
+              <small>{file.summary}</small>
+            </div>
+          }
 
           <p>
             <strong>Content:</strong>{' '}
