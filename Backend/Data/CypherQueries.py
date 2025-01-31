@@ -97,7 +97,7 @@ MERGE (category:CATEGORY {name: $category})
 WITH user, category
 MATCH (user_prompt:USER_PROMPT)
 WHERE user_prompt.id = $user_prompt_id
-CREATE (file:FILE {name: $name, time: $time, summary: $summary, structure: $structure, version: 1})
+CREATE (file:FILE {id: $file_id, name: $name, time: $time, summary: $summary, structure: $structure, version: 1})
 MERGE (file)-[:ORIGINATES_FROM]->(user_prompt)
 MERGE (file)-[:BELONGS_TO]->(category)
 RETURN file;
@@ -167,25 +167,24 @@ ORDER BY
 """
 
 # Files
-# ToDo: files shouldn't bother having a id, their name and category folder is their identifier (but that makes it harder to refactor?)
 
 GET_FILE_BY_ID = """
-MATCH (category:CATEGORY)--(file:FILE)
-WHERE id(file) = $file_id
-RETURN id(file) AS id, category.id AS category, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
+MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)--(file:FILE)
+WHERE file.id = $file_id
+RETURN file.id AS id, category.id AS category, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
 ORDER BY file.time DESC;
 """
 
 GET_FILES_FOR_CATEGORY = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY {name: $category_name})
     <-[:BELONGS_TO]-(file:FILE)
-RETURN id(file) AS id, category.id AS category_id, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
+RETURN file.id AS id, category.id AS category_id, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
 ORDER BY file.time DESC;
 """
 
 DELETE_FILE_BY_ID = """
 MATCH (file:FILE)-[:BELONGS_TO]->(category:CATEGORY)<-[:HAS_CATEGORY]-(user:USER)
-WHERE id(file) = $file_id AND user.id = $user_id
+WHERE file.id = $file_id AND user.id = $user_id
 DETACH DELETE file;
 """
 

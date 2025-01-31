@@ -347,6 +347,7 @@ class NodeDatabaseManagement:
         :param category: Category of the file.
         :param file_path: Path to the file.
         """
+        file_uuid = str(shortuuid.uuid())
         time = int(datetime.now().timestamp())
         file_name = os.path.basename(file_path)
 
@@ -359,6 +360,7 @@ class NodeDatabaseManagement:
         )
 
         parameters = {
+            "file_id": file_uuid,
             "user_id": get_user_context(),
             "category": category,
             "user_prompt_id": user_prompt_id,
@@ -381,9 +383,12 @@ class NodeDatabaseManagement:
         :param file_id: ID of the file.
         :return: The file record if found, None otherwise.
         """
-        parameters = {"file_id": file_id}
+        parameters = {
+            "user_id": get_user_context(),
+            "file_id": file_id
+        }
 
-        records = self.neo4jDriver.execute_read(CypherQueries.GET_FILE_BY_ID, parameters)
+        record = self.neo4jDriver.execute_read(CypherQueries.GET_FILE_BY_ID, parameters)[0]
 
         return records[0]
 
