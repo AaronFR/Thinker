@@ -13,10 +13,10 @@ class Organising:
         file_references = []
         if files:
             for file in files:
-                file_with_category = nodeDB().get_file_by_id(file.get("id"))
-                if not file_with_category:
+                file_data = nodeDB().get_file_by_id(file.get("id"))
+                if not file_data:
                     continue
-                file_system_address = f"{file_with_category['category']}\\{file_with_category['name']}"
+                file_system_address = f"{file_data['category_id']}\\{file_data['name']}"
                 file_references.append(file_system_address)
         return file_references
 

@@ -6,6 +6,8 @@ import shortuuid
 from datetime import datetime
 from typing import List, Dict, Optional, Any
 
+from flask_socketio import emit
+
 from Data import CypherQueries
 from Data.Neo4jDriver import Neo4jDriver
 from Data.Files.StorageMethodology import StorageMethodology
@@ -354,10 +356,14 @@ class NodeDatabaseManagement:
         content = StorageMethodology.select().read_file(file_path)
         from AiOrchestration.AiOrchestrator import AiOrchestrator
 
-        summary = AiOrchestrator().execute(
-            [PersonaConstants.SUMMARISER_SYSTEM_INSTRUCTIONS],
-            [content]
-        )
+        FILE_SUMAMRIES_ENABLED = False
+        if FILE_SUMAMRIES_ENABLED:
+            summary = AiOrchestrator().execute(
+                [PersonaConstants.SUMMARISER_SYSTEM_INSTRUCTIONS],
+                [content]
+            )
+        else:
+            summary = ""
 
         parameters = {
             "file_id": file_uuid,
@@ -372,6 +378,8 @@ class NodeDatabaseManagement:
 
         logging.info(f"Creating file node: {category}/{file_name} against prompt [{user_prompt_id}]\nSummary: {summary}")
         self.neo4jDriver.execute_write(CypherQueries.CREATE_FILE_NODE, parameters)
+
+        emit('output_file', {'file': file_uuid})
 
     @handle_errors()
     def get_file_by_id(self, file_id: int):
@@ -388,9 +396,20 @@ class NodeDatabaseManagement:
             "file_id": file_id
         }
 
-        record = self.neo4jDriver.execute_read(CypherQueries.GET_FILE_BY_ID, parameters)[0]
+        records = self.neo4jDriver.execute_read(CypherQueries.GET_FILE_BY_ID, parameters)
+        if not records:
+            return None
 
-        return records[0]
+        record = records[0]
+
+        return {
+            "id": record["id"],
+            "category_id": record["category"],
+            "name": record["name"],
+            "summary": record["summary"],
+            "structure": record["structure"],
+            "time": record["time"]
+        }
 
     @handle_errors()
     def get_files_by_category(self, category_name: str) -> List[Dict[str, Any]]:
@@ -417,7 +436,7 @@ class NodeDatabaseManagement:
         ]
 
     @handle_errors()
-    def delete_file_by_id(self, file_id: int) -> None:
+    def delete_file_by_id(self, file_id: str) -> None:
         """
         Deletes a specific message (isolated USER_PROMPT node) by its Neo4j internal id.
         If the CATEGORY the message is associated with has no more messages, it deletes the CATEGORY node as well.
@@ -428,7 +447,7 @@ class NodeDatabaseManagement:
         """
         parameters = {
             "user_id": get_user_context(),
-            "file_id": int(file_id),
+            "file_id": str(file_id),
         }
 
         self.neo4jDriver.execute_delete(CypherQueries.DELETE_FILE_BY_ID, parameters)

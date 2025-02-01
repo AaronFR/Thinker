@@ -10,7 +10,6 @@ from Utilities.AuthUtils import login_required
 from Utilities.Routing import fetch_entity
 from Utilities.Contexts import get_user_context
 
-
 files_bp = Blueprint('files', __name__)
 
 
@@ -19,6 +18,13 @@ files_bp = Blueprint('files', __name__)
 def get_files(category_name):
     category_name = category_name.lower()
     return fetch_entity(nodeDB().get_files_by_category(category_name), "files")
+
+
+# ToDo: Rename endpoints logically
+@files_bp.route('/read_file/<file_id>', methods=['GET'])
+@login_required
+def get_file_by_id(file_id):
+    return fetch_entity(nodeDB().get_file_by_id(file_id), "file")
 
 
 @files_bp.route('/file/<file_category>/<file_name>', methods=['GET'])

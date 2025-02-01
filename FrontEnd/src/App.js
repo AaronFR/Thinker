@@ -78,7 +78,7 @@ function App () {
     const [workflow, setWorkflow] = useState()
  
     // Custom hooks
-    const { message, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(concatenatedQA, selectedFiles, selectedMessages, tags, workflow, setWorkflow);
+    const { message, files, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(concatenatedQA, selectedFiles, selectedMessages, tags, workflow, setWorkflow);
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt();
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions(FLASK_PORT);
     const { selectedWorkflow, workflowIsLoading, selectMessageError, selectWorkflow } = useSelectedWorkflow();
@@ -246,9 +246,10 @@ function App () {
             />
     
             <OutputSection 
-              message={message} 
+              message={message}
+              files={files}
               error={messageError} 
-              isProcessing={isProcessing} 
+              isProcessing={isProcessing}
             />
     
             <Navigation />

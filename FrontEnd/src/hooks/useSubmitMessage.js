@@ -17,6 +17,7 @@ const useSubmitMessage = (
   setWorkflow
 ) => {
   const [message, setMessage] = useState('');
+  const [files, setFiles] = useState([])
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [totalCost, setTotalCost] = useState(null);
@@ -99,6 +100,10 @@ const useSubmitMessage = (
       socket.on('response', (data) => {
         console.log('Received chunk:', data.content);
         setMessage((prevMessage) => prevMessage + data.content);
+      });
+
+      socket.on('output_file', (data) => {
+        setFiles((prevFiles) => [...prevFiles, data.file])
       });
 
       socket.on('connect_error', () => {
@@ -184,6 +189,7 @@ const useSubmitMessage = (
       if (socketRef.current) {
         socketRef.current.off('connect');
         socketRef.current.off('response');
+        socketRef.current.off('output_file');
         socketRef.current.off('connect_error');
         socketRef.current.off('send_workflow');
         socketRef.current.off('update_workflow');
@@ -230,7 +236,7 @@ const useSubmitMessage = (
     [concatenatedQA, selectedMessages, selectedFiles, tags]
   );
 
-  return { message, totalCost, error, isProcessing, handleSubmit };
+  return { message, files, totalCost, error, isProcessing, handleSubmit };
 };
 
 export default useSubmitMessage;
