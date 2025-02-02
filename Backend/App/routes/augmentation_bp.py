@@ -6,6 +6,7 @@ from flask import Blueprint, jsonify, request
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Augmentation import Augmentation
 from Utilities.AuthUtils import login_required
+from Utilities.Contexts import set_functionality_context
 from Utilities.CostingUtils import balance_required
 from Utilities.Routing import parse_and_validate_data
 
@@ -28,6 +29,7 @@ QUESTION_PROMPT_SCHEMA = {
 }
 
 
+# ToDo change to auto_engineer
 @augmentation_bp.route('/augmentation/select_persona', methods=['POST'])
 @login_required
 @balance_required
@@ -38,6 +40,8 @@ def select_persona():
     :return: A JSON object representing the selected persona
     """
     try:
+        set_functionality_context("select_persona")
+
         data = request.get_json()
         parsed_data = parse_and_validate_data(data, SELECT_WORKFLOW_SCHEMA)
         user_prompt = parsed_data.get("user_prompt")
@@ -63,6 +67,8 @@ def select_workflow():
     :return: A JSON object representing the selected workflow
     """
     try:
+        set_functionality_context("select_workflow")
+
         data = request.get_json()
         parsed_data = parse_and_validate_data(data, SELECT_WORKFLOW_SCHEMA)
         user_prompt = parsed_data.get("user_prompt")
@@ -91,6 +97,8 @@ def augment_user_prompt():
     logging.info("augment_user_prompt triggered")
 
     try:
+        set_functionality_context("augmentation")
+
         data = request.get_json()
         parsed_data = parse_and_validate_data(data, AUGMENT_PROMPT_SCHEMA)
 
@@ -122,6 +130,8 @@ def question_user_prompt():
     logging.info("question_user_prompt triggered")
 
     try:
+        set_functionality_context("questioning")
+
         data = request.get_json()
         parsed_data = parse_and_validate_data(data, QUESTION_PROMPT_SCHEMA)
         user_prompt = parsed_data.get("user_prompt")

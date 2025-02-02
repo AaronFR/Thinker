@@ -9,7 +9,7 @@ from openai import OpenAI, BadRequestError
 
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Utilities import Globals
-from Utilities.Contexts import get_expensed_nodes, set_expensed_nodes, get_message_context
+from Utilities.Contexts import get_expensed_nodes, set_expensed_nodes, get_message_context, get_functionality_context
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
@@ -193,6 +193,10 @@ class ChatGptWrapper:
         if message_id:
             logging.info(f"Expensing ${total_cost} to USER_PROMPT Node[{message_id}]")
             NodeDB().expense_node(message_id, total_cost)
+        functionality = get_functionality_context()
+        if functionality:
+            logging.info(f"Expensing ${total_cost} against {functionality} functionality.")
+            NodeDB().expense_functionality(functionality, total_cost)
 
         logging.info(
             f"Request cost [{model}] - Input tokens: {input_tokens} ${input_cost}, "

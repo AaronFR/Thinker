@@ -584,3 +584,22 @@ class NodeDatabaseManagement:
             parameters
         )
         logging.info(f"Node with UUID [{node_id}] updated by [{amount}] - {status}")
+
+    @handle_errors()
+    def expense_functionality(self, functionality: str, amount: float) -> None:
+        """Attaches a cost information to a give node
+
+        :param functionality: the functionality usage estimate to update
+        :param amount: positive to assign a cost to a given functionality or message. eh whatever bro
+        """
+        parameters = {
+            "user_id": get_user_context(),
+            "functionality": functionality + "_cost",
+            "amount": amount
+        }
+
+        status = self.neo4jDriver.execute_write(
+            CypherQueries.EXPENSE_FUNCTIONALITY,
+            parameters
+        )
+        logging.info(f"User functionality {functionality} updated by [{amount}] - {status}")

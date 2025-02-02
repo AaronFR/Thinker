@@ -206,3 +206,9 @@ SET n.cost = COALESCE(n.cost, 0) + $amount
 RETURN n;
 """
 
+EXPENSE_FUNCTIONALITY = """
+MATCH (user:USER {id: $user_id})
+SET user[$functionality] = COALESCE(user[$functionality], 0.0) + $amount
+RETURN user[$functionality]
+"""
+
