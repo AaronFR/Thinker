@@ -9,7 +9,7 @@ from openai import OpenAI, BadRequestError
 
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Utilities import Globals
-from Utilities.Contexts import get_expensed_nodes, set_expensed_nodes
+from Utilities.Contexts import get_expensed_nodes, set_expensed_nodes, get_message_context
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
@@ -184,18 +184,19 @@ class ChatGptWrapper:
         input_cost = input_tokens * self.cost_config.input_token_costs[model]
         output_cost = output_tokens * self.cost_config.output_token_costs[model]
         total_cost = (input_cost + output_cost)
+
         Globals.current_request_cost += total_cost
 
         NodeDB().deduct_from_user_balance(total_cost)
 
-        expensed_nodes = get_expensed_nodes()
-        for expensed_node_uuid in expensed_nodes:
-            logging.info(f"Expensing ${total_cost} to Node[{expensed_node_uuid}]")
-            NodeDB().expense_node(expensed_node_uuid, total_cost)
-        set_expensed_nodes([])  # wipe after transactions have been expensed
+        message_id = get_message_context()
+        if message_id:
+            logging.info(f"Expensing ${total_cost} to USER_PROMPT Node[{message_id}]")
+            NodeDB().expense_node(message_id, total_cost)
 
         logging.info(
-            f"Request cost [{model}] - Input tokens: {input_tokens}, Output tokens: {output_tokens}, "
+            f"Request cost [{model}] - Input tokens: {input_tokens} ${input_cost}, "
+            f"Output tokens: {output_tokens}, ${output_cost} \n"
             f"Total cost: ${total_cost:.4f}"
         )
 

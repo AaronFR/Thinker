@@ -104,7 +104,7 @@ Workflow.propTypes = {
         status: PropTypes.string.isRequired,
         description: PropTypes.string,
         parameters: PropTypes.object,
-        response: PropTypes.object,
+        response: PropTypes.string,
       })
     ).isRequired,
   }).isRequired,

@@ -47,6 +47,8 @@ def init_process_message_ws(socketio: SocketIO):
         logging.info(f"process_message triggered with data: {data}")
 
         try:
+            message_uuid = str(shortuuid.uuid())
+            set_message_context(message_uuid)
             parsed_data = parse_and_validate_data(data, PROCESS_MESSAGE_SCHEMA)
 
             user_prompt = parsed_data["prompt"]
@@ -65,8 +67,6 @@ def init_process_message_ws(socketio: SocketIO):
             category = CategoryManagement.determine_category(user_prompt, tags.get("category"))
             selected_persona = get_selected_persona(data)
 
-            message_uuid = str(shortuuid.uuid())
-            set_message_context(message_uuid)
             NodeDB().create_user_prompt_node(category)
 
             response_message = selected_persona.query(

@@ -173,8 +173,7 @@ OutputSection.propTypes = {
   onDelete: PropTypes.func.isRequired,
   onSelect: PropTypes.func.isRequired,
   selectedFiles: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    // ... other file properties as needed
+    id: PropTypes.string.isRequired,
   })),
 };
 
