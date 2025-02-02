@@ -598,8 +598,24 @@ class NodeDatabaseManagement:
             "amount": amount
         }
 
-        status = self.neo4jDriver.execute_write(
+        new_total = self.neo4jDriver.execute_write(
             CypherQueries.EXPENSE_FUNCTIONALITY,
             parameters
         )
-        logging.info(f"User functionality {functionality} updated by [{amount}] - {status}")
+        logging.info(f"User functionality {functionality} updated by [{amount}] - Total: {new_total}")
+
+    @handle_errors()
+    def get_user_information(self, parameters):
+        """
+        Fetch user information based on a list of parameters.
+
+        :param parameters: List of parameter names to retrieve.
+        :return: Dictionary of user information.
+        """
+        query = CypherQueries.fetch_user_params_query(get_user_context(), parameters)
+
+        records = self.neo4jDriver.execute_read(
+            query
+        )
+
+        return records[0].data()

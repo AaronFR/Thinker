@@ -63,6 +63,7 @@ def create_app():
     from .routes.files_bp import files_bp
     from .routes.categories_bp import categories_bp
     from .routes.messages import messages_bp
+    from .routes.info_bp import info_bp
     app.register_blueprint(home_bp)
     app.register_blueprint(authorisation_bp)
     app.register_blueprint(augmentation_bp)
@@ -71,6 +72,7 @@ def create_app():
     app.register_blueprint(files_bp)
     app.register_blueprint(categories_bp)
     app.register_blueprint(messages_bp)
+    app.register_blueprint(info_bp)
 
     # Register WebSocket handlers
     from .websockets.process_message_ws import init_process_message_ws

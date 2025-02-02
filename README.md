@@ -103,7 +103,6 @@ Some of the features planned for the next few releases..
     - Add option to manually specify if a file should be overwritten or a new version created
   - Delete selected items button
   - Delete category button
-  - Message cost displayed to the user appears to be underestimated by x100..
   - Ability to terminate a mid-process prompt
   - Prompts can fail and the user doesn't know why, it just stalls at 'Processing..'
   - It's hard to select a file vs expanding it for review (solved if that means the same thing though..)

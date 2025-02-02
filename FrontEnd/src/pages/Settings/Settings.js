@@ -1,9 +1,11 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 
 import { handleLogout } from '../../utils/loginUtils';
+import { formatPrice } from '../../utils/numberUtils';
 import AutoExpandingTextarea from '../../utils/AutoExpandingTextarea';
 import TextSizeSlider from '../../utils/textSizeSlider';
 import Navigation from '../../components/Navigation';
+import { apiFetch } from '../../utils/authUtils';
 import TooltipConstants from '../../constants/tooltips';
 
 import './Settings.css';
@@ -11,6 +13,9 @@ import './Settings.css';
 import { SettingsContext } from './SettingsContext';
 
 import { Tooltip } from 'react-tooltip';
+
+
+const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
 const FUNCTIONALITY_STATES = {
   OFF: 'off',
@@ -63,9 +68,16 @@ const FunctionalitySettings = ({
   settings,
   changeSetting,
   handleMessageChange,
+  userInfo
 }) => (
   <div>
     <h2 className="settings-heading">Functionality</h2>
+
+    <h3>Auto select persona</h3>
+    <p>Total costs {formatPrice(parseFloat(userInfo?.select_persona_cost))}</p>
+
+    <h3>Auto select worfklows</h3>
+    <p>Total costs {formatPrice(parseFloat(userInfo?.select_workflow_cost))}</p>
 
     {/* Auto Prompt Engineering Subsection */}
     <AutoPromptEngineeringSection
@@ -73,6 +85,7 @@ const FunctionalitySettings = ({
       onChange={changeSetting}
       promptMessage={settings.promptAugmentationMessage}
       handleMessageChange={handleMessageChange}
+      cost={userInfo?.augmentation_cost}
     />
 
     {/* Prompt Questioning Subsection */}
@@ -81,6 +94,7 @@ const FunctionalitySettings = ({
       onChange={changeSetting}
       promptMessage={settings.promptQuestioningMessage}
       handleMessageChange={handleMessageChange}
+      cost={userInfo?.questioning_cost}
     />
 
     <BestOfSection 
@@ -104,9 +118,11 @@ const PromptQuestioningSection = ({
   onChange,
   promptMessage,
   handleMessageChange,
+  cost,
 }) => (
   <div>
     <h3>Prompt Questioning</h3>
+    <h4>Total cost: {formatPrice(parseFloat(cost))}</h4>
     <label className="settings-label">
       <select
         className="settings-select"
@@ -155,9 +171,11 @@ const AutoPromptEngineeringSection = ({
   onChange,
   promptMessage,
   handleMessageChange,
+  cost
 }) => (
   <div>
     <h3>Auto Prompt Engineering</h3>
+    <h4>Total cost: {formatPrice(parseFloat(cost))}</h4>
     <label className="settings-label">
       <select
         className="settings-select"
@@ -416,6 +434,10 @@ const SystemMessagesSettings = ({ settings, handleMessageChange }) => (
  * Main component that aggregates all settings sections.
  */
 export function Settings() {
+  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost']);
+  const [userInfo, setUserInfo] = useState(null);
+  const [error, setError] = useState(null);
+
   const {
     settings,
     changeSetting,
@@ -444,9 +466,48 @@ export function Settings() {
   const toggleSummarisation = () =>
     toggleSetting('optimization.summarise', 'summarisationEnabled');
 
+  const fetchUserInformation = async () => {
+    setError(null);
+    setUserInfo(null);
+    try {
+      // Filter out empty parameters
+      const filteredParameters = parameters.filter(param => param.trim() !== '');
+
+      if (filteredParameters.length === 0) {
+        throw new Error('Please specify at least one parameter.');
+      }
+
+      const response = await apiFetch(`${FLASK_PORT}/info/user`, {
+        method: 'POST',
+        body: JSON.stringify({ parameters: filteredParameters }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to fetch user information.');
+      }
+
+      const data = await response.json();
+      setUserInfo(data.user_data);
+    } catch (err) {
+      console.error('Error fetching user information:', err);
+      setError(err.message || 'Unable to load user information. Please try again.');
+    }
+  };
+
+  useEffect(() => {
+    fetchUserInformation();
+  }, [])
+
   return (
     <div className="scrollable settings-container">
       <Navigation />
+
+      {error && <p>{error}</p>}
+
+      <small>
+        {userInfo?.email}
+      </small>
 
       <UserInterfaceSettings
         settings={settings}
@@ -458,6 +519,7 @@ export function Settings() {
         settings={settings}
         changeSetting={changeSetting}
         handleMessageChange={handleMessageChange}
+        userInfo={userInfo}
       />
 
       <SummariesSettings

@@ -212,3 +212,15 @@ SET user[$functionality] = COALESCE(user[$functionality], 0.0) + $amount
 RETURN user[$functionality]
 """
 
+
+def fetch_user_params_query(user_id, params):
+    """
+    Define query to get
+    """
+    # Construct dynamic projection
+    projection = ", ".join([f"user.{param} AS {param}" for param in params])
+
+    return f"""
+    MATCH (user:USER {{id: "{user_id}"}})
+    RETURN {projection}
+    """
