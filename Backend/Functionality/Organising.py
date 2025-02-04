@@ -4,6 +4,7 @@ from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification import PersonaConstants
+from Utilities.Contexts import set_functionality_context
 
 
 class Organising:
@@ -33,6 +34,7 @@ class Organising:
         :return:
         """
         config = Configuration.load_config()
+        set_functionality_context(None)  # ToDo: Really different contexts should be isolated by thread.
 
         if not category:
             category = CategoryManagement.categorise_prompt_input(user_prompt, response_message)
