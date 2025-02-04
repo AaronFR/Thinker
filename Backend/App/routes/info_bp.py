@@ -2,11 +2,13 @@ import logging
 
 from flask import Blueprint, request, jsonify
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
+from Utilities.AuthUtils import login_required
 
 info_bp = Blueprint('info', __name__)
 
 
 @info_bp.route('/info/user', methods=['POST'])
+@login_required
 def get_user_info():
     """
     Endpoint to fetch user information based on provided parameters.
