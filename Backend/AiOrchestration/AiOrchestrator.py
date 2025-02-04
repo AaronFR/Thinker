@@ -86,68 +86,9 @@ class AiOrchestrator:
                 else self.prompter.get_open_ai_response(messages, model)
             )
 
-        config = Configuration.load_config()
-        differentiated_reruns = config.get('features', {}).get(
-            "multiple_reruns_enabled",
-            False
-        )
-
-        if differentiated_reruns == 'differentiated' and rerun_count > 1:
-            logging.info("Parallel reruns are enabled. Executing differentiated parallel rerun logic.")
-            return self._handle_differentiated_reruns(messages, model, rerun_count, judgement_criteria, streaming)
-        else:
+        if rerun_count > 1:
             logging.info("Parallel reruns are enabled. Executing non-differentiated parallel rerun logic.")
             return self._handle_reruns(messages, model, rerun_count, judgement_criteria, streaming)
-
-    def _handle_differentiated_reruns(
-            self,
-            messages: List[Dict[str, str]],
-            model: ChatGptModel,
-            rerun_count: int,
-            judgement_criteria: List[str],
-            streaming: bool = False
-    ) -> str:
-        capped_rerun_count = min(rerun_count, len(self.RERUN_SYSTEM_MESSAGES))
-
-        # Prepare modified messages for each rerun based on predefined system messages
-        modified_messages_list = []
-        for i in range(capped_rerun_count):
-            modified_messages = messages.copy()
-            system_message = self.RERUN_SYSTEM_MESSAGES[i]
-            if system_message:
-                modified_messages.insert(0, {"role": "system", "content": system_message})
-            modified_messages_list.append(modified_messages)
-
-        responses = []
-
-        @copy_current_request_context
-        def process_rerun(modified_messages, model):
-            with current_app.app_context():
-                return self.prompter.get_open_ai_response(modified_messages, model)
-
-        with ThreadPoolExecutor(max_workers=capped_rerun_count) as executor:
-            future_to_rerun = {
-                executor.submit(process_rerun, modified_messages, model): idx
-                for idx, modified_messages in enumerate(modified_messages_list, start=1)
-            }
-
-            for future in as_completed(future_to_rerun):
-                idx = future_to_rerun[future]
-                try:
-                    response = future.result()
-                    logging.info(f"Rerun {idx} response: {response}")
-                    responses.append(response)
-                except Exception as exc:
-                    logging.exception(f"Rerun {idx} generated an exception: {exc}")
-                    responses.append(f"Rerun {idx} failed: {exc}")
-
-        new_messages = generate_messages("", judgement_criteria, responses, model)
-        final_response = Utility.execute_with_retries(
-            lambda: self.prompter.get_open_ai_streaming_response(new_messages, model) if streaming
-            else self.prompter.get_open_ai_response(new_messages, model)
-        )
-        logging.info(f"Final quality-checked response: {final_response}")
-        return final_response
 
     def _handle_reruns(
             self,

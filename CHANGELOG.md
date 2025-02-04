@@ -18,7 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- 
+- Best of: 'Differentiated' option, openAi doesn't like multiple simultaneous similar prompts, but primarily it was bugged and is 
+  exceptionally difficult to debug, its simply not a priority before open beta
 
 ## [0.9.4] - 2025-01-29 - Self-Expository
 

@@ -242,14 +242,9 @@ const BestOfSection = ({
       >
         <option value={FUNCTIONALITY_STATES.OFF}>Off</option>
         <option value={FUNCTIONALITY_STATES.ON}>On</option>
-        <option value="differentiated">Differentiated</option>
       </select>
       For a given step runs multiple prompts in parrallel, running an additional call to select for the best response.
     </label>
-    <p>
-      If you select 'differentiated' each response will be instructed to focus on different factors: quality, creativity, etc<br/>
-      Otherwise each run is supplied the same information but will vary randomly.
-    </p>
 
     <p>👍 Improving response coherency or any other selected metric</p>
     <p>👍 Helping inexpensive models compete against more expensive ones</p>
