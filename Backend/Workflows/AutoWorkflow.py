@@ -3,13 +3,14 @@ import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Callable, Optional, List, Dict
 
-from flask import copy_current_request_context
+from flask import copy_current_request_context, g
 from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import find_enum_value, ChatGptModel
 from Data.Files.StorageMethodology import StorageMethodology
-from Utilities.Contexts import add_to_expensed_nodes, get_message_context, get_user_context
+from Utilities.Contexts import add_to_expensed_nodes, get_message_context, get_user_context, set_message_context, \
+    set_user_context
 from Utilities.Decorators import return_for_error
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
 from Workflows.Workflows import generate_auto_workflow
@@ -113,13 +114,19 @@ class AutoWorkflow(BaseWorkflow):
         user_id = get_user_context()
 
         @copy_current_request_context
-        def wrapped_process_file(file_ref, iteration_id):
+        def wrapped_process_file(file_ref, iteration_id, message_id, user_id):
+            """
+            Note: it's at this exact point that the flask g context isn't passed and needs to be re-initialised for the
+            thread
+            """
+            set_message_context(message_id)
+            set_user_context(user_id)
             return self._process_file(process_prompt, initial_message, file_ref, selected_message_ids, best_of, model,
                                       iteration_id, message_id, user_id)
 
         with ThreadPoolExecutor(max_workers=len(file_references)) as executor:
             future_to_file = {
-                executor.submit(wrapped_process_file, file_ref, iteration_id + 1): file_ref
+                executor.submit(wrapped_process_file, file_ref, iteration_id + 1, message_id, user_id): file_ref
                 for iteration_id, file_ref in enumerate(file_references)
             }
 
@@ -129,7 +136,7 @@ class AutoWorkflow(BaseWorkflow):
                     iteration_id, response = future.result()
                     logging.info(f"Processed file '{file_ref}' successfully (Iteration {iteration_id}).")
                 except Exception as e:
-                    logging.error(f"Error processing file '{file_ref}': {e}")
+                    logging.exception(f"Error processing file '{file_ref}': {e}")
 
     def _execute_sequential(
             self,
