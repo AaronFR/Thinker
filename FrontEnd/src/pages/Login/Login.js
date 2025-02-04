@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import { handleLogin, handleRegister, handleLogout } from '../../utils/loginUtils';
 import { About, BetaBanner, Pitch } from '../Guide/Guide';
+import Navigation from "../../components/Navigation";
 
 import { Tooltip } from 'react-tooltip';
 import TooltipConstants from '../../constants/tooltips';
@@ -51,7 +52,9 @@ export function Login({ isAuthenticated }) {
 
     return (
         <div className='scrollable container background'>
+            {isAuthenticated && <Navigation />}
             <div className="auth-container">
+                
                 <div className='logo'>
                     <div className='beta-symbol'>β</div>
                     <div className='thinker'>The Thinker AI</div>

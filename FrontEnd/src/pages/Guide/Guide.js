@@ -231,7 +231,7 @@ export function Guide() {
         The Thinker AI
       </h1>
       <h2 className="centered">
-        🧰 A toolbox for AI 🧰
+        🧰 AI Toolkit 🧰
       </h2>
 
       <About />
