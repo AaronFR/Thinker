@@ -54,7 +54,7 @@ class Neo4jDriver:
         """
         record = result.single()
         if record is None:
-            logging.error("No record returned by the query.")
+            logging.warning(f"No record returned by the query for {field}")
             return None
 
         logging.info(f"Record returned: {record}")
