@@ -102,6 +102,7 @@ const FunctionalitySettings = ({
       promptMessage={settings.bestOfMessage}
       onChange={changeSetting}
       handleMessageChange={handleMessageChange}
+      cost={userInfo?.best_of_cost}
     />
 
     
@@ -225,9 +226,11 @@ const BestOfSection = ({
   onChange,
   promptMessage,
   handleMessageChange,
+  cost
 }) => (
   <div>
     <h3>Best of multiple runs</h3>
+    <h4>Total cost: {formatPrice(parseFloat(cost))}</h4>
     <label className="settings-label">
       <select
         className="settings-select"
@@ -276,9 +279,11 @@ const SummariesSettings = ({
   settings,
   toggleSummarisation,
   handleMessageChange,
+  cost
 }) => (
   <div>
     <h2 className="settings-heading">Summaries</h2>
+    <h4>Total cost: {formatPrice(parseFloat(cost))}</h4>
     <label className="settings-label">
       <input
         type="checkbox"
@@ -429,7 +434,7 @@ const SystemMessagesSettings = ({ settings, handleMessageChange }) => (
  * Main component that aggregates all settings sections.
  */
 export function Settings() {
-  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost']);
+  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'summarise_workflows_cost']);
   const [userInfo, setUserInfo] = useState(null);
   const [error, setError] = useState(null);
 
@@ -521,6 +526,7 @@ export function Settings() {
         settings={settings}
         toggleSummarisation={toggleSummarisation}
         handleMessageChange={handleMessageChange}
+        cost={userInfo?.summarise_workflows_cost}
       />
 
       <SystemMessagesSettings

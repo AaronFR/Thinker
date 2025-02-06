@@ -5,7 +5,7 @@ from AiOrchestration.ChatGptModel import ChatGptModel
 from AiOrchestration.GeminiModel import GeminiModel
 from AiOrchestration.ChatGptMessageBuilder import generate_messages
 
-from Utilities.Decorators import handle_errors
+from Utilities.Decorators import handle_errors, specify_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
 from Utilities.models import determine_prompter
@@ -92,6 +92,7 @@ class AiOrchestrator:
             logging.info("Parallel reruns are enabled. Executing non-differentiated parallel rerun logic.")
             return self._handle_reruns(messages, model, rerun_count, judgement_criteria, streaming)
 
+    @specify_functionality_context("best_of")
     def _handle_reruns(
             self,
             messages: List[Dict[str, str]],

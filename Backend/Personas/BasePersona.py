@@ -144,9 +144,6 @@ class BasePersona:
         :param model: The model to use for generating responses.
         :return: Generated response.
         """
-        if best_of != 1:
-            set_functionality_context("best_of")
-
         file_content = []
         for file_reference in file_references:
             content = StorageMethodology.select().read_file(file_reference)
@@ -176,9 +173,6 @@ class BasePersona:
             model=model
         )
         self.history.append((prompt, response))
-
-        if best_of != 1:
-            set_functionality_context(None)
 
         return response
 
