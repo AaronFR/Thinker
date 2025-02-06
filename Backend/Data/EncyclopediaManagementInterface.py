@@ -72,8 +72,10 @@ class EncyclopediaManagementInterface:
         return redirects_df.set_index('redirect_term')['target_term'].to_dict()
 
     @handle_errors(raise_errors=True)
-    def search_encyclopedia(self, user_messages: List[str]) -> str:
+    def search_encyclopedia(self, user_messages: List[str]) -> str | None:
         """Searches the encyclopedia for terms derived from user messages.
+
+        ToDo: Try moving away from function calls
 
         :param user_messages: List of user input messages containing the terms.
         :return: A string representation of the additional context found.
@@ -83,7 +85,11 @@ class EncyclopediaManagementInterface:
             user_messages,
             SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
         )
-        terms = output['terms']
+        terms = output.get('terms')
+        if not terms:
+            logging.info(f"No terms found in output: {output}")
+            return None
+
         logging.info(f"Terms to search for in {self.ENCYCLOPEDIA_NAME}: {terms}")
 
         return self.extract_terms_from_encyclopedia(terms)
