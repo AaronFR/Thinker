@@ -5,10 +5,11 @@ from typing import Callable, Optional, List, Dict
 from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from AiOrchestration.ChatGptModel import find_enum_value, ChatGptModel
+from AiOrchestration.ChatGptModel import ChatGptModel
 from Functionality.Writing import Writing
 from Utilities.Contexts import add_to_expensed_nodes, get_message_context
 from Utilities.Decorators import return_for_error
+from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
 from Workflows.Instructions import plan_pages_to_write
 from Workflows.Workflows import generate_write_pages_workflow
@@ -42,7 +43,7 @@ class WritePagesWorkflow(BaseWorkflow):
         :return: Summary of the AI's response.
         :raises WorkflowExecutionError: If any step in the workflow fails.
         """
-        model = find_enum_value(tags.get("model") if tags else None)
+        model = find_model_enum_value(tags.get("model") if tags else None)
         best_of = int(tags.get("best of", 1)) if tags else 1
 
         # Determine the number of pages to write

@@ -90,7 +90,7 @@ Some of the features planned for the next few releases..
   pages of each internet search
   - Settings to disable automatic internet searches and specify pages to search through
   - Visual display in workflow of pages visited
-- **Deepseek R1**: And other AI models
+- **Deepseek R1**:
   - Option for selecting the 'default' model (internally and for workflow steps)
 - **Reference/File message optimisation**: Optimised with regards to the prompt referencing them, this could both minimise
   confusion when using a lot of reference material and also serve as basically a 2nd step in the 'though process' of responding

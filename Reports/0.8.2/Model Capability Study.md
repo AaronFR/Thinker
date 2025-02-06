@@ -465,11 +465,12 @@ def log_and_handle_errors(method):
 Applying the Decorator:
 
 ```Python
-Before (ChatGptWrapper.get_open_ai_response):
+Before(ChatGptWrapper.get_ai_response):
+
 
 def get_open_ai_response(...):
     try:
-        # method implementation
+    # method implementation
     except OpenAIError as e:
         logging.exception(f"OpenAI API error", exc_info=e)
         raise

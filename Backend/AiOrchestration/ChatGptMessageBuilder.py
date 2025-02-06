@@ -54,12 +54,12 @@ def build_role_messages(
     role_messages = []
     if assistant_messages:
         role_messages.extend(
-            _format_message(ChatGptRole.ASSISTANT, prompt) for prompt in assistant_messages)
+            format_message(ChatGptRole.ASSISTANT, prompt) for prompt in assistant_messages)
 
     role_messages += [
-         _format_message(ChatGptRole.SYSTEM, prompt) for prompt in system_prompts
+         format_message(ChatGptRole.SYSTEM, prompt) for prompt in system_prompts
      ] + [
-         _format_message(ChatGptRole.USER, prompt) for prompt in user_prompts
+         format_message(ChatGptRole.USER, prompt) for prompt in user_prompts
      ]
 
     if model == ChatGptModel.CHAT_GPT_O1_MINI or model == ChatGptModel.CHAT_GPT_O1_PREVIEW:
@@ -70,7 +70,7 @@ def build_role_messages(
     return role_messages
 
 
-def _format_message(role: ChatGptRole, content: str) -> Dict[str, str]:
+def format_message(role: ChatGptRole, content: str) -> Dict[str, str]:
     """Format a message for OpenAI API."""
     return {"role": role.value, "content": content}
 

@@ -4,8 +4,8 @@ from typing import Callable, Optional, List, Dict
 from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from AiOrchestration.ChatGptModel import find_enum_value
 from Utilities.Decorators import return_for_error
+from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import UPDATE_WORKFLOW_STEP, BaseWorkflow
 
 
@@ -36,7 +36,7 @@ class WriteTestsWorkflow(BaseWorkflow):
         :return: Summary of the AI's response.
         :raises WorkflowExecutionError: If any step in the workflow fails.
         """
-        model = find_enum_value(tags.get("model") if tags else None)
+        model = find_model_enum_value(tags.get("model") if tags else None)
 
         file_name_prompt = (
             "Please provide the filename (including extension) of the code for which tests should be written. "

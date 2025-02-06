@@ -7,11 +7,12 @@ from flask import copy_current_request_context, g
 from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from AiOrchestration.ChatGptModel import find_enum_value, ChatGptModel
+from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import add_to_expensed_nodes, get_message_context, get_user_context, set_message_context, \
     set_user_context
 from Utilities.Decorators import return_for_error
+from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
 from Workflows.Workflows import generate_auto_workflow
 
@@ -47,7 +48,7 @@ class AutoWorkflow(BaseWorkflow):
         :return: AI's response.
         :raises WorkflowExecutionError: If any step in the workflow fails.
         """
-        model = find_enum_value(tags.get("model", None) if tags else None)
+        model = find_model_enum_value(tags.get("model", None) if tags else None)
         best_of = int(tags.get("best of", 1)) if tags else 1  # type validation check needed
 
         if not file_references:

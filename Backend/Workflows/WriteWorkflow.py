@@ -4,12 +4,13 @@ from typing import Callable, Optional, List, Dict
 
 from flask_socketio import emit
 
-from AiOrchestration.ChatGptModel import find_enum_value, ChatGptModel
+from AiOrchestration.ChatGptModel import ChatGptModel
 from Functionality.Coding import Coding
 from Functionality.Writing import Writing
 
 from Utilities.Contexts import get_user_context
 from Utilities.Decorators import return_for_error
+from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
 from Workflows.Instructions import write_file, write_code_file, plan_file_creation
 from Workflows.Workflows import generate_write_workflow
@@ -46,7 +47,7 @@ class WriteWorkflow(BaseWorkflow):
         """
 
         try:
-            model = find_enum_value(tags.get("model") if tags else None)
+            model = find_model_enum_value(tags.get("model") if tags else None)
             best_of = int(tags.get("best of", 1)) if tags else 1
 
             emit("send_workflow",

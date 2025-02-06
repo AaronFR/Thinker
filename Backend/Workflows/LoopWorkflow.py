@@ -2,9 +2,10 @@ import logging
 from typing import Callable, Optional, List, Dict
 from flask_socketio import emit
 
-from AiOrchestration.ChatGptModel import find_enum_value, ChatGptModel
+from AiOrchestration.ChatGptModel import ChatGptModel
 from Utilities.Contexts import add_to_expensed_nodes, get_message_context
 from Utilities.Decorators import return_for_error
+from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
 from Workflows.Workflows import generate_loop_workflow
 
@@ -53,7 +54,7 @@ class LoopWorkflow(BaseWorkflow):
         n_loops = int(tags.get("loops", 2))
         n_loops = min(n_loops, self.MAX_LOOPS)  # Enforce maximum number of loops
 
-        model = find_enum_value(tags.get("model")) if tags and "model" in tags else ChatGptModel.CHAT_GPT_4_OMNI_MINI
+        model = find_model_enum_value(tags.get("model")) if tags and "model" in tags else ChatGptModel.CHAT_GPT_4_OMNI_MINI
         best_of = int(tags.get("best of", 1))
 
         workflow_data = generate_loop_workflow(

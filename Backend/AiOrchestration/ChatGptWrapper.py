@@ -9,7 +9,7 @@ from openai import OpenAI, BadRequestError
 
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Utilities import Globals
-from Utilities.Contexts import get_expensed_nodes, set_expensed_nodes, get_message_context, get_functionality_context
+from Utilities.Contexts import get_message_context, get_functionality_context
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
@@ -61,7 +61,7 @@ class ChatGptWrapper:
     def __init__(self):
         ErrorHandler.setup_logging()
 
-    def get_open_ai_response(
+    def get_ai_response(
             self,
             messages: List[Dict[str, str]],
             model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
@@ -93,7 +93,7 @@ class ChatGptWrapper:
         return responses[0] if rerun_count == 1 else responses or None
 
     @handle_errors(debug_logging=True, raise_errors=True)
-    def get_open_ai_streaming_response(
+    def get_ai_streaming_response(
             self,
             messages: List[Dict[str, str]],
             model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str | List[str]:
@@ -144,10 +144,10 @@ class ChatGptWrapper:
         return full_response
 
     @handle_errors(debug_logging=True, raise_errors=True)
-    def get_open_ai_function_response(self,
-                                      messages: List[Dict[str, str]],
-                                      function_schema,
-                                      model=ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> Dict[str, object]:
+    def get_ai_function_response(self,
+                                 messages: List[Dict[str, str]],
+                                 function_schema,
+                                 model=ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> Dict[str, object]:
         """Requests a structured response from the OpenAI API for function calling.
 
         :param messages: Messages sent to the ChatGPT client
@@ -213,7 +213,7 @@ if __name__ == '__main__':
     #         "role": ChatGptRole.USER.value, "content": """Which llm ai model is the best available at time of writing"""
     #     }  # there are no prizes for guessing the answer
     # ])
-    output = ChatGptWrapper.get_open_ai_streaming_response([
+    output = ChatGptWrapper.get_ai_streaming_response([
         {
             "role": ChatGptRole.USER.value, "content": "Describe Spain?",
         },

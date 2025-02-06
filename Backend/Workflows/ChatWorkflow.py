@@ -3,9 +3,8 @@ from typing import Callable, Optional, List, Dict
 
 from flask_socketio import emit
 
-from AiOrchestration.ChatGptModel import find_enum_value
-from Utilities.Contexts import add_to_expensed_nodes, get_message_context
 from Utilities.Decorators import return_for_error
+from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow
 from Workflows.Workflows import generate_chat_workflow
 
@@ -30,7 +29,7 @@ class ChatWorkflow(BaseWorkflow):
         """
         Executes the chat workflow.
 
-        ToDo: has a bad habit of saying 'the user'
+        ToDo: has a bad habit of saying 'the user' (this happens on Gemini too, its the system message)
 
         :param process_prompt: Function to process user prompts.
         :param initial_message: The user's initial prompt.
@@ -39,9 +38,10 @@ class ChatWorkflow(BaseWorkflow):
         :param tags: Optional dictionary of additional metadata.
         :return: AI's response.
         """
-
         logging.info("Chat workflow selected")
-        model = find_enum_value(tags.get("model") if tags else None)
+
+        # ToDo: Need to add a user configured default model instead of None
+        model = find_model_enum_value(tags.get("model") if tags else None)
         best_of = int(tags.get("best of", 1)) if tags else 1  # type validation check needed
         workflow_details = generate_chat_workflow(
             initial_message=initial_message,
