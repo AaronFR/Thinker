@@ -152,13 +152,16 @@ class GeminiWrapper:
         try:
             user_messages, system_messages = self._prepare_gemini_messages(messages)
             prompt = ' '.join([message['content'] for message in user_messages])  # Gemini takes single prompt
-            system_instructions = ' '.join([message['content'] for message in system_messages])
+
+            system_instructions = None
+            if len(system_messages) > 0:
+                system_instructions = ' '.join([message['content'] for message in system_messages])
 
             outputs = self.gemini_client.models.generate_content_stream(
                 model=model.value,
                 contents=prompt,
                 config=GenerateContentConfig(
-                    system_instruction=system_instructions
+                    system_instruction=system_instructions if system_instructions.strip() else None
                 )
             )
             response_content = []
@@ -173,7 +176,7 @@ class GeminiWrapper:
             self.calculate_prompt_cost(
                 self.gemini_client.models.count_tokens(
                     model=model.value,
-                    contents=prompt + system_instructions
+                    contents=prompt + system_instructions if system_instructions.strip() else prompt
                 ).total_tokens,  # ToDo: You can also retrieve the number of cached tokens
                 self.gemini_client.models.count_tokens(
                     model=model.value,

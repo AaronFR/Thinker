@@ -67,8 +67,8 @@ class AiOrchestrator:
         response = self._handle_rerun(messages, model, rerun_count, judgement_criteria, streaming)
 
         if not response:
-            logging.error("No response from OpenAI API.")
-            raise Exception("Failed to get response from OpenAI API.")
+            logging.error(f"No response from AI API : {self.prompter.__name__}")
+            raise Exception("Failed to get response from AI resource")
 
         logging.info(f"Executor Task Finished, with response:\n{response}")
         return response
