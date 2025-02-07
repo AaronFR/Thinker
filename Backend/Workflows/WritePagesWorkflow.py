@@ -128,7 +128,6 @@ class WritePagesWorkflow(BaseWorkflow):
         :return: List of page instruction messages.
         """
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
-        add_to_expensed_nodes(get_message_context())
 
         response = AiOrchestrator().execute(
             [plan_pages_to_write(page_count)],

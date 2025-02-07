@@ -240,7 +240,6 @@ class AutoWorkflow(BaseWorkflow):
         :return: List of files with their purposes.
         """
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
-        add_to_expensed_nodes(get_message_context())
 
         prompt = (
             "Just give a mark down list of prompts to be used to create a series of pages based on the following user "

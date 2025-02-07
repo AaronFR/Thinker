@@ -71,7 +71,6 @@ class LoopWorkflow(BaseWorkflow):
 
             prompt_message = f"{initial_message}\n\nSpecifically focus on {enhancement_quality} for iteration #{iteration}'."
 
-            add_to_expensed_nodes(get_message_context())
             self._chat_step(
                 iteration=iteration,
                 process_prompt=process_prompt,
@@ -87,7 +86,6 @@ class LoopWorkflow(BaseWorkflow):
             "Review your prior outputs and generate a final version of the output taking into account the user prompt"
             f"Initial user prompt: {initial_message}"
         )
-        add_to_expensed_nodes(get_message_context())
         response = self._chat_step(
             iteration=n_loops + 1,
             process_prompt=process_prompt,

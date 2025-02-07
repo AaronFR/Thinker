@@ -59,7 +59,6 @@ class BaseWorkflow:
         :return: AI's response.
         """
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
-        add_to_expensed_nodes(get_message_context())
 
         response = process_prompt(
             message,
