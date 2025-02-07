@@ -109,7 +109,7 @@ def generate_write_workflow(
         )
 
     workflow = {
-        "version": "1.0",
+        "version": "1.1",
         "workflow_name": "Write Workflow",
         "steps": steps,
         "status": "pending"
@@ -254,7 +254,7 @@ def generate_auto_workflow(
     :raises ValueError: If any of the parameters are invalid.
     """
     workflow = {
-        "version": "1.1",
+        "version": "1.2",
         "workflow_name": "Auto Workflow",
         "steps": [],
         "status": "pending",

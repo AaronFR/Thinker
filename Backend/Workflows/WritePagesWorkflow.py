@@ -1,15 +1,18 @@
+import io
 import logging
 import re
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Callable, Optional, List, Dict
 
+from flask import copy_current_request_context
 from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Writing import Writing
-from Utilities.Contexts import add_to_expensed_nodes, get_message_context, get_user_context
+from Utilities.Contexts import get_message_context, get_user_context, set_message_context, set_user_context
 from Utilities.Decorators import return_for_error
 from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
@@ -86,21 +89,32 @@ class WritePagesWorkflow(BaseWorkflow):
 
         logging.info(f"Preparing to write to file: {file_name} with purpose: {purpose}")
 
-        # Process each page instruction
         content = ""
-        # ToDo:  Switch to threading to via a dict and re-assembling content via the int keys in order
-        for page_instruction in pages:
-            content += self._chat_step(
-                iteration=iteration,
-                process_prompt=process_prompt,
-                message=page_instruction,
-                file_references=file_references or [],
-                selected_message_ids=selected_message_ids or [],
-                best_of=best_of,
-                streaming=False,
-                model=model,
+        USE_PARALLEL_PROCESSING = True
+        if USE_PARALLEL_PROCESSING:
+            content = self.efficient_process_pages(
+                pages,
+                process_prompt,
+                file_references,
+                selected_message_ids,
+                best_of,
+                model,
+                iteration
             )
-            iteration += 1
+            iteration = page_count + iteration
+        else:
+            for page_instruction in pages:
+                content += self._chat_step(
+                    iteration=iteration,
+                    process_prompt=process_prompt,
+                    message=page_instruction,
+                    file_references=file_references or [],
+                    selected_message_ids=selected_message_ids or [],
+                    best_of=best_of,
+                    streaming=False,
+                    model=model,
+                )
+                iteration += 1
 
         file_path = Path(get_user_context()).joinpath(file_name)
         StorageMethodology.select().save_file(content, str(file_path), overwrite=False)
@@ -116,6 +130,70 @@ class WritePagesWorkflow(BaseWorkflow):
         )
 
         return summary
+
+    def efficient_process_pages(
+        self,
+        pages,
+        process_prompt,
+        file_references,
+        selected_message_ids,
+        best_of,
+        model,
+        iteration
+    ):
+        """
+        Processes pages concurrently and efficiently concatenates the results.
+        """
+        message_id = get_message_context()
+        user_id = get_user_context()
+
+        num_pages = len(pages)
+        results = [None] * num_pages  # Pre-allocate list for results
+
+        with ThreadPoolExecutor(max_workers=min(32, num_pages)) as executor:  # Adjust max_workers as needed
+            futures = []
+            for i, page_instruction in enumerate(pages, 0):
+                future = executor.submit(
+                    copy_current_request_context(self.threaded_page_process),
+                    page_instruction,
+                    iteration + i,  # workflow steps are not 0-indexed
+                    process_prompt,
+                    file_references,
+                    selected_message_ids,
+                    best_of,
+                    model,
+                    message_id,
+                    user_id
+                )
+                futures.append((i, future))  # Store index with the future
+
+            for i, future in futures:
+                try:
+                    results[i] = future.result()  # Retrieve results in order
+                except Exception as e:
+                    logging.exception(f"Error processing page {i}: {e}")
+                    # Handle the error appropriately, e.g., log it, return an error string, etc.
+                    results[i] = ""  # set to empty string if there's an error so other operations don't fail
+
+        return ("\n\n".join(results)).strip()  # concatenate the results to one string.
+
+    def threaded_page_process(self, page_instruction, iteration, process_prompt, file_references,
+                              selected_message_ids, best_of, model, message_id, user_id):
+        """Helper function to process a single page instruction."""
+        set_message_context(message_id)
+        set_user_context(user_id)
+
+        response = self._chat_step(
+            iteration=iteration,
+            process_prompt=process_prompt,
+            message=page_instruction,
+            file_references=file_references or [],
+            selected_message_ids=selected_message_ids or [],
+            best_of=best_of,
+            streaming=False,
+            model=model,
+        )
+        return response
 
     def _determine_pages_step(
         self,

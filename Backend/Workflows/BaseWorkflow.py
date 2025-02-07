@@ -100,11 +100,12 @@ class BaseWorkflow:
         :param model: The AI model to use.
         :return: AI's response.
         """
-        emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
+
         config = Configuration.load_config()
 
         should_summarize = config['optimization'].get("summarise", False)
         if should_summarize:
+            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
 
             summarisation_system_message = config.get('systemMessages', {}).get(
                 "summarisationMessage",
@@ -175,7 +176,7 @@ class BaseWorkflow:
         )
         response = response + """
         
-        """  # Otherwise when the next section is appended on it won't be on a new line
+        """  # Otherwise if a new section is appended on it won't be on a new line
 
         file_path = Path(user_id).joinpath(file_name)
 

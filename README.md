@@ -83,7 +83,6 @@ Some of the features planned for the next few releases..
 
 - **Response options**: After a response is output the option exists to reference it immediately, with settings for automatic reference
    or to make saving a message a manual selection rather an automatic process.
-- **Write Workflow**: Needs to be reviewed, tested and optimised, frequently doesn't have anything to do with prompt
 - **Payment System**: Top up system for updating balance (via stripe)
   - Attach receipts to ~~prompts~~, workflows and features. So the user always knows how much they've spent and on what.
 - **Internet access**: Rather than just reading a related summary of a search actually read the content of the first few 
