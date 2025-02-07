@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from typing import List, Dict, Any
 
 import boto3
@@ -7,7 +8,7 @@ import yaml
 from botocore.exceptions import ClientError
 
 from Data.Files.StorageBase import StorageBase
-from Utilities.Constants import DEFAULT_ENCODING
+from Utilities.Constants import DEFAULT_ENCODING, MAX_FILE_SIZE
 from Utilities.Contexts import get_user_context
 from Utilities.Decorators import return_for_error
 
@@ -44,6 +45,9 @@ class S3Manager(StorageBase):
         :param overwrite: If True, allows overwriting existing files.
         :return: True if file was uploaded, else False.
         """
+        if sys.getsizeof(content) > MAX_FILE_SIZE:
+            raise Exception("File is far too large. 10 MB max.")
+
         # Prevent overwriting without an explicit overwrite
         if not overwrite and self.check_file_exists(file_path):
             logging.warning(f"File {file_path} already exists. Not overwriting.")

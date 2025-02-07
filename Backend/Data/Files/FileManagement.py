@@ -2,14 +2,13 @@ import csv
 import os
 import logging
 import shutil
-import sys
 import yaml
 
 from typing import List, Dict, Any
 from deprecated.classic import deprecated
 
 from Data.Files.StorageBase import StorageBase
-from Utilities.Constants import DEFAULT_ENCODING, MAX_FILE_SIZE
+from Utilities.Constants import DEFAULT_ENCODING
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Contexts import get_user_context
@@ -64,8 +63,6 @@ class FileManagement(StorageBase):
 
         :raises Exception: If the file size exceeds the limit.
         """
-        if sys.getsizeof(content) > MAX_FILE_SIZE:
-            raise Exception("File is far too large. 10 MB max.")
 
         data_path = FileManagement()._get_data_path(file_path)
         mode = "w" if overwrite or not os.path.exists(data_path) else "a"
