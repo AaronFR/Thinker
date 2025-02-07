@@ -47,7 +47,7 @@ class S3Manager(StorageBase):
         # Prevent overwriting without an explicit overwrite
         if not overwrite and self.check_file_exists(file_path):
             logging.warning(f"File {file_path} already exists. Not overwriting.")
-            return False
+            content = self.read_file(file_path) + content
 
         try:
             self.s3_client.put_object(
