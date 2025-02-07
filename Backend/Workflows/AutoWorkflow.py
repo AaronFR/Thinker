@@ -114,7 +114,6 @@ class AutoWorkflow(BaseWorkflow):
         message_id = get_message_context()
         user_id = get_user_context()
 
-        @copy_current_request_context
         def wrapped_process_file(file_ref, iteration_id, message_id, user_id):
             """
             Note: it's at this exact point that the flask g context isn't passed and needs to be re-initialised for the
@@ -127,7 +126,7 @@ class AutoWorkflow(BaseWorkflow):
 
         with ThreadPoolExecutor(max_workers=len(file_references)) as executor:
             future_to_file = {
-                executor.submit(wrapped_process_file, file_ref, iteration_id + 1, message_id, user_id): file_ref
+                executor.submit(copy_current_request_context(wrapped_process_file), file_ref, iteration_id + 1, message_id, user_id): file_ref
                 for iteration_id, file_ref in enumerate(file_references)
             }
 
