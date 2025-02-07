@@ -1,13 +1,15 @@
 import logging
 import re
+from pathlib import Path
 from typing import Callable, Optional, List, Dict
 
 from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
+from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Writing import Writing
-from Utilities.Contexts import add_to_expensed_nodes, get_message_context
+from Utilities.Contexts import add_to_expensed_nodes, get_message_context, get_user_context
 from Utilities.Decorators import return_for_error
 from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
@@ -85,19 +87,23 @@ class WritePagesWorkflow(BaseWorkflow):
         logging.info(f"Preparing to write to file: {file_name} with purpose: {purpose}")
 
         # Process each page instruction
+        content = ""
+        # ToDo:  Switch to threading to via a dict and re-assembling content via the int keys in order
         for page_instruction in pages:
-            self._save_file_step(
+            content += self._chat_step(
                 iteration=iteration,
                 process_prompt=process_prompt,
                 message=page_instruction,
                 file_references=file_references or [],
                 selected_message_ids=selected_message_ids or [],
                 best_of=best_of,
-                file_name=file_name,
+                streaming=False,
                 model=model,
-                overwrite=True
             )
             iteration += 1
+
+        file_path = Path(get_user_context()).joinpath(file_name)
+        StorageMethodology.select().save_file(content, str(file_path), overwrite=False)
 
         summary = self._summary_step(
             iteration=iteration,
