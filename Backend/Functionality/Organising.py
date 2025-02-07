@@ -5,6 +5,7 @@ from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.UserContextManagement import UserContextManagement
 from Personas.PersonaSpecification import PersonaConstants
 from Utilities.Contexts import set_functionality_context
+from Utilities.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
 
 
 class Organising:
@@ -56,7 +57,7 @@ class Organising:
         :param content: The content to be summarised
         """
         summary = AiOrchestrator().execute(
-            [PersonaConstants.SUMMARISER_SYSTEM_INSTRUCTIONS],
+            [SUMMARISER_SYSTEM_INSTRUCTIONS],
             [content]
         )
         return summary

@@ -16,7 +16,7 @@ from Utilities.Contexts import get_message_context, get_user_context, set_messag
 from Utilities.Decorators import return_for_error
 from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
-from Workflows.Instructions import plan_pages_to_write
+from Utilities.Instructions import plan_pages_to_write, SIMPLE_SUMMARY_PROMPT
 from Workflows.Workflows import generate_write_pages_workflow
 
 
@@ -27,6 +27,8 @@ class WritePagesWorkflow(BaseWorkflow):
     This workflow manages the creation of multiple pages by processing
     user instructions and generating corresponding files.
     """
+
+    USE_PARALLEL_PROCESSING = True
 
     @return_for_error("An error occurred during the write pages workflow.", debug_logging=True)
     def execute(
@@ -90,8 +92,7 @@ class WritePagesWorkflow(BaseWorkflow):
         logging.info(f"Preparing to write to file: {file_name} with purpose: {purpose}")
 
         content = ""
-        USE_PARALLEL_PROCESSING = True
-        if USE_PARALLEL_PROCESSING:
+        if self.USE_PARALLEL_PROCESSING:
             content = self.efficient_process_pages(
                 pages,
                 process_prompt,
@@ -122,7 +123,7 @@ class WritePagesWorkflow(BaseWorkflow):
         summary = self._summary_step(
             iteration=iteration,
             process_prompt=process_prompt,
-            message="Very quickly summarise what you just wrote and where you wrote it.",
+            message=SIMPLE_SUMMARY_PROMPT,
             file_references=file_references or [],
             selected_message_ids=selected_message_ids or [],
             streaming=True,

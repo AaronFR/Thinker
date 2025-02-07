@@ -12,7 +12,7 @@ from Utilities.Contexts import get_user_context
 from Utilities.Decorators import return_for_error
 from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
-from Workflows.Instructions import write_file, write_code_file, plan_file_creation
+from Utilities.Instructions import write_file, write_code_file, plan_file_creation, SIMPLE_SUMMARY_PROMPT
 from Workflows.Workflows import generate_write_workflow
 
 
@@ -91,7 +91,7 @@ class WriteWorkflow(BaseWorkflow):
             summary = self._summary_step(
                 iteration=3,
                 process_prompt=process_prompt,
-                message="Very quickly summarise what you just wrote and where you wrote it.",
+                message=SIMPLE_SUMMARY_PROMPT,
                 file_references=file_references,
                 selected_message_ids=[],
                 streaming=True,

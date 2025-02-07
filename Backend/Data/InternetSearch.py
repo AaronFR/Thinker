@@ -6,6 +6,7 @@ from urllib.parse import quote_plus
 from duckduckgo_search import DDGS
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Utilities.Instructions import EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE, EXTRACT_SEARCH_TERMS_PROMPT
 
 
 class DuckDuckGoSearchAPI:
@@ -71,24 +72,17 @@ class InternetSearch:
         logging.info("Extracting keywords from the user prompt.")
         try:
             response = AiOrchestrator().execute(
-                [(
-                    "You are an assistant that extracts relevant search phrases from user prompts. "
-                    "Search terms should be lengthy sentences and give contextual context"
-                )],
+                [EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE],
                 [
-                    (
-                        "Extract a key phrase from the following prompt to use for an internet search. "
-                        "Respond with the phrases separated by commas only, without additional text."
-                    ),
+                    EXTRACT_SEARCH_TERMS_PROMPT,  # ToDo: Might not actually need this line
                     user_prompt
                 ],
             )
 
             keywords = self.parse_keywords(response)
-            logging.debug(f"Extracted keywords: {keywords}")
             return keywords
         except Exception as e:
-            logging.error(f"Failed to extract keywords: {e}")
+            logging.exception(f"Failed to extract keywords: {e}")
             return []
 
     @staticmethod

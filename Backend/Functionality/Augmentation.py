@@ -4,6 +4,16 @@ from typing import Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
+from Utilities.Instructions import AUTO_ENGINEER_PROMPT_SYSTEM_MESSAGE, QUESTION_PROMPT_SYSTEM_MESSAGE, \
+    AUTO_SELECT_WORKFLOW_SYSTEM_MESSAGE, AUTO_SELECT_PERSONA_SYSTEM_MESSAGE
+
+
+class Persona(Enum):
+    CODER = "coder"
+    WRITER = "writer"
+
+
+DEFAULT_PERSONA = Persona.CODER
 
 
 class Workflow(Enum):
@@ -12,9 +22,7 @@ class Workflow(Enum):
     AUTO = "auto"
 
 
-class Persona(Enum):
-    CODER = "coder"
-    WRITER = "writer"
+DEFAULT_WORKFLOW = Workflow.CHAT
 
 
 class Augmentation:
@@ -29,9 +37,7 @@ class Augmentation:
         config = Configuration.load_config()
         persona_selection_system_message = config.get('systemMessages', {}).get(
             "personaSelectionMessage",
-            """You are an assistant that selects an appropriate persona based on the user's prompt.
-            Choose one of the following personas: 'coder' or 'writer'.
-            Respond with only the persona name in lowercase."""
+            AUTO_SELECT_PERSONA_SYSTEM_MESSAGE
         )
 
         try:
@@ -48,11 +54,11 @@ class Augmentation:
                 return Persona.WRITER
             else:
                 logging.warning(f"Unexpected persona '{llm_response}' returned by LLM. Defaulting to 'coder'.")
-                return Persona.CODER  # Default persona
+                return DEFAULT_PERSONA
 
         except Exception as e:
             logging.error(f"Error selecting persona: {e}. Defaulting to 'coder'.")
-            return Persona.CODER  # Default persona in case of error
+            return DEFAULT_PERSONA
 
     @staticmethod
     def select_workflow(user_prompt: str, tags: Dict[str, str] = None) -> Workflow:
@@ -72,10 +78,7 @@ class Augmentation:
         config = Configuration.load_config()
         workflow_selection_system_message = config.get('systemMessages', {}).get(
             "workflowSelectionMessage",
-            """You are an assistant that selects the most appropriate workflow for processing a user prompt.
-            Choose one of the following workflows: 'chat', 'write', or 'auto'.
-            Chat is for simply responding to the uesr, write writes the output to a given file and auto processes input files one by one.
-            Respond with only the workflow name in lowercase."""
+            AUTO_SELECT_WORKFLOW_SYSTEM_MESSAGE
         )
 
         try:
@@ -96,11 +99,11 @@ class Augmentation:
                 return Workflow.AUTO
             else:
                 logging.warning(f"Unexpected workflow '{llm_response}' returned by LLM. Defaulting to 'chat'.")
-                return Workflow.CHAT  # Default workflow
+                return DEFAULT_WORKFLOW
 
         except Exception as e:
             logging.error(f"Error selecting workflow: {e}. Defaulting to 'chat'.")
-            return Workflow.CHAT  # Default workflow in case of error
+            return DEFAULT_WORKFLOW
 
     @staticmethod
     def augment_prompt(initial_prompt: str):
@@ -110,10 +113,7 @@ class Augmentation:
         #  You should check.
         prompt_augmentation_system_message = config.get('systemMessages', {}).get(
             "promptAugmentationMessage",
-            """Take the given user prompt and rewrite it augmenting it in line with prompt engineering standards."
-            Increase clarity, state facts simply, use for step by step reasoning. 
-            Returning *only* the new and improved user prompt
-            Augment user prompt with as many prompt engineering standards crammed in as possible, don't answer it"""
+            AUTO_ENGINEER_PROMPT_SYSTEM_MESSAGE
         )
 
         # ToDo: Indepth study of prompt engineering principles and testing to optimise this prompt
@@ -139,8 +139,7 @@ class Augmentation:
 
         prompt_questioning_system_message = config.get('systemMessages', {}).get(
             "promptQuestioningMessage",
-            """Given the following user prompt what are your questions, be concise and targeted. 
-            Just ask the questions you would like to know before answering my prompt, do not actually answer my prompt"""
+            QUESTION_PROMPT_SYSTEM_MESSAGE
         )
 
         # ToDo: Indepth study of what makes for the best questions (after graph database has been developed)

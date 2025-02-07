@@ -12,9 +12,11 @@ from Utilities.models import determine_prompter
 
 
 class AiOrchestrator:
-    """Manages interactions with a given large language model (LLM), specifically designed for processing user input and
+    """
+    Manages interactions with a given large language model (LLM), specifically designed for processing user input and
     generating appropriate responses.
     """
+    # ToDo Re-implement differentiated re-runs
     RERUN_SYSTEM_MESSAGES = [
         "",  # First rerun: No additions
         "prioritize coherency",
@@ -45,7 +47,8 @@ class AiOrchestrator:
         assistant_messages: List[str] = None,
         streaming: bool = False
     ) -> str:
-        """Generate a response based on system and user prompts.
+        """
+        Generate a response based on system and user prompts.
 
         This method constructs messages to be sent to the OpenAI API and retrieves a response.
 
@@ -67,7 +70,7 @@ class AiOrchestrator:
         response = self._handle_rerun(messages, model, rerun_count, judgement_criteria, streaming)
 
         if not response:
-            logging.error(f"No response from AI API : {self.prompter.__name__}")
+            logging.error(f"No response from AI API : {self.prompter}")
             raise Exception("Failed to get response from AI resource")
 
         logging.info(f"Executor Task Finished, with response:\n{response}")
@@ -81,7 +84,7 @@ class AiOrchestrator:
             judgement_criteria: List[str],
             streaming: bool = False
     ) -> str:
-        logging.info("🤔... Executing Prompt")
+        logging.info("EXECUTING PROMPT")
         if rerun_count == 1:
             return Utility.execute_with_retries(
                 lambda: self.prompter.get_ai_streaming_response(messages, model) if streaming
@@ -121,7 +124,11 @@ class AiOrchestrator:
         function_schema: str,
         model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
     ) -> Dict[str, object]:
-        """Generates a structured response based on system and user prompts.
+        """
+        Generates a structured response based on system and user prompts.
+
+        ToDo: I am not a fan of function calls large schema inputs, run tests to check if a well put system prompt and
+        interpreter alone can replace the role of the remaining function calls
 
         :param system_prompts: The system prompts to guide the thinking process
         :param user_prompts: The specific task to address

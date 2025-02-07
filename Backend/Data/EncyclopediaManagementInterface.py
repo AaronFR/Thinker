@@ -10,6 +10,8 @@ from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Personas.PersonaSpecification.PersonaConstants import SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
 from Utilities.Constants import DEFAULT_ENCODING
 from Utilities.Decorators import handle_errors
+from Utilities.Instructions import select_topic_prompt, SELECT_TOPIC_SYSTEM_MESSAGE, \
+    SUMMARISE_WHILE_RETAINING_DETAIL_SYSTEM_MESSAGE, string_of_existing_topics_prompt
 
 
 class EncyclopediaManagementInterface:
@@ -108,8 +110,9 @@ class EncyclopediaManagementInterface:
                 user_topics = nodeDB().list_user_topics()
 
                 selected_topic_raw = AiOrchestrator().execute(
-                    ["Given the list of topics I gave you, just return the most appropriate from the list"],
-                    [term.get("term") + " : " + term.get("specifics"), str(user_topics)]
+                    [SELECT_TOPIC_SYSTEM_MESSAGE],
+                    [select_topic_prompt(term),
+                     string_of_existing_topics_prompt(user_topics)]
                 )
                 selected_topic = selected_topic_raw.strip("'")
 
@@ -131,9 +134,7 @@ class EncyclopediaManagementInterface:
         """
         entry_dict = self.encyclopedia.get(term_name)
         output = AiOrchestrator().execute(
-            [
-                "summarise the following information while retaining essential details."
-            ],
+            [SUMMARISE_WHILE_RETAINING_DETAIL_SYSTEM_MESSAGE],
             [
                 term_name + ": " + specifics,
                 str(entry_dict)

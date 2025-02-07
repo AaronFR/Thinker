@@ -36,12 +36,6 @@ SELECT_WORKFLOW_INSTRUCTIONS = [{
     }
 }]
 
-"""
-ToDo: Documents are themselves are a powerful way of instructing the AI to follow tasks,
- but for now we will avoid this until we can trigger it more deliberately
-"""
-SUMMARISER_SYSTEM_INSTRUCTIONS = """Take the file input and summarise it in a sentence or two."""
-
 SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA = [{
     "name": "executiveDirective",
     "description": """Array of terms you want to know more about""",

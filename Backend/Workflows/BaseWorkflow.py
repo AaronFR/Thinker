@@ -11,6 +11,7 @@ from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context, add_to_expensed_nodes, get_message_context
 from Utilities.Decorators import specify_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
+from Utilities.Instructions import SIMPLE_SUMMARY_PROMPT
 
 UPDATE_WORKFLOW_STEP = "update_workflow_step"
 
@@ -109,7 +110,7 @@ class BaseWorkflow:
 
             summarisation_system_message = config.get('systemMessages', {}).get(
                 "summarisationMessage",
-                "Very quickly summarise what you just wrote and where you wrote it."
+                SIMPLE_SUMMARY_PROMPT
             ) + f"<initial_message>\n{message}\n</initial_message>"
 
             output = process_prompt(

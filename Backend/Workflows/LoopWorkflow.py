@@ -5,6 +5,7 @@ from flask_socketio import emit
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Utilities.Contexts import add_to_expensed_nodes, get_message_context
 from Utilities.Decorators import return_for_error
+from Utilities.Instructions import for_each_focus_on_prompt
 from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
 from Workflows.Workflows import generate_loop_workflow
@@ -69,12 +70,10 @@ class LoopWorkflow(BaseWorkflow):
             enhancement_quality = self.ENHANCEMENT_QUALITIES[iteration - 1] if iteration <= len(self.ENHANCEMENT_QUALITIES) else "enhance the code as needed."
             logging.info(f"Iteration {iteration}: with prompt enhancement.")
 
-            prompt_message = f"{initial_message}\n\nSpecifically focus on {enhancement_quality} for iteration #{iteration}'."
-
             self._chat_step(
                 iteration=iteration,
                 process_prompt=process_prompt,
-                message=prompt_message,
+                message=for_each_focus_on_prompt(initial_message, enhancement_quality, iteration),
                 file_references=file_references or [],
                 selected_message_ids=selected_message_ids or [],
                 best_of=best_of,

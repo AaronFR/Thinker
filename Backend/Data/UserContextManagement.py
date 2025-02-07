@@ -6,6 +6,7 @@ from typing import List, Dict, Any
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
+from Utilities.Instructions import extract_memory_node_terms_system_message, PARSE_MEMORY_NODES_SYSTEM_MESSAGE
 
 ENCYCLOPEDIA_NAME = "User Context"
 
@@ -27,16 +28,7 @@ class UserContextManagement(EncyclopediaManagementInterface):
 
     def __init__(self):
         super().__init__()
-        self.instructions = (
-            "You are an assistant designed to intelligently navigate a node memory system to extract context "
-            "based on provided node names. When a request is made, analyze the given list of context nodes and deduce "
-            "which one likely contains the relevant information. You should prioritize the most specific and pertinent "
-            "nodes related to the inquiry"
-            "For example, if asked for a user's name, consider the nodes provided and ascertain which one, "
-            "such as 'personal', is most likely to contain this data. "
-            "Focus on following succinct, logical conclusions based on the structural relationships of the nodes "
-            "presented."
-        )
+        self.instructions = PARSE_MEMORY_NODES_SYSTEM_MESSAGE
 
     def __new__(cls) -> "UserContextManagement":
         """Ensures a single instance of UserContextManagement."""
@@ -56,29 +48,9 @@ class UserContextManagement(EncyclopediaManagementInterface):
         """
         existing_nodes = NodeDB().list_user_topics()
 
-        instructions = (
-            "You are an assistant that helps store helpful information about the user to long term memory in a "
-            "prescribed format."
-            "This information is used as context in future prompts, so you prioritise ensuring the information is "
-            "relevant to the user and correct. \n"
-            "You prefer writing to one single meaningful topic node name instead of creating new but overly-similar "
-            "nodes."
-            "Identify and return an array of specific, concise items that describe context that can be inferred"
-            " node_name and parameter should ideally be singular words; if not, must have underscores, not spaces. "
-            "Format. fields in brackets are placeholders and should be filled, include the words parameter and content "
-            "they are not to be replaced"
-            "<(topic_name) parameter=\"(sub_topic_name)\" "
-            "content=\"(the content you want to note on that sub_topic)\" />"
-            "Required: (topic_name), (sub_topic_name), (content), all 3 must be included."
-            "Don't actually write the ( brackets.\n"
-            "Example format:\n"
-            "<movies parameter=\"favorite\" content=\"Ikiru\" />"
-            f"\n\nPRE-EXISTING NODES: {existing_nodes}"
-        )
-
         try:
             user_topics_reasoning = AiOrchestrator().execute(
-                [instructions],
+                [extract_memory_node_terms_system_message(existing_nodes)],
                 user_input,
             )
             logging.info(f"User topic reasoning: {user_topics_reasoning}")

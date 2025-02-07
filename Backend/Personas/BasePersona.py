@@ -14,6 +14,7 @@ from Data.Files.StorageMethodology import StorageMethodology
 from Data.UserContextManagement import UserContextManagement
 from Utilities.Contexts import set_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
+from Utilities.Instructions import DEFAULT_BEST_OF_SYSTEM_MESSAGE, DETECT_RELEVANT_HISTORY_SYSTEM_MESSAGE
 from Utilities.Utility import Utility
 from Workflows.ChatWorkflow import ChatWorkflow
 
@@ -189,6 +190,7 @@ class BasePersona:
 
         :param user_messages: List of user messages.
         :param history_messages: The ai will treat these messages as prior context
+        :param best_of: How many times this 'thought' is to be rerun to select for a best response
         :param streaming: Whether to stream the response.
         :param model: The AI model used for generating the response.
         :return: Generated response or an error message.
@@ -217,11 +219,11 @@ class BasePersona:
 
         best_of_system_message = config['systemMessages'].get(
             "bestOfMessage",
-            "Pick and choose from your prior answers to create the best possible answer to the users initial user_message"
+            DEFAULT_BEST_OF_SYSTEM_MESSAGE
         )
         judgement_criteria = (
             best_of_system_message +
-            f"<user_message>{user_messages}</user_message"
+            f"\n<user_message>{user_messages}</user_message>"
         )
 
         try:
@@ -241,6 +243,8 @@ class BasePersona:
 
     def detect_relevant_history(self, user_messages: List[str]) -> List[str]:
         """
+        ⚠ WIP
+
         Automatically determine which prompt-response pairs are relevant for the current context.
 
         ToDo: latter this project would probably be better suited extracting 'concepts' from prompts, these concepts
@@ -256,9 +260,7 @@ class BasePersona:
 
         executor = AiOrchestrator()
         relevant_history_list = executor.execute(
-            ["Review the messages I've entered and am about to enter, check them against the Prompt History, write a "
-             "list of number ids for the prompts. Be very harsh only include a message from the history if it "
-             "DIRECTLY relates to the user message. Otherwise include NOTHING. Just the list of numbers in square brackets, no commentary",
+            [DETECT_RELEVANT_HISTORY_SYSTEM_MESSAGE,
              numbered_prompts],
             user_messages
         )

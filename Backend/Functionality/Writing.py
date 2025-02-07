@@ -7,6 +7,8 @@ from typing import Dict, List, Optional
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
 from Personas.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
+from Utilities.Constants import DEFAULT_EXTENSION
+from Utilities.Instructions import determine_pages_prompt
 
 
 class Writing(enum.Enum):
@@ -30,22 +32,13 @@ class Writing(enum.Enum):
             files = [{
                 "file_name": file_name,
                 "purpose": (
-                    "This is a new or possibly pre-existing file. "
+                    "This is a new or possibly pre-existing file.\n"
                     "Your output will be appended here, so write the file without meta commentary."
                 )
             }]
         else:
-            prompt = (
-                "Give just a filename (with extension) that should be worked on given the following prompt. "
-                "No commentary. "
-                "If appropriate, write multiple files, the ones at the top of the class hierarchy first/on the top."
-            ) if config['beta_features']['multi_file_processing_enabled'] else (
-                "Give just a filename (with extension) that should be worked on given the following prompt. "
-                "No commentary. Select only one singular file alone."
-            )
-
             files_response = AiOrchestrator().execute_function(
-                [prompt],
+                [determine_pages_prompt(config['beta_features']['multi_file_processing_enabled'])],
                 [initial_message],
                 GENERATE_FILE_NAMES_FUNCTION_SCHEMA
             )
@@ -69,7 +62,6 @@ class Writing(enum.Enum):
         :param file_name: The file name to check.
         :return: The file name with a valid extension.
         """
-        DEFAULT_EXTENSION = 'txt'
         path = Path(file_name)
 
         if not path.suffix:

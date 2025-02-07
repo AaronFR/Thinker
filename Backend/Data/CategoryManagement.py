@@ -8,7 +8,9 @@ from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities import Colour
-from Utilities.Decorators import handle_errors
+from Utilities.Instructions import DEFAULT_USER_CATEGORISATION_INSTRUCTIONS, categorisation_system_message, \
+    categorisation_prompt, SELECT_COLOUR_SYSTEM_MESSAGE, CATEGORY_DESCRIPTION_SYSTEM_MESSAGE, \
+    category_description_prompt
 
 
 class CategoryManagement:
@@ -38,7 +40,7 @@ class CategoryManagement:
         return category.replace('/', '_')  # Replace '/' to avoid routing issues
 
     @staticmethod
-    def categorise_prompt_input(user_prompt: str, llm_response: Optional[str] = None) -> str:
+    def categorise_prompt_input(user_prompt: str, llm_response: Optional[str] = None) -> str | None:
         """
         Categorizes the user input based on prompt and optional response using the AI orchestrator.
 
@@ -51,19 +53,13 @@ class CategoryManagement:
 
         user_categorisation_instructions = config.get('systemMessages', {}).get(
             "categorisationMessage",
-            "Given the following prompt-response pair, think through step by step and explain your reasoning."
+            DEFAULT_USER_CATEGORISATION_INSTRUCTIONS
         )
-        instruction_template = (
-            f"LIGHTLY suggested existing categories, you DONT need to follow: {str(category_names)} "
-            f"{user_categorisation_instructions} "
-            "and categorize the data with the most suitable single-word answer."
-            "Write it as <result=\"(your_selection)\""
+
+        category_reasoning = AiOrchestrator().execute(
+            [categorisation_prompt(category_names, user_categorisation_instructions)],
+            [categorisation_system_message(user_prompt, llm_response)]
         )
-        categorisation_instructions = instruction_template.format(category_names)
-
-        categorisation_input = CategoryManagement.CATEGORIZATION_TEMPLATE.format(user_prompt, llm_response or "")
-
-        category_reasoning = AiOrchestrator().execute([categorisation_instructions], [categorisation_input])
         logging.info(f"Category Reasoning: {category_reasoning}")
 
         category = CategoryManagement.extract_result(category_reasoning)
@@ -196,18 +192,16 @@ class CategoryManagement:
         :param category_name: The name of the category.
         :return: A string representing a color in HEX format or None if AI call fails.
         """
-        system_prompts = [
-            "You are a color expert."
-            "Assign a HEX color code that best represents the given category name."
-            "Provide only the HEX code without any additional text."
-        ]
         user_prompts = [f"Category Name: {category_name}"]
 
         config = Configuration.load_config()
         use_ai = config['interface'].get("ai_colour", False)
         try:
             if use_ai:
-                ai_response = AiOrchestrator().execute(system_prompts, user_prompts)
+                ai_response = AiOrchestrator().execute(
+                    [SELECT_COLOUR_SYSTEM_MESSAGE],
+                    user_prompts
+                )
                 ai_color = ai_response.strip()
                 if Colour.is_valid_hex_color(ai_color):
                     logging.info(f"AI assigned color '{ai_color}' for category '{category_name}'.")
@@ -227,23 +221,14 @@ class CategoryManagement:
         :param additional_context: Optionally add the user prompt for additional context
         :return: A short description of the category.
         """
-        user_prompts = []
-        if additional_context:
-            user_prompts.append(additional_context)
-
-        system_messages = [
-            (
-                "You are an assistant that provides very concise, short general category descriptions."
-                "These descriptions help others tell if this category is the right one to file their data into"
-            )
-        ]
-        user_prompts = [
-            additional_context,
-            f"Generate a concise and relevant description for the category: {category_name}"
-        ]
-
         try:
-            description = AiOrchestrator().execute(system_messages, user_prompts)
+            description = AiOrchestrator().execute(
+                [CATEGORY_DESCRIPTION_SYSTEM_MESSAGE],
+                [
+                    category_description_prompt(category_name),
+                    additional_context,
+                ]
+            )
             description = description.strip()
 
             if CategoryManagement.is_valid_description(description):

@@ -900,7 +900,7 @@ from Functionality.Writing import Writing
 from Utilities.Contexts import get_user_context
 from Utilities.Decorators import return_for_error, handle_errors
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
-from Workflows.Instructions import write_file, write_code_file, plan_file_creation
+from Utilities.Instructions import write_file, write_code_file, plan_file_creation
 from Workflows.Workflows import generate_write_pages_workflow
 
 
@@ -1300,7 +1300,7 @@ from Functionality.Writing import Writing
 from Utilities.Contexts import get_user_context
 from Utilities.Decorators import return_for_error
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
-from Workflows.Instructions import write_file, write_code_file, plan_file_creation
+from Utilities.Instructions import write_file, write_code_file, plan_file_creation
 from Workflows.Workflows import generate_write_workflow
 
 
