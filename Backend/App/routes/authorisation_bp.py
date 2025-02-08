@@ -7,6 +7,7 @@ from flask import Blueprint, jsonify, request, make_response
 from flask_jwt_extended import create_access_token, decode_token, unset_jwt_cookies, create_refresh_token
 
 from App import jwt
+from Constants.Exceptions import FAILURE_TO_LOGIN, FAILURE_TO_VALIDATE_SESSION, FAILURE_TO_LOGOUT_SESSION
 from Utilities.Encryption import hash_password, check_password
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.Routing import parse_and_validate_data
@@ -89,7 +90,7 @@ def login():
         response.set_cookie(REFRESH_TOKEN_COOKIE, refresh_token, max_age=604800, httponly=True, secure=True, samesite="None")  # samesite="Strict"
         return response
     except Exception as e:
-        logging.exception("Failed to login")
+        logging.exception(FAILURE_TO_LOGIN)
         return jsonify({"error": "Failed to login"}), 401
 
 
@@ -113,7 +114,7 @@ def validate_session():
         logging.debug(f"Decoded user_id: {user_id}")
         return jsonify({"status": "valid", "user_id": user_id}), 200
     except Exception as e:
-        logging.exception("Error validating token")
+        logging.exception(FAILURE_TO_VALIDATE_SESSION)
         return jsonify({"status": "invalid", "error": "Unexpected error"}), 500
 
 
@@ -127,8 +128,8 @@ def logout():
             logging.info("No access_token cookie found")
             return jsonify({"status": "invalid", "error": "No token provided"}), 401
     except Exception as e:
-        logging.exception("JWT validation failed")
-        return jsonify({"error": "JWT validation failed"}), 401
+        logging.exception(FAILURE_TO_LOGOUT_SESSION)
+        return jsonify({"error": "logout failed"}), 401
 
     response = make_response(jsonify({"message": "Successfully logged out"}))
     unset_jwt_cookies(response)

@@ -2,6 +2,7 @@ import logging
 
 from flask import Blueprint, request, jsonify
 
+from Constants.Exceptions import FAILURE_TO_GET_USER_INFO
 from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 from Utilities.AuthUtils import login_required
@@ -43,7 +44,7 @@ def get_user_info():
         return jsonify({"user_data": user_info}), 200
 
     except Exception as e:
-        logging.exception("Failed to fetch user information.")
+        logging.exception(FAILURE_TO_GET_USER_INFO)
         return jsonify({"error": str(e)}), 500
 
 

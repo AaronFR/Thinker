@@ -6,6 +6,7 @@ from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
+from Constants.Exceptions import FAILURE_TO_REVIEW_RELEVANT_HISTORY
 from Data.Configuration import Configuration
 from Data.EncyclopediaManagement import EncyclopediaManagement
 from Data.InternetSearch import InternetSearch
@@ -272,6 +273,6 @@ class BasePersona:
                 for id in relevant_history_list:
                     relevant_history.append(str(self.history[int(id)]))
         except Exception:
-            logging.exception("Failed to Retrieve relevant history!")
+            logging.exception(FAILURE_TO_REVIEW_RELEVANT_HISTORY)
 
         return relevant_history

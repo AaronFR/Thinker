@@ -9,6 +9,8 @@ from openai import OpenAI, BadRequestError
 
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Constants import Globals
+from Constants.Exceptions import OPEN_AI_FLAGGED_REQUEST_INAPPROPRIATE, \
+    SERVER_FAILURE_OPEN_AI_API, FAILURE_TO_STREAM
 from Utilities.Contexts import get_message_context, get_functionality_context
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
@@ -83,10 +85,10 @@ class ChatGptWrapper:
                 model
             )
         except BadRequestError:
-            logging.exception("OpenAi ChatGpt Flagged user request as Inappropriate")
+            logging.exception(OPEN_AI_FLAGGED_REQUEST_INAPPROPRIATE)
             return "OpenAi ChatGpt Server Flagged Your Request as Inappropriate. Try again, it does this alot."
         except Exception as e:
-            logging.exception("OpenAi server failure")
+            logging.exception(SERVER_FAILURE_OPEN_AI_API)
             raise e
 
         responses = [choice.message.content for choice in chat_completion.choices]
@@ -135,7 +137,7 @@ class ChatGptWrapper:
             )
         except Exception as e:
             emit('response', {'content': e})
-            logging.exception("Failed to stream")
+            logging.exception(FAILURE_TO_STREAM)
         finally:
             yield {'stream_end': True}
         # ToDo: ideally workflow_step_finished events should be sent here
@@ -162,7 +164,6 @@ class ChatGptWrapper:
             messages=messages,
             functions=function_schema,
             function_call={"name": "executiveDirective"}
-            # ToDo:investigate more roles
         )
         self.calculate_prompt_cost(
             chat_completion.usage.prompt_tokens,
@@ -171,7 +172,7 @@ class ChatGptWrapper:
         )
 
         arguments = chat_completion.choices[0].message.function_call.arguments
-        return json.loads(arguments) if arguments else {"error": "NO RESPONSE FROM OpenAI API"}
+        return json.loads(arguments) if arguments else {"error": SERVER_FAILURE_OPEN_AI_API}
 
     def calculate_prompt_cost(self, input_tokens: int, output_tokens: int, model: ChatGptModel):
         """Calculates the estimated cost of a call to OpenAi ChatGpt Api

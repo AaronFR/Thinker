@@ -45,59 +45,55 @@ class WriteWorkflow(BaseWorkflow):
         :return: AI's response.
         :raises WorkflowExecutionError: If any step in the workflow fails.
         """
+        model = find_model_enum_value(tags.get("model") if tags else None)
+        best_of = int(tags.get("best of", 1)) if tags else 1
 
-        try:
-            model = find_model_enum_value(tags.get("model") if tags else None)
-            best_of = int(tags.get("best of", 1)) if tags else 1
+        emit("send_workflow",
+             {"workflow": generate_write_workflow(initial_message, file_references, selected_message_ids,
+                                                  model.value)})
 
-            emit("send_workflow",
-                 {"workflow": generate_write_workflow(initial_message, file_references, selected_message_ids,
-                                                      model.value)})
+        files = Writing.determine_files(initial_message, tags)
+        summary = ""
+        for file in files:
+            file_name = file['file_name']
+            emit(UPDATE_WORKFLOW_STEP, {"step": 2, "file_name": file_name})
+            user_id = get_user_context()
+            file_path = Path(user_id).joinpath(file_name)
+            purpose = file['purpose']
 
-            files = Writing.determine_files(initial_message, tags)
-            summary = ""
-            for file in files:
-                file_name = file['file_name']
-                emit(UPDATE_WORKFLOW_STEP, {"step": 2, "file_name": file_name})
-                user_id = get_user_context()
-                file_path = Path(user_id).joinpath(file_name)
-                purpose = file['purpose']
+            logging.info(f"Writing code to {file_path}, \nPurpose: {purpose}")
 
-                logging.info(f"Writing code to {file_path}, \nPurpose: {purpose}")
-
-                # ToDo: You should check if this pre-planning stage has value and to what degree if so
-                self._chat_step(
-                    iteration=1,
-                    process_prompt=process_prompt,
-                    message=plan_file_creation(initial_message, file_name),
-                    file_references=file_references or [],
-                    selected_message_ids=selected_message_ids or [],
-                    best_of=best_of,
-                    streaming=False,
-                    model=model,
-                )
-
-                self._save_file_step(
-                    iteration=2,
-                    process_prompt=process_prompt,
-                    message=write_code_file(file_name, purpose) if Coding.is_coding_file(file_name)
-                    else write_file(file_name, purpose),
-                    file_references=file_references or [],
-                    selected_message_ids=selected_message_ids or [],
-                    file_name=file_name,
-                    model=model,
-                )
-
-            summary = self._summary_step(
-                iteration=3,
+            # ToDo: You should check if this pre-planning stage has value and to what degree if so
+            self._chat_step(
+                iteration=1,
                 process_prompt=process_prompt,
-                message=SIMPLE_SUMMARY_PROMPT,
-                file_references=file_references,
-                selected_message_ids=[],
-                streaming=True,
-                model=ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+                message=plan_file_creation(initial_message, file_name),
+                file_references=file_references or [],
+                selected_message_ids=selected_message_ids or [],
+                best_of=best_of,
+                streaming=False,
+                model=model,
             )
 
-            return summary
-        except Exception as e:
-            logging.exception("Failed to process write workflow")
+            self._save_file_step(
+                iteration=2,
+                process_prompt=process_prompt,
+                message=write_code_file(file_name, purpose) if Coding.is_coding_file(file_name)
+                else write_file(file_name, purpose),
+                file_references=file_references or [],
+                selected_message_ids=selected_message_ids or [],
+                file_name=file_name,
+                model=model,
+            )
+
+        summary = self._summary_step(
+            iteration=3,
+            process_prompt=process_prompt,
+            message=SIMPLE_SUMMARY_PROMPT,
+            file_references=file_references,
+            selected_message_ids=[],
+            streaming=True,
+            model=ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+        )
+
+        return summary

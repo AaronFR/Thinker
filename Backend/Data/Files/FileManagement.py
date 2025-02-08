@@ -7,6 +7,8 @@ import yaml
 from typing import List, Dict, Any
 from deprecated.classic import deprecated
 
+from Constants.Exceptions import file_not_found, file_not_loaded, FAILURE_TO_LIST_STAGED_FILES, \
+    user_staging_area_not_found, FAILURE_TO_READ_FILE, cannot_read_image_file
 from Data.Files.StorageBase import StorageBase
 from Constants.Constants import DEFAULT_ENCODING
 from Utilities.Decorators import handle_errors
@@ -84,17 +86,17 @@ class FileManagement(StorageBase):
 
         if self.is_image_file(full_address):
             logging.warning(f"Attempted to read an image file: {full_address}")
-            return f"CANNOT READ IMAGE FILE: {full_address}"
+            return cannot_read_image_file(full_address)
 
         try:
             with open(full_path, 'r', encoding=DEFAULT_ENCODING) as file:
                 return file.read()
         except FileNotFoundError:
-            logging.exception(f"File not found: {full_address}")
-            return f"FILE NOT FOUND {full_address}"
+            logging.exception(file_not_found(full_address))
+            return file_not_found(full_address)
         except Exception:
-            logging.exception("An unexpected error occurred while reading the file.")
-            return f"FAILED TO LOAD {full_address}"
+            logging.exception(FAILURE_TO_READ_FILE)
+            return file_not_loaded(full_address)
 
     @handle_errors()
     def move_file(self, current_path: str, new_path: str) -> None:
@@ -159,10 +161,10 @@ class FileManagement(StorageBase):
             logging.info(f"Found the following files in the user's staging directory: {file_paths}")
             return file_paths
         except FileNotFoundError:
-            logging.exception(f"The directory {staging_directory} does not exist.")
+            logging.exception(user_staging_area_not_found(staging_directory))
             return []
         except Exception:
-            logging.exception("An error occurred while listing staged files.")
+            logging.exception(FAILURE_TO_LIST_STAGED_FILES)
             return []
 
     @staticmethod

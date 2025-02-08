@@ -4,6 +4,7 @@ import os
 from flask import Blueprint, jsonify, request
 from werkzeug.utils import secure_filename
 
+from Constants.Exceptions import file_not_deleted
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.AuthUtils import login_required
@@ -64,7 +65,7 @@ def delete_file(file_id):
         logging.info(f"File node {file_id} deleted")
         return jsonify({"message": f"File {file_id} deleted successfully"}), 200
     except Exception as e:
-        logging.exception(f"Failed to delete file {file_id}")
+        logging.exception(file_not_deleted(file_id))
         return jsonify({"error": str(e)}), 500
 
 

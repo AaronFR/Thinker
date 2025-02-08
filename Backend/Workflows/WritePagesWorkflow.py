@@ -9,6 +9,7 @@ from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
+from Constants.Exceptions import failure_to_process_individual_page_iteration
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Writing import Writing
 from Utilities.Contexts import get_message_context, get_user_context, set_message_context, set_user_context
@@ -170,8 +171,8 @@ class WritePagesWorkflow(BaseWorkflow):
             for i, future in futures:
                 try:
                     results[i] = future.result()  # Retrieve results in order
-                except Exception as e:
-                    logging.exception(f"Error processing page {i}: {e}")
+                except Exception:
+                    logging.exception(failure_to_process_individual_page_iteration(i))
                     # Handle the error appropriately, e.g., log it, return an error string, etc.
                     results[i] = ""  # set to empty string if there's an error so other operations don't fail
 

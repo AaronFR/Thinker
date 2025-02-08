@@ -1,5 +1,6 @@
 import logging
 
+from Constants.Exceptions import FAILED_TO_UPDATE_USER_BALANCE
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 from Constants import Globals
 
@@ -35,7 +36,7 @@ class Pricing:
                 "message": f"User balance successfully topped up by ${amount}."
             }
         except Exception as e:
-            logging.exception(f"FAILED TO UPDATE USER BALANCE!: {str(e)}")
+            logging.exception(FAILED_TO_UPDATE_USER_BALANCE)
             return {
                 "status_code": 500,
                 "message": f"Failed to update user balance: {str(e)}"

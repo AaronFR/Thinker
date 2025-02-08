@@ -5,6 +5,7 @@ import yaml
 from typing import List, Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Constants.Exceptions import NOT_IMPLEMENTED_IN_INTERFACE
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Constants.PersonaSpecification.PersonaConstants import SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
 from Constants.Constants import DEFAULT_ENCODING
@@ -148,7 +149,7 @@ class EncyclopediaManagementInterface:
         :param term_name: The name of the term to fetch from Wikipedia.
         :return: A status indicating whether the fetching and updating were successful.
         """
-        raise NotImplementedError("This method should be overridden by subclasses")
+        raise NotImplementedError(NOT_IMPLEMENTED_IN_INTERFACE)
 
 
 if __name__ == '__main__':

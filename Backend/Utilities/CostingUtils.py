@@ -2,6 +2,7 @@ from functools import wraps
 import logging
 from flask import request, jsonify
 
+from Constants.Exceptions import failed_to_retrieve_user_balance
 from Data.Pricing import Pricing
 from Utilities.AuthUtils import decode_jwt
 from Utilities.Contexts import set_user_context
@@ -34,8 +35,8 @@ def balance_required(fn):
         # Retrieve and validate user balance
         try:
             balance = Pricing.get_user_balance()
-        except Exception as e:
-            logging.error(f"Error retrieving balance for user_id {user_id}: {e}")
+        except Exception:
+            logging.exception(failed_to_retrieve_user_balance(user_id))
             return jsonify({"status": "error", "error": "Unable to retrieve balance"}), 500
 
         if not (isinstance(balance, float) or isinstance(balance, int)):

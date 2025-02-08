@@ -7,6 +7,7 @@ import boto3
 import yaml
 from botocore.exceptions import ClientError
 
+from Constants.Exceptions import file_not_loaded, cannot_read_image_file
 from Data.Files.StorageBase import StorageBase
 from Constants.Constants import DEFAULT_ENCODING, MAX_FILE_SIZE, THE_THINKER_S3_STANDARD_BUCKET_ID
 from Utilities.Contexts import get_user_context
@@ -77,7 +78,7 @@ class S3Manager(StorageBase):
 
             if self.is_image_file(full_address):
                 logging.warning(f"Cannot read image file: {full_address}")
-                return f"[CANNOT READ IMAGE FILE: {full_address}]"
+                return cannot_read_image_file(full_address)
 
             response = self.s3_client.get_object(
                 Bucket=os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
@@ -86,7 +87,7 @@ class S3Manager(StorageBase):
             return response['Body'].read().decode(DEFAULT_ENCODING)
         except ClientError as e:
             logging.error(f"Failed to download {full_address}: {e}")
-            return f"FAILED TO LOAD {full_address}"
+            return file_not_loaded(full_address)
 
     def save_yaml(self, yaml_path: str, data: Dict[Any, Any]) -> None:
         """

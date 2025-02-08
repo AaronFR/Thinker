@@ -7,6 +7,7 @@ from flask import copy_current_request_context
 from flask_socketio import emit
 
 from AiOrchestration.ChatGptModel import ChatGptModel
+from Constants.Exceptions import failure_to_process_file_in_workflow
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_message_context, get_user_context, set_message_context, set_user_context
 from Utilities.Decorators import return_for_error
@@ -130,8 +131,8 @@ class AutoWorkflow(BaseWorkflow):
                 try:
                     iteration_id, response = future.result()
                     logging.info(f"Processed file '{file_ref}' successfully (Iteration {iteration_id}).")
-                except Exception as e:
-                    logging.exception(f"Error processing file '{file_ref}': {e}")
+                except Exception:
+                    logging.exception(failure_to_process_file_in_workflow)
 
     def _execute_sequential(
             self,

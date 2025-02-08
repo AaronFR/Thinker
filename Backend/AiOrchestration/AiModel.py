@@ -1,6 +1,8 @@
 import enum
 from typing import Optional, Type, TypeVar
 
+from Constants.Exceptions import NOT_IMPLEMENTED_IN_INTERFACE
+
 # Define a TypeVar constrained to subclasses of AiModel
 T = TypeVar('T', bound='AiModel')
 
@@ -37,4 +39,4 @@ class AiModel(enum.Enum):
         :return: Default enum member.
         :rtype: T
         """
-        raise NotImplementedError("Subclasses must implement the get_default method.")
+        raise NotImplementedError(NOT_IMPLEMENTED_IN_INTERFACE)

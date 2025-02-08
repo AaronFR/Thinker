@@ -6,6 +6,7 @@ from duckduckgo_search import DDGS
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Constants.Instructions import EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE, EXTRACT_SEARCH_TERMS_PROMPT
+from Utilities.Decorators import return_for_error
 
 
 class DuckDuckGoSearchAPI:
@@ -13,7 +14,8 @@ class DuckDuckGoSearchAPI:
     A class to interact with the DuckDuckGo Instant API for performing searches.
     """
 
-    def search(self, query: str) -> dict:
+    @return_for_error({})
+    def search(self, query: str) -> list[dict]:
         """
         Perform a search using the DuckDuckGo API.
         ToDo: Automatically search each result website to
@@ -22,18 +24,15 @@ class DuckDuckGoSearchAPI:
         :return: JSON response from the DuckDuckGo API.
         """
         search_query = quote_plus(query)
-        try:
-            response = DDGS().text(
-                keywords=search_query,
-                region='wt-wt',
-                safesearch='off',
-                max_results=3
-            )
-            logging.info(f"DuckDuckGo search request successful: Response:\n {response}")
-            return response
-        except Exception as e:
-            logging.error(f"DuckDuckGo search request failed: {e}")
-            return {}
+
+        response = DDGS().text(
+            keywords=search_query,
+            region='wt-wt',
+            safesearch='off',
+            max_results=3
+        )
+        logging.info(f"DuckDuckGo search request successful: Response:\n {response}")
+        return response
 
 
 class InternetSearch:
@@ -61,6 +60,7 @@ class InternetSearch:
 
         return results
 
+    @return_for_error([], debug_logging=True)
     def extract_search_terms(self, user_prompt: str) -> List[str]:
         """
         Extract keywords from the user prompt using AI.
@@ -68,21 +68,16 @@ class InternetSearch:
         :param user_prompt: The input prompt from the user.
         :return: A list of extracted keywords.
         """
-        logging.info("Extracting keywords from the user prompt.")
-        try:
-            response = AiOrchestrator().execute(
-                [EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE],
-                [
-                    EXTRACT_SEARCH_TERMS_PROMPT,  # ToDo: Might not actually need this line
-                    user_prompt
-                ],
-            )
+        response = AiOrchestrator().execute(
+            [EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE],
+            [
+                EXTRACT_SEARCH_TERMS_PROMPT,  # ToDo: Might not actually need this line
+                user_prompt
+            ],
+        )
 
-            keywords = self.parse_keywords(response)
-            return keywords
-        except Exception as e:
-            logging.exception(f"Failed to extract keywords: {e}")
-            return []
+        keywords = self.parse_keywords(response)
+        return keywords
 
     @staticmethod
     def parse_keywords(ai_response: str) -> List[str]:

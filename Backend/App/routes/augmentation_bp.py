@@ -9,6 +9,8 @@ from typing import List, Dict
 
 from flask import Blueprint, jsonify, request
 
+from Constants.Exceptions import FAILURE_TO_SELECT_PERSONA, FAILURE_TO_SELECT_WORKFLOW, FAILURE_TO_AUTO_ENGINEER_PROMPT, \
+    FAILURE_TO_QUESTION_PROMPT
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Augmentation import Augmentation
 from Utilities.AuthUtils import login_required
@@ -58,7 +60,7 @@ def select_persona():
         logging.error("Value error: %s", str(ve))
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
-        logging.exception("Failed to select persona")
+        logging.exception(FAILURE_TO_SELECT_PERSONA)
         return jsonify({"error": str(e)}), 500
 
 
@@ -86,14 +88,14 @@ def select_workflow():
         logging.error("Value error: %s", str(ve))
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
-        logging.exception("Failed to select workflow")
+        logging.exception(FAILURE_TO_SELECT_WORKFLOW)
         return jsonify({"error": str(e)}), 500
 
 
 @augmentation_bp.route('/auto_engineer_prompt', methods=['POST'])
 @login_required
 @balance_required
-def augment_user_prompt():
+def auto_engineer_user_prompt():
     """
     Accept a user prompt and augment it in line with prompt engineering standards.
 
@@ -119,7 +121,7 @@ def augment_user_prompt():
         logging.error("Value error: %s", str(ve))
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
-        logging.exception("Failed to augment message")
+        logging.exception(FAILURE_TO_AUTO_ENGINEER_PROMPT)
         return jsonify({"error": str(e)}), 500
 
 
@@ -171,7 +173,7 @@ def question_user_prompt():
         logging.error("Value error: %s", str(ve))
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
-        logging.exception("Failed to generate questions for message")
+        logging.exception(FAILURE_TO_QUESTION_PROMPT)
         return jsonify({"error": str(e)}), 500
 
 

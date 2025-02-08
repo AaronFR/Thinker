@@ -3,9 +3,11 @@ from enum import Enum
 from typing import Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Constants.Exceptions import FAILURE_TO_SELECT_PERSONA, FAILURE_TO_SELECT_WORKFLOW
 from Data.Configuration import Configuration
 from Constants.Instructions import AUTO_ENGINEER_PROMPT_SYSTEM_MESSAGE, QUESTION_PROMPT_SYSTEM_MESSAGE, \
     AUTO_SELECT_WORKFLOW_SYSTEM_MESSAGE, AUTO_SELECT_PERSONA_SYSTEM_MESSAGE
+from Utilities.Decorators import return_for_error
 
 
 class Persona(Enum):
@@ -27,6 +29,7 @@ DEFAULT_WORKFLOW = Workflow.CHAT
 
 class Augmentation:
     @staticmethod
+    @return_for_error(DEFAULT_PERSONA)
     def select_persona(user_prompt: str) -> Persona:
         """
         Selects a persona based on the user prompt.
@@ -40,27 +43,23 @@ class Augmentation:
             AUTO_SELECT_PERSONA_SYSTEM_MESSAGE
         )
 
-        try:
-            llm_response = AiOrchestrator().execute(
-                [persona_selection_system_message],
-                [f"user prompt: \"\"\"\n{user_prompt}\n\"\"\""]
-            ).strip().lower()
+        llm_response = AiOrchestrator().execute(
+            [persona_selection_system_message],
+            [f"user prompt: \"\"\"\n{user_prompt}\n\"\"\""]
+        ).strip().lower()
 
-            logging.info(f"LLM selected persona: {llm_response}")
+        logging.info(f"LLM selected persona: {llm_response}")
 
-            if llm_response == Persona.CODER.value:
-                return Persona.CODER
-            elif llm_response == Persona.WRITER.value:
-                return Persona.WRITER
-            else:
-                logging.warning(f"Unexpected persona '{llm_response}' returned by LLM. Defaulting to 'coder'.")
-                return DEFAULT_PERSONA
-
-        except Exception as e:
-            logging.error(f"Error selecting persona: {e}. Defaulting to 'coder'.")
+        if llm_response == Persona.CODER.value:
+            return Persona.CODER
+        elif llm_response == Persona.WRITER.value:
+            return Persona.WRITER
+        else:
+            logging.warning(f"Unexpected persona '{llm_response}' returned by LLM. Defaulting to {DEFAULT_PERSONA}.")
             return DEFAULT_PERSONA
 
     @staticmethod
+    @return_for_error(DEFAULT_WORKFLOW)
     def select_workflow(user_prompt: str, tags: Dict[str, str] = None) -> Workflow:
         """
         Automatically selects a workflow based on the user prompt using AI deliberation.
@@ -81,28 +80,24 @@ class Augmentation:
             AUTO_SELECT_WORKFLOW_SYSTEM_MESSAGE
         )
 
-        try:
-            # Execute the LLM call to determine the workflow
-            llm_response = AiOrchestrator().execute(
-                [workflow_selection_system_message],
-                [f"user prompt: \"\"\"\n{user_prompt}\n\"\"\""]
-            ).strip().lower()
+        # Execute the LLM call to determine the workflow
+        llm_response = AiOrchestrator().execute(
+            [workflow_selection_system_message],
+            [f"user prompt: \"\"\"\n{user_prompt}\n\"\"\""]
+        ).strip().lower()
 
-            logging.info(f"LLM selected workflow: {llm_response}")
+        logging.info(f"LLM selected workflow: {llm_response}")
 
-            # Validate the response and map it to the Workflow enum
-            if llm_response == Workflow.CHAT.value:
-                return Workflow.CHAT
-            elif llm_response == Workflow.WRITE.value:
-                return Workflow.WRITE
-            elif llm_response == Workflow.AUTO.value:
-                return Workflow.AUTO
-            else:
-                logging.warning(f"Unexpected workflow '{llm_response}' returned by LLM. Defaulting to 'chat'.")
-                return DEFAULT_WORKFLOW
-
-        except Exception as e:
-            logging.error(f"Error selecting workflow: {e}. Defaulting to 'chat'.")
+        # Validate the response and map it to the Workflow enum
+        if llm_response == Workflow.CHAT.value:
+            return Workflow.CHAT
+        elif llm_response == Workflow.WRITE.value:
+            return Workflow.WRITE
+        elif llm_response == Workflow.AUTO.value:
+            return Workflow.AUTO
+        else:
+            logging.warning(
+                f"Unexpected workflow '{llm_response}' returned by LLM. Defaulting to '{DEFAULT_WORKFLOW}'.")
             return DEFAULT_WORKFLOW
 
     @staticmethod

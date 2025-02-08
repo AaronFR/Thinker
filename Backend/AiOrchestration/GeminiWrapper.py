@@ -13,6 +13,7 @@ from AiOrchestration.ChatGptMessageBuilder import format_message
 from AiOrchestration.GeminiModel import GeminiModel
 from Constants import Globals
 from Constants.Constants import GEMINI_API_KEY
+from Constants.Exceptions import FAILURE_TO_STREAM, SERVER_FAILURE_GEMINI_API, NO_RESPONSE_GEMINI_API
 from Utilities.Contexts import get_message_context, get_functionality_context
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
@@ -135,7 +136,7 @@ class GeminiWrapper:
             return output
 
         except Exception as e:
-            logging.exception("Gemini server failure")
+            logging.exception(SERVER_FAILURE_GEMINI_API)
             raise e
 
     @handle_errors(debug_logging=True, raise_errors=True)
@@ -188,7 +189,7 @@ class GeminiWrapper:
 
         except Exception as e:
             emit('response', {'content': str(e)})
-            logging.exception("Failed to stream")
+            logging.exception(FAILURE_TO_STREAM)
         finally:
             yield {'stream_end': True}
             pass
@@ -245,7 +246,7 @@ class GeminiWrapper:
             model
         )
 
-        return json.loads(output) if output else {"error": "NO RESPONSE FROM OpenAI API"}
+        return json.loads(output) if output else {"error": NO_RESPONSE_GEMINI_API}
 
     def calculate_prompt_cost(self, input_tokens: int, output_tokens: int, model: GeminiModel):
         """Calculates the estimated cost of a call to Gemini Api

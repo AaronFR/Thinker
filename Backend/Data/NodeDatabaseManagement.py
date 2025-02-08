@@ -9,6 +9,7 @@ from typing import List, Dict, Optional, Any
 from flask_socketio import emit
 
 from Constants import CypherQueries
+from Constants.Exceptions import failed_to_create_user_topic
 from Data.Neo4jDriver import Neo4jDriver
 from Data.Files.StorageMethodology import StorageMethodology
 from Constants.PersonaSpecification import PersonaConstants
@@ -473,8 +474,8 @@ class NodeDatabaseManagement:
                     CypherQueries.format_create_user_topic_query(term.get('parameter')),
                     parameters
                 )
-            except Exception as e:
-                logging.error(f"Error creating user topic node: {term}, error: {e}")
+            except Exception:
+                logging.exception(failed_to_create_user_topic(str(term)))
 
     @handle_errors()
     def search_for_user_topic_content(self, term: str, synonyms: Optional[List[str]] = None) -> Optional[Dict[str, Any]]:

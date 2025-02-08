@@ -7,6 +7,7 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 from Constants.Instructions import extract_memory_node_terms_system_message, PARSE_MEMORY_NODES_SYSTEM_MESSAGE
+from Utilities.Decorators import return_for_error
 
 ENCYCLOPEDIA_NAME = "User Context"
 
@@ -37,6 +38,7 @@ class UserContextManagement(EncyclopediaManagementInterface):
         return cls._instance
 
     @staticmethod
+    @return_for_error([])
     def extract_terms_from_input(user_input: List[str]) -> List[Dict[str, Any]]:
         """Extracts user_topic contextual information based on the users information
         ToDo: The parameters should be all in lowercase
@@ -48,20 +50,15 @@ class UserContextManagement(EncyclopediaManagementInterface):
         """
         existing_nodes = NodeDB().list_user_topics()
 
-        try:
-            user_topics_reasoning = AiOrchestrator().execute(
-                [extract_memory_node_terms_system_message(existing_nodes)],
-                user_input,
-            )
-            logging.info(f"User topic reasoning: {user_topics_reasoning}")
+        user_topics_reasoning = AiOrchestrator().execute(
+            [extract_memory_node_terms_system_message(existing_nodes)],
+            user_input,
+        )
+        logging.info(f"User topic reasoning: {user_topics_reasoning}")
 
-            parsed_terms = UserContextManagement.parse_user_topic_tags(user_topics_reasoning)
-            logging.info(f"Parsed terms: {parsed_terms}")
-            return parsed_terms
-
-        except Exception as e:
-            logging.exception("Failed to extract terms from user input.", exc_info=e)
-            return []
+        parsed_terms = UserContextManagement.parse_user_topic_tags(user_topics_reasoning)
+        logging.info(f"Parsed terms: {parsed_terms}")
+        return parsed_terms
 
     @staticmethod
     def parse_user_topic_tags(input_text: str) -> List[Dict[str, str]]:

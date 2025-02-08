@@ -2,7 +2,8 @@ import functools
 import logging
 from typing import Union, Callable
 
-from Utilities.Contexts import set_functionality_context
+from Constants.Exceptions import error_in_function
+from Utilities.Contexts import set_functionality_context, get_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
 
 ErrorHandler.setup_logging()
@@ -37,7 +38,7 @@ def handle_errors(func=None, *, debug_logging: bool = False, raise_errors: bool 
 
             return result
         except Exception as e:
-            logging.exception(f"Error in {func.__name__}: {e}", exc_info=e)
+            logging.exception(error_in_function(func.__name__, e), exc_info=e)
             if raise_errors:
                 raise
 
@@ -66,7 +67,7 @@ def return_for_error(return_object: Union[object, Callable], debug_logging: bool
 
                 return result
             except Exception as e:
-                logging.exception(f"Error in {method.__name__}: {e}", exc_info=e)
+                logging.exception(error_in_function(method.__name__, e), exc_info=e)
                 if callable(return_object):
                     return return_object(e)
                 return return_object
@@ -83,11 +84,12 @@ def specify_functionality_context(function_name: str):
     def decorator(method):
         @functools.wraps(method)
         def wrapper(*args, **kwargs):
+            prior_functionality_context = get_functionality_context()
             set_functionality_context(function_name)
 
             result = method(*args, **kwargs)
 
-            set_functionality_context(None)
+            set_functionality_context(prior_functionality_context)
             return result
         return wrapper
     return decorator

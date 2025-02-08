@@ -4,6 +4,7 @@ import re
 from typing import Optional
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Constants.Exceptions import failure_to_suggest_colour_for_category, failure_to_create_description_for_category
 from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
@@ -208,8 +209,8 @@ class CategoryManagement:
                     return ai_color
 
             return Colour.generate_random_colour()
-        except Exception as e:
-            logging.error(f"AI color assignment failed for category '{category_name}': {e}")
+        except Exception:
+            logging.exception(failure_to_suggest_colour_for_category(category_name))
             return None
 
     @staticmethod
@@ -239,8 +240,8 @@ class CategoryManagement:
                     f"AI response '{description}' is not a valid description. Using default description."
                 )
                 return CategoryManagement.default_description(category_name)
-        except Exception as e:
-            logging.error(f"Failed to generate description for category '{category_name}': {e}")
+        except Exception:
+            logging.exception(failure_to_create_description_for_category(category_name))
             return CategoryManagement.default_description(category_name)
 
 

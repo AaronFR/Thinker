@@ -4,6 +4,7 @@ from typing import List, Dict, Union
 from AiOrchestration.ChatGptModel import ChatGptModel
 from AiOrchestration.GeminiModel import GeminiModel
 from AiOrchestration.ChatGptMessageBuilder import generate_messages
+from Constants.Exceptions import AI_RESOURCE_FAILURE, FUNCTION_SCHEMA_EMPTY, NO_RESPONSE_OPEN_AI_API
 
 from Utilities.Decorators import handle_errors, specify_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
@@ -71,7 +72,7 @@ class AiOrchestrator:
 
         if not response:
             logging.error(f"No response from AI API : {self.prompter}")
-            raise Exception("Failed to get response from AI resource")
+            raise Exception(AI_RESOURCE_FAILURE)
 
         logging.info(f"Executor Task Finished, with response:\n{response}")
         return response
@@ -140,7 +141,7 @@ class AiOrchestrator:
 
         if not function_schema:
             logging.error("No function schema found")
-            raise ValueError("Function schema cannot be empty.")
+            raise ValueError(FUNCTION_SCHEMA_EMPTY)
 
         messages = generate_messages(system_prompts, user_prompts, model=model)
         response = Utility.execute_with_retries(
@@ -149,7 +150,7 @@ class AiOrchestrator:
 
         if response is None:
             logging.error("Failed to obtain a valid response from OpenAI API.")
-            raise RuntimeError("OpenAI API returned no response.")
+            raise RuntimeError(NO_RESPONSE_OPEN_AI_API)
 
         logging.info(f"Function evaluated with response: {response}")
         return response
