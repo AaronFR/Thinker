@@ -5,46 +5,44 @@ export const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http
 
 /* Auth */
 
-export const loginEndpoint = `${FLASK_PORT}/login`;
-export const registerEndpoint = `${FLASK_PORT}/register`;
+export const loginEndpoint = `${FLASK_PORT}/auth/login`;
+export const registerEndpoint = `${FLASK_PORT}/auth/register`;
 export const validateSessionEndpoint = `${FLASK_PORT}/auth/validate`;
-export const refreshSessionEndpoint = `${FLASK_PORT}/refresh`;
-export const logoutSessionEndpoint = `${FLASK_PORT}/logout`;
+export const refreshSessionEndpoint = `${FLASK_PORT}/auth/refresh`;
+export const logoutSessionEndpoint = `${FLASK_PORT}/auth/logout`;
 
 /* Augmentation */
 
-export const autoEngineerPromptEndpoint = `${FLASK_PORT}/augmentation/augment_prompt`;
-export const questionPromptEndpoint = `${FLASK_PORT}/augmentation/question_prompt`
 export const selectPersonaEndpoint = `${FLASK_PORT}/augmentation/select_persona`;
 export const selectWorkflowEndpoint = `${FLASK_PORT}/augmentation/select_workflow`;
+export const autoEngineerPromptEndpoint = `${FLASK_PORT}/augmentation/auto_engineer_prompt`;
+export const questionPromptEndpoint = `${FLASK_PORT}/augmentation/question_prompt`
 
 /* Categories */
 
 export const fetchCategoriesEndpoint = `${FLASK_PORT}/categories`
+export const categoriesWithFilesEndpoint = `${FLASK_PORT}/categories_with_files`
 
 /* Files */
 
-export const fileUploadEndpoint = `${FLASK_PORT}/file`;
-export function readFileEndpoint(uuid) {
-  return `${FLASK_PORT}/read_file/${uuid}`
-}
-export const readStagedFilesEndpoint = `${FLASK_PORT}/list_staged_files`
-export function deleteFileEndpoint(fileId) {
-  return `${FLASK_PORT}/file/${fileId}`
+export const fileEndpoint = `${FLASK_PORT}/file`;
+export function fileIdEndpoint(uuid) {
+  return `${FLASK_PORT}/file/${uuid}`
 }
 
-export function fetchFilesForCategoryEndpoint(categoryId, fileName) {
-  return `${FLASK_PORT}/file/${categoryId}/${fileName}`
+export function filesForCategoryNameEndpoint(categoryName) {
+  return `${FLASK_PORT}/files/category/${categoryName.toLowerCase()}`
 }
-export const categoriesWithFilesEndpoint = `${FLASK_PORT}/categories_with_files`
-export function fetchFilesForCategoryNameEndpoint(categoryName) {
-  return `${FLASK_PORT}/files/${categoryName.toLowerCase()}`
+export const readStagedFilesEndpoint = `${FLASK_PORT}/files/list_staged_files`
+
+export function fileAddressEndpoint(categoryId, fileName) {
+  return `${FLASK_PORT}/file_address/${categoryId}/${fileName}`
 }
 
 /* Info */
 
 export const userInfoEndpoint = `${FLASK_PORT}/info/user`;
-export const userConfigEndpoint = `${FLASK_PORT}/data/config`;
+export const userConfigEndpoint = `${FLASK_PORT}/info/config`;
 
 /* Messages */
 

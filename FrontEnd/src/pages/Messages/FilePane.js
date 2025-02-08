@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import FileItem from './FileItem';
 import { withLoadingOpacity, toTitleCase } from '../../utils/textUtils';
 import { apiFetch } from '../../utils/authUtils';
-import { categoriesWithFilesEndpoint, fetchFilesForCategoryNameEndpoint } from '../../constants/endpoints';
+import { categoriesWithFilesEndpoint, filesForCategoryNameEndpoint } from '../../constants/endpoints';
 
 /**
  * FilePane Component
@@ -53,7 +53,7 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles }) => {
     setLoadingFiles(prev => ({ ...prev, [categoryId]: true })); // Start loading for category
     
     try {
-      const response = await apiFetch(fetchFilesForCategoryNameEndpoint(categoryName.toLowerCase()), {
+      const response = await apiFetch(filesForCategoryNameEndpoint(categoryName.toLowerCase()), {
         method: "GET",
       });
 

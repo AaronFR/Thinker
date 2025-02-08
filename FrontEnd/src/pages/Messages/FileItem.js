@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { shortenText, getBasename, MarkdownRenderer, CodeHighlighter } from '../../utils/textUtils';
+import { shortenText, getBasename, CodeHighlighter } from '../../utils/textUtils';
 import { apiFetch } from '../../utils/authUtils';
-import { deleteFileEndpoint, fetchFilesForCategoryEndpoint } from '../../constants/endpoints';
+import {  fileAddressEndpoint, fileIdEndpoint } from '../../constants/endpoints';
 
 /**
  * FileItem Component
@@ -35,7 +35,7 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(fetchFilesForCategoryEndpoint(file.category_id, getBasename(file.name)), {
+      const response = await fetch(fileAddressEndpoint(file.category_id, getBasename(file.name)), {
         method: 'GET',
         credentials: "include"
       });
@@ -77,7 +77,7 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
     setError(null);
 
     try {
-        const response = await apiFetch(deleteFileEndpoint(file.id), {
+        const response = await apiFetch(fileIdEndpoint(file.id), {
             method: 'DELETE',
         });
 

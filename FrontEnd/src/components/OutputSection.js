@@ -7,7 +7,7 @@ import { useSelection } from '../pages/Messages/SelectionContext';
 
 import './styles/OutputSection.css';
 import { apiFetch } from '../utils/authUtils';
-import { readFileEndpoint } from '../constants/endpoints';
+import { fileIdEndpoint } from '../constants/endpoints';
 
 /**
  * During streaming code blocks won't be formatted correctly till the final 
@@ -70,7 +70,7 @@ const OutputSection = ({ message, files, error = '', isProcessing }) => {
    */
   const fetchFileByUUID = useCallback(async (uuid) => {
     try {
-      const response = await apiFetch(readFileEndpoint(uuid), {
+      const response = await apiFetch(fileIdEndpoint(uuid), {
         method: 'GET',
       });
 

@@ -58,7 +58,6 @@ def create_app():
     from .routes.home_bp import home_bp
     from .routes.authorisation_bp import authorisation_bp
     from .routes.augmentation_bp import augmentation_bp
-    from .routes.config_bp import config_bp
     from .routes.pricing_bp import pricing_bp
     from .routes.files_bp import files_bp
     from .routes.categories_bp import categories_bp
@@ -67,7 +66,6 @@ def create_app():
     app.register_blueprint(home_bp)
     app.register_blueprint(authorisation_bp)
     app.register_blueprint(augmentation_bp)
-    app.register_blueprint(config_bp)
     app.register_blueprint(pricing_bp)
     app.register_blueprint(files_bp)
     app.register_blueprint(categories_bp)

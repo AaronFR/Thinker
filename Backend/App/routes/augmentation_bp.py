@@ -1,3 +1,9 @@
+"""
+As in prompt augmentation
+Stores a variety of features for improving the users prompts and helping the user write it, before it's submitted.
+"""
+
+
 import logging
 from typing import List, Dict
 
@@ -10,7 +16,7 @@ from Utilities.Contexts import set_functionality_context
 from Utilities.CostingUtils import balance_required
 from Utilities.Routing import parse_and_validate_data
 
-augmentation_bp = Blueprint('augmentation', __name__)
+augmentation_bp = Blueprint('augmentation', __name__, url_prefix='/augmentation')
 
 SELECT_WORKFLOW_SCHEMA = {
     "user_prompt": {"required": True, "type": str},
@@ -29,8 +35,7 @@ QUESTION_PROMPT_SCHEMA = {
 }
 
 
-# ToDo change to auto_engineer
-@augmentation_bp.route('/augmentation/select_persona', methods=['POST'])
+@augmentation_bp.route('/select_persona', methods=['POST'])
 @login_required
 @balance_required
 def select_persona():
@@ -57,7 +62,7 @@ def select_persona():
         return jsonify({"error": str(e)}), 500
 
 
-@augmentation_bp.route('/augmentation/select_workflow', methods=['POST'])
+@augmentation_bp.route('/select_workflow', methods=['POST'])
 @login_required
 @balance_required
 def select_workflow():
@@ -85,7 +90,7 @@ def select_workflow():
         return jsonify({"error": str(e)}), 500
 
 
-@augmentation_bp.route('/augmentation/augment_prompt', methods=['POST'])
+@augmentation_bp.route('/auto_engineer_prompt', methods=['POST'])
 @login_required
 @balance_required
 def augment_user_prompt():
@@ -118,7 +123,7 @@ def augment_user_prompt():
         return jsonify({"error": str(e)}), 500
 
 
-@augmentation_bp.route('/augmentation/question_prompt', methods=['POST'])
+@augmentation_bp.route('/question_prompt', methods=['POST'])
 @login_required
 @balance_required
 def question_user_prompt():

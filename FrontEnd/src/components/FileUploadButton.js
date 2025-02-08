@@ -6,7 +6,7 @@ import ProgressBar from '../utils/ProgressBar';
 import './styles/FileUploadButton.css';
 
 import TooltipConstants from '../constants/tooltips';
-import { fileUploadEndpoint } from '../constants/endpoints';
+import { fileEndpoint } from '../constants/endpoints';
 
 // Define initial state for the reducer
 const initialState = {
@@ -75,7 +75,7 @@ const FileUploadButton = ({ onUploadSuccess }) => {
       const signal = controller.signal;
 
       try {
-        const response = await fetch(fileUploadEndpoint, {
+        const response = await fetch(fileEndpoint, {
           method: 'POST',
           body: formData,
           signal,

@@ -13,7 +13,7 @@ from Utilities.Routing import parse_and_validate_data
 from Utilities.Contexts import set_user_context
 from Utilities.AuthUtils import decode_jwt, login_required, ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE
 
-authorisation_bp = Blueprint('auth', __name__)
+authorisation_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 ERROR_NO_ID = "No user id found"
 BLACKLIST = set()  # ToDo: Will need to be more robust
@@ -93,7 +93,7 @@ def login():
         return jsonify({"error": "Failed to login"}), 401
 
 
-@authorisation_bp.route('/auth/validate', methods=['GET'])
+@authorisation_bp.route('/validate', methods=['GET'])
 def validate_session():
     """
     ToDo: Might want to confirm user still exists in system if blacklisting is implemented

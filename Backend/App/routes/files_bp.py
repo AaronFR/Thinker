@@ -13,38 +13,13 @@ from Utilities.Contexts import get_user_context
 files_bp = Blueprint('files', __name__)
 
 
-@files_bp.route('/files/<category_name>', methods=['GET'])
-@login_required
-def get_files(category_name):
-    category_name = category_name.lower()
-    return fetch_entity(nodeDB().get_files_by_category(category_name), "files")
+# CRUD by ID
 
 
-# ToDo: Rename endpoints logically
-@files_bp.route('/read_file/<file_id>', methods=['GET'])
+@files_bp.route('/file/<file_id>', methods=['GET'])
 @login_required
 def get_file_by_id(file_id):
     return fetch_entity(nodeDB().get_file_by_id(file_id), "file")
-
-
-@files_bp.route('/file/<file_category>/<file_name>', methods=['GET'])
-@login_required
-def get_file_content(file_category, file_name):
-    full_path = str(file_category) + "/" + file_name
-
-    logging.info(f"File node {file_category}/{file_name} content extracted")
-    return fetch_entity(StorageMethodology.select().read_file(full_path), "content")
-
-
-@files_bp.route('/list_staged_files', methods=['GET'])
-@login_required
-def list_files():
-    """
-    Lists the staged files for the user on prompt submission
-
-    :return:
-    """
-    return fetch_entity(StorageMethodology.select().list_staged_files(), "files")
 
 
 @files_bp.route('/file', methods=['POST'])
@@ -78,9 +53,9 @@ def upload_file():
 @login_required
 def delete_file(file_id):
     """
-    ToDo: Doesn't actually delete the file in storage
+    ToDo: Doesn't actually delete the file in local storage
 
-    :param file_id:
+    :param file_id: the UUID of the file to delete
     :return:
     """
     try:
@@ -91,3 +66,36 @@ def delete_file(file_id):
     except Exception as e:
         logging.exception(f"Failed to delete file {file_id}")
         return jsonify({"error": str(e)}), 500
+
+
+# List files
+
+
+@files_bp.route('/files/category/<category_name>', methods=['GET'])
+@login_required
+def list_files_in_category(category_name):
+    category_name = category_name.lower()
+    return fetch_entity(nodeDB().get_files_by_category(category_name), "files")
+
+
+@files_bp.route('/files/list_staged_files', methods=['GET'])
+@login_required
+def list_staged_files():
+    """
+    Lists the staged files for the user on prompt submission
+
+    :return:
+    """
+    return fetch_entity(StorageMethodology.select().list_staged_files(), "files")
+
+
+# By File Address
+
+
+@files_bp.route('/file_address/<file_category>/<file_name>', methods=['GET'])
+@login_required
+def get_file_content_by_address(file_category, file_name):
+    full_path = str(file_category) + "/" + file_name
+
+    logging.info(f"File node {file_category}/{file_name} content extracted")
+    return fetch_entity(StorageMethodology.select().read_file(full_path), "content")

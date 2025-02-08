@@ -1,4 +1,4 @@
-import { loginEndpoint, logoutSessionEndpoint, registerEndpoint, routeToEndpoint } from "../constants/endpoints";
+import { loginEndpoint, logoutSessionEndpoint, registerEndpoint } from "../constants/endpoints";
 import { apiFetch } from "./authUtils";
 
     
