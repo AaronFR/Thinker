@@ -12,9 +12,8 @@ from Data.InternetSearch import InternetSearch
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Data.UserContextManagement import UserContextManagement
-from Utilities.Contexts import set_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
-from Utilities.Instructions import DEFAULT_BEST_OF_SYSTEM_MESSAGE, DETECT_RELEVANT_HISTORY_SYSTEM_MESSAGE
+from Constants.Instructions import DEFAULT_BEST_OF_SYSTEM_MESSAGE, DETECT_RELEVANT_HISTORY_SYSTEM_MESSAGE
 from Utilities.Utility import Utility
 from Workflows.ChatWorkflow import ChatWorkflow
 

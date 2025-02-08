@@ -4,7 +4,7 @@ import time
 from typing import List, Dict, Callable, Any
 
 import tiktoken
-from Utilities import Constants
+from Constants import Constants
 from AiOrchestration.ChatGptModel import ChatGptModel
 
 

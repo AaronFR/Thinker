@@ -8,7 +8,7 @@ from flask_socketio import emit
 from openai import OpenAI, BadRequestError
 
 from AiOrchestration.ChatGptModel import ChatGptModel
-from Utilities import Globals
+from Constants import Globals
 from Utilities.Contexts import get_message_context, get_functionality_context
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler

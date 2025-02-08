@@ -1,4 +1,3 @@
-import logging
 from abc import abstractmethod
 from typing import Callable, Any, List
 
@@ -11,7 +10,7 @@ from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context, add_to_expensed_nodes, get_message_context
 from Utilities.Decorators import specify_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
-from Utilities.Instructions import SIMPLE_SUMMARY_PROMPT
+from Constants.Instructions import SIMPLE_SUMMARY_PROMPT
 
 UPDATE_WORKFLOW_STEP = "update_workflow_step"
 

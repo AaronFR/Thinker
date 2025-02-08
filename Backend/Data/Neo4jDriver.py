@@ -3,6 +3,8 @@ import os
 from typing import Optional, Any, Dict
 
 from neo4j import GraphDatabase, basic_auth
+
+from Constants.Constants import NEO4J_URI, NEO4J_PASSWORD
 from Utilities.Decorators import handle_errors
 
 
@@ -13,8 +15,8 @@ class Neo4jDriver:
 
     def __init__(self):
         """Initializes the Neo4jDriver and establishes a connection to the database."""
-        uri = os.getenv("NEO4J_URI")
-        password = os.getenv("NEO4J_PASSWORD")
+        uri = os.getenv(NEO4J_URI)
+        password = os.getenv(NEO4J_PASSWORD)
         if not uri or not password:
             raise ValueError("NEO4J_URI and NEO4J_PASSWORD environment variables must be set.")
 

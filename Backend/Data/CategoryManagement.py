@@ -8,7 +8,7 @@ from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities import Colour
-from Utilities.Instructions import DEFAULT_USER_CATEGORISATION_INSTRUCTIONS, categorisation_system_message, \
+from Constants.Instructions import DEFAULT_USER_CATEGORISATION_INSTRUCTIONS, categorisation_system_message, \
     categorisation_prompt, SELECT_COLOUR_SYSTEM_MESSAGE, CATEGORY_DESCRIPTION_SYSTEM_MESSAGE, \
     category_description_prompt
 

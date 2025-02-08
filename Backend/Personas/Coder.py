@@ -1,6 +1,6 @@
-from typing import List, Dict, Any
+from typing import Dict, Any
 from Personas.BasePersona import BasePersona
-from Personas.PersonaSpecification import CoderSpecification
+from Constants.PersonaSpecification import CoderSpecification
 from Utilities.ErrorHandler import ErrorHandler
 from Workflows.AutoWorkflow import AutoWorkflow
 from Workflows.ChatWorkflow import ChatWorkflow

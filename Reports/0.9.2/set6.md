@@ -900,9 +900,8 @@ from Functionality.Writing import Writing
 from Utilities.Contexts import get_user_context
 from Utilities.Decorators import return_for_error, handle_errors
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
-from Utilities.Instructions import write_file, write_code_file, plan_file_creation
+from Constants.Instructions import write_file, write_code_file, plan_file_creation
 from Workflows.Workflows import generate_write_pages_workflow
-
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)
@@ -926,12 +925,12 @@ class WritePagesWorkflow(BaseWorkflow):
     @return_for_error("An error occurred during the write pages workflow.", debug_logging=True)
     @handle_errors
     def execute(
-        self,
-        process_prompt: Callable[..., str],
-        initial_message: str,
-        file_references: Optional[List[str]] = None,
-        selected_message_ids: Optional[List[str]] = None,
-        tags: Optional[Dict[str, str]] = None,
+            self,
+            process_prompt: Callable[..., str],
+            initial_message: str,
+            file_references: Optional[List[str]] = None,
+            selected_message_ids: Optional[List[str]] = None,
+            tags: Optional[Dict[str, str]] = None,
     ) -> str:
         """
         Execute all steps of the write pages workflow.
@@ -1030,11 +1029,11 @@ class WritePagesWorkflow(BaseWorkflow):
         return summary
 
     def _determine_pages_step(
-        self,
-        iteration: int,
-        initial_message: str,
-        page_count: int,
-        model: ChatGptModel,
+            self,
+            iteration: int,
+            initial_message: str,
+            page_count: int,
+            model: ChatGptModel,
     ) -> List[str]:
         """
         Determine the list of page instructions to be processed.
@@ -1300,9 +1299,8 @@ from Functionality.Writing import Writing
 from Utilities.Contexts import get_user_context
 from Utilities.Decorators import return_for_error
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
-from Utilities.Instructions import write_file, write_code_file, plan_file_creation
+from Constants.Instructions import write_file, write_code_file, plan_file_creation
 from Workflows.Workflows import generate_write_workflow
-
 
 # Configure logger for this module
 logger = logging.getLogger(__name__)
@@ -1326,12 +1324,12 @@ class WriteWorkflow(BaseWorkflow):
 
     @return_for_error("An error occurred during the write workflow.", debug_logging=True)
     def execute(
-        self,
-        process_prompt: Callable[[str, List[str], List[str], bool, ChatGptModel], str],
-        initial_message: str,
-        file_references: Optional[List[str]] = None,
-        selected_message_ids: Optional[List[str]] = None,
-        tags: Optional[Dict[str, str]] = None,
+            self,
+            process_prompt: Callable[[str, List[str], List[str], bool, ChatGptModel], str],
+            initial_message: str,
+            file_references: Optional[List[str]] = None,
+            selected_message_ids: Optional[List[str]] = None,
+            tags: Optional[Dict[str, str]] = None,
     ) -> str:
         """
         Execute all steps of the write workflow.
@@ -1395,7 +1393,8 @@ class WriteWorkflow(BaseWorkflow):
             )
 
             # Step 2: Write or rewrite the file
-            write_message = write_code_file(file_name, purpose) if Coding.is_coding_file(file_name) else write_file(file_name, purpose)
+            write_message = write_code_file(file_name, purpose) if Coding.is_coding_file(file_name) else write_file(
+                file_name, purpose)
             self._save_file_step(
                 iteration=index + 1,
                 process_prompt=process_prompt,

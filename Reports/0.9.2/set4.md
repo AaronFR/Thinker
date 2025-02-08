@@ -418,7 +418,7 @@ import shortuuid
 from datetime import datetime
 from typing import List, Dict
 
-from Data import CypherQueries
+from Constants import CypherQueries
 from Data.Neo4jDriver import Neo4jDriver
 from Data.Files.StorageMethodology import StorageMethodology
 from Personas.PersonaSpecification import PersonaConstants

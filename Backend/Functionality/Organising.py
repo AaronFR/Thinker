@@ -3,9 +3,8 @@ from Data.CategoryManagement import CategoryManagement
 from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.UserContextManagement import UserContextManagement
-from Personas.PersonaSpecification import PersonaConstants
 from Utilities.Contexts import set_functionality_context
-from Utilities.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
+from Constants.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
 
 
 class Organising:

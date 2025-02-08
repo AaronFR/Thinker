@@ -53,7 +53,6 @@ export function fetchMessagesByCategoryEndpoint(categoryName) {
   return `${FLASK_PORT}/messages/${categoryName}`;
 }
 
-
 /* Pricing */
 
 export const userBalanceEndpoint = `${FLASK_PORT}/pricing/balance`

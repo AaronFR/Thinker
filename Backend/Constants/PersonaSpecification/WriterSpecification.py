@@ -1,6 +1,6 @@
 import logging
 
-from Personas.PersonaSpecification.PersonaConstants import WRITER
+from Constants.PersonaSpecification.PersonaConstants import WRITER
 from Data.Configuration import Configuration
 
 

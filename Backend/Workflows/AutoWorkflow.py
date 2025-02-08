@@ -10,7 +10,7 @@ from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_message_context, get_user_context, set_message_context, set_user_context
 from Utilities.Decorators import return_for_error
-from Utilities.Instructions import multiple_pages_summary_message, for_each_focus_on_prompt
+from Constants.Instructions import multiple_pages_summary_message, for_each_focus_on_prompt
 from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow
 from Workflows.Workflows import generate_auto_workflow

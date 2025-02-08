@@ -1,5 +1,4 @@
 import logging
-import os
 import pandas as pd
 import yaml
 
@@ -7,10 +6,10 @@ from typing import List, Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
-from Personas.PersonaSpecification.PersonaConstants import SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
-from Utilities.Constants import DEFAULT_ENCODING
+from Constants.PersonaSpecification.PersonaConstants import SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
+from Constants.Constants import DEFAULT_ENCODING
 from Utilities.Decorators import handle_errors
-from Utilities.Instructions import select_topic_prompt, SELECT_TOPIC_SYSTEM_MESSAGE, \
+from Constants.Instructions import select_topic_prompt, SELECT_TOPIC_SYSTEM_MESSAGE, \
     SUMMARISE_WHILE_RETAINING_DETAIL_SYSTEM_MESSAGE, string_of_existing_topics_prompt
 
 

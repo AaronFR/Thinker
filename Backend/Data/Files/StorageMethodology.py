@@ -1,5 +1,7 @@
 import os
 
+from Constants.Constants import THE_THINKER_S3_STANDARD_ACCESS_KEY, THE_THINKER_S3_STANDARD_SECRET_ACCESS_KEY, \
+    STORAGE_TYPE, LOCAL_STORAGE, AWS_S3_STORAGE
 from Data.Files.FileManagement import FileManagement
 from Data.Files.S3Manager import S3Manager
 from Data.Files.StorageBase import StorageBase
@@ -22,13 +24,13 @@ class StorageMethodology:
                            required environment variables are not set.
         :return: An instance of StorageBase subclass either FileManagement or S3Manager.
         """
-        storage_type = os.getenv("STORAGE_TYPE", "local")
+        storage_type = os.getenv(STORAGE_TYPE, LOCAL_STORAGE)
 
-        if storage_type == 'local':
+        if storage_type == LOCAL_STORAGE:
             return FileManagement()
-        elif storage_type == 's3':
-            access_key = os.getenv("THE-THINKER-S3-STANDARD-ACCESS-KEY")
-            secret_key = os.getenv("THE-THINKER-S3-STANDARD-SECRET-ACCESS-KEY")
+        elif storage_type == AWS_S3_STORAGE:
+            access_key = os.getenv(THE_THINKER_S3_STANDARD_ACCESS_KEY)
+            secret_key = os.getenv(THE_THINKER_S3_STANDARD_SECRET_ACCESS_KEY)
 
             if not access_key or not secret_key:
                 raise ValueError("AWS access keys must be defined for S3 storage.")

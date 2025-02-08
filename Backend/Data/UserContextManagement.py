@@ -6,7 +6,7 @@ from typing import List, Dict, Any
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
-from Utilities.Instructions import extract_memory_node_terms_system_message, PARSE_MEMORY_NODES_SYSTEM_MESSAGE
+from Constants.Instructions import extract_memory_node_terms_system_message, PARSE_MEMORY_NODES_SYSTEM_MESSAGE
 
 ENCYCLOPEDIA_NAME = "User Context"
 

@@ -2,7 +2,7 @@ import logging
 
 import bcrypt
 
-from Utilities.Constants import DEFAULT_ENCODING
+from Constants.Constants import DEFAULT_ENCODING
 
 
 def hash_password(password):

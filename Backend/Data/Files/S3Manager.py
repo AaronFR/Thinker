@@ -8,7 +8,7 @@ import yaml
 from botocore.exceptions import ClientError
 
 from Data.Files.StorageBase import StorageBase
-from Utilities.Constants import DEFAULT_ENCODING, MAX_FILE_SIZE
+from Constants.Constants import DEFAULT_ENCODING, MAX_FILE_SIZE, THE_THINKER_S3_STANDARD_BUCKET_ID
 from Utilities.Contexts import get_user_context
 from Utilities.Decorators import return_for_error
 
@@ -55,7 +55,7 @@ class S3Manager(StorageBase):
 
         try:
             self.s3_client.put_object(
-                Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
+                Bucket=os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
                 Key=self.convert_to_s3_path(file_path),
                 Body=content
             )
@@ -80,7 +80,7 @@ class S3Manager(StorageBase):
                 return f"[CANNOT READ IMAGE FILE: {full_address}]"
 
             response = self.s3_client.get_object(
-                Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
+                Bucket=os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
                 Key=self.convert_to_s3_path(full_address)
             )
             return response['Body'].read().decode(DEFAULT_ENCODING)
@@ -100,7 +100,7 @@ class S3Manager(StorageBase):
 
         try:
             self.s3_client.put_object(
-                Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
+                Bucket=os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
                 Key=self.convert_to_s3_path(full_path),
                 Body=yaml_content,
                 ContentType='application/x-yaml'
@@ -121,7 +121,7 @@ class S3Manager(StorageBase):
 
         try:
             response = self.s3_client.get_object(
-                Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
+                Bucket=os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
                 Key=self.convert_to_s3_path(full_path)
             )
             yaml_content = response['Body'].read().decode(DEFAULT_ENCODING)
@@ -142,13 +142,13 @@ class S3Manager(StorageBase):
         """
         try:
             self.s3_client.copy_object(
-                Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
-                CopySource={'Bucket': os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
+                Bucket=os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
+                CopySource={'Bucket': os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
                             'Key': self.convert_to_s3_path(current_path)},
                 Key=self.convert_to_s3_path(new_path)
             )
             self.s3_client.delete_object(
-                Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
+                Bucket=os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
                 Key=self.convert_to_s3_path(current_path)
             )
             logging.info(f"File {current_path} moved to {new_path}.")
@@ -164,7 +164,7 @@ class S3Manager(StorageBase):
         try:
             paginator = self.s3_client.get_paginator('list_objects_v2')
             pages = paginator.paginate(
-                Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
+                Bucket=os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
                 Prefix=get_user_context()
             )
 
@@ -213,7 +213,7 @@ class S3Manager(StorageBase):
 
         try:
             response = self.s3_client.list_objects_v2(
-                Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
+                Bucket=os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
                 Prefix=directory_prefix,
                 MaxKeys=1
             )
@@ -233,7 +233,7 @@ class S3Manager(StorageBase):
         """
         try:
             self.s3_client.head_object(
-                Bucket=os.getenv("THE-THINKER-S3-STANDARD-BUCKET-ID"),
+                Bucket=os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
                 Key=self.convert_to_s3_path(file_key)
             )
             return True

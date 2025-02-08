@@ -11,7 +11,8 @@ from google.genai.types import GenerateContentResponse, GenerateContentConfig
 
 from AiOrchestration.ChatGptMessageBuilder import format_message
 from AiOrchestration.GeminiModel import GeminiModel
-from Utilities import Globals
+from Constants import Globals
+from Constants.Constants import GEMINI_API_KEY
 from Utilities.Contexts import get_message_context, get_functionality_context
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
@@ -54,7 +55,7 @@ class GeminiWrapper:
         """Create a new instance or return the existing one."""
         if cls._instance is None:
             cls._instance = super(GeminiWrapper, cls).__new__(cls)
-            cls._instance.gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+            cls._instance.gemini_client = genai.Client(api_key=os.getenv(GEMINI_API_KEY))
             cls._instance.cost_config = CostConfiguration()  # Load cost configurations
         return cls._instance
 

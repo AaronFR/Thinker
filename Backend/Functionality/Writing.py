@@ -6,9 +6,9 @@ from typing import Dict, List, Optional
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
-from Personas.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
-from Utilities.Constants import DEFAULT_EXTENSION
-from Utilities.Instructions import determine_pages_prompt
+from Constants.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
+from Constants.Constants import DEFAULT_EXTENSION
+from Constants.Instructions import determine_pages_prompt
 
 
 class Writing(enum.Enum):

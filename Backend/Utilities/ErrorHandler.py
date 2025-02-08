@@ -3,7 +3,8 @@ import logging
 import os
 import sys
 
-from Utilities import Constants
+from Constants import Constants
+from Constants.Constants import LOCAL_STORAGE, STORAGE_TYPE
 
 
 class ErrorHandler:
@@ -34,7 +35,7 @@ class ErrorHandler:
         logger.setLevel(logging.DEBUG)
 
         # Set up file handler
-        if os.getenv("STORAGE_TYPE") == "local":
+        if os.getenv(STORAGE_TYPE) == LOCAL_STORAGE:
             file_handler = ErrorHandler.setup_file_handler(log_file, format_scheme)
             if file_handler:
                 file_handler.setLevel(logging.DEBUG)

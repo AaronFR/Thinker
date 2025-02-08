@@ -1,7 +1,7 @@
 import logging
 
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
-from Utilities import Globals
+from Constants import Globals
 
 
 class Pricing:

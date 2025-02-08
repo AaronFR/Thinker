@@ -8,7 +8,7 @@ from typing import List, Dict, Any
 from deprecated.classic import deprecated
 
 from Data.Files.StorageBase import StorageBase
-from Utilities.Constants import DEFAULT_ENCODING
+from Constants.Constants import DEFAULT_ENCODING
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Contexts import get_user_context

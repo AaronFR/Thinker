@@ -1,8 +1,7 @@
-import logging
-from typing import List, Dict, Any
+from typing import Dict, Any
 
 from Utilities.ErrorHandler import ErrorHandler
-from Personas.PersonaSpecification import WriterSpecification
+from Constants.PersonaSpecification import WriterSpecification
 from Personas.BasePersona import BasePersona
 from Workflows.AutoWorkflow import AutoWorkflow
 from Workflows.ChatWorkflow import ChatWorkflow

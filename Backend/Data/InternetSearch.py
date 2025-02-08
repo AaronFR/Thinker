@@ -1,12 +1,11 @@
 import logging
-import requests
 from typing import List
 from urllib.parse import quote_plus
 
 from duckduckgo_search import DDGS
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Utilities.Instructions import EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE, EXTRACT_SEARCH_TERMS_PROMPT
+from Constants.Instructions import EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE, EXTRACT_SEARCH_TERMS_PROMPT
 
 
 class DuckDuckGoSearchAPI:

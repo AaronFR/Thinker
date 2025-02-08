@@ -1,4 +1,3 @@
-import io
 import logging
 import re
 from concurrent.futures import ThreadPoolExecutor
@@ -16,7 +15,7 @@ from Utilities.Contexts import get_message_context, get_user_context, set_messag
 from Utilities.Decorators import return_for_error
 from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
-from Utilities.Instructions import plan_pages_to_write, SIMPLE_SUMMARY_PROMPT
+from Constants.Instructions import plan_pages_to_write, SIMPLE_SUMMARY_PROMPT
 from Workflows.Workflows import generate_write_pages_workflow
 
 

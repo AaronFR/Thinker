@@ -7,6 +7,8 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
 
+from Constants.Constants import JWT_SECRET_KEY, THINKER_ENV, THE_THINKER_FRONTEND_URL
+
 # Instantiate SocketIO and jwt manager globally
 socketio = SocketIO()
 jwt = JWTManager()
@@ -17,12 +19,12 @@ def create_app():
 
     app = Flask(__name__)
 
-    app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY", "your_default_secret_key")
+    app.config[JWT_SECRET_KEY] = os.getenv(JWT_SECRET_KEY, "your_default_secret_key")
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=15)
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
     app.config['JWT_COOKIE_CSRF_PROTECT'] = True
-    app.config['ENV'] = os.getenv("THINKER_ENV", "development")
+    app.config['ENV'] = os.getenv(THINKER_ENV, "development")
 
     # Secure cookie settings
     app.config['JWT_COOKIE_SECURE'] = True  # app.config['ENV'] == "production"
@@ -31,7 +33,7 @@ def create_app():
     jwt.init_app(app)
 
     # deployed heroku frontend origin, defaults to localhost for local development
-    frontend_origin = os.getenv("THE_THINKER_FRONTEND_URL", "http://localhost:3000")
+    frontend_origin = os.getenv(THE_THINKER_FRONTEND_URL, "http://localhost:3000")
     allowed_domains = [
         frontend_origin,
         "https://thethinkerai.com",  # woah this site looks pretty cool *WINKS AGGRESSIVELY*

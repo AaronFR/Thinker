@@ -8,10 +8,10 @@ from typing import List, Dict, Optional, Any
 
 from flask_socketio import emit
 
-from Data import CypherQueries
+from Constants import CypherQueries
 from Data.Neo4jDriver import Neo4jDriver
 from Data.Files.StorageMethodology import StorageMethodology
-from Personas.PersonaSpecification import PersonaConstants
+from Constants.PersonaSpecification import PersonaConstants
 from Utilities.Contexts import get_user_context, get_message_context
 from Utilities.Decorators import handle_errors
 
