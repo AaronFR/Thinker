@@ -6,8 +6,7 @@ import ProgressBar from '../utils/ProgressBar';
 import './styles/FileUploadButton.css';
 
 import TooltipConstants from '../constants/tooltips';
-
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+import { fileUploadEndpoint } from '../constants/endpoints';
 
 // Define initial state for the reducer
 const initialState = {
@@ -76,7 +75,7 @@ const FileUploadButton = ({ onUploadSuccess }) => {
       const signal = controller.signal;
 
       try {
-        const response = await fetch(`${FLASK_PORT}/file`, {
+        const response = await fetch(fileUploadEndpoint, {
           method: 'POST',
           body: formData,
           signal,

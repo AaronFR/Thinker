@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { apiFetch } from '../utils/authUtils';
-
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+import { autoEngineerPromptEndpoint } from '../constants/endpoints';
 
 const useAugmentedPrompt = () => {
   const [augmentedPrompt, setAugmentedPrompt] = useState('');
@@ -18,7 +17,7 @@ const useAugmentedPrompt = () => {
     setError(null);
 
     try {
-      const response = await apiFetch(`${FLASK_PORT}/augmentation/augment_prompt`, {
+      const response = await apiFetch(autoEngineerPromptEndpoint, {
         method: 'POST',
         body: JSON.stringify({ user_prompt: input }),
       });

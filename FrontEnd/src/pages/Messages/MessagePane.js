@@ -7,8 +7,7 @@ import { withLoadingOpacity, toTitleCase} from '../../utils/textUtils';
 import MessageItem from './MessageItem';
 
 import './styles/MessageHistory.css';
-
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+import { fetchCategoriesEndpoint } from '../../constants/endpoints';
 
 /**
  * MessageHistory Component
@@ -32,7 +31,9 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => 
    */
   const fetchCategories = useCallback(async () => {
     try {
-      const response = await apiFetch(`${FLASK_PORT}/categories`, { method: "GET" });
+      const response = await apiFetch(fetchCategoriesEndpoint, {
+        method: "GET"
+      });
 
       if (!response.ok) {
         throw new Error("Failed to fetch message categories");
@@ -63,7 +64,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => 
    */
   const fetchMessagesByCategory = useCallback(async (categoryName, categoryId) => {
     try {
-      const response = await apiFetch(`${FLASK_PORT}/messages/${categoryName.toLowerCase()}`, {
+      const response = await apiFetch(fetchMessagesByCategory(categoryName.toLowerCase()), {
         method: "GET",
       })
 

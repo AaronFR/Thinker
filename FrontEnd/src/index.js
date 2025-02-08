@@ -15,8 +15,7 @@ import { SelectionProvider } from "./pages/Messages/SelectionContext";
 
 import 'highlight.js/styles/atom-one-dark.css';
 import Messages from "./pages/Messages/Messages";
-
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+import { validateSessionEndpoint } from "./constants/endpoints";
 
 function RootApp() {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -24,7 +23,7 @@ function RootApp() {
   useEffect(() => {
     const validateSession = async () => {
       try {
-        const response = await apiFetch(`${FLASK_PORT}/auth/validate`, {
+        const response = await apiFetch(validateSessionEndpoint, {
             method: "GET",
         });
 

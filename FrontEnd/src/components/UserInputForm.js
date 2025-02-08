@@ -21,8 +21,8 @@ import PagesSelector from './Selectors/PagesSelector';
 
 import { Tooltip } from 'react-tooltip';
 import TooltipConstants from '../constants/tooltips';
+import { readStagedFilesEndpoint } from '../constants/endpoints';
 
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 /**
@@ -73,7 +73,7 @@ const UserInputForm = ({
    */
   const fetchStagedFiles = async () => {
     try {
-        const response = await apiFetch(`${FLASK_PORT}/list_staged_files`, {
+        const response = await apiFetch(readStagedFilesEndpoint, {
             method: "GET",
         });
 

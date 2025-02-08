@@ -1,4 +1,4 @@
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+import { refreshSessionEndpoint } from "../constants/endpoints";
 
 /**
  * Retrieves the value of a specific cookie by name.
@@ -43,7 +43,7 @@ export const apiFetch = async (url, options = {}, requiresAuth = true) => {
         try {
         
             // Attempt to refresh the token
-            const refreshResponse = await fetch(FLASK_PORT + '/refresh', {
+            const refreshResponse = await fetch(refreshSessionEndpoint, {
                 method: 'POST',
                 credentials: 'include', // Include cookies for refresh
             });

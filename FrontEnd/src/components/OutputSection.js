@@ -7,8 +7,7 @@ import { useSelection } from '../pages/Messages/SelectionContext';
 
 import './styles/OutputSection.css';
 import { apiFetch } from '../utils/authUtils';
-
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+import { readFileEndpoint } from '../constants/endpoints';
 
 /**
  * During streaming code blocks won't be formatted correctly till the final 
@@ -71,7 +70,7 @@ const OutputSection = ({ message, files, error = '', isProcessing }) => {
    */
   const fetchFileByUUID = useCallback(async (uuid) => {
     try {
-      const response = await apiFetch(`${FLASK_PORT}/read_file/${uuid}`, {
+      const response = await apiFetch(readFileEndpoint(uuid), {
         method: 'GET',
       });
 

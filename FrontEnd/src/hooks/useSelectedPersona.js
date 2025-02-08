@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { apiFetch } from '../utils/authUtils';
-
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+import { selectPersonaEndpoint } from '../constants/endpoints';
 
 /*
  * Hook for selecting an appropriate persona for the users given prompt.
@@ -21,7 +20,7 @@ const useSelectedPersona = () => {
     setError(null);
 
     try {
-      const response = await apiFetch(`${FLASK_PORT}/augmentation/select_persona`, {
+      const response = await apiFetch(selectPersonaEndpoint, {
         method: 'POST',
         body: JSON.stringify({
           user_prompt: userPrompt

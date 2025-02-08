@@ -13,9 +13,8 @@ import './Settings.css';
 import { SettingsContext } from './SettingsContext';
 
 import { Tooltip } from 'react-tooltip';
+import { userInfoEndpoint } from '../../constants/endpoints';
 
-
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
 const FUNCTIONALITY_STATES = {
   OFF: 'off',
@@ -477,7 +476,7 @@ export function Settings() {
         throw new Error('Please specify at least one parameter.');
       }
 
-      const response = await apiFetch(`${FLASK_PORT}/info/user`, {
+      const response = await apiFetch(userInfoEndpoint, {
         method: 'POST',
         body: JSON.stringify({ parameters: filteredParameters }),
       });

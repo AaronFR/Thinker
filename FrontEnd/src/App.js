@@ -25,6 +25,7 @@ import { apiFetch } from './utils/authUtils';
 
 import './App.css';
 import useSelectedPersona from './hooks/useSelectedPersona';
+import { userBalanceEndpoint } from './constants/endpoints';
 
 
 /**
@@ -33,7 +34,6 @@ import useSelectedPersona from './hooks/useSelectedPersona';
  * Main application component that handles user input, displays messages,
  * and manages state related to prompts and API interactions.
  */
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
 function App () {
 
@@ -80,7 +80,7 @@ function App () {
     // Custom hooks
     const { message, files, error: messageError, isProcessing, handleSubmit } = useSubmitMessage(concatenatedQA, selectedFiles, selectedMessages, tags, workflow, setWorkflow);
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt();
-    const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions(FLASK_PORT);
+    const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions();
     const { selectedWorkflow, workflowIsLoading, selectMessageError, selectWorkflow } = useSelectedWorkflow();
     const { automaticallySelectedPersona, personaIsLoading, selectPersonaError, selectPersona } = useSelectedPersona();
 
@@ -92,7 +92,7 @@ function App () {
 
     const loadBalance = async () => {
       try {
-          const response = await apiFetch(FLASK_PORT + '/pricing/balance', {
+          const response = await apiFetch(userBalanceEndpoint, {
               method: 'GET',
           });
 

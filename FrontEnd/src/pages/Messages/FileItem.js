@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 
 import { shortenText, getBasename, MarkdownRenderer, CodeHighlighter } from '../../utils/textUtils';
 import { apiFetch } from '../../utils/authUtils';
-
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+import { deleteFileEndpoint, fetchFilesForCategoryEndpoint } from '../../constants/endpoints';
 
 /**
  * FileItem Component
@@ -36,7 +35,7 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${FLASK_PORT}/file/${file.category_id}/${getBasename(file.name)}`, {
+      const response = await fetch(fetchFilesForCategoryEndpoint(file.category_id, getBasename(file.name)), {
         method: 'GET',
         credentials: "include"
       });
@@ -78,7 +77,7 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
     setError(null);
 
     try {
-        const response = await apiFetch(`${FLASK_PORT}/file/${file.id}`, {
+        const response = await apiFetch(deleteFileEndpoint(file.id), {
             method: 'DELETE',
         });
 

@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 
 import { apiFetch } from '../utils/authUtils';
 import './styles/TransactionForm.css';
+import { updateUserBalanceEndpoint } from '../constants/endpoints';
 
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 const AMOUNT_REGEX = /^\d+(\.\d{1,2})?$/; // Two decimal places allowed
 
 /**
@@ -52,7 +52,7 @@ const TransactionForm = ({ onSuccess }) => {
         try {
             const floatAmount = parseFloat(amount).toFixed(2); // only dollars and cents ($)1.23456 -> ($)1.23
 
-            const response = await apiFetch(`${FLASK_PORT}/pricing/add`, {
+            const response = await apiFetch(updateUserBalanceEndpoint, {
                 method: 'POST',
                 body: JSON.stringify({ sum: parseFloat(floatAmount) }),
             });

@@ -6,8 +6,7 @@ import { formatPrice } from '../../utils/numberUtils';
 import TransactionForm from '../../components/TransactionForm';
 import Navigation from '../../components/Navigation';
 import { BetaBanner } from '../Guide/Guide';
-
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+import { sessionTotalSpentEndpoint, userBalanceEndpoint } from '../../constants/endpoints';
 
 export function Pricing() {
     const [balance, setBalance] = useState(0.0);
@@ -18,7 +17,7 @@ export function Pricing() {
      */
     const loadBalance = useCallback(async () => {
         try {
-            const response = await apiFetch(`${FLASK_PORT}/pricing/balance`, {
+            const response = await apiFetch(userBalanceEndpoint, {
                 method: 'GET',
             });
 
@@ -38,7 +37,7 @@ export function Pricing() {
      */
     const loadSessionCost = useCallback(async () => {
         try {
-            const response = await apiFetch(`${FLASK_PORT}/pricing/session`, {
+            const response = await apiFetch(sessionTotalSpentEndpoint, {
                 method: 'GET',
             });
 

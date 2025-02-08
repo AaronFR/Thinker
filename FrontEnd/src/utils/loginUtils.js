@@ -1,19 +1,18 @@
+import { loginEndpoint, logoutSessionEndpoint, registerEndpoint, routeToEndpoint } from "../constants/endpoints";
 import { apiFetch } from "./authUtils";
-
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
 
     
     /**
      * Sends a POST request to the specified endpoint with the provided data.
      *
-     * @param {string} endpoint: The API endpoint to send the request to.
+     * @param {string} route: The API route to send the request to.
      * @param {Object} data: The payload to include in the request body.
      * @returns {Promise<Response>} The fetch response.
      * @raises {Error} If the fetch request fails.
      */
     const postRequest = async (endpoint, data) => {
         try {
-            const response = await apiFetch(`${FLASK_PORT}/${endpoint}`, {
+            const response = await apiFetch(endpoint, {
                 method: 'POST',
                 body: JSON.stringify(data),
             },
@@ -33,7 +32,7 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
     */
     export const handleLogin = async ( email, password ) => {
         try {
-            const response = await postRequest('login', { email, password });
+            const response = await postRequest(loginEndpoint, { email, password });
 
             if (response.ok) {
                 alert('Login successful!');
@@ -55,7 +54,7 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
      */
     export const handleRegister = async ( email, password ) => {
         try {
-            const response = await postRequest('register', { email, password });
+            const response = await postRequest(registerEndpoint, { email, password });
 
             if (response.ok) {
                 alert('User registered successfully!');
@@ -74,7 +73,7 @@ const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://loca
      */
     export const handleLogout = async () => {
         try {
-            const response = await apiFetch(`${FLASK_PORT}/logout`, {
+            const response = await apiFetch(logoutSessionEndpoint, {
                 method: "POST",
             });
     

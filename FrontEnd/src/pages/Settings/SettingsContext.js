@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useRef, useCallback } from 'react';
 import { apiFetch } from '../../utils/authUtils';
+import { userConfigEndpoint } from '../../constants/endpoints';
 
 /**
  * SettingsContext
@@ -50,8 +51,6 @@ export const SettingsProvider = ({ children }) => {
     const typingTimer = useRef(null);
     const idleTime = 2000; // Time before processing user message changes
 
-    const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || 'http://localhost:5000';
-
     /**
      * Fetches configuration settings from the server.
      *
@@ -59,7 +58,7 @@ export const SettingsProvider = ({ children }) => {
      */
     const fetchConfig = async () => {
         try {
-            const response = await apiFetch(`${FLASK_PORT}/data/config`, {
+            const response = await apiFetch(userConfigEndpoint, {
                 method: 'GET',
             });
             if (response.ok) {
@@ -87,7 +86,7 @@ export const SettingsProvider = ({ children }) => {
      */
     const saveConfig = async (field, value) => {
         try {
-            const response = await apiFetch(`${FLASK_PORT}/data/config`, {
+            const response = await apiFetch(userConfigEndpoint, {
                 method: 'POST',
                 body: JSON.stringify({ field, value }),
             });
@@ -142,7 +141,7 @@ export const SettingsProvider = ({ children }) => {
             }
         };
         loadConfig();
-    }, [FLASK_PORT]);
+    }, []);
 
     /**
      * Toggles a boolean setting and saves the updated config to the server.

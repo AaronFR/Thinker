@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { io } from 'socket.io-client';
 
 import { apiFetch } from '../utils/authUtils';
-
-const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http://localhost:5000";
+import { refreshSessionEndpoint } from '../constants/endpoints';
+import { FLASK_PORT } from '../constants/endpoints';
 
 /**
  * Custom hook to handle message submission through a websocket connection.
@@ -151,7 +151,9 @@ const useSubmitMessage = (
         if (data.error === 'token_expired' && !isRefreshingRef.current) {
           isRefreshingRef.current = true;
           try {
-            const refreshResponse = await apiFetch(FLASK_PORT + '/refresh', { method: 'POST' });
+            const refreshResponse = await apiFetch(refreshSessionEndpoint, {
+               method: 'POST'
+            });
             if (refreshResponse.ok) {
               console.log('Token refreshed successfully');
               socketRef.current.disconnect();
@@ -177,7 +179,7 @@ const useSubmitMessage = (
         }
       });
     });
-  }, [FLASK_PORT, processUpdateQueue]);
+  }, [processUpdateQueue]);
 
   // Initialize the socket connection when the component mounts
   useEffect(() => {
