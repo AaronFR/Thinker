@@ -40,6 +40,10 @@ body.dark-mode .dropdown {
   transition: border-color var(--transition-fast);
 }
 
+.react-select__option {
+  color: var(--color-input-text);
+}
+
 .react-select__single-value {
   font-size: 12px;
 }

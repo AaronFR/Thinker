@@ -264,6 +264,7 @@ const UserInputForm = ({
           <ModelSelector
             selectedModel={tags.model}
             setTags={setTags}
+            forTags={true}
           />
 
           {settings.bestOfEnabled !== 'off' && <BestOfSelector

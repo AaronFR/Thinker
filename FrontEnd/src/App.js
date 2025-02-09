@@ -61,7 +61,7 @@ function App () {
 
     // Tags management
     const [tags, setTags] = useState(
-      { model: "gpt-4o-mini" }  // e.g. write: "example.txt" category: "example"
+      { model: settingsRef.current.defaultModel }
     );
 
     // Context Selected Items
@@ -120,6 +120,10 @@ function App () {
     useEffect(() => {
       setSelectedPersona(automaticallySelectedPersona);
     }, [automaticallySelectedPersona]);
+
+    useEffect(() => {
+      setTags(prevTags => ({ ...prevTags, model: settingsRef.current.defaultModel }));
+    }, [settings.defaultModel])
 
     const handleInputChange = (event, selectedMessages, selectedFiles, tags) => {      
       setUserInput(event.target.value);

@@ -12,6 +12,7 @@ import './Settings.css';
 
 import { SettingsContext } from './SettingsContext';
 
+import ModelSelector from '../../components/Selectors/ModelSelector';
 import { Tooltip } from 'react-tooltip';
 import { userInfoEndpoint } from '../../constants/endpoints';
 
@@ -57,6 +58,26 @@ const UserInterfaceSettings = ({ settings, toggleDarkMode, toggleAiColourisation
     <TextSizeSlider />
   </div>
 );
+
+
+/**
+ * AI Model Component
+ *
+ * Renders settings related to AI model utilisation.
+ */
+const AiModelSettings = ({ settings, handleModelChange }) => (
+  <div>
+    <div className="settings-section">
+      <h2 className="settings-heading">AI Models</h2>
+      <h3>LLM Model Default</h3>
+      <p>This will specifiy the foreground model default, each step in each workflow you run will run on this model (unless changed)</p>
+      <ModelSelector
+        selectedModel={settings?.defaultModel || ''} // Use optional chaining and provide a default value
+        setTags={handleModelChange} // Re-use the setTags prop, but with a different handler
+      />
+    </div>
+  </div>
+)
 
 /**
  * FunctionalitySettings Component
@@ -494,6 +515,13 @@ export function Settings() {
     }
   };
 
+  const handleModelChange = (selectedModelValue) => {
+    changeSetting(
+      'interface.default_model',
+      selectedModelValue,
+      'defaultModel'); // Assuming 'defaultModel' is what you want to call it in settings.
+  };
+
   useEffect(() => {
     fetchUserInformation();
   }, [])
@@ -512,6 +540,11 @@ export function Settings() {
         settings={settings}
         toggleDarkMode={toggleDarkMode}
         toggleAiColourisation={toggleAiColourisation}
+      />
+
+      <AiModelSettings
+        settings={settings}
+        handleModelChange={handleModelChange}
       />
 
       <FunctionalitySettings

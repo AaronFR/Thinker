@@ -3,12 +3,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { components } from 'react-select';
-
+import Select from 'react-select';
 import TagSelector from './TagsSelector';
 
 import openAiLogo from './styles/openAiLogo.png';
 import googleLogo from './styles/googleLogo.png'; 
 import TooltipConstants from '../../constants/tooltips';
+
+import './styles/Selector.css';
 
 /**
  * CustomOption Component
@@ -32,7 +34,7 @@ const CustomOption = (props) => {
   );
 };
 
-const ModelSelector = React.memo(({ selectedModel, setTags }) => {
+const ModelSelector = React.memo(({ selectedModel, setTags, forTags }) => {
   const models = [
     { value: "gpt-4o-mini", label: "gpt-4o-mini" },
     { value: "gpt-4o", label: "gpt-4o" },
@@ -42,6 +44,21 @@ const ModelSelector = React.memo(({ selectedModel, setTags }) => {
     { value: "gemini-2.0-flash-lite-preview", label: "gemini-2.0-flash-lite-preview" },
   ];
 
+  const customStyles = {
+    option: (provided, state) => ({
+      ...provided,
+      display: 'flex',
+      alignItems: 'center',
+      color: 'var(--color-input-text)',
+      padding: '6px 8px',
+      fontSize: '12px',
+    }),
+  };
+
+  const handleChange = (selectedOption) => {
+    setTags(selectedOption.value);  // Pass only the value
+  };
+
   return (
     <div
       className="model-selector"
@@ -49,7 +66,7 @@ const ModelSelector = React.memo(({ selectedModel, setTags }) => {
       data-tooltip-html={TooltipConstants.modelSelector}
       data-tooltip-place="top"
     >
-      <TagSelector
+      {forTags ? <TagSelector
         selectedValue={selectedModel}
         setTags={setTags}
         options={models}
@@ -57,7 +74,19 @@ const ModelSelector = React.memo(({ selectedModel, setTags }) => {
         CustomOption={CustomOption}
         className="model-selector"
         
+      /> : <Select
+        className="dropdown model-selector"
+        classNamePrefix="react-select"
+        styles={customStyles}
+        value={models.find(option => option.value === selectedModel)}
+        onChange={handleChange}
+        options={models}
+        getOptionLabel={(option) => option.label}
+        getOptionValue={(option) => option.value}
+        placeholder="Select a model..."
+        components={{ Option: CustomOption }}
       />
+      }
     </div>
   );
 });

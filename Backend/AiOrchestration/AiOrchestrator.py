@@ -1,6 +1,7 @@
 import logging
-from typing import List, Dict, Union
+from typing import List, Dict
 
+from AiOrchestration.AiModel import AiModel
 from AiOrchestration.ChatGptModel import ChatGptModel
 from AiOrchestration.GeminiModel import GeminiModel
 from AiOrchestration.ChatGptMessageBuilder import generate_messages
@@ -44,7 +45,7 @@ class AiOrchestrator:
         user_prompts: List[str] | str,
         rerun_count: int = 1,
         judgement_criteria: List[str] = None,
-        model: Union[ChatGptModel, GeminiModel] = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+        model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
         assistant_messages: List[str] = None,
         streaming: bool = False
     ) -> str:
