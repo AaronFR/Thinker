@@ -1,5 +1,7 @@
+import ast
 import enum
 import logging
+import re
 from pathlib import Path
 
 from typing import Dict, List, Optional
@@ -8,7 +10,7 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
 from Constants.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
 from Constants.Constants import DEFAULT_EXTENSION
-from Constants.Instructions import determine_pages_prompt
+from Constants.Instructions import determine_pages_prompt, DETERMINE_PAGES_SCHEMA
 
 
 class Writing(enum.Enum):
@@ -37,19 +39,29 @@ class Writing(enum.Enum):
                 )
             }]
         else:
-            files_response = AiOrchestrator().execute_function(
-                [determine_pages_prompt(config['beta_features']['multi_file_processing_enabled'])],
+            test = AiOrchestrator().execute(
+                [determine_pages_prompt(config['beta_features']['multi_file_processing_enabled']),
+                 DETERMINE_PAGES_SCHEMA],
                 [initial_message],
-                GENERATE_FILE_NAMES_FUNCTION_SCHEMA
             )
-            for file in files_response.get('files', []):
-                # Check and append extension if needed
-                file_name = Writing.check_and_append_extension(file['file_name'])
-                purpose = file.get('purpose', '')  # Purpose is optional
-                files.append({
-                    "file_name": file_name,
-                    "purpose": purpose
-                })
+
+            pattern = r"<([^>\s]+)(?:\s+purpose='([^']+)')?>"
+
+            # Find all matches using re.findall
+            matches = re.findall(pattern, test)
+
+            if not matches:
+                logging.warning("No matches found for user topic tags.")
+
+            files = []
+            for match in matches:
+                file_dict = {
+                    "file_name": match[0],
+                }
+                # Add 'purpose' only if it exists
+                if match[1]:
+                    file_dict["purpose"] = match[1]
+                files.append(file_dict)
 
         logging.info(f"Referencing/Creating the following files: {files}")
         return files

@@ -176,6 +176,8 @@ def determine_pages_prompt(multi_file_processing_enabled: bool = False) -> str:
     )
 
 
+
+
 EXTRACT_SEARCH_TERMS_PROMPT = (
     "Extract a key phrase from the following prompt to use for an internet search. "
     "Respond with the phrases separated by commas only, without additional text."
@@ -190,8 +192,25 @@ def categorisation_prompt(
         f"LIGHTLY suggested existing categories, you DONT need to follow: {str(category_names)} "
         f"{user_categorisation_instructions} "
         "and categorize the data with the most suitable single-word answer."
-        "Write it as <result=\"(your_selection)\""
+        "Write it as <result=\"(your_selection)\">"
     )
+
+
+DETERMINE_PAGES_SCHEMA = (
+    "Write your data as a list ('[' then ']') of tags ('<' then '>'), "
+    "where the tag name itself is the file_name (including extension), "
+    "with a parameter 'purpose' representing why you want to create this file given the initial user "
+    "message."
+    "Purpose: a brief explanation of why the file is being referenced or created, "
+    "clarifying its role in the overall process.\n"
+    "Format:\n"
+    "[<file_name.txt purpose='How this file is expected to satisfy the following request'>]"
+    "Example:\n"
+    "Message: 'Create a function to calculate pi using the Leibniz formula' and graph the results "
+    "visually using pandas' ->\n"
+    "[<pi.py purpose='Create a functional to calculate pi using the Leibniz formula'>,\n"
+    "<graph.py purpose='graph the results of pi.py using pandas'>]"
+)
 
 
 def category_description_prompt(category_name: str) -> str:

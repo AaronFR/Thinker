@@ -59,7 +59,7 @@ class WriteWorkflow(BaseWorkflow):
             emit(UPDATE_WORKFLOW_STEP, {"step": 2, "file_name": file_name})
             user_id = get_user_context()
             file_path = Path(user_id).joinpath(file_name)
-            purpose = file['purpose']
+            purpose = file.get('purpose', "")
 
             logging.info(f"Writing code to {file_path}, \nPurpose: {purpose}")
 

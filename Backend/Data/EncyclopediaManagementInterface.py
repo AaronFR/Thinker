@@ -89,6 +89,7 @@ class EncyclopediaManagementInterface:
         )
         extract_list_pattern = r'\[.*?\]'
         matches = re.findall(extract_list_pattern, output, re.DOTALL)
+        terms = []
         if matches:
             try:
                 # Safely convert the string representation of the list to an actual Python list
