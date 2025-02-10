@@ -204,12 +204,14 @@ class BasePersona:
         if config['beta_features']['encyclopedia_enabled']:
             encyclopedia_manager = EncyclopediaManagement()
             additional_context = encyclopedia_manager.search_encyclopedia(user_messages)
-            system_messages.append(additional_context)
+            if additional_context:
+                system_messages.append(additional_context)
 
         if config['beta_features']['user_context_enabled']:
             user_encyclopedia_manager = UserContextManagement()
             user_context = user_encyclopedia_manager.search_encyclopedia(user_messages)
-            system_messages.append(user_context)
+            if user_context:
+                system_messages.append(user_context)
 
         if config['optimization']['message_history']:
             recent_history = self.detect_relevant_history(user_messages)
