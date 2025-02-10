@@ -49,7 +49,7 @@ export const userConfigEndpoint = `${FLASK_PORT}/info/config`;
 export function deleteMessageByIdEndpoint(messageId) {
   return `${FLASK_PORT}/messages/${messageId}`;
 }
-export function fetchMessagesByCategoryEndpoint(categoryName) {
+export function messagesForCategoryEndpoint(categoryName) {
   return `${FLASK_PORT}/messages/${categoryName}`;
 }
 

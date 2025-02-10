@@ -7,7 +7,7 @@ import { withLoadingOpacity, toTitleCase} from '../../utils/textUtils';
 import MessageItem from './MessageItem';
 
 import './styles/MessageHistory.css';
-import { fetchCategoriesEndpoint } from '../../constants/endpoints';
+import { fetchCategoriesEndpoint, messagesForCategoryEndpoint } from '../../constants/endpoints';
 
 /**
  * MessageHistory Component
@@ -64,7 +64,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => 
    */
   const fetchMessagesByCategory = useCallback(async (categoryName, categoryId) => {
     try {
-      const response = await apiFetch(fetchMessagesByCategory(categoryName.toLowerCase()), {
+      const response = await apiFetch(messagesForCategoryEndpoint(categoryName.toLowerCase()), {
         method: "GET",
       })
 
