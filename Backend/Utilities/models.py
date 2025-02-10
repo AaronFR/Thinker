@@ -23,4 +23,4 @@ def find_model_enum_value(model_string: str) -> AiModel:
     elif model_string in gemini_models:
         return GeminiModel.find_enum_value(model_string)
     else:
-        raise f"Invalid model! {model_string}"
+        raise Exception(f"Invalid model! {model_string}")

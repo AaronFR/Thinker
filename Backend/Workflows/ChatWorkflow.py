@@ -40,7 +40,6 @@ class ChatWorkflow(BaseWorkflow):
         """
         logging.info("Chat workflow selected")
 
-        # ToDo: Need to add a user configured default model instead of None
         model = find_model_enum_value(tags.get("model") if tags else None)
         best_of = int(tags.get("best of", 1)) if tags else 1  # type validation check needed
         workflow_details = generate_chat_workflow(

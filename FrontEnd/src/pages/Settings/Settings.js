@@ -65,15 +65,26 @@ const UserInterfaceSettings = ({ settings, toggleDarkMode, toggleAiColourisation
  *
  * Renders settings related to AI model utilisation.
  */
-const AiModelSettings = ({ settings, handleModelChange }) => (
+const AiModelSettings = ({ settings, handleForegroundModelChange, handleBackgroundModelChange }) => (
   <div>
     <div className="settings-section">
       <h2 className="settings-heading">AI Models</h2>
-      <h3>LLM Model Default</h3>
-      <p>This will specifiy the foreground model default, each step in each workflow you run will run on this model (unless changed)</p>
+      <h3>Foreground Model Default</h3>
+      <p>This will specifiy the foreground model to be selected by default, each step in each workflow will run on the selected model</p>
       <ModelSelector
-        selectedModel={settings?.defaultModel || ''} // Use optional chaining and provide a default value
-        setTags={handleModelChange} // Re-use the setTags prop, but with a different handler
+        selectedModel={settings?.defaultForegroundModel || ''}
+        setTags={handleForegroundModelChange}
+      />
+
+      <h3>Background Model</h3>
+      <p>
+        In the thinker many programs actually run in the background to try and improve the main 'foreground' prompt and the user experience overall, for this 
+        purpose you want a functional econonmical, to the point LLM.
+      </p>
+      <ModelSelector
+        selectedModel={settings?.defaultBackgroundModel || ''}
+        setTags={handleBackgroundModelChange}
+        economicalMode={true}
       />
     </div>
   </div>
@@ -515,11 +526,18 @@ export function Settings() {
     }
   };
 
-  const handleModelChange = (selectedModelValue) => {
+  const handleForegroundModelChange = (selectedModelValue) => {
     changeSetting(
-      'interface.default_model',
+      'models.default_foreground_model',
       selectedModelValue,
-      'defaultModel'); // Assuming 'defaultModel' is what you want to call it in settings.
+      'defaultForegroundModel');
+  };
+
+  const handleBackgroundModelChange = (selectedModelValue) => {
+    changeSetting(
+      'models.default_background_model',
+      selectedModelValue,
+      'defaultBackgroundModel');
   };
 
   useEffect(() => {
@@ -544,7 +562,8 @@ export function Settings() {
 
       <AiModelSettings
         settings={settings}
-        handleModelChange={handleModelChange}
+        handleForegroundModelChange={handleForegroundModelChange}
+        handleBackgroundModelChange={handleBackgroundModelChange}
       />
 
       <FunctionalitySettings

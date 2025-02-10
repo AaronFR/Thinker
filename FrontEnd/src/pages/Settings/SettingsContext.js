@@ -22,7 +22,8 @@ export const SettingsProvider = ({ children }) => {
     const initialSettings = {
         debug: false,
         darkMode: true,
-        defaultModel: "gpt-4o-mini",
+        defaultForegroundModel: "gpt-4o-mini",
+        defaultBackgroundModel: "gpt-4o-mini",
         aiColour: false,
         language: 'en',
         augmentedPromptsEnabled: "off",
@@ -109,7 +110,8 @@ export const SettingsProvider = ({ children }) => {
                     ...prevSettings,
                     debug: loadedConfig.interface.debug ?? initialSettings.debug,
                     darkMode: loadedConfig.interface.dark_mode ?? initialSettings.darkMode,
-                    defaultModel: loadedConfig.interface.default_model ?? initialSettings.defaultModel,
+                    defaultForegroundModel: loadedConfig.models.default_foreground_model ?? initialSettings.defaultForegroundModel,
+                    defaultBackgroundModel: loadedConfig.models.default_background_model ?? initialSettings.defaultBackgroundModel,
                     aiColour: loadedConfig.interface.ai_colour ?? initialSettings.aiColour,
                     augmentedPromptsEnabled:
                         loadedConfig.beta_features.augmented_prompts_enabled ?? initialSettings.augmentedPromptsEnabled,

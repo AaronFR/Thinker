@@ -9,8 +9,8 @@ T = TypeVar('T', bound='AiModel')
 
 class AiModel(enum.Enum):
     """
-        Base Enum class for AI Models.
-        """
+    Base Enum class for AI Models.
+    """
 
     @classmethod
     def find_enum_value(cls: Type[T], model_name: Optional[str] = None) -> T:

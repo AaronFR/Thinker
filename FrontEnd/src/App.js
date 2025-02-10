@@ -61,7 +61,7 @@ function App () {
 
     // Tags management
     const [tags, setTags] = useState(
-      { model: settingsRef.current.defaultModel }
+      { model: settingsRef.current.defaultForegroundModel }
     );
 
     // Context Selected Items
@@ -122,7 +122,7 @@ function App () {
     }, [automaticallySelectedPersona]);
 
     useEffect(() => {
-      setTags(prevTags => ({ ...prevTags, model: settingsRef.current.defaultModel }));
+      setTags(prevTags => ({ ...prevTags, model: settingsRef.current.defaultForegroundModel }));
     }, [settings.defaultModel])
 
     const handleInputChange = (event, selectedMessages, selectedFiles, tags) => {      

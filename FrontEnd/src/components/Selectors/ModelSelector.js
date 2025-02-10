@@ -1,6 +1,6 @@
 // ModelSelector.js
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { components } from 'react-select';
 import Select from 'react-select';
@@ -34,15 +34,26 @@ const CustomOption = (props) => {
   );
 };
 
-const ModelSelector = React.memo(({ selectedModel, setTags, forTags }) => {
-  const models = [
+const ModelSelector = React.memo(({ selectedModel, setTags, forTags, economicalMode }) => {
+  const economicalModels = useMemo(() => [
+    { value: "gpt-4o-mini", label: "gpt-4o-mini" },
+    { value: "gemini-2.0-flash", label: "gemini-2.0-flash" },
+    { value: "gemini-2.0-flash-lite-preview", label: "gemini-2.0-flash-lite-preview" },
+  ], []);
+
+  const allModels = useMemo(() => [
     { value: "gpt-4o-mini", label: "gpt-4o-mini" },
     { value: "gpt-4o", label: "gpt-4o" },
     { value: "o1-mini", label: "o1-mini" },
     { value: "o1-preview", label: "o1-preview" },
     { value: "gemini-2.0-flash", label: "gemini-2.0-flash" },
     { value: "gemini-2.0-flash-lite-preview", label: "gemini-2.0-flash-lite-preview" },
-  ];
+  ], []);
+
+  // Derive the models to display based on economicalMode
+  const modelsToDisplay = useMemo(() => (
+    economicalMode ? economicalModels : allModels
+  ), [economicalMode, economicalModels, allModels]);
 
   const customStyles = {
     option: (provided, state) => ({
@@ -69,7 +80,7 @@ const ModelSelector = React.memo(({ selectedModel, setTags, forTags }) => {
       {forTags ? <TagSelector
         selectedValue={selectedModel}
         setTags={setTags}
-        options={models}
+        options={modelsToDisplay}
         placeholder="model"
         CustomOption={CustomOption}
         className="model-selector"
@@ -78,9 +89,9 @@ const ModelSelector = React.memo(({ selectedModel, setTags, forTags }) => {
         className="dropdown model-selector"
         classNamePrefix="react-select"
         styles={customStyles}
-        value={models.find(option => option.value === selectedModel)}
+        value={modelsToDisplay.find(option => option.value === selectedModel)}
         onChange={handleChange}
-        options={models}
+        options={modelsToDisplay}
         getOptionLabel={(option) => option.label}
         getOptionValue={(option) => option.value}
         placeholder="Select a model..."
