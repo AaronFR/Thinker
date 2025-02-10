@@ -1,4 +1,7 @@
+import ast
 import logging
+import re
+
 import pandas as pd
 import yaml
 
@@ -7,11 +10,10 @@ from typing import List, Dict
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Constants.Exceptions import NOT_IMPLEMENTED_IN_INTERFACE
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
-from Constants.PersonaSpecification.PersonaConstants import SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
 from Constants.Constants import DEFAULT_ENCODING
 from Utilities.Decorators import handle_errors
 from Constants.Instructions import select_topic_prompt, SELECT_TOPIC_SYSTEM_MESSAGE, \
-    SUMMARISE_WHILE_RETAINING_DETAIL_SYSTEM_MESSAGE, string_of_existing_topics_prompt
+    SUMMARISE_WHILE_RETAINING_DETAIL_SYSTEM_MESSAGE, string_of_existing_topics_prompt, SCHEMA_FOR_CONCEPT_TERMS
 
 
 class EncyclopediaManagementInterface:
@@ -77,17 +79,23 @@ class EncyclopediaManagementInterface:
     def search_encyclopedia(self, user_messages: List[str]) -> str | None:
         """Searches the encyclopedia for terms derived from user messages.
 
-        ToDo: Try moving away from function calls
-
         :param user_messages: List of user input messages containing the terms.
         :return: A string representation of the additional context found.
         """
-        output = AiOrchestrator().execute_function(
-            [self.instructions],
-            user_messages,
-            SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA
+
+        output = AiOrchestrator().execute(
+            [self.instructions, SCHEMA_FOR_CONCEPT_TERMS],
+            user_messages
         )
-        terms = output.get('terms')
+        extract_list_pattern = r'\[.*?\]'
+        matches = re.findall(extract_list_pattern, output, re.DOTALL)
+        if matches:
+            try:
+                # Safely convert the string representation of the list to an actual Python list
+                terms = ast.literal_eval(matches[0])
+            except (ValueError, SyntaxError):
+                terms = []
+
         if not terms:
             logging.info(f"No terms found in output: {output}")
             return None
@@ -116,7 +124,7 @@ class EncyclopediaManagementInterface:
                 )
                 selected_topic = selected_topic_raw.strip("'")
 
-                content = nodeDB().search_for_user_topic_content(selected_topic)
+                content = nodeDB().search_for_user_topic_content(selected_topic.strip())
                 if content:
                     additional_context.append(content)
 

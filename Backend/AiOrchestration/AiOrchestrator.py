@@ -68,7 +68,7 @@ class AiOrchestrator:
         if not model:
             config = Configuration.load_config()
             default_model_string = config.get('models', {}).get(
-                "default_model",
+                "default_background_model",
                 ChatGptModel.CHAT_GPT_4_OMNI_MINI.value
             )
             model = find_model_enum_value(default_model_string)

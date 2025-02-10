@@ -36,35 +36,6 @@ SELECT_WORKFLOW_INSTRUCTIONS = [{
     }
 }]
 
-SEARCH_ENCYCLOPEDIA_FUNCTION_SCHEMA = [{
-    "name": "executiveDirective",
-    "description": """Array of terms you want to know more about""",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "terms": {
-                "type": "array",
-                "description": """An array of objects to look up/cross-reference against the encyclopedia definitions.
-                 Can be 0 or more entries depending on context; none can be completely valid.""",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "term": {
-                            "type": "string",
-                            "description": """A term you want to look up in the encyclopedia"""
-                        },
-                        "specifics": {
-                            "type": "string",
-                            "description": "The specific property of this term your interested in."
-                        }
-                    },
-                    "required": ["term", "specifics"]
-                }
-            }
-        }
-    }
-}]
-
 ADD_TO_ENCYCLOPEDIA_FUNCTION_SCHEMA = [{
     "name": "executiveDirective",
     "description": """Array of terms you want to know more about""",

@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 
@@ -130,7 +131,19 @@ def string_of_existing_topics_prompt(user_topics: List[str]):
 
 
 def select_topic_prompt(term: dict[str, str]):
-    return "Topic : " + term.get("term") + ", Specifics: " + term.get("specifics")
+    var1 = term.get("term")
+    specifics = term.get("specifics")
+    return "Topic : " + term.get("term", "") + \
+           (", Specifics: " + term.get("specifics")) if specifics else ""
+
+
+SCHEMA_FOR_CONCEPT_TERMS = (
+    "For the given prompt, return an array of concepts that would help answer this prompt. "
+    "The 'term' field should be simple, e.g., the actual word of the concept. You can use "
+    "the 'specifics' field if there is a particular aspect you would prefer to explore.\n"
+    "Example: 'Tell me about the capital of France.' -> "
+    "[{\"term\": \"France\", \"specifics\": \"capital\"}, {\"term\": \"Paris\"}]"
+)
 
 
 SELECT_TOPIC_SYSTEM_MESSAGE = "Given the list of topics I gave you, just return the most appropriate from the list"
