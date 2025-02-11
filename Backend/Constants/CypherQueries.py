@@ -91,19 +91,36 @@ MERGE (user_prompt)-[:BELONGS_TO]->(category)
 RETURN user_prompt.id AS user_prompt_id;
 """
 
+
+"""
+Summary:
+Find the user and the category the file node belongs to
+Check for any previous file node with that same name
+    if a previous file exists merge over it and update the version number
+Create a relationship to the user prompt node that created/update this file
+Return the files Data
+"""
 CREATE_FILE_NODE = """
 MATCH (user:USER {id: $user_id})
 MERGE (category:CATEGORY {name: $category})
 WITH user, category
-MATCH (user_prompt:USER_PROMPT)
-WHERE user_prompt.id = $user_prompt_id
-CREATE (file:FILE {id: $file_id, name: $name, time: $time, summary: $summary, structure: $structure, version: 1})
-MERGE (file)-[:ORIGINATES_FROM]->(user_prompt)
-MERGE (file)-[:BELONGS_TO]->(category)
-RETURN file;
+MATCH (user_prompt:USER_PROMPT {id: $user_prompt_id})
+OPTIONAL MATCH (existingFile:FILE)-[:BELONGS_TO]->(category)
+WHERE existingFile.name = $name
+WITH existingFile, user_prompt, category
+MERGE (newFile:FILE {name: $name})-[:BELONGS_TO]->(category)
+SET newFile.version = COALESCE(existingFile.version, 0) + 1,
+    newFile.id = $file_id,
+    newFile.time = $time,
+    newFile.summary = $summary,
+    newFile.structure = $structure
+CREATE (newFile)-[:ORIGINATES_FROM {version: newFile.version}]->(user_prompt)
+RETURN newFile;
 """
 
+
 # Messages
+
 GET_MESSAGE = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)
     <-[:BELONGS_TO]-(user_prompt:USER_PROMPT {id: $message_id})
@@ -190,6 +207,7 @@ DETACH DELETE file;
 """
 
 # Pricing
+
 GET_USER_BALANCE = """
 MATCH (user:USER {id: $user_id})
 RETURN user.balance AS balance;
