@@ -213,18 +213,3 @@ class AutoWorkflow(BaseWorkflow):
             user_id=user_id
         )
         return iteration_id, response
-
-    @staticmethod
-    def extract_markdown_list_items(text: str) -> List[str]:
-        """Extracts list items from markdown-formatted text, including both unordered and ordered lists.
-
-        :param text: The text containing Markdown list items.
-        :returns: A list of strings containing the extracted list items.
-        """
-        pattern = r'^\s*[-*]\s+(.*)$|^\s*\d+\.\s+(.*)$'
-
-        matches = re.findall(pattern, text, re.MULTILINE)
-
-        # Flatten the matches and filter out empty strings
-        extracted_items = [item[0] or item[1] for item in matches if item[0] or item[1]]
-        return extracted_items

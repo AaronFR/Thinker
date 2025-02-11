@@ -9,6 +9,7 @@ from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
+from Constants.Constants import EXTRACT_ELEMENTS_FROM_LIST
 from Constants.Exceptions import failure_to_process_individual_page_iteration
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Writing import Writing
@@ -237,8 +238,7 @@ class WritePagesWorkflow(BaseWorkflow):
         :param text: The text containing Markdown list items.
         :return: A list of extracted list items.
         """
-        pattern = r'^\s*[-*]\s+(.*)$|^\s*\d+\.\s+(.*)$'
-        matches = re.findall(pattern, text, re.MULTILINE)
+        matches = re.findall(EXTRACT_ELEMENTS_FROM_LIST, text, re.MULTILINE)
 
         # Flatten matches and filter out empty strings
         extracted_items = [item[0] or item[1] for item in matches if item[0] or item[1]]

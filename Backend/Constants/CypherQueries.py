@@ -129,6 +129,7 @@ DETACH DELETE category;
 """
 
 # Categories
+
 GET_CATEGORY_ID = """
 MATCH (category:CATEGORY {name: $category_name})
 RETURN category.id AS category_id;

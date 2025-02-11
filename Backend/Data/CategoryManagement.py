@@ -4,6 +4,7 @@ import re
 from typing import Optional
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Constants.Constants import RESULT_AS_TAG_REGEX, SENTENCE_WITH_FULL_STOP_REGEX
 from Constants.Exceptions import failure_to_suggest_colour_for_category, failure_to_create_description_for_category
 from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
@@ -100,7 +101,7 @@ class CategoryManagement:
         :param input_string: The string containing the result element.
         :return: The text inside the result element or None if not found.
         """
-        match = re.search(r'<result="([^"]+)">', input_string)
+        match = re.search(RESULT_AS_TAG_REGEX, input_string)
         if match:
             return match.group(1)
 
@@ -171,7 +172,7 @@ class CategoryManagement:
         :param description: The description to validate.
         :return: True if valid, False otherwise.
         """
-        return bool(re.match(r'^.*\.$', description))
+        return bool(re.match(SENTENCE_WITH_FULL_STOP_REGEX, description))
 
     @staticmethod
     def default_description(category_name: str) -> str:

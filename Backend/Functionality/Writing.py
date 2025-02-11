@@ -9,7 +9,7 @@ from typing import Dict, List, Optional
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
 from Constants.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
-from Constants.Constants import DEFAULT_EXTENSION
+from Constants.Constants import DEFAULT_EXTENSION, TAG_WITH_PURPOSE_REGEX
 from Constants.Instructions import determine_pages_prompt, DETERMINE_PAGES_SCHEMA
 
 
@@ -45,10 +45,8 @@ class Writing(enum.Enum):
                 [initial_message],
             )
 
-            pattern = r"<([^>\s]+)(?:\s+purpose='([^']+)')?>"
-
             # Find all matches using re.findall
-            matches = re.findall(pattern, test)
+            matches = re.findall(TAG_WITH_PURPOSE_REGEX, test)
 
             if not matches:
                 logging.warning("No matches found for user topic tags.")

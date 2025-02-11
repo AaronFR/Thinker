@@ -131,7 +131,6 @@ def string_of_existing_topics_prompt(user_topics: List[str]):
 
 
 def select_topic_prompt(term: dict[str, str]):
-    var1 = term.get("term")
     specifics = term.get("specifics")
     return "Topic : " + term.get("term", "") + \
            (", Specifics: " + term.get("specifics")) if specifics else ""

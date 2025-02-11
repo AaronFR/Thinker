@@ -1,3 +1,5 @@
+import re
+
 MAX_SCHEMA_RETRIES = 2
 MAX_PROMPT_RETRIES = 3
 
@@ -28,4 +30,19 @@ NEO4J_PASSWORD = "NEO4J_PASSWORD"
 
 GEMINI_API_KEY = "GEMINI_API_KEY"
 
+# REGEX
 
+IDENTIFY_CONTEXT_NODE_PATTERN = re.compile(
+    r'<(?P<node_name>[a-zA-Z_]+)\s+parameter="(?P<parameter>[^"]+)"\s+content="(?P<content>[^"]+)"\s*/>'
+)
+
+RESULT_AS_TAG_REGEX = r'<result="([^"]+)">'
+
+TAG_WITH_PURPOSE_REGEX = r"<([^>\s]+)(?:\s+purpose='([^']+)')?>"
+
+EXTRACT_LIST_REGEX = r'\[.*?\]'
+
+# Ordered or Unordered
+EXTRACT_ELEMENTS_FROM_LIST = r'^\s*[-*]\s+(.*)$|^\s*\d+\.\s+(.*)$'
+
+SENTENCE_WITH_FULL_STOP_REGEX = r'^.*\.$'

@@ -4,6 +4,7 @@ import re
 from typing import List, Dict, Any
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Constants.Constants import IDENTIFY_CONTEXT_NODE_PATTERN
 from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 from Constants.Instructions import extract_memory_node_terms_system_message, PARSE_MEMORY_NODES_SYSTEM_MESSAGE
@@ -23,9 +24,7 @@ class UserContextManagement(EncyclopediaManagementInterface):
 
     _instance = None
     # Precompiled regex pattern for extracting user topic tags
-    TAG_PATTERN = re.compile(
-        r'<(?P<node_name>[a-zA-Z_]+)\s+parameter="(?P<parameter>[^"]+)"\s+content="(?P<content>[^"]+)"\s*/>'
-    )
+
 
     def __init__(self):
         super().__init__()
@@ -67,7 +66,7 @@ class UserContextManagement(EncyclopediaManagementInterface):
         :param input_text: A string containing user topic tags to parse.
         :return: A list of dictionaries with node names, parameters, and content.
         """
-        matches = UserContextManagement.TAG_PATTERN.findall(input_text)  # Extract all matches from input_text
+        matches = IDENTIFY_CONTEXT_NODE_PATTERN.findall(input_text)  # Extract all matches from input_text
 
         if not matches:
             logging.warning("No matches found for user topic tags.")
