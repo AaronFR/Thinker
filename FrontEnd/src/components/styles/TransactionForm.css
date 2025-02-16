@@ -13,6 +13,11 @@
   margin-bottom: 15px;
 }
 
+.input-field {
+  background-color: #ffffff;
+  color: #ccc;
+}
+
 .input-field:focus {
   border-color: #007bff;
   outline: none;

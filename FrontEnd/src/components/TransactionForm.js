@@ -5,7 +5,7 @@ import { apiFetch } from '../utils/authUtils';
 import './styles/TransactionForm.css';
 import { updateUserBalanceEndpoint } from '../constants/endpoints';
 
-const AMOUNT_REGEX = /^\d+(\.\d{1,2})?$/; // Two decimal places allowed
+const AMOUNT_REGEX = /^\d*\.?\d*$/; // Two decimal places allowed
 
 /**
  * TransactionForm Component
@@ -107,7 +107,7 @@ const TransactionForm = ({ onSuccess }) => {
                     aria-invalid={!!error}
                 />
                 <small id="amountHelp" className="form-text">
-                    Enter the amount in USD (e.g., 5.00)
+                    Enter the amount in USD (e.g. 5.00)
                 </small>
                 {error && <p className="error-message" role="alert">{error}</p>}
                 {success && <p className="success-message" role="status">{success}</p>}
