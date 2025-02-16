@@ -88,9 +88,14 @@ export const About = () => {
 export const BetaBanner = () => {
   return (
     <div className="centered beta-banner">
-      <h2 >
-        🚧 In beta - β testers wanted! Enquire and get to use the site <i>for free</i>
-      </h2>
+      <div>
+        <h2 >
+          🚧 In beta - β testers wanted! Enquire and get to use the site <i>for free.</i>
+        </h2>
+        <div className="centered">
+          <h3 >Contact us: <a href= "mailto:TheThinkerAi@protonmail.com">TheThinkerAi@protonmail.com</a></h3>
+        </div>
+      </div>
     </div>
   )
 }
@@ -139,9 +144,9 @@ export const Pitch = () => {
             🤖 - Uses AI... to automate using AI
           </ul>
           <ul id="I'm hoping break even with budget for contribution bounties can be reached at 10-20% margin. That may be naive honestly.">
-            ¢ - Pay as you go, pay for what you want as you want, with a small margin (0% in beta, w/ ¢30 fee) going to funding the development of this application
+            ¢ - Pay as you go, pay for what you want as you want, with a small margin (0% in beta) going to funding the development of this application
             <ul id="">
-              🤏 Put in a small amount, and give it a shot! ($0.30 fee)
+              🤏 Put in a small amount, and give it a shot! (We pass on a $0.30 fee per transaction)
             </ul>
           </ul>
           <ul id="Well. That's the idea anyway">
