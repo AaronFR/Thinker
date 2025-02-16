@@ -13,13 +13,17 @@ const TooltipConstants = {
   fileUploadButton: "Upload file(s) as reference for your prompt",
   augmentButton: "Generates a more detailed copy of your prompt. <br>Optimised to be more machine readable/provide a better response",
   questionButton: "The app will ask questions it has about your prompt.<br>Provide answers for additional context or just use it for rubber ducking 🦆",
-  submitButton_whileProcessing: "Processing prompt... if its stuck that means something went wrong and we haven't implemented a terminate button yet.. so you'll just have to refresh your page 😅",
+  submitButton: `Send your message to The Thinker for a response.
+    <br>If you click here again you can enter another prompt while this one continues in the background
+  `,
+  submitButton_whileProcessing: `Processing prompt... <br>
+    click here if you want to go to enter a new prompt, the current request will continue in the background
+  `,
 
   /* Selectors */
   personaSelector: "Choose a speciality. This affects how the AI responds, also different 'personas' run some workflows in their own specific way",
   workflowSelector: "Select workflow, workflows determine how your prompt is answered, each workflow consists of steps where each step typically contains *at least* one call to an LLM",
-  modelSelector: `
-    Select the AI model to use, listed from the most affordable to the most powerful.<br>
+  modelSelector: `Select the AI model to use, listed from the most affordable to the most powerful.<br>
     Note: Only "key" operations within workflow steps use the selected model, 
     Most tasks use the economical gpt-4o-mini model.
   `,
@@ -39,8 +43,7 @@ const TooltipConstants = {
   bestOfSystemMessage: "The AI compares all generated responses with your original prompt request to select the best response",
 
   /* Explanations */
-  llmDetails: `
-    Large Language Model, sometimes for advanced models you'll see LRM (Large <i>Reasoning</i> Model)
+  llmDetails: `Large Language Model, sometimes for advanced models you'll see LRM (Large <i>Reasoning</i> Model)
     <br>LLMs are the foundation of "Artificial Intelligence"
     <br>Simply, a LLM is a statistical function that predicts which character should be ouput next in responding to a set of inputs.
     <br>Letter by letter, until a full response is generated.
@@ -48,8 +51,7 @@ const TooltipConstants = {
     <br>We may be called 'The Thinker AI' but you'll be better off using AI/LLMs if you understand that they do NOT think
     <br>It guesses at correct answers statistically, and sometimes these guesses can be far removed from anything resembling actual thought
   `,
-  minFeeDetails: `
-    Which we have to pay and will pass on directly rather than indirectly by increasing prices
+  minFeeDetails: `Which we have to pay and will pass on directly rather than indirectly by increasing prices
     <br><i class="sarcasm">Ahhh the joy of cash-free transactions am I right</i>?
   `,
 };

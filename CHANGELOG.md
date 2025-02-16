@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Costs for individual functionalities are displayed
 - ~~Option~~ to run write pages workflow in parallel
 - Select default model
+- Use 'new' after submitting a prompt to immediately start entering a new prompt while the current request
+ runs in the background
 
 ### Changed
 

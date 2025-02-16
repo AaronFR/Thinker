@@ -2,6 +2,7 @@ import logging
 
 import shortuuid
 from flask_socketio import emit, SocketIO
+from flask import abort
 
 from Data.CategoryManagement import CategoryManagement
 from Data.Files.StorageMethodology import StorageMethodology
@@ -10,7 +11,7 @@ from Functionality.Organising import Organising
 from Personas.Coder import Coder
 from Personas.Writer import Writer
 from Utilities.AuthUtils import login_required_ws
-from Utilities.Contexts import set_message_context, get_message_context, add_to_expensed_nodes
+from Utilities.Contexts import set_message_context, get_message_context
 from Utilities.CostingUtils import balance_required
 from Utilities.Routing import parse_and_validate_data
 
@@ -30,6 +31,19 @@ def init_process_message_ws(socketio: SocketIO):
 
     :param socketio: The Flask-SocketIO instance.
     """
+
+    @socketio.on('connect')
+    def handle_connect():
+        logging.info(f"🟢 Client connected")
+
+    @socketio.on('disconnect_from_request')
+    @login_required_ws
+    def disconnect_from_request():
+        logging.info(f"🔴 Client disconnected")
+
+        # Send acknowledgment back to client
+        return {'status': 'Disconnecting from request'}
+
     @socketio.on('start_stream')
     @login_required_ws
     @balance_required
@@ -53,7 +67,7 @@ def init_process_message_ws(socketio: SocketIO):
 
             user_prompt = parsed_data["prompt"]
             if not user_prompt:
-                raise Exception(ERROR_NO_PROMPT)
+                abort(400)
 
             if parsed_data["additionalQA"]:
                 user_prompt += f"\nAdditional Q&A context: \n{parsed_data['additionalQA']}"

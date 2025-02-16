@@ -33,6 +33,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
  * and integrates the FileUploadButton component for file uploads.
  *
  * @param {function} handleSubmit - Function to handle form submission.
+ * @param {function} disconnectFromRequest - Function to abort the form submission stream.
  * @param {function} handleInputChange - Function to handle changes in user input.
  * @param {string} userInput - Current value of the user input.
  * @param {boolean} isProcessing - Indicates if the form is in a processing state.
@@ -45,6 +46,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
  */
 const UserInputForm = ({
   handleSubmit,
+  disconnectFromRequest,
   handleInputChange,
   userInput,
   isProcessing,
@@ -209,7 +211,7 @@ const UserInputForm = ({
             data-tooltip-html={TooltipConstants.augmentButton}
             data-tooltip-place="bottom"
           >
-            {'Auto-Engineer'}
+            {'Improve prompt'}
           </button>}
           {settings.questionUserPromptsEnabled !== 'off' &&
           <button // settings.promptQuestioningMessage != 'off'
@@ -224,18 +226,29 @@ const UserInputForm = ({
           >
             {'Question'}
           </button>}
-          <button 
-            type="submit"
-            className="button submit-button"
-            disabled={isProcessing}
-            aria-busy={isProcessing}
-            data-tooltip-id="tooltip"
-            data-tooltip-content={isProcessing ? TooltipConstants.submitButton_whileProcessing :
-            ""}
-            data-tooltip-place="bottom"
-          >
-            {isProcessing ? 'Processing...' : 'Enter'}
-          </button>
+          {isProcessing
+            ? <button
+              type="button"
+              className="button submit-button"
+              onClick={disconnectFromRequest}
+              aria-busy={isProcessing}
+              data-tooltip-id="tooltip"
+              data-tooltip-html={TooltipConstants.submitButton_whileProcessing}
+              data-tooltip-place="bottom"
+            >
+              New
+            </button>
+            : <button 
+              type="submit"
+              className="button submit-button"
+              disabled={isProcessing}
+              data-tooltip-id="tooltip"
+              data-tooltip-html={TooltipConstants.submitButton}
+              data-tooltip-place="bottom"
+            >
+              Enter
+            </button>
+          }
         </div>
 
         <div className='palette'>

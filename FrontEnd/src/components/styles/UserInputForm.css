@@ -42,6 +42,7 @@
 }
 .submit-button:disabled {
   background: var(--color-button-disabled);
+  opacity: 50%;
   cursor: not-allowed;
 }
 .submit-button:active {

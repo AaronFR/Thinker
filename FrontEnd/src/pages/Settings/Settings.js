@@ -206,7 +206,7 @@ const AutoPromptEngineeringSection = ({
   cost
 }) => (
   <div>
-    <h3>Auto Prompt Engineering</h3>
+    <h3>Prompt Improvement</h3>
     <h4>Total cost: {formatPrice(parseFloat(cost))}</h4>
     <label className="settings-label">
       <select

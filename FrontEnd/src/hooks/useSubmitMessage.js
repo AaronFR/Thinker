@@ -17,10 +17,11 @@ const useSubmitMessage = (
   setWorkflow
 ) => {
   const [message, setMessage] = useState('');
-  const [files, setFiles] = useState([])
+  const [files, setFiles] = useState([]);
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [totalCost, setTotalCost] = useState(null);
+
   const socketRef = useRef(null);
 
   const userInputRef = useRef('');
@@ -83,7 +84,9 @@ const useSubmitMessage = (
     isProcessingQueueRef.current = false;
   }, []);
 
-  // Function to initialize the socket connection
+  /**
+   * Function to initialize the socket connection
+   */
   const initializeSocket = useCallback(() => {
     return new Promise((resolve, reject) => {
       const socket = io(FLASK_PORT, {
@@ -103,7 +106,7 @@ const useSubmitMessage = (
       });
 
       socket.on('output_file', (data) => {
-        setFiles((prevFiles) => [...prevFiles, data.file])
+        setFiles((prevFiles) => [...prevFiles, data.file]);
       });
 
       socket.on('connect_error', () => {
@@ -113,7 +116,8 @@ const useSubmitMessage = (
         reject(new Error('WebSocket connection failed'));
       });
 
-      // Workflows
+      /* Workflow Events */
+
       socket.on('send_workflow', (data) => {
         console.log("Receiving workflow schema", data.workflow);
         setWorkflow(data.workflow);
@@ -141,6 +145,8 @@ const useSubmitMessage = (
         }
       });
 
+      /* End Stream Events */
+
       socket.on('stream_end', () => {
         console.log('Stream has ended');
         setIsProcessing(false);
@@ -156,6 +162,7 @@ const useSubmitMessage = (
             });
             if (refreshResponse.ok) {
               console.log('Token refreshed successfully');
+
               socketRef.current.disconnect();
 
               await initializeSocket(); // Reinitialize the socket and wait for it to connect
@@ -181,7 +188,9 @@ const useSubmitMessage = (
     });
   }, [processUpdateQueue]);
 
-  // Initialize the socket connection when the component mounts
+  /**
+   * Initialize the socket connection when the component mounts
+   */
   useEffect(() => {
     initializeSocket().catch((err) => {
       console.error('Failed to initialize socket:', err);
@@ -189,24 +198,23 @@ const useSubmitMessage = (
 
     return () => {
       if (socketRef.current) {
-        socketRef.current.off('connect');
-        socketRef.current.off('response');
-        socketRef.current.off('output_file');
-        socketRef.current.off('connect_error');
-        socketRef.current.off('send_workflow');
-        socketRef.current.off('update_workflow');
-        socketRef.current.off('update_workflow_step');
-        socketRef.current.off('stream_end');
-        socketRef.current.off('error');
+        socketRef.current.removeAllListeners();
         socketRef.current.disconnect();
       }
     };
   }, [initializeSocket]);
 
-  // Function to handle message submission
+  /**
+   * Function to handle message submission
+   */
   const handleSubmit = useCallback(async (userInput, selectedPersona, selectedMessages, selectedFiles, tags) => {
       userInputRef.current = userInput;
       selectedPersonaRef.current = selectedPersona;
+
+      if (isProcessing) {
+        console.warn('A submission is already in progress.');
+        return;
+      }
 
       setError(null);
       setIsProcessing(true);
@@ -215,30 +223,63 @@ const useSubmitMessage = (
       setWorkflow(null); // Clear the previous workflow diagram
 
       console.log('Storing pending submit:', { userInput, selectedPersona, tags });
+
       pendingSubmitRef.current = { userInput, selectedPersona, selectedMessages, selectedFiles, tags };
 
       try {
-        if (socketRef.current && socketRef.current.connected) {
-          socketRef.current.emit('start_stream', {
-            prompt: userInput,
-            additionalQA: concatenatedQA,
-            files: selectedFiles,
-            messages: selectedMessages, // consider sending just IDs if needed
-            persona: selectedPersona,
-            tags: tags
-          });
-          console.log('Stream started');
+        if (!socketRef.current || !socketRef.current.connected) {
+          // Reinitialize the socket connection if it's not connected
+          await initializeSocket();
         }
+
+        socketRef.current.emit('start_stream', {
+          prompt: userInput,
+          additionalQA: concatenatedQA,
+          files: selectedFiles,
+          messages: selectedMessages, // consider sending just IDs if needed
+          persona: selectedPersona,
+          tags: tags
+        });
+        console.log('Stream started');
       } catch (err) {
         console.error('Error starting the stream:', err);
         setError('Error starting the stream. Please try again later.');
         setIsProcessing(false);
       }
     },
-    [concatenatedQA, selectedMessages, selectedFiles, tags]
+    [concatenatedQA, selectedMessages, selectedFiles, tags, isProcessing, initializeSocket]
   );
 
-  return { message, files, totalCost, error, isProcessing, handleSubmit };
+  /**
+   * Function to cancel the ongoing request
+   */
+  /**
+ * Function to cancel the ongoing request
+ */
+const disconnectFromRequest = useCallback(() => {
+  if (socketRef.current && socketRef.current.connected) {
+
+    // ToDo: Consider adding msgId for terminating ongoing requests
+    socketRef.current.emit('disconnect_from_request', (response) => {
+      console.info("Disconnecting from request view", response);
+      // Disconnect after acknowledgment
+      socketRef.current.disconnect();
+
+      // Reset state variables
+      setIsProcessing(false);
+      setMessage('');
+      setTotalCost(null);
+      setWorkflow(null);
+      pendingSubmitRef.current = null;
+      updateQueueRef.current = [];
+    });
+  } else {
+    console.warn('No active socket connection to disconnect.');
+  }
+}, []);
+
+
+  return { message, files, totalCost, error, isProcessing, handleSubmit, disconnectFromRequest };
 };
 
 export default useSubmitMessage;
