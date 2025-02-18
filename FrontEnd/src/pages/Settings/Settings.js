@@ -141,6 +141,33 @@ const FunctionalitySettings = ({
 );
 
 /**
+ * WorkflowsSettings Component
+ *
+ * Renders Workflows related settings.
+ */
+const WorkflowsSettings = ({
+   settings,
+   toggleWritePagesInParallel,
+}) => (
+  <div>
+    <h2 className="settings-heading">Workflows</h2>
+
+    <p>Write each page at once rather than in sequence - faster but means pages can't refer to prior content</p>
+    <label className="settings-label">
+      <input
+        type="checkbox"
+        className="settings-checkbox"
+        checked={settings.writePagesInParallel}
+        onChange={toggleWritePagesInParallel}  // ToDo: This approach might be a lot more efficient
+      />
+      Write Pages in Parallel
+    </label>
+    
+    
+  </div>
+);
+
+/**
  * PromptQuestioningSection Component
  *
  * Renders settings for Prompt Questioning.
@@ -527,6 +554,8 @@ export function Settings() {
     toggleSetting('optimization.summarise', 'summarisationEnabled');
   const toggleFileSummarisation = () =>
     toggleSetting('optimization.summariseFiles', 'fileSummarisationEnabled');
+  const toggleWritePagesInParallel = () =>
+    toggleSetting('optimization.writePagesInParallel', 'writePagesInParallel');
 
   const fetchUserInformation = async () => {
     setError(null);
@@ -602,6 +631,11 @@ export function Settings() {
         changeSetting={changeSetting}
         handleMessageChange={handleMessageChange}
         userInfo={userInfo}
+      />
+
+      <WorkflowsSettings
+        settings={settings}
+        toggleWritePagesInParallel={toggleWritePagesInParallel}
       />
 
       <SummariesSettings

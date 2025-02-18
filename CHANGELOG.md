@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Gemini models are available (gemini-2.0-flash and gemini-2.0-flash-lite-preview)
 - Generated files are displayed under the underneath the response
 - Costs for individual functionalities are displayed
-- ~~Option~~ to run write pages workflow in parallel
+- Option to run write pages workflow in parallel
 - Select default model
 - Use 'new' after submitting a prompt to immediately start entering a new prompt while the current request
  runs in the background

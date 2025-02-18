@@ -11,6 +11,7 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Constants.Constants import EXTRACT_ELEMENTS_FROM_LIST
 from Constants.Exceptions import failure_to_process_individual_page_iteration
+from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Writing import Writing
 from Utilities.Contexts import get_message_context, get_user_context, set_message_context, set_user_context
@@ -93,7 +94,8 @@ class WritePagesWorkflow(BaseWorkflow):
         logging.info(f"Preparing to write to file: {file_name} with purpose: {purpose}")
 
         content = ""
-        if self.USE_PARALLEL_PROCESSING:
+        config = Configuration.load_config()
+        if config.get('optimization', {}).get('writePagesInParallel', False):
             content = self.efficient_process_pages(
                 pages,
                 process_prompt,
@@ -171,6 +173,7 @@ class WritePagesWorkflow(BaseWorkflow):
 
             for i, future in futures:
                 try:
+                    # ToDo: Doesn't ACTUALLY appear to be in order
                     results[i] = future.result()  # Retrieve results in order
                 except Exception:
                     logging.exception(failure_to_process_individual_page_iteration(i))
