@@ -3,7 +3,6 @@ import logging
 from typing import Union, Callable
 
 from Constants.Exceptions import error_in_function
-from Utilities.Contexts import set_functionality_context, get_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
 
 ErrorHandler.setup_logging()
@@ -75,21 +74,3 @@ def return_for_error(return_object: Union[object, Callable], debug_logging: bool
     return decorator
 
 
-def specify_functionality_context(function_name: str):
-    """
-    Sets a specific functionality context for the duration of the method call and no longer
-
-    :param function_name: The functionality to enable and then disable for the duration of the method
-    """
-    def decorator(method):
-        @functools.wraps(method)
-        def wrapper(*args, **kwargs):
-            prior_functionality_context = get_functionality_context()
-            set_functionality_context(function_name)
-
-            result = method(*args, **kwargs)
-
-            set_functionality_context(prior_functionality_context)
-            return result
-        return wrapper
-    return decorator

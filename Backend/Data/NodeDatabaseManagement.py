@@ -568,6 +568,50 @@ class NodeDatabaseManagement:
         )
         logging.info(f"User balance updated by: {amount}")
 
+    # Pricing - Gemini management
+
+    @handle_errors()
+    def get_system_gemini_balance(self) -> Optional[float]:
+        """Returns the SYSTEM gemini account balance, when this hits 0 gemini calls are blocked
+
+        :return: The system balance if found, None otherwise.
+        """
+
+        records = self.neo4jDriver.execute_read(
+            CypherQueries.GET_SYSTEM_GEMINI_BALANCE
+        )
+        if len(records) > 1:
+            logging.error(f"Database Catastrophe: Multiple SYSTEM records found!!")
+        return records[0]["gemini_balance"]
+
+    @handle_errors()
+    def deduct_from_system_gemini_balance(self, amount: float) -> None:
+        """Deducts a specific amount from the systems gemini balance total
+
+        :param amount: The amount to deduct (should be a positive value).
+        """
+        if amount <= 0:
+            logging.error("Deduction amount must be positive.")
+            return
+
+        self.update_system_gemini_balance(-amount)
+
+    @handle_errors()
+    def update_system_gemini_balance(self, amount: float) -> None:
+        """Updates the user's balance by the specified amount.
+
+        :param amount: positive for an amount to add to the users balance.
+        """
+        parameters = {
+            "amount": amount
+        }
+
+        self.neo4jDriver.execute_write(
+            CypherQueries.UPDATE_SYSTEM_GEMINI_BALANCE,
+            parameters
+        )
+        logging.info(f"System gemini balance updated by: {amount}")
+
     @handle_errors()
     def expense_node(self, node_id: str, amount: float) -> None:
         """Attaches a cost information to a give node

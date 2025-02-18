@@ -6,6 +6,7 @@ This module contains Cypher queries used for interacting with the Neo4j Graph Da
 Constraints:
 CREATE CONSTRAINT FOR (user:USER) REQUIRE user.id IS UNIQUE;
 CREATE CONSTRAINT FOR (category:CATEGORY) REQUIRE category.id IS UNIQUE;
+CREATE CONSTRAINT FOR (s:SYSTEM) REQUIRE s.id IS UNIQUE;
 """
 
 # ToDo: include secure user match e.g MATCH (user:USER {id: $user_id})
@@ -216,6 +217,16 @@ RETURN user.balance AS balance;
 UPDATE_USER_BALANCE = """
 MATCH (user:USER {id: $user_id})
 SET user.balance = user.balance + $amount;
+"""
+
+GET_SYSTEM_GEMINI_BALANCE = """
+MATCH (system:SYSTEM)
+RETURN system.gemini_balance AS gemini_balance;
+"""
+
+UPDATE_SYSTEM_GEMINI_BALANCE = """
+MATCH (system:SYSTEM)
+SET system.gemini_balance = system.gemini_balance + $amount;
 """
 
 # Will create the node if it doesn't already yet exist

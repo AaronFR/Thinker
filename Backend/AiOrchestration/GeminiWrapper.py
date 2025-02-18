@@ -16,6 +16,7 @@ from Constants.Constants import GEMINI_API_KEY
 from Constants.Exceptions import FAILURE_TO_STREAM, SERVER_FAILURE_GEMINI_API, NO_RESPONSE_GEMINI_API
 from Utilities.Contexts import get_message_context, get_functionality_context
 from Utilities.Decorators import handle_errors
+from Utilities.PaymentDecorators import evaluate_gemini_balance
 from Utilities.ErrorHandler import ErrorHandler
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 
@@ -93,6 +94,7 @@ class GeminiWrapper:
                 logging.warning(f"Unknown message role: {role}")
         return user_messages, system_messages
 
+    @evaluate_gemini_balance()
     def get_ai_response(
             self,
             messages: List[Dict[str, str]],
@@ -139,6 +141,7 @@ class GeminiWrapper:
             logging.exception(SERVER_FAILURE_GEMINI_API)
             raise e
 
+    @evaluate_gemini_balance()
     @handle_errors(debug_logging=True, raise_errors=True)
     def get_ai_streaming_response(
             self,
@@ -197,6 +200,7 @@ class GeminiWrapper:
         return full_response
 
     @handle_errors(debug_logging=True, raise_errors=True)
+    @evaluate_gemini_balance()
     def get_ai_function_response(self,
                                  messages: List[Dict[str, str]],
                                  function_schema,
@@ -263,6 +267,7 @@ class GeminiWrapper:
         Globals.current_request_cost += total_cost
 
         NodeDB().deduct_from_user_balance(total_cost)
+        NodeDB().deduct_from_system_gemini_balance(total_cost)
 
         message_id = get_message_context()
         if message_id:
@@ -279,9 +284,10 @@ class GeminiWrapper:
             f"Total cost: ${total_cost:.4f}"
         )
 
+
 if __name__ == '__main__':
     """
-    This method will fail specifially because the code works within a flask context, disable these calls when testing
+    This method will fail specifically because the code works within a flask context, disable these calls when testing
     """
     gemini_wrapper = GeminiWrapper()
 

@@ -8,7 +8,7 @@ from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context, add_to_expensed_nodes, get_message_context
-from Utilities.Decorators import specify_functionality_context
+from Utilities.PaymentDecorators import specify_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
 from Constants.Instructions import SIMPLE_SUMMARY_PROMPT
 

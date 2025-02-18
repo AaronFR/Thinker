@@ -8,7 +8,8 @@ from AiOrchestration.ChatGptMessageBuilder import generate_messages
 from Constants.Exceptions import AI_RESOURCE_FAILURE, FUNCTION_SCHEMA_EMPTY, NO_RESPONSE_OPEN_AI_API
 from Data.Configuration import Configuration
 
-from Utilities.Decorators import handle_errors, specify_functionality_context
+from Utilities.Decorators import handle_errors
+from Utilities.PaymentDecorators import specify_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
 from Utilities.models import determine_prompter, find_model_enum_value
