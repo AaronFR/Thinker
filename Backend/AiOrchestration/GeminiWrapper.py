@@ -29,7 +29,7 @@ class GeminiRole(enum.Enum):
     SYSTEM = "system"
 
 
-class CostConfiguration:  #  This entire Class will need refactoring to properly calculate costs
+class CostConfiguration:  # This entire Class will need refactoring to properly calculate costs
     """Handles cost configuration for API calls."""
 
     def __init__(self):
@@ -57,12 +57,19 @@ class GeminiWrapper:
         """Create a new instance or return the existing one."""
         if cls._instance is None:
             cls._instance = super(GeminiWrapper, cls).__new__(cls)
-            cls._instance.gemini_client = genai.Client(api_key=os.getenv(GEMINI_API_KEY))
+            cls._instance.gemini_client = cls._get_google_genai_client()
             cls._instance.cost_config = CostConfiguration()  # Load cost configurations
         return cls._instance
 
     def __init__(self):
         ErrorHandler.setup_logging()
+
+    @staticmethod
+    def _get_google_genai_client():
+        try:
+            return genai.Client(api_key=os.getenv(GEMINI_API_KEY))
+        except Exception:
+            logging.exception("Failed to create google AI client!")
 
     @staticmethod
     def _prepare_gemini_messages(messages: List[Dict[str, str]]) -> tuple[

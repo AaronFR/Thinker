@@ -36,8 +36,9 @@ def evaluate_gemini_balance():
             try:
                 if NodeDB().get_system_gemini_balance() > 0:
                     result = method(*args, **kwargs)
-
                     return result
+                else:
+                    raise Exception("System cannot afford call")
             except:
                 logging.exception("Failed to evaluate gemini total balance!")
         return wrapper
