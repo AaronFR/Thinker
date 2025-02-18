@@ -84,13 +84,15 @@ Some of the features planned for the next few releases..
 - **Response options**: After a response is output the option exists to reference it immediately, with settings for automatic reference
    or to make saving a message a manual selection rather an automatic process.
 - **Payment System**: Top up system for updating balance (via stripe)
-  - Attach receipts to ~~prompts~~, workflows and features. So the user always knows how much they've spent and on what.
+  - Attach receipts to ~~prompts~~, workflows and ~~features~~. So the user always knows how much they've spent and on what.
 - **Internet access**: Rather than just reading a related summary of a search actually read the content of the first few 
   pages of each internet search
   - Settings to disable automatic internet searches and specify pages to search through
   - Visual display in workflow of pages visited
 - **Deepseek R1**:
   - Option for selecting the 'default' model (internally and for workflow steps)
+- **O3-mini**:
+  - Awaiting access..
 - **Reference/File message optimisation**: Optimised with regards to the prompt referencing them, this could both minimise
   confusion when using a lot of reference material and also serve as basically a 2nd step in the 'though process' of responding
   to a given prompt
@@ -98,11 +100,10 @@ Some of the features planned for the next few releases..
 ### UI
 
 - **QOL**:
-  - Visual redesign of pages and messages, make messages and files viewable at the end of a workflow response
+  - Visual redesign of pages and messages, make messages ~~and files~~ viewable at the end of a workflow response
     - Add option to manually specify if a file should be overwritten or a new version created
-  - Delete selected items button
-  - Delete category button
-  - Ability to terminate a mid-process prompt
+  - 'Delete selected items' button
+  - 'Delete category' button
   - Prompts can fail and the user doesn't know why, it just stalls at 'Processing..'
   - It's hard to select a file vs expanding it for review (solved if that means the same thing though..)
   - Ability to undo changes to files

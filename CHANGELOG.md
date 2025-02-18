@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 
+
+### Changed
+
+- 
+
+### Removed
+
+- 
+
+## [0.9.5] - 2025-02-18 - Pre public beta
+
+### Added
+
 - Gemini models are available (gemini-2.0-flash and gemini-2.0-flash-lite-preview)
 - Generated files are displayed under the underneath the response
 - Costs for individual functionalities are displayed
