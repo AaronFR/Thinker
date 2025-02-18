@@ -309,12 +309,14 @@ const BestOfSection = ({
 const SummariesSettings = ({
   settings,
   toggleSummarisation,
+  toggleFileSummarisation,
   handleMessageChange,
-  cost
+  summarise_workflows_cost,
+  summarise_files_cost,
 }) => (
   <div>
     <h2 className="settings-heading">Summaries</h2>
-    <h4>Total cost: {formatPrice(parseFloat(cost))}</h4>
+
     <label className="settings-label">
       <input
         type="checkbox"
@@ -325,6 +327,7 @@ const SummariesSettings = ({
       />
       Enables summaries on compatible workflows
     </label>
+    <h4>Total cost: {formatPrice(parseFloat(summarise_workflows_cost))}</h4>
     <div
       data-tooltip-id="tooltip"
       data-tooltip-content={TooltipConstants.summarisationSystemMessage}
@@ -335,6 +338,32 @@ const SummariesSettings = ({
         className="textarea"
         onChange={(e) =>
           handleMessageChange('summarisationMessage', e.target.value)
+        }
+        style={{ opacity: 0.9 }}
+      />
+    </div>
+
+    <label className="settings-label">
+      <input
+        type="checkbox"
+        className="settings-checkbox"
+        id="summarise-checkbox"
+        checked={settings.fileSummarisationEnabled}
+        onChange={toggleFileSummarisation}
+      />
+      Add a summary to new files after they've been created
+    </label>
+    <h4>Total cost: {formatPrice(parseFloat(summarise_files_cost))}</h4>
+    <div
+      data-tooltip-id="tooltip"
+      data-tooltip-content={TooltipConstants.summarisationSystemMessage}
+      data-tooltip-place="bottom"
+    >
+      <AutoExpandingTextarea
+        value={settings.fileSummarisationMessage}
+        className="textarea"
+        onChange={(e) =>
+          handleMessageChange('fileSummarisationMessage', e.target.value)
         }
         style={{ opacity: 0.9 }}
       />
@@ -465,7 +494,7 @@ const SystemMessagesSettings = ({ settings, handleMessageChange }) => (
  * Main component that aggregates all settings sections.
  */
 export function Settings() {
-  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'summarise_workflows_cost']);
+  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'summarise_workflows_cost', 'summarise_files_cost']);
   const [userInfo, setUserInfo] = useState(null);
   const [error, setError] = useState(null);
 
@@ -496,6 +525,8 @@ export function Settings() {
     );
   const toggleSummarisation = () =>
     toggleSetting('optimization.summarise', 'summarisationEnabled');
+  const toggleFileSummarisation = () =>
+    toggleSetting('optimization.summariseFiles', 'fileSummarisationEnabled');
 
   const fetchUserInformation = async () => {
     setError(null);
@@ -576,8 +607,10 @@ export function Settings() {
       <SummariesSettings
         settings={settings}
         toggleSummarisation={toggleSummarisation}
+        toggleFileSummarisation={toggleFileSummarisation}
         handleMessageChange={handleMessageChange}
-        cost={userInfo?.summarise_workflows_cost}
+        summarise_workflows_cost={userInfo?.summarise_workflows_cost}
+        summarise_files_cost={userInfo?.summarise_files_cost}
       />
 
       <SystemMessagesSettings

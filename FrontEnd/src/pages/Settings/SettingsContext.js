@@ -40,7 +40,8 @@ export const SettingsProvider = ({ children }) => {
         writerPersonaMessage: 'Default writer persona message...',
         categorisationMessage: 'Default categorisation message...',
         bestOfMessage: 'Default best of judgement criteria...',
-        summarisationMessage: 'Default summarisation message...'
+        summarisationMessage: 'Default summarisation message...',
+        filesSummarisationMessage: 'Default file summarisation message...',
     };
 
     const [settings, setSettings] = useState(initialSettings);
@@ -141,6 +142,8 @@ export const SettingsProvider = ({ children }) => {
                         loadedConfig.systemMessages.bestOfMessage || initialSettings.bestOfMessage,
                     summarisationMessage:
                         loadedConfig.systemMessages.summarisationMessage || initialSettings.summarisationMessage,
+                    fileSummarisationMessage:
+                        loadedConfig.systemMessages.fileSummarisationMessage || initialSettings.filesSummarisationMessage,
                 }));
             }
         };

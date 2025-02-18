@@ -166,7 +166,7 @@ const PagesSelector = React.memo(({ pages, setTags }) => {
                     data-tooltip-html={TooltipConstants.pagesSelector}
                     data-tooltip-place="top"
                 >
-                    + Add Pages
+                    + Page Count
                 </button>
             )}
         </div>

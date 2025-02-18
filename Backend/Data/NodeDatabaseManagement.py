@@ -10,10 +10,12 @@ from flask_socketio import emit
 
 from Constants import CypherQueries
 from Constants.Exceptions import failed_to_create_user_topic
+from Constants.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
+from Data.Configuration import Configuration
 from Data.Neo4jDriver import Neo4jDriver
 from Data.Files.StorageMethodology import StorageMethodology
-from Constants.PersonaSpecification import PersonaConstants
-from Utilities.Contexts import get_user_context, get_message_context
+from Utilities.Contexts import get_user_context, get_message_context, get_functionality_context, \
+    set_functionality_context
 from Utilities.Decorators import handle_errors
 
 
@@ -354,17 +356,7 @@ class NodeDatabaseManagement:
         time = int(datetime.now().timestamp())
         file_name = os.path.basename(file_path)
 
-        content = StorageMethodology.select().read_file(file_path)
-        from AiOrchestration.AiOrchestrator import AiOrchestrator
-
-        FILE_SUMAMRIES_ENABLED = False
-        if FILE_SUMAMRIES_ENABLED:
-            summary = AiOrchestrator().execute(
-                [PersonaConstants.SUMMARISER_SYSTEM_INSTRUCTIONS],
-                [content]
-            )
-        else:
-            summary = ""
+        summary = self.summarise_file(file_path)
 
         parameters = {
             "file_id": file_uuid,
@@ -381,6 +373,35 @@ class NodeDatabaseManagement:
         self.neo4jDriver.execute_write(CypherQueries.CREATE_FILE_NODE, parameters)
 
         emit('output_file', {'file': file_uuid})
+
+    @staticmethod
+    def summarise_file(file_path: str):
+        """
+        ToDo: May need to refactor @specify_functionality_context because it can't be locally imported, NodeDB should be
+         low on the dependency tree but it occasionally needs to run methods like this from classes which themselves
+         must use NodeDB
+        """
+        config = Configuration.load_config()
+
+        if config.get('optimization', {}).get('summariseFiles', False):
+            prior_functionality_context = get_functionality_context()
+            set_functionality_context("summarise_files")
+
+            content = StorageMethodology.select().read_file(file_path)
+
+            from AiOrchestration.AiOrchestrator import AiOrchestrator
+            summary = AiOrchestrator().execute(
+                [config.get("systemMessages", {}).get(
+                    'fileSummarisationMessage',
+                    SUMMARISER_SYSTEM_INSTRUCTIONS
+                )],
+                [content]
+            )
+            set_functionality_context(prior_functionality_context)
+        else:
+            summary = ""
+
+        return summary
 
     @handle_errors()
     def get_file_by_id(self, file_id: int):

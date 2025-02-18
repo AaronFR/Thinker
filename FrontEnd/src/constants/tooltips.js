@@ -40,6 +40,7 @@ const TooltipConstants = {
   questioningSystemMessage: "When generating questions, the AI references your prompt, uploaded files, and previous messages. (As of yet it does not reference user knowledge)",
   autoPromptEngigneeringSystemMessage: "When generating a 'prompt engineering' copy the application only reads the users prompt. It does not reference selected files or messages.",
   summarisationSystemMessage: "The summarisation step will be provided with every single file and message reference supplied originally, this means a For All workflow can see each re-written file",
+  fileSummarisationSystemMessage: "File summaries only access the content of the file. TIP: be creative: it doesn't <i>have</i> to be a generic summary, prioritise what you want.",
   bestOfSystemMessage: "The AI compares all generated responses with your original prompt request to select the best response",
 
   /* Explanations */
