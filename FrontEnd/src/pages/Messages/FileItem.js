@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { shortenText, getBasename, CodeHighlighter } from '../../utils/textUtils';
 import { apiFetch } from '../../utils/authUtils';
-import {  fileAddressEndpoint, fileIdEndpoint } from '../../constants/endpoints';
+import { fileAddressEndpoint, fileIdEndpoint } from '../../constants/endpoints';
 
 /**
  * FileItem Component

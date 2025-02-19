@@ -55,6 +55,16 @@ const TooltipConstants = {
   minFeeDetails: `Which we have to pay and will pass on directly rather than indirectly by increasing prices
     <br><i class="sarcasm">Ahhh the joy of cash-free transactions am I right</i>?
   `,
+  perToken: `Tokens are what LLMs actually 'read', they roughly correspond to one word.
+  
+  Precise measurements differ from model to model. 
+  This explanation is 40 tokens long to GPT-4o.
+  `,
+  perMillionToken: `1 million tokens more accurately correpsonds to ~750,000 words
+  The average novel is about 100,000 words long.
+  `,
+  byCheapest: `Gemini-2.0- Flash lite - preview
+  At time of writing`
 };
 
 export default TooltipConstants;
