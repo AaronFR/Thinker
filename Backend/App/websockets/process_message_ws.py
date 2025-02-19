@@ -98,7 +98,10 @@ def init_process_message_ws(socketio: SocketIO):
                     chunk_content += content
                     emit('response', {'content': content})
                 elif 'stream_end' in chunk:
-                    emit('stream_end')
+                    emit('stream_end', {
+                        "category_name": category,
+                        "category_id": NodeDB().get_category_id(category)
+                    })
                     emit("update_workflow", {"status": "finished"})
                     break  # Exit the loop after emitting 'stream_end
 
@@ -108,6 +111,11 @@ def init_process_message_ws(socketio: SocketIO):
             Organising.categorize_and_store_prompt(user_prompt, full_message, category)
 
             logging.info(f"response message: {response_message}")
+
+            emit('trigger_refresh', {
+                "category_name": category,
+                "category_id": NodeDB().get_category_id(category)
+            })
 
         except ValueError as ve:
             logging.error("Value error: %s", str(ve))

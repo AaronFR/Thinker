@@ -32,6 +32,7 @@ const useSubmitMessage = (
   const updateQueueRef = useRef([]);
   const isProcessingQueueRef = useRef(false); // Flag to prevent multiple concurrent queue processing
   const isRefreshingRef = useRef(false);
+  const [refreshCategory, setRefreshCategory] = useState(null);
 
   /**
    * Update workflowRef whenever workflow state changes.
@@ -147,9 +148,13 @@ const useSubmitMessage = (
 
       /* End Stream Events */
 
-      socket.on('stream_end', () => {
+      socket.on('stream_end', (data) => {
         console.log('Stream has ended');
         setIsProcessing(false);
+      });
+
+      socket.on('trigger_refresh', (data) => {
+        setRefreshCategory({ name: data.category_name, id: data.category_id });
       });
 
       socket.on('error', async (data) => {
@@ -279,7 +284,7 @@ const disconnectFromRequest = useCallback(() => {
 }, []);
 
 
-  return { message, files, totalCost, error, isProcessing, handleSubmit, disconnectFromRequest };
+  return { message, files, totalCost, error, isProcessing, handleSubmit, disconnectFromRequest, refreshCategory };
 };
 
 export default useSubmitMessage;

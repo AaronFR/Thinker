@@ -20,6 +20,7 @@ from Utilities.PaymentDecorators import evaluate_gemini_balance
 from Utilities.ErrorHandler import ErrorHandler
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 
+
 #  For now assuming that google only has text and vision available
 
 
@@ -89,7 +90,8 @@ class GeminiWrapper:
             content = message['content']
 
             if role == "system":
-                system_messages.append({'role': GeminiRole.SYSTEM.value, 'content': content})  # This will handle case when only system prompt is sent in
+                # This will handle case when only system prompt is sent in
+                system_messages.append({'role': GeminiRole.SYSTEM.value, 'content': content})
             elif role == "user":
                 user_messages.append({'role': GeminiRole.USER.value, 'content': content})
             elif role == "assistant":

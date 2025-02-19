@@ -78,7 +78,7 @@ function App () {
     const [workflow, setWorkflow] = useState()
  
     // Custom hooks
-    const { message, files, error: messageError, isProcessing, handleSubmit, disconnectFromRequest } = useSubmitMessage(concatenatedQA, selectedFiles, selectedMessages, tags, workflow, setWorkflow);
+    const { message, files, error: messageError, isProcessing, handleSubmit, disconnectFromRequest, refreshCategory } = useSubmitMessage(concatenatedQA, selectedFiles, selectedMessages, tags, workflow, setWorkflow);
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt();
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions();
     const { selectedWorkflow, workflowIsLoading, selectMessageError, selectWorkflow } = useSelectedWorkflow();
@@ -206,6 +206,7 @@ function App () {
               isProcessing={isProcessing}
               onMessageSelect={toggleMessageSelection}
               selectedMessages={selectedMessages}
+              refreshCategory={refreshCategory}
             />
           </div>
         

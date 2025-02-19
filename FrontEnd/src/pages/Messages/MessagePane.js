@@ -17,7 +17,7 @@ import { fetchCategoriesEndpoint, messagesForCategoryEndpoint } from '../../cons
  * @param {boolean} isProcessing - Indicates if the application is currently processing data.
  * @param {function} onMessageSelect - Callback to handle message selection.
  */
-const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => {
+const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages, refreshCategory }) => {
   const [categories, setCategories] = useState([])
   const [error, setError] = useState('');
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
@@ -73,6 +73,9 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => 
       }
 
       const data = await response.json();
+
+      categories[0].name.toLowerCase() == categoryName.toLowerCase())
+
       setCategories(prevCetegories => 
         prevCetegories.map(category =>
           category.name.toLowerCase() == categoryName.toLowerCase() ? { ...category, messages: data.messages } : category
@@ -83,6 +86,14 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages }) => 
       setError("Unable to load messages. Please try again.");
     }
   }, []);
+
+  useEffect(() => {
+    if (refreshCategory == null) {
+      return
+    }
+
+    fetchMessagesByCategory(refreshCategory?.name, refreshCategory?.id)
+  }, [refreshCategory])
 
   /**
    * Handles the deletion of a message.

@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- 
+- New messages will trigger a category refresh if that category is already open
 
 ### Removed
 
