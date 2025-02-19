@@ -7,7 +7,7 @@ from pathlib import Path
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
-from Utilities.Contexts import get_user_context, add_to_expensed_nodes, get_message_context
+from Utilities.Contexts import get_user_context
 from Utilities.PaymentDecorators import specify_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
 from Constants.Instructions import SIMPLE_SUMMARY_PROMPT
@@ -161,12 +161,9 @@ class BaseWorkflow:
         :return: AI's response.
         """
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
-        if not message_id:
-            message_id = get_message_context()
         if not user_id:
             user_id = get_user_context()
 
-        add_to_expensed_nodes(message_id)
         response = process_prompt(
             message,
             file_references,

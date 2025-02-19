@@ -2,6 +2,8 @@ from flask import g
 from typing import List
 
 
+# User Request Info
+
 def set_user_context(user_id: str):
     """
     Set the user_id in Flask's g object.
@@ -30,6 +32,9 @@ def get_message_context() -> str | None:
     return getattr(g, 'message_context', None)
 
 
+# Functionalities
+
+
 def set_functionality_context(function_name: str):
     """
     The specific functionality being used, primarily used for cost estimating purposes.
@@ -42,26 +47,3 @@ def get_functionality_context() -> str | None:
     Get the name of the current employed functionality from Flask's g object. Returns None if not set.
     """
     return getattr(g, 'functionality_context', None)
-
-
-def add_to_expensed_nodes(expensed_node_uuid: str):
-    """
-    Append a Node UUID to the list of expensed_nodes that will be expensed at the end of the transaction.
-    """
-    if not hasattr(g, 'expensed_nodes'):
-        g.expensed_nodes = []
-    g.expensed_nodes.append(expensed_node_uuid)
-
-
-def set_expensed_nodes(new_list: List[str]):
-    """
-    Re-set the entire list of Node UUID's, e.g., for wiping.
-    """
-    g.expensed_nodes = new_list
-
-
-def get_expensed_nodes() -> List[str]:
-    """
-    Return the list of nodes to expense by their UUID. Returns an empty list if not set.
-    """
-    return getattr(g, 'expensed_nodes', [])

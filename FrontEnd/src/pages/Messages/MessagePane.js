@@ -74,8 +74,6 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages, refre
 
       const data = await response.json();
 
-      categories[0].name.toLowerCase() == categoryName.toLowerCase())
-
       setCategories(prevCetegories => 
         prevCetegories.map(category =>
           category.name.toLowerCase() == categoryName.toLowerCase() ? { ...category, messages: data.messages } : category
