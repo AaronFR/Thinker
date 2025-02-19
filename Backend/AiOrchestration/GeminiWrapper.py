@@ -45,7 +45,7 @@ class CostConfiguration:  # This entire Class will need refactoring to properly 
 
         self.output_token_costs = {model: float(os.environ.get(f'OUTPUT_COST_{model.name}', default)) for model, default in {
             GeminiModel.GEMINI_2_FLASH: 0.0000004,  # $/token
-            GeminiModel.GEMINI_2_FLASH_LITE_PREVIEW: 0.00000015,  # $/token
+            GeminiModel.GEMINI_2_FLASH_LITE_PREVIEW: 0.00000030,  # $/token
         }.items()}
 
 
