@@ -25,7 +25,7 @@ const FUNCTIONALITY_STATES = {
 };
 
 /* Sections 
- * ToDo: Add config checks to leave sections open if they user left them open
+ * ToDo: Add config checks to leave sections open if they user left them
  */
 
 /**
@@ -85,26 +85,24 @@ const AiModelSettings = ({ settings, handleForegroundModelChange, handleBackgrou
 
   const maxContent = (
   <div>
-    <div className="settings-section">
-      {sectionHeading}
-      <h3>Foreground Model Default</h3>
-      <p>This will specifiy the foreground model to be selected by default, each step in each workflow will run on the selected model</p>
-      <ModelSelector
-        selectedModel={settings?.defaultForegroundModel || ''}
-        setTags={handleForegroundModelChange}
-      />
+    {sectionHeading}
+    <h3>Foreground Model Default</h3>
+    <p>This will specifiy the foreground model to be selected by default, each step in each workflow will run on the selected model</p>
+    <ModelSelector
+      selectedModel={settings?.defaultForegroundModel || ''}
+      setTags={handleForegroundModelChange}
+    />
 
-      <h3>Background Model</h3>
-      <p>
-        In the thinker many programs actually run in the background to try and improve the main 'foreground' prompt and the user experience overall, for this 
-        purpose you want a functional econonmical, to the point LLM.
-      </p>
-      <ModelSelector
-        selectedModel={settings?.defaultBackgroundModel || ''}
-        setTags={handleBackgroundModelChange}
-        economicalMode={true}
-      />
-    </div>
+    <h3>Background Model</h3>
+    <p>
+      In the thinker many programs actually run in the background to try and improve the main 'foreground' prompt and the user experience overall, for this 
+      purpose you want a functional econonmical, to the point LLM.
+    </p>
+    <ModelSelector
+      selectedModel={settings?.defaultBackgroundModel || ''}
+      setTags={handleBackgroundModelChange}
+      economicalMode={true}
+    />
   </div>)
 
   return (<ExpandableElement

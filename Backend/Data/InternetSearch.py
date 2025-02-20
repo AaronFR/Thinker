@@ -1,13 +1,37 @@
+"""
+This is, to be frank, a huge pot of worms.
+For the record: All I want to do is to be able to process information the user can freely access online and make it
+available to said user,
+
+1: as context for their requested prompt
+2: as a clickable link for reference
+
+There are a couple of possibilities that may need to be implemented to mitigate the myriad issues of AI with internet
+search:
+Running requests client side, Running a 3rd party search function, creating a system for interacting with various common
+website APIs instead of page requests, etc.
+
+Additionally, if you own a website and don't want our user agent to make requests add it to your robots.txt and our
+program should be automatically disabled from searching instantly, please contact us if there's any further issue.
+"""
+
+
 import logging
 from typing import List
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urlparse
+import urllib.robotparser
 
+import requests
+from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Constants.Instructions import EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE, EXTRACT_SEARCH_TERMS_PROMPT
 from Utilities.Decorators import return_for_error
 from Utilities.PaymentDecorators import specify_functionality_context
+from Utilities.Utility import Utility
+
+USER_AGENT = 'TheThinkerAiBot'
 
 
 class DuckDuckGoSearchAPI:
@@ -110,8 +134,85 @@ class InternetSearch:
             return []
 
         search_query = " ".join(keywords)
-        responses = self.search_api.search(search_query)
+        search_results = self.search_api.search(search_query)
+
+        responses: List[str] = []
+        for search_result in search_results:
+            response_url = search_result.get("href")
+            logging.info(f"Reading content from - {response_url}")
+
+            website_content = self.read_website_content(response_url)
+            responses.append(Utility.encapsulate_in_tag(website_content, response_url))
+
         return responses
+
+
+    @staticmethod
+    def read_website_content(url):
+        """
+        A bit of a grayzone, we *will* check the robots.txt and if a site doesn't want automated bot, we won't go there.
+        Ideally the user will be notified, and they can go there in person.
+        """
+        headers = {'User-Agent': USER_AGENT}
+        res = requests.get(url, headers=headers)
+        html_page = res.content
+        soup = BeautifulSoup(html_page, 'html.parser')
+        text = soup.find_all(text=True)
+
+        output = ''
+        blacklist = [
+            '[document]',
+            'noscript',
+            'header',
+            'html',
+            'meta',
+            'head',
+            'input',
+            'script',
+            'source',
+            'style',
+            'link',
+            'img',
+            'svg',
+            'button',
+            'iframe'
+        ]
+        for t in text:
+            if t.parent.name not in blacklist:
+                output += '{} '.format(t)
+
+        # character limit - first 50000 characters
+        output = output[:50000]
+
+        return output
+
+    @staticmethod
+    def can_fetch(url: str, user_agent: str = USER_AGENT):
+        """
+        Checks if a given user agent is allowed to fetch a URL based on the site's robots.txt.
+
+        @param url: The URL to check.
+        @param user_agent: The user agent string to simulate (e.g., 'MyBot/1.0').
+        @return: True if the user agent is allowed to fetch the URL, False otherwise.
+        """
+        try:
+            parsed_uri = urlparse(url)
+            base_url = f'{parsed_uri.scheme}://{parsed_uri.netloc}'
+            robots_url = f'{base_url}/robots.txt'
+
+            rp = urllib.robotparser.RobotFileParser()
+            rp.set_url(robots_url)
+            rp.read()
+
+            return rp.can_fetch(user_agent, url)
+
+        except Exception as e:
+            logging.exception(f"Error checking robots.txt: {e}")
+            # If there's an error (e.g., robots.txt doesn't exist, network issue),
+            # you might want to assume you *can* fetch (be optimistic) or *cannot*
+            # fetch (be conservative).  The choice depends on your risk tolerance
+            # and the website's terms of service. Here, we default to "cannot fetch"
+            return False
 
 
 # Example usage
@@ -119,14 +220,4 @@ if __name__ == "__main__":
     duckduckgo_api = DuckDuckGoSearchAPI()
     internet_search = InternetSearch(search_api=duckduckgo_api)
 
-    user_prompt = "Tell me about the health benefits of green tea."
-
-    search_terms = internet_search.extract_search_terms(user_prompt)
-    logging.info(f"Keywords for search: {search_terms}")
-
-    # Perform online search with extracted keywords
-    results = internet_search.search_online(search_terms)
-    if results:
-        print(results)
-    else:
-        logging.info("No search results found.")
+    print(internet_search.can_fetch("https://www.example.com"))

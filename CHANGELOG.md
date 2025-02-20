@@ -9,13 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Model descriptions and price per token comparions are displayed in Pricing
+- Model descriptions and price per token comparisons are displayed in Pricing
 
 ### Changed
 
 - New messages will trigger a category refresh if that category is already open
 - Settings sections can be minimised to make settings less overwhelming
   - Most sections start minimised
+- Full internet search: Relevant pages are used as reference for the user's prompt
 
 ### Removed
 

@@ -20,6 +20,19 @@ class Utility:
         return token_count <= limit
 
     @staticmethod
+    def encapsulate_in_tag(content: str, tag: str):
+        """
+        Surround the content in a HTML-like tag, not just for html, AI frequently understands what the content is better
+        contextually
+        when surrounded by similar tags
+
+        :param content: The content to encapsulate with the tag
+        :param tag: The 'tag' representing a HTML element
+        :return: surrounded by html tags
+        """
+        return f"<{tag}>\n{content}\n</{tag}>"
+
+    @staticmethod
     def calculate_tokens_used(messages: List[Dict[str, str]], model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI):
         token_count = 0
         for message in messages:
@@ -74,7 +87,7 @@ class Utility:
     def is_valid_prompt(user_input: str) -> bool:
         """Validate if the user input is a non-empty question."""
         if not user_input.strip():
-            print("Please enter a valid prompt.")
+            logging.error("Invalid prompt entered")
             return False
 
         return True
