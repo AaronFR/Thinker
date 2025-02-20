@@ -8,7 +8,7 @@ from AiOrchestration.AiModel import AiModel
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
-from Utilities.Contexts import get_user_context
+from Utilities.Contexts import get_user_context, set_iteration_context
 from Utilities.PaymentDecorators import specify_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
 from Constants.Instructions import SIMPLE_SUMMARY_PROMPT
@@ -59,7 +59,7 @@ class BaseWorkflow:
         :param model: The AI model to use.
         :return: AI's response.
         """
-        emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
+        BaseWorkflow.emit_step_started_events(iteration)
 
         response = process_prompt(
             message,
@@ -105,7 +105,7 @@ class BaseWorkflow:
 
         should_summarize = config['optimization'].get("summarise", False)
         if should_summarize:
-            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
+            BaseWorkflow.emit_step_started_events(iteration)
 
             summarisation_system_message = config.get('systemMessages', {}).get(
                 "summarisationMessage",
@@ -160,7 +160,7 @@ class BaseWorkflow:
         :param model: The AI model to use.
         :return: AI's response.
         """
-        emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
+        BaseWorkflow.emit_step_started_events(iteration)
         if not user_id:
             user_id = get_user_context()
 
@@ -181,6 +181,11 @@ class BaseWorkflow:
 
         BaseWorkflow.emit_step_completed_events(iteration, streaming=False, response=response)
         return response
+
+    @staticmethod
+    def emit_step_started_events(iteration: int):
+        emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
+        set_iteration_context(iteration)
 
     @staticmethod
     def emit_step_completed_events(iteration: int, streaming: bool, response: str):

@@ -15,7 +15,8 @@ from Constants.Exceptions import failure_to_process_individual_page_iteration
 from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Writing import Writing
-from Utilities.Contexts import get_message_context, get_user_context, set_message_context, set_user_context
+from Utilities.Contexts import get_message_context, get_user_context, set_message_context, set_user_context, \
+    set_iteration_context
 from Utilities.Decorators import return_for_error
 from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
@@ -188,6 +189,7 @@ class WritePagesWorkflow(BaseWorkflow):
         """Helper function to process a single page instruction."""
         set_message_context(message_id)
         set_user_context(user_id)
+        set_iteration_context(iteration)
 
         response = self._chat_step(
             iteration=iteration,
@@ -217,7 +219,7 @@ class WritePagesWorkflow(BaseWorkflow):
         :param model: The AI model to use.
         :return: List of page instruction messages.
         """
-        emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
+        BaseWorkflow.emit_step_started_events(iteration)
 
         response = AiOrchestrator().execute(
             [plan_pages_to_write(page_count)],

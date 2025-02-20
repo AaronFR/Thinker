@@ -64,7 +64,7 @@ class WriteTestsWorkflow(BaseWorkflow):
         prompt_messages = test_prompt_messages
 
         for iteration, message in enumerate(prompt_messages, start=1):
-            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
+            # emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
 
             if iteration == 1:
                 response = self._save_file_step(

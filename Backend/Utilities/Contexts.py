@@ -32,6 +32,22 @@ def get_message_context() -> str | None:
     return getattr(g, 'message_context', None)
 
 
+# Workflow step context
+
+def set_iteration_context(iteration: int):
+    """
+    Set the iteration id in Flask's g object.
+    """
+    g.iteration_context = iteration
+
+
+def get_iteration_context():
+    """
+    Get the iteration from Flask's g object. Returns None if not set.
+    """
+    return getattr(g, 'iteration_context', None)
+
+
 # Functionalities
 
 

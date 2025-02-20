@@ -10,7 +10,8 @@ from AiOrchestration.AiModel import AiModel
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Constants.Exceptions import failure_to_process_file_in_workflow
 from Data.Files.StorageMethodology import StorageMethodology
-from Utilities.Contexts import get_message_context, get_user_context, set_message_context, set_user_context
+from Utilities.Contexts import get_message_context, get_user_context, set_message_context, set_user_context, \
+    set_iteration_context
 from Utilities.Decorators import return_for_error
 from Constants.Instructions import multiple_pages_summary_message, for_each_focus_on_prompt
 from Utilities.models import find_model_enum_value
@@ -118,6 +119,7 @@ class AutoWorkflow(BaseWorkflow):
             """
             set_message_context(message_id)
             set_user_context(user_id)
+            set_iteration_context(iteration_id)
             return self._process_file(process_prompt, initial_message, file_ref, selected_message_ids, best_of, model,
                                       iteration_id, message_id, user_id)
 
