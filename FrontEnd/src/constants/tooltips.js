@@ -64,7 +64,8 @@ const TooltipConstants = {
   The average novel is about 100,000 words long.
   `,
   byCheapest: `Gemini-2.0- Flash lite - preview
-  At time of writing`
+  At time of writing`,
+  internetSearchCosting: `This is the minimum cost, page content will also add to the input costs of evaluating a response`,
 };
 
 export default TooltipConstants;

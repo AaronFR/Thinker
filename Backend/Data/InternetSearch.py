@@ -7,6 +7,7 @@ from duckduckgo_search import DDGS
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Constants.Instructions import EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE, EXTRACT_SEARCH_TERMS_PROMPT
 from Utilities.Decorators import return_for_error
+from Utilities.PaymentDecorators import specify_functionality_context
 
 
 class DuckDuckGoSearchAPI:
@@ -61,6 +62,7 @@ class InternetSearch:
         return results
 
     @return_for_error([], debug_logging=True)
+    @specify_functionality_context('internet_search')
     def extract_search_terms(self, user_prompt: str) -> List[str]:
         """
         Extract keywords from the user prompt using AI.

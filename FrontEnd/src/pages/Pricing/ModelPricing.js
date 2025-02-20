@@ -182,7 +182,7 @@ const ModelPricing = () => {
             ))}
 
             <small>
-              Prices up to date as of 19th of Febuary
+              Prices last updated: 19th of Febuary
             </small>
         </div>
     );

@@ -110,7 +110,6 @@ const FunctionalitySettings = ({
     <h3>Auto select worfklows</h3>
     <p>Total costs {formatPrice(parseFloat(userInfo?.select_workflow_cost))}</p>
 
-    {/* Auto Prompt Engineering Subsection */}
     <AutoPromptEngineeringSection
       currentValue={settings.augmentedPromptsEnabled}
       onChange={changeSetting}
@@ -119,13 +118,18 @@ const FunctionalitySettings = ({
       cost={userInfo?.augmentation_cost}
     />
 
-    {/* Prompt Questioning Subsection */}
     <PromptQuestioningSection
       currentValue={settings.questionUserPromptsEnabled}
       onChange={changeSetting}
       promptMessage={settings.promptQuestioningMessage}
       handleMessageChange={handleMessageChange}
       cost={userInfo?.questioning_cost}
+    />
+
+    <InternetSearchSection 
+      currentValue={settings.internetSearchEnabled}
+      onChange={changeSetting}
+      cost={userInfo?.internet_search_cost}
     />
 
     <BestOfSection 
@@ -329,6 +333,50 @@ const BestOfSection = ({
 );
 
 /**
+ * InternetSearch Component
+ * 
+ * ToDo: system message for search after full implementation
+ *
+ * Contains the settings and rules for internet search functionality
+ */
+const InternetSearchSection = ({
+  currentValue,
+  onChange,
+  cost
+}) => (
+  <div>
+    <h3>Internet Search</h3>
+    <h4
+      data-tooltip-id="tooltip"
+      data-tooltip-content={TooltipConstants.internetSearchCosting}
+      data-tooltip-place="bottom"
+    >
+      Total cost: {formatPrice(parseFloat(cost))}
+    </h4>
+    <label className="settings-label">
+      <select
+        className="settings-select"
+        value={currentValue}
+        onChange={(e) =>
+          onChange(
+            'features.internet_search_enabled',
+            e.target.value,
+            'internetSearchEnabled'
+          )
+        }
+      >
+        <option value={FUNCTIONALITY_STATES.OFF}>Off</option>
+        <option value={FUNCTIONALITY_STATES.ON}>On</option>
+      </select>
+      If enabled each step will search the internet, if applicable, for additional context
+    </label>
+
+    <p>👍 Additional context can improve the response, access information the AI doesn't know and mitigate hallucinations</p>
+    <p>👎 Increases costs and time per request (though input is cheaper than output)</p> 
+  </div>
+);
+
+/**
  * SummariesSettings Component
  *
  * Renders Summaries related settings.
@@ -521,7 +569,7 @@ const SystemMessagesSettings = ({ settings, handleMessageChange }) => (
  * Main component that aggregates all settings sections.
  */
 export function Settings() {
-  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'summarise_workflows_cost', 'summarise_files_cost']);
+  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'internet_search_cost', 'summarise_workflows_cost', 'summarise_files_cost']);
   const [userInfo, setUserInfo] = useState(null);
   const [error, setError] = useState(null);
 

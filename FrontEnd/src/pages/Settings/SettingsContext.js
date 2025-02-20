@@ -28,12 +28,12 @@ export const SettingsProvider = ({ children }) => {
         language: 'en',
         augmentedPromptsEnabled: "off",
         questionUserPromptsEnabled: "off",
-        bestOfEnabled: 'on',
+        bestOfEnabled: 'off',
+        internetSearchEnabled: 'off',
         userEncyclopediaEnabled: false,
         summarisationEnabled: false,
         encyclopediaEnabled: false,
         multiFileProcessingEnabled: false,
-        multiple_reruns_enabled: "off",
         promptAugmentationMessage: 'Default prompt augmentation message...',
         promptQuestioningMessage: 'Default prompt questioning message...',
         coderPersonaMessage: 'Default coder persona message...',
@@ -120,6 +120,8 @@ export const SettingsProvider = ({ children }) => {
                         loadedConfig.beta_features.question_user_prompts_enabled ?? initialSettings.questionUserPromptsEnabled,
                     bestOfEnabled:
                         loadedConfig.features.multiple_reruns_enabled ?? initialSettings.bestOfEnabled,
+                    internetSearchEnabled:
+                        loadedConfig.features.internet_search_enabled ?? initialSettings.internetSearchEnabled,
                     summarisationEnabled:
                         loadedConfig.optimization.summarise ?? initialSettings.summarisationEnabled,
                     userEncyclopediaEnabled:

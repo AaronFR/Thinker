@@ -157,8 +157,9 @@ class BasePersona:
                 message = nodeDB().get_message_by_id(message_id)
                 content = message["prompt"] + " : \n\n" + message["response"]
                 messages.append(content)
-        INTERNET_SEARCH_ENABLED = True
-        if INTERNET_SEARCH_ENABLED:
+
+        config = Configuration.load_config()
+        if config['features'].get('internet_search_enabled', False) == 'on':
             internet_search_results = InternetSearch().search_internet_based_on_prompt(prompt)
             for search_result in internet_search_results:
                 messages.append(str(search_result))
