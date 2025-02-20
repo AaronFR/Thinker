@@ -91,7 +91,7 @@ class AiOrchestrator:
     def _handle_rerun(
             self,
             messages: List[Dict[str, str]],
-            model: ChatGptModel,
+            model: AiModel,
             rerun_count: int,
             judgement_criteria: List[str],
             streaming: bool = False
@@ -111,7 +111,7 @@ class AiOrchestrator:
     def _handle_reruns(
             self,
             messages: List[Dict[str, str]],
-            model: ChatGptModel,
+            model: AiModel,
             rerun_count: int,
             judgement_criteria: List[str],
             streaming: bool = False
@@ -134,7 +134,7 @@ class AiOrchestrator:
         system_prompts: List[str] | str,
         user_prompts: List[str] | str,
         function_schema: str,
-        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
+        model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
     ) -> Dict[str, object]:
         """
         Generates a structured response based on system and user prompts.

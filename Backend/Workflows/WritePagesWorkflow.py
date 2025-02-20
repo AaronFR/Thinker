@@ -7,6 +7,7 @@ from typing import Callable, Optional, List, Dict
 from flask import copy_current_request_context
 from flask_socketio import emit
 
+from AiOrchestration.AiModel import AiModel
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Constants.Constants import EXTRACT_ELEMENTS_FROM_LIST
@@ -205,7 +206,7 @@ class WritePagesWorkflow(BaseWorkflow):
         iteration: int,
         initial_message: str,
         page_count: int,
-        model: ChatGptModel,
+        model: AiModel,
     ) -> List[str]:
         """
         Determine the list of page instructions to be processed.

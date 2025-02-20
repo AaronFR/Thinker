@@ -6,6 +6,7 @@ from typing import Callable, Optional, List, Dict
 from flask import copy_current_request_context
 from flask_socketio import emit
 
+from AiOrchestration.AiModel import AiModel
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Constants.Exceptions import failure_to_process_file_in_workflow
 from Data.Files.StorageMethodology import StorageMethodology
@@ -94,7 +95,7 @@ class AutoWorkflow(BaseWorkflow):
             file_references: List[str],
             selected_message_ids: List[str],
             best_of: int,
-            model: ChatGptModel,
+            model: AiModel,
     ):
         """
         Executes the workflow steps in parallel.
@@ -141,7 +142,7 @@ class AutoWorkflow(BaseWorkflow):
             file_references: List[str],
             selected_message_ids: List[str],
             best_of: int,
-            model: ChatGptModel,
+            model: AiModel,
     ):
         """
         Executes the workflow steps sequentially.
@@ -181,7 +182,7 @@ class AutoWorkflow(BaseWorkflow):
             file_reference: str,
             selected_message_ids: List[str],
             best_of: int,
-            model: ChatGptModel,
+            model: AiModel,
             iteration_id: int,
             message_id: str = None,
             user_id: str = None,

@@ -4,6 +4,7 @@ from typing import Callable, Any, List
 from flask_socketio import emit
 from pathlib import Path
 
+from AiOrchestration.AiModel import AiModel
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
@@ -43,7 +44,7 @@ class BaseWorkflow:
         selected_message_ids: List[str],
         best_of: int = 1,
         streaming: bool = True,
-        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+        model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
     ) -> str:
         """
         Handles individual chat steps.
@@ -82,7 +83,7 @@ class BaseWorkflow:
         selected_message_ids: List[str],
         best_of: int = 1,
         streaming: bool = True,
-        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+        model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
     ) -> str:
         """
         Summarises the results of a workflow.
@@ -100,7 +101,6 @@ class BaseWorkflow:
         :param model: The AI model to use.
         :return: AI's response.
         """
-
         config = Configuration.load_config()
 
         should_summarize = config['optimization'].get("summarise", False)
@@ -142,7 +142,7 @@ class BaseWorkflow:
         selected_message_ids: List[str],
         file_name: str,
         best_of: int = 1,
-        model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+        model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
         overwrite: bool = True,
         message_id: str = None,
         user_id: str = None,

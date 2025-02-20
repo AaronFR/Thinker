@@ -4,6 +4,7 @@ import logging
 from typing import List, Tuple, Any, Dict
 from flask_socketio import emit
 
+from AiOrchestration.AiModel import AiModel
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Constants.Exceptions import FAILURE_TO_REVIEW_RELEVANT_HISTORY
@@ -134,7 +135,7 @@ class BasePersona:
                        selected_message_ids: List[str] = None,
                        best_of: int = 1,
                        streaming: bool = False,
-                       model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str:
+                       model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str:
         """
         Process and store the user's question.
 
@@ -183,7 +184,7 @@ class BasePersona:
               history_messages: List[str] = None,
               best_of: int = 1,
               streaming: bool = False,
-              model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str:
+              model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str:
         """
         Process the input question and create a response.
 

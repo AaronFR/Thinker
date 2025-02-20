@@ -4,6 +4,8 @@ import time
 from typing import List, Dict, Callable, Any
 
 import tiktoken
+
+from AiOrchestration.AiModel import AiModel
 from Constants import Constants
 from AiOrchestration.ChatGptModel import ChatGptModel
 
@@ -33,7 +35,7 @@ class Utility:
         return f"<{tag}>\n{content}\n</{tag}>"
 
     @staticmethod
-    def calculate_tokens_used(messages: List[Dict[str, str]], model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI):
+    def calculate_tokens_used(messages: List[Dict[str, str]], model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI):
         token_count = 0
         for message in messages:
             enc = tiktoken.encoding_for_model(model.value)
