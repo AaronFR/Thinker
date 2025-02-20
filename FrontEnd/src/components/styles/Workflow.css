@@ -114,6 +114,23 @@ body.dark-mode .step{
   color: var(--color-border-active);
 }
 
+/* Sites */
+.site-container {
+  text-align: left;
+}
+
+.site-link {
+  color: lightcyan;
+  margin-left: 5px;
+}
+
+.site-image {
+  width: 25px;
+  height: 25px;
+  margin-right: 1rem;
+}
+
+
 /* Workflow Details */
 .workflow-details {
   display: flex;

@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Settings sections can be minimised to make settings less overwhelming
   - Most sections start minimised
 - Full internet search: Relevant pages are used as reference for the user's prompt
+  - Pages are sourced and displayed to the user per step
 
 ### Removed
 

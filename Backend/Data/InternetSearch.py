@@ -24,12 +24,15 @@ import urllib.robotparser
 import requests
 from bs4 import BeautifulSoup
 from duckduckgo_search import DDGS
+from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Constants.Instructions import EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE, EXTRACT_SEARCH_TERMS_PROMPT
+from Utilities.Contexts import get_iteration_context
 from Utilities.Decorators import return_for_error
 from Utilities.PaymentDecorators import specify_functionality_context
 from Utilities.Utility import Utility
+from Workflows.BaseWorkflow import UPDATE_WORKFLOW_STEP
 
 USER_AGENT = 'TheThinkerAiBot'
 
@@ -137,12 +140,18 @@ class InternetSearch:
         search_results = self.search_api.search(search_query)
 
         responses: List[str] = []
+        site_hrefs: List[str] = []
         for search_result in search_results:
             response_url = search_result.get("href")
             logging.info(f"Reading content from - {response_url}")
 
             website_content = self.read_website_content(response_url)
             responses.append(Utility.encapsulate_in_tag(website_content, response_url))
+            site_hrefs.append(response_url)
+
+        # ToDo: It's messy to have InternetSearch worry about communicating to the workflow, a helper method in a
+        #  file dedicated to emitting methods would be clearer
+        emit(UPDATE_WORKFLOW_STEP, {"step": get_iteration_context(), "sites": site_hrefs})
 
         return responses
 

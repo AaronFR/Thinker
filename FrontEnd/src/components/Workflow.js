@@ -56,7 +56,7 @@ const Workflow = ({ workflowData }) => {
  *   - response (object): The generated response data.
  */
 const StepDetail = ({ step }) => {
-  const { step_id, module, status, description = "No description available", parameters, response } = step;
+  const { step_id, module, status, description = "No description available", parameters, response, sites } = step;
 
   return (
     <div className={`step ${status}`}>
@@ -74,6 +74,36 @@ const StepDetail = ({ step }) => {
             </div>
           ))}
         </div>
+      )}
+      {sites && Object.keys(sites).length > 0 && (
+        <ExpandableElement
+          className="response"
+          minContent={"Sites"}
+          maxContent={
+            <>
+              {Object.entries(sites).map(([key, value]) => (
+                <div key={key} className="site-container">
+                  <img 
+                    src={`${new URL(value).origin}/favicon.ico`} 
+                    alt={`${key} favicon`} 
+                    className="site-image"
+                    onError={(e) => { e.target.src = 'fallback-icon-url'; }} // You can replace with a fallback icon URL
+                  />
+                  <strong>{key}</strong>:{" "}
+                  <a 
+                    href={value} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="site-link"
+                  >
+                    {value}
+                  </a>
+                </div>
+              ))}
+            </>
+          }
+          initiallyExpanded={true}
+        />
       )}
       {response && Object.keys(response).length > 0 && (
         <ExpandableElement
