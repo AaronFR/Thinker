@@ -41,9 +41,9 @@ const ModelPricing = () => {
             name: 'GPT 4o',
             inputPerToken: 0.0000025,
             outputPerToken: 0.00001,
-            description: 'OpenAI latest flagship model, offers state-of-the-art performance across various tasks',
-            goodFor: 'Complex tasks, high-quality outputs, and versatile applications',
-            badFor: 'Cost-sensitive operations due to higher pricing',
+            description: 'Prior generation model, competent and less wordy just outputing a answer right away',
+            goodFor: 'Simple tasks where you want a perfomant, to the point response',
+            badFor: 'Expensive and no longer cutting edge',
             image: openAiLogo,
         },
         {

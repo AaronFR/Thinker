@@ -7,7 +7,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
 
-from Constants.Constants import JWT_SECRET_KEY, THINKER_ENV, THE_THINKER_FRONTEND_URL
+from Constants.Constants import JWT_SECRET_KEY, THINKER_ENV, THE_THINKER_FRONTEND_URL, THE_THINKER_AI_DOMAIN_URL
 
 # Instantiate SocketIO and jwt manager globally
 socketio = SocketIO()
@@ -36,7 +36,7 @@ def create_app():
     frontend_origin = os.getenv(THE_THINKER_FRONTEND_URL, "http://localhost:3000")
     allowed_domains = [
         frontend_origin,
-        "https://thethinkerai.com",  # woah this site looks pretty cool *WINKS AGGRESSIVELY*
+        THE_THINKER_AI_DOMAIN_URL
     ]
 
     CORS(

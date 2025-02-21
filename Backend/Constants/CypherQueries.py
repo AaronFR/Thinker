@@ -12,6 +12,8 @@ CREATE CONSTRAINT FOR (s:SYSTEM) REQUIRE s.id IS UNIQUE;
 # ToDo: include secure user match e.g MATCH (user:USER {id: $user_id})
 #  That way it reduces the odds of forgetting to add a user check
 
+# Auth
+
 FIND_USER_BY_EMAIL = """
 MATCH (user:USER)
 WHERE user.email = $email
@@ -29,6 +31,16 @@ MERGE (user:USER {id: $user_id})
 ON CREATE SET user.email = $email, user.password_hash = $password_hash, user.balance = 0
 RETURN user.id;
 """
+
+MARK_VERIFIED = """
+MATCH (user:USER)
+WHERE user.email = $email
+SET user.verified = true
+RETURN user.verified AS verified_status;
+"""
+
+
+# CREATE
 
 CREATE_CATEGORY = """
 MATCH (user:USER {id: $user_id})

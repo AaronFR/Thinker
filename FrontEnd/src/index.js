@@ -16,6 +16,7 @@ import { SelectionProvider } from "./pages/Messages/SelectionContext";
 import 'highlight.js/styles/atom-one-dark.css';
 import Messages from "./pages/Messages/Messages";
 import { validateSessionEndpoint } from "./constants/endpoints";
+import VerifyEmail from "./pages/Verify/VerifyEmail";
 
 function RootApp() {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -50,6 +51,7 @@ function RootApp() {
             {/* Public Routes */}
             <Route path="/login" element={<Login isAuthenticated={isAuthenticated}  />} />
             <Route path="/guide" element={<Guide />} />
+            <Route path="/verify" element={<VerifyEmail isAuthenticated={isAuthenticated} />} />
 
             {/* Protected Routes */}
             <Route path="/messages" element={isAuthenticated ? <Messages /> : <Navigate to="/login" />} />

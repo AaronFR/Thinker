@@ -163,7 +163,7 @@ export function Login({ isAuthenticated }) {
 
 
                 
-                <p className='version-number'>v0.9.4</p>
+                <p className='version-number'>v0.9.5</p>
             </div>
             <BetaBanner />
             <Pitch />

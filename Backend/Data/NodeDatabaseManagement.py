@@ -91,6 +91,23 @@ class NodeDatabaseManagement:
         return bool(result)
 
     @handle_errors()
+    def mark_user_email_verified(self, email: str) -> bool:
+        """When email verification has completed successfully we mark it against the USER node
+
+        :param email: The email to check.
+        :return: True if the user exists, False otherwise.
+        """
+        parameters = {"email": email}
+
+        result = self.neo4jDriver.execute_write(
+            CypherQueries.MARK_VERIFIED,
+            parameters,
+            'verified_status'
+        )
+
+        return result
+
+    @handle_errors()
     def find_user_by_email(self, email: str) -> Optional[str]:
         """Return the user id for a given email address.
 

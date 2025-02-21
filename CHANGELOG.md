@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Model descriptions and price per token comparisons are displayed in Pricing
+- New users are sent email verification emails
 
 ### Changed
 

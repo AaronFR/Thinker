@@ -7,6 +7,7 @@ export const FLASK_PORT = process.env.REACT_APP_THE_THINKER_BACKEND_URL || "http
 
 export const loginEndpoint = `${FLASK_PORT}/auth/login`;
 export const registerEndpoint = `${FLASK_PORT}/auth/register`;
+export const verifyEndpoint = `${FLASK_PORT}/auth/verify`
 export const validateSessionEndpoint = `${FLASK_PORT}/auth/validate`;
 export const refreshSessionEndpoint = `${FLASK_PORT}/auth/refresh`;
 export const logoutSessionEndpoint = `${FLASK_PORT}/auth/logout`;

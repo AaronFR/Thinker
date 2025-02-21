@@ -78,7 +78,7 @@ const StepDetail = ({ step }) => {
       {sites && Object.keys(sites).length > 0 && (
         <ExpandableElement
           className="response"
-          minContent={"Sites"}
+          minContent={"Sites Referenced"}
           maxContent={
             <>
               {Object.entries(sites).map(([key, value]) => (
@@ -108,7 +108,7 @@ const StepDetail = ({ step }) => {
       {response && Object.keys(response).length > 0 && (
         <ExpandableElement
           className="response"
-          minContent={"Response Generated + "}
+          minContent={"Response Generated"}
           maxContent={
             <>
               <h4>Response</h4>

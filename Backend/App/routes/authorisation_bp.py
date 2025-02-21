@@ -1,4 +1,5 @@
 import logging
+import os
 
 import shortuuid
 import time
@@ -6,13 +7,16 @@ import time
 from flask import Blueprint, jsonify, request, make_response
 from flask_jwt_extended import create_access_token, decode_token, unset_jwt_cookies, create_refresh_token
 
-from App import jwt
+from App import jwt as flask_jwt
+import jwt
+from Constants.Constants import JWT_SECRET_KEY
 from Constants.Exceptions import FAILURE_TO_LOGIN, FAILURE_TO_VALIDATE_SESSION, FAILURE_TO_LOGOUT_SESSION
 from Utilities.Encryption import hash_password, check_password
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB, NodeDatabaseManagement
 from Utilities.Routing import parse_and_validate_data
 from Utilities.Contexts import set_user_context
 from Utilities.AuthUtils import decode_jwt, login_required, ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE
+from Utilities.Verification import send_verification_email
 
 authorisation_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -51,6 +55,8 @@ def register():
         return jsonify({"error": "User with this email already exists"}), 409
 
     logging.info(f"Registering new user {user_id}")
+
+    send_verification_email(email)
     registered = nodeDB().create_user(user_id, email, password_hash)
     if registered:
         logging.info("Successfully registered new user")
@@ -64,6 +70,28 @@ def register():
     else:
         logging.error("Failed to register new user!")
         return jsonify({"Failure": "Failed to register user"}), 500
+
+
+@authorisation_bp.route('/verify', methods=['GET'])
+def verify_email():
+    token = request.args.get('token')
+    if not token:
+        return jsonify({'error': 'Missing token.'}), 400
+    try:
+        decoded = jwt.decode(token, os.getenv(JWT_SECRET_KEY), algorithms=['HS256'])
+        email = decoded['email']
+
+        email_verified: bool = NodeDatabaseManagement().mark_user_email_verified(email)
+
+        if email_verified:
+            logging.info(f"The following email address has been marked verified: {email}")
+            return jsonify({'message': 'Email verified successfully.'}), 200
+        else:
+            return jsonify({'error': 'Failed to mark user as verified, try again later'}), 500
+    except jwt.ExpiredSignatureError:
+        return jsonify({'error': 'Verification link has expired.'}), 400
+    except jwt.InvalidTokenError:
+        return jsonify({'error': 'Invalid token.'}), 400
 
 
 @authorisation_bp.route('/login', methods=['POST'])
@@ -136,7 +164,7 @@ def logout():
     return response
 
 
-@jwt.token_in_blocklist_loader
+@flask_jwt.token_in_blocklist_loader
 def check_if_token_in_blacklist(jwt_header, jwt_payload):
     return jwt_payload["jti"] in BLACKLIST
 
