@@ -11,6 +11,7 @@ from Utilities.Decorators import handle_errors
 class Neo4jDriver:
     """
     This class manages the connection to the Neo4j database and provides read and write functionalities.
+    ToDo: Confusing, could do with a re-write
     """
 
     def __init__(self):

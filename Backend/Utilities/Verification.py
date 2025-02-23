@@ -7,7 +7,7 @@ import jwt
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
-from Constants.Constants import THE_THINKER_AI_DOMAIN_URL, SENDGRID_API_KEY
+from Constants.Constants import SENDGRID_API_KEY
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 
 
@@ -23,7 +23,7 @@ def send_verification_email(email: str):
         'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
     }, os.getenv("JWT_SECRET_KEY"), algorithm='HS256')
 
-    verification_link = f"{THE_THINKER_AI_DOMAIN_URL}/verify?token={token}"
+    verification_link = f"http://thethinkerai.com/verify?token={token}"
 
     message = Mail(
         from_email='verification@em6129.thethinkerai.com',
@@ -48,7 +48,7 @@ def send_verification_email(email: str):
         logging.info(f"Verification email sent to {email} with status code {response.status_code}")
     except Exception:
         logging.exception("Failure to send verification email!")
-        raise "Failure to send verification email!"
+        raise Exception("Failure to send verification email!")
 
 
 def apply_new_user_promotion(email: str):
@@ -56,6 +56,7 @@ def apply_new_user_promotion(email: str):
     Attempt to add new account promotion
     ToDo: Investigate applying a lock to neo4j for these types of write operations
     """
+    promotional_text = ''
     if NodeDB().check_new_user_promotion_active():
         remaining_new_user_promotions = NodeDB().add_new_user_promotion(email)
         if remaining_new_user_promotions is not None:

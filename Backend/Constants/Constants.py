@@ -11,7 +11,7 @@ MAX_FILE_SIZE = 10 * 1024 * 1024
 DEFAULT_ENCODING = 'utf-8'
 DEFAULT_EXTENSION = 'txt'
 
-THE_THINKER_AI_DOMAIN_URL = "https://thethinkerai.com",  # woah this site looks pretty cool *WINKS AGGRESSIVELY*
+THE_THINKER_AI_DOMAIN_URL = "https://thethinkerai.com"  # woah this site looks pretty cool *WINKS AGGRESSIVELY*
 
 # Envs
 

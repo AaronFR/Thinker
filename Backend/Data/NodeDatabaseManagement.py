@@ -700,6 +700,8 @@ class NodeDatabaseManagement:
         records = self.neo4jDriver.execute_read(
             query
         )
+        if not records:
+            return None
 
         return records[0].data()
 
@@ -720,6 +722,8 @@ class NodeDatabaseManagement:
     def add_new_user_promotion(self, email: str) -> int | None:
         """
         Will attempt to add a new user promotion against the account with the specified email
+        # ToDo: would be nice to see user_balance information too but would require re-write of neo4jdriver's
+        execute_write method
 
         :param email:
         :return:
@@ -728,17 +732,15 @@ class NodeDatabaseManagement:
             "email": email,
         }
 
-        results = self.neo4jDriver.execute_write(
+        remaining_promotions = self.neo4jDriver.execute_write(
             CypherQueries.APPLY_NEW_USER_PROMOTION,
-            parameters
+            parameters,
+            'new_user_promotions_remaining'
         )
 
-        if results:
-            user_balance = results[0].get("user_balance")
-            remaining_promotions = results[0].get("new_user_promotions_remaining")
-
+        if remaining_promotions:
             logging.info(
-                f"New user promotion applied, user [{email}] new balance: {user_balance}, remaining promotions: {remaining_promotions}")
+                f"New user promotion applied, user [{email}], remaining promotions: {remaining_promotions}")
             return remaining_promotions
         else:
             logging.warning(f"New user promotion could not be applied for user [{email}].  No promotions remaining.")

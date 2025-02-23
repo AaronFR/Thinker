@@ -87,7 +87,7 @@ def verify_email():
 
         if email_verified:
             promotion_applied_test = apply_new_user_promotion(email)
-            
+
             logging.info(f"The following email address has been marked verified: {email}")
             return jsonify({'message': 'Email verified successfully.'}), 200
         else:
