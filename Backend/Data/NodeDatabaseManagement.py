@@ -702,3 +702,44 @@ class NodeDatabaseManagement:
         )
 
         return records[0].data()
+
+    # Promotions
+
+    def check_new_user_promotion_active(self):
+        records = self.neo4jDriver.execute_read(
+            CypherQueries.NEW_USER_PROMOTIONS_REMAINING
+        )
+
+        remaining_promotions = records[0].get("new_user_promotions_remaining", 0)
+
+        if type(remaining_promotions) == int and remaining_promotions > 0:
+            return True
+
+        return False
+
+    def add_new_user_promotion(self, email: str) -> int | None:
+        """
+        Will attempt to add a new user promotion against the account with the specified email
+
+        :param email:
+        :return:
+        """
+        parameters = {
+            "email": email,
+        }
+
+        results = self.neo4jDriver.execute_write(
+            CypherQueries.APPLY_NEW_USER_PROMOTION,
+            parameters
+        )
+
+        if results:
+            user_balance = results[0].get("user_balance")
+            remaining_promotions = results[0].get("new_user_promotions_remaining")
+
+            logging.info(
+                f"New user promotion applied, user [{email}] new balance: {user_balance}, remaining promotions: {remaining_promotions}")
+            return remaining_promotions
+        else:
+            logging.warning(f"New user promotion could not be applied for user [{email}].  No promotions remaining.")
+            return None

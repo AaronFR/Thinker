@@ -16,7 +16,7 @@ from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB, NodeDa
 from Utilities.Routing import parse_and_validate_data
 from Utilities.Contexts import set_user_context
 from Utilities.AuthUtils import decode_jwt, login_required, ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE
-from Utilities.Verification import send_verification_email
+from Utilities.Verification import send_verification_email, apply_new_user_promotion
 
 authorisation_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -33,6 +33,7 @@ LOGIN_USER_SCHEMA = {
 }
 
 
+# ToDo: Limit to once per user per minute
 @authorisation_bp.route('/register', methods=['POST'])
 def register():
     """
@@ -72,6 +73,7 @@ def register():
         return jsonify({"Failure": "Failed to register user"}), 500
 
 
+# ToDo: Limit to one use per user per minute
 @authorisation_bp.route('/verify', methods=['GET'])
 def verify_email():
     token = request.args.get('token')
@@ -84,6 +86,8 @@ def verify_email():
         email_verified: bool = NodeDatabaseManagement().mark_user_email_verified(email)
 
         if email_verified:
+            promotion_applied_test = apply_new_user_promotion(email)
+            
             logging.info(f"The following email address has been marked verified: {email}")
             return jsonify({'message': 'Email verified successfully.'}), 200
         else:

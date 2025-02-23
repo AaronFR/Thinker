@@ -266,3 +266,27 @@ def fetch_user_params_query(user_id, params):
     MATCH (user:USER {{id: "{user_id}"}})
     RETURN {projection}
     """
+
+
+# Promotions
+
+
+NEW_USER_PROMOTIONS_REMAINING = """
+MATCH (system:SYSTEM)
+RETURN system.new_user_promotions_remaining as new_user_promotions_remaining
+"""
+
+APPLY_NEW_USER_PROMOTION = """
+WITH $email AS email
+MATCH (user:USER {email: email})
+WITH email, COUNT(user) AS userCount
+WHERE userCount = 1
+MATCH (system:SYSTEM)
+WHERE system.new_user_promotions_remaining > 0
+MATCH (user:USER {email: email})
+WHERE user.new_user_promotion_applied IS NULL OR user.new_user_promotion_applied = false
+SET system.new_user_promotions_remaining = system.new_user_promotions_remaining - 1,
+    user.balance = user.balance + 1.0,
+    user.new_user_promotion_applied = true
+RETURN user.balance AS user_balance, system.new_user_promotions_remaining AS new_user_promotions_remaining
+"""
