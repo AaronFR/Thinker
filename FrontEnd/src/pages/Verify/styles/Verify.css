@@ -6,14 +6,14 @@
   left: 0;
   right: 0;
   z-index: -1;
-  background-image: url('../../../../public/theSchoolOfAthens.png');
+  background-image: url('../../../../public/gates-of-hell-bg.png');
   background-size: cover;
   background-repeat: no-repeat;
   opacity: 20%;
   background-blend-mode: darken;
 }
 body.dark-mode .verify-background:before {
-  opacity: 30%;
+  opacity: 100%;
 }
 .verify-background {
   z-index: 2;
