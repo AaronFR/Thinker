@@ -27,7 +27,7 @@ const AutoExpandingTextarea = ({ value, onChange, ...props }) => {
             textareaRef.current.style.height = 'auto' // Reset height to calculate scrollHeight accurately
             textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
         }
-    }, [value, text])
+    }, [value])
 
     /**
      * handleChange

@@ -132,14 +132,8 @@ const UserInputForm = ({
    */
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      e.preventDefault();  // Prevent form submission
-      if (e.shiftKey) {
-        const { selectionStart, selectionEnd, value } = e.target;
-        e.target.value =
-          value.substring(0, selectionStart) + '\n' +
-          value.substring(selectionEnd);
-        e.target.selectionStart = e.target.selectionEnd = selectionStart + 1;
-      } else {
+      if (!e.shiftKey) {
+        e.preventDefault();
         handleSubmit(e);
       }
     }

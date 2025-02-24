@@ -125,8 +125,10 @@ function App () {
       setTags(prevTags => ({ ...prevTags, model: settingsRef.current.defaultForegroundModel }));
     }, [settings.defaultModel])
 
-    const handleInputChange = (event, selectedMessages, selectedFiles, tags) => {      
-      setUserInput(event.target.value);
+    const handleInputChange = (event, selectedMessages, selectedFiles, tags) => {
+      const newValue = event.target.value.trim();
+      setUserInput(newValue);
+
       if (typingTimer.current) {
         clearTimeout(typingTimer.current);
       }
@@ -135,7 +137,7 @@ function App () {
       event.target.style.height = "auto"; // Reset height to calculate scroll height properly
       event.target.style.height = `${Math.min(event.target.scrollHeight, 8 * 24)}px`;
 
-      debouncedHandleTyping(event.target.value, selectedMessages, selectedFiles, tags);
+      debouncedHandleTyping(newValue, selectedMessages, selectedFiles, tags);
     };
 
     const handleTyping = (value, selectedMessages, selectedFiles, tags) => {
