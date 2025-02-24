@@ -9,6 +9,7 @@ from google import genai
 from flask_socketio import emit
 from google.genai.types import GenerateContentResponse, GenerateContentConfig
 
+from AiOrchestration.AiWrapper import AiWrapper
 from AiOrchestration.ChatGptMessageBuilder import format_message
 from AiOrchestration.GeminiModel import GeminiModel
 from Constants import Globals
@@ -30,7 +31,7 @@ class GeminiRole(enum.Enum):
     SYSTEM = "system"
 
 
-class GeminiWrapper:
+class GeminiWrapper(AiWrapper):
     """Wrapper class for interacting with the Google Gemini API."""
 
     _instance = None
@@ -158,8 +159,8 @@ class GeminiWrapper:
                     system_instruction=system_instructions if system_instructions.strip() else None
                 )
             )
-            response_content = []
 
+            response_content = []
             for chunk in outputs:
                 content = chunk.text
                 if content:
@@ -240,38 +241,6 @@ class GeminiWrapper:
         )
 
         return json.loads(output) if output else {"error": NO_RESPONSE_GEMINI_API}
-
-    def calculate_prompt_cost(self, input_tokens: int, output_tokens: int, model: GeminiModel):
-        """Calculates the estimated cost of a call to Gemini Api
-
-        :param input_tokens: prompt tokens
-        :param output_tokens: response tokens from the Gemini model
-        :param model: the specific Gemini model being used. Placeholders for now
-        """
-        # ToDo: Refactor cost calculation to properly align with gemini costs, its not token based as of December 2024
-        input_cost = input_tokens * model.input_cost
-        output_cost = output_tokens * model.output_cost
-        total_cost = (input_cost + output_cost)
-
-        Globals.current_request_cost += total_cost
-
-        NodeDB().deduct_from_user_balance(total_cost)
-        NodeDB().deduct_from_system_gemini_balance(total_cost)
-
-        message_id = get_message_context()
-        if message_id:
-            logging.info(f"Expensing ${total_cost} to USER_PROMPT Node[{message_id}]")
-            NodeDB().expense_node(message_id, total_cost)
-        functionality = get_functionality_context()
-        if functionality:
-            logging.info(f"Expensing ${total_cost} against {functionality} functionality.")
-            NodeDB().expense_functionality(functionality, total_cost)
-
-        logging.info(
-            f"Request cost [{model}] - Input tokens: {input_tokens} ${input_cost}, "
-            f"Output tokens: {output_tokens}, ${output_cost} "
-            f"Total cost: ${total_cost:.4f}"
-        )
 
 
 if __name__ == '__main__':

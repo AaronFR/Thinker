@@ -6,6 +6,7 @@ from typing import List, Dict
 from flask_socketio import emit
 from openai import OpenAI, BadRequestError
 
+from AiOrchestration.AiWrapper import AiWrapper
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Constants import Globals
 from Constants.Exceptions import OPEN_AI_FLAGGED_REQUEST_INAPPROPRIATE, \
@@ -25,7 +26,7 @@ class ChatGptRole(enum.Enum):
     TOOL = "tool"
 
 
-class ChatGptWrapper:
+class ChatGptWrapper(AiWrapper):
 
     _instance = None
 
@@ -149,37 +150,6 @@ class ChatGptWrapper:
 
         arguments = chat_completion.choices[0].message.function_call.arguments
         return json.loads(arguments) if arguments else {"error": SERVER_FAILURE_OPEN_AI_API}
-
-    def calculate_prompt_cost(self, input_tokens: int, output_tokens: int, model: ChatGptModel):
-        """Calculates the estimated cost of a call to OpenAi ChatGpt Api
-
-        :param input_tokens: prompt tokens
-        :param output_tokens: response tokens from the openAi model
-        :param model: the specific OpenAI model being used, the non Mini version is *very* expensive,
-        and should be used rarely
-        """
-        input_cost = input_tokens * model.input_cost
-        output_cost = output_tokens * model.output_cost
-        total_cost = (input_cost + output_cost)
-
-        Globals.current_request_cost += total_cost
-
-        NodeDB().deduct_from_user_balance(total_cost)
-
-        message_id = get_message_context()
-        if message_id:
-            logging.info(f"Expensing ${total_cost} to USER_PROMPT Node[{message_id}]")
-            NodeDB().expense_node(message_id, total_cost)
-        functionality = get_functionality_context()
-        if functionality:
-            logging.info(f"Expensing ${total_cost} against {functionality} functionality.")
-            NodeDB().expense_functionality(functionality, total_cost)
-
-        logging.info(
-            f"Request cost [{model}] - Input tokens: {input_tokens} ${input_cost}, "
-            f"Output tokens: {output_tokens}, ${output_cost} \n"
-            f"Total cost: ${total_cost:.4f}"
-        )
 
 
 if __name__ == '__main__':
