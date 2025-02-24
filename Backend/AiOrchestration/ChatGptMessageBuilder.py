@@ -31,7 +31,7 @@ def generate_messages(
 
     messages = build_role_messages(system_prompts, user_prompts, assistant_messages, model)
     logging.debug(f"Messages: {messages}")
-    logging.info(f"Tokens used (limit 128k): {Utility.calculate_tokens_used(messages)}")
+    logging.info(f"Tokens used (limit 128k): {Utility().calculate_tokens_used(messages, model)}")
     return messages
 
 

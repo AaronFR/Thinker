@@ -107,8 +107,8 @@ class ChatGptWrapper:
             full_response = ''.join(response_content)
             final_message = [{"content": full_response}]
             self.calculate_prompt_cost(
-                Utility.calculate_tokens_used(messages, model),
-                Utility.calculate_tokens_used(final_message, model),
+                Utility().calculate_tokens_used(messages, model),
+                Utility().calculate_tokens_used(final_message, model),
                 model
             )
         except Exception as e:

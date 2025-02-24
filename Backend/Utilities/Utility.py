@@ -1,16 +1,35 @@
 import logging
 import os
+import threading
 import time
 from typing import List, Dict, Callable, Any
 
 import tiktoken
+from google import genai
 
 from AiOrchestration.AiModel import AiModel
-from Constants import Constants
+from AiOrchestration.GeminiModel import GeminiModel
 from AiOrchestration.ChatGptModel import ChatGptModel
+from Constants import Constants
+from Constants.Constants import GEMINI_API_KEY
 
 
 class Utility:
+
+    _instance = None
+    _lock = threading.Lock()
+
+    def __new__(cls):
+        """Create a new instance or return the existing one."""
+        if not cls._instance:
+            with cls._lock:  # Ensure thread-safety during instance creation
+                if not cls._instance:  # Double-check to avoid race conditions
+                    cls._instance = super(Utility, cls).__new__(cls)
+        return cls._instance
+
+    def __init__(self):
+        if not hasattr(self, 'gemini_client'):
+            self.gemini_client = genai.Client(api_key=os.getenv(GEMINI_API_KEY))
 
     @staticmethod
     def is_within_token_limit(content: str, limit=128000, model="gpt-4o-mini") -> bool:
@@ -34,12 +53,23 @@ class Utility:
         """
         return f"<{tag}>\n{content}\n</{tag}>"
 
-    @staticmethod
-    def calculate_tokens_used(messages: List[Dict[str, str]], model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI):
+    def calculate_tokens_used(self, messages: List[Dict[str, str]], model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI):
         token_count = 0
-        for message in messages:
+        model_type = type(model)
+
+        if model_type == ChatGptModel:
             enc = tiktoken.encoding_for_model(model.value)
-            token_count += len(enc.encode(str(message['content'])))
+            for message in messages:
+                token_count += len(enc.encode(str(message['content'])))
+
+        if model_type == GeminiModel:
+            character_soup = ""
+            for message in messages:
+                character_soup += message.get("content")
+            token_count = self.gemini_client.models.count_tokens(
+                model=model.value,
+                contents=character_soup
+            ).total_tokens.bit_count()
 
         return token_count
 

@@ -2,7 +2,7 @@ import enum
 import json
 import logging
 import os
-from typing import List, Dict, Tuple
+from typing import List, Dict
 
 from google import genai
 
