@@ -18,3 +18,19 @@ body.dark-mode .verify-background:before {
 .verify-background {
   z-index: 2;
 }
+
+.message {
+  padding-left: 10px
+}
+.promotion {
+  padding: 10px;
+  padding-left: 20px;
+}
+
+.big {
+  font-size: larger;
+  background: linear-gradient(125deg, rgb(79, 233, 79), rgb(21, 148, 21));
+  -webkit-background-clip: text; /* for Safari and Chrome */
+  background-clip: text;
+  color: transparent;
+}

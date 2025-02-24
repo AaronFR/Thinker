@@ -55,49 +55,19 @@ def apply_new_user_promotion(email: str):
     """
     Attempt to add new account promotion
     ToDo: Investigate applying a lock to neo4j for these types of write operations
+
+    email: The email of the user who will receive the 1 dollar promotion to
+    return: a tuple containing two booleans: was the promotion applied, and was it the *last* promotion
     """
-    promotional_text = ''
+    promotion_applied = False
+    last_promotion = False
+
     if NodeDB().check_new_user_promotion_active():
         remaining_new_user_promotions = NodeDB().add_new_user_promotion(email)
+
         if remaining_new_user_promotions is not None:
-            promotional_text = promotion_applied_text(remaining_new_user_promotions)
-    else:
-        promotional_text = (
-            "<p>Unfortunately we're out of new user promotions, this limit is to avoid malicious attacks, so "
-            "contact us and we might be able to give you some free credit later."
-            "</p>"
-        )
-        # ToDo: consider email alert to system email
-        logging.warning(f"Could not apply new_user_promotion for [{email}] !")
+            promotion_applied = True
+            if remaining_new_user_promotions == 0:
+                last_promotion = True
 
-    return promotional_text
-
-
-def promotion_applied_text(remaining_new_user_promotions: int | None):
-    """
-    Additional text to inform the user they have received their free user trail promotion or not.
-    This is not guaranteed but as long as it's viable new user will get a free dollar to figure out if The Thinker
-    AI works for them
-    # ToDo: consider email alert to system email in each case
-
-    :param remaining_new_user_promotions: The remaining number of new user promotions left
-    :return: html content related to the status of their new user promotion
-    """
-    promotional_text = (
-        "<p>As a new user you start with a <i>whole</i>, <b>singular</b> <u><b><i>DOLLAR!</i></b></u></p>"
-        "But yeah use it and see if The Thinker AI works for you."
-    )
-    if remaining_new_user_promotions == 0:
-        promotional_text += (
-            "<br>"
-            "<p>ALSO yours was the last new user promotion available (currently), <i>luuuuuuucky.</i></p>"
-        )
-        logging.warning("New user promotions depleted!")
-    elif remaining_new_user_promotions < 10:
-        promotional_text += (
-            "<br>"
-            f"<p>(We are at <i>just</i>{remaining_new_user_promotions} free trail's left btw)</p>"
-        )
-        logging.warning("New user promotions nearly-depleted!")
-
-    return promotional_text
+    return promotion_applied, last_promotion

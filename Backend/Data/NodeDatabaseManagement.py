@@ -737,11 +737,10 @@ class NodeDatabaseManagement:
             parameters,
             'new_user_promotions_remaining'
         )
-
-        if remaining_promotions:
-            logging.info(
-                f"New user promotion applied, user [{email}], remaining promotions: {remaining_promotions}")
-            return remaining_promotions
-        else:
+        if remaining_promotions is None:
             logging.warning(f"New user promotion could not be applied for user [{email}].  No promotions remaining.")
             return None
+
+        logging.info(
+            f"New user promotion applied, user [{email}], remaining promotions: {remaining_promotions}")
+        return remaining_promotions

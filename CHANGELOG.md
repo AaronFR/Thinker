@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Model descriptions and price per token comparisons are displayed in Pricing
 - New users are sent email verification emails
+  - New user *can* receive the free dollar promotion after verification
 
 ### Changed
 

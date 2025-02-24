@@ -86,10 +86,15 @@ def verify_email():
         email_verified: bool = NodeDatabaseManagement().mark_user_email_verified(email)
 
         if email_verified:
-            promotion_applied_test = apply_new_user_promotion(email)
+            promotion_applied, last_promotion = apply_new_user_promotion(email)
 
             logging.info(f"The following email address has been marked verified: {email}")
-            return jsonify({'message': 'Email verified successfully.'}), 200
+            return jsonify(
+                {'message': 'Email verified successfully.',
+                 'promotion_applied': promotion_applied,
+                 'last_promotion': last_promotion
+                 }
+            ), 200
         else:
             return jsonify({'error': 'Failed to mark user as verified, try again later'}), 500
     except jwt.ExpiredSignatureError:
