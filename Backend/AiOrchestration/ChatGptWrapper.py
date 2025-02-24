@@ -1,7 +1,6 @@
 import enum
 import json
 import logging
-import os
 from typing import List, Dict
 
 from flask_socketio import emit
@@ -26,28 +25,6 @@ class ChatGptRole(enum.Enum):
     TOOL = "tool"
 
 
-class CostConfiguration:
-    """Handles cost configuration for API calls."""
-
-    def __init__(self):
-        """
-        Initialize cost settings from environment variables or defaults.
-        """
-        self.input_token_costs = {model: float(os.environ.get(f'INPUT_COST_{model.name}', default)) for model, default in {
-            ChatGptModel.CHAT_GPT_4_OMNI_MINI: 0.00000015,  # $/token
-            ChatGptModel.CHAT_GPT_4_OMNI: 0.0000025,  # $/token
-            ChatGptModel.CHAT_GPT_O1_MINI: 0.00000055,  # $/token
-            ChatGptModel.CHAT_GPT_O3_MINI: 0.00000055,  # $/token
-        }.items()}
-
-        self.output_token_costs = {model: float(os.environ.get(f'OUTPUT_COST_{model.name}', default)) for model, default in {
-            ChatGptModel.CHAT_GPT_4_OMNI_MINI: 0.0000006,  # $/token
-            ChatGptModel.CHAT_GPT_4_OMNI: 0.00001,  # $/token
-            ChatGptModel.CHAT_GPT_O1_MINI: 0.0000044,  # $/token
-            ChatGptModel.CHAT_GPT_O3_MINI: 0.0000044,  # $/token
-        }.items()}
-
-
 class ChatGptWrapper:
 
     _instance = None
@@ -57,7 +34,6 @@ class ChatGptWrapper:
         if cls._instance is None:
             cls._instance = super(ChatGptWrapper, cls).__new__(cls)
             cls._instance.open_ai_client = OpenAI()  # Initialize the OpenAI client
-            cls._instance.cost_config = CostConfiguration()  # Load cost configurations
         return cls._instance
 
     def __init__(self):
@@ -182,8 +158,8 @@ class ChatGptWrapper:
         :param model: the specific OpenAI model being used, the non Mini version is *very* expensive,
         and should be used rarely
         """
-        input_cost = input_tokens * self.cost_config.input_token_costs[model]
-        output_cost = output_tokens * self.cost_config.output_token_costs[model]
+        input_cost = input_tokens * model.input_cost
+        output_cost = output_tokens * model.output_cost
         total_cost = (input_cost + output_cost)
 
         Globals.current_request_cost += total_cost

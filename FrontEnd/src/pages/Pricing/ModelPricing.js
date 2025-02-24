@@ -40,7 +40,7 @@ const models = [
         outputPerToken: 0.0000044,
         description: 'OpenAi\'s leading publicly avaible model, intelligent, quick and affordable ',
         goodFor: 'Current top performing model',
-        badFor: 'OpenAI',
+        badFor: 'Long latency (that means it takes a while to get started)',
         image: openAiLogo,
     },
     {

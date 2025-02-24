@@ -30,25 +30,6 @@ class GeminiRole(enum.Enum):
     SYSTEM = "system"
 
 
-class CostConfiguration:  # This entire Class will need refactoring to properly calculate costs
-    """Handles cost configuration for API calls."""
-
-    def __init__(self):
-        """
-        Initialize cost settings from environment variables or defaults.
-        """
-        # Placeholder costs since Gemini's pricing structure differs significantly from OpenAI's
-        self.input_token_costs = {model: float(os.environ.get(f'INPUT_COST_{model.name}', default)) for model, default in {
-            GeminiModel.GEMINI_2_FLASH: 0.0000001,  # $/token
-            GeminiModel.GEMINI_2_FLASH_LITE_PREVIEW: 0.000000075,  # $/token
-        }.items()}
-
-        self.output_token_costs = {model: float(os.environ.get(f'OUTPUT_COST_{model.name}', default)) for model, default in {
-            GeminiModel.GEMINI_2_FLASH: 0.0000004,  # $/token
-            GeminiModel.GEMINI_2_FLASH_LITE_PREVIEW: 0.00000030,  # $/token
-        }.items()}
-
-
 class GeminiWrapper:
     """Wrapper class for interacting with the Google Gemini API."""
 
@@ -59,7 +40,6 @@ class GeminiWrapper:
         if cls._instance is None:
             cls._instance = super(GeminiWrapper, cls).__new__(cls)
             cls._instance.gemini_client = cls._get_google_genai_client()
-            cls._instance.cost_config = CostConfiguration()  # Load cost configurations
         return cls._instance
 
     def __init__(self):
@@ -268,9 +248,9 @@ class GeminiWrapper:
         :param output_tokens: response tokens from the Gemini model
         :param model: the specific Gemini model being used. Placeholders for now
         """
-        #  Refactor cost calculation to properly align with gemini costs, its not token based as of December 2024
-        input_cost = input_tokens * self.cost_config.input_token_costs[model]
-        output_cost = output_tokens * self.cost_config.output_token_costs[model]
+        # ToDo: Refactor cost calculation to properly align with gemini costs, its not token based as of December 2024
+        input_cost = input_tokens * model.input_cost
+        output_cost = output_tokens * model.output_cost
         total_cost = (input_cost + output_cost)
 
         Globals.current_request_cost += total_cost

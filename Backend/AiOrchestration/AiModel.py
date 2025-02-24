@@ -1,4 +1,5 @@
 import enum
+import os
 from typing import Optional, Type, TypeVar
 
 from Constants.Exceptions import NOT_IMPLEMENTED_IN_INTERFACE
@@ -11,6 +12,19 @@ class AiModel(enum.Enum):
     """
     Base Enum class for AI Models.
     """
+
+    def __init__(self, model_str: str, default_input_cost: float, default_output_cost: float):
+        # Allow environment variables to override default costs
+        env_input = os.environ.get(f'INPUT_COST_{self.name}')
+        env_output = os.environ.get(f'OUTPUT_COST_{self.name}')
+        self._model_str = model_str
+        self.input_cost = float(env_input) if env_input is not None else default_input_cost  # $/token
+        self.output_cost = float(env_output) if env_output is not None else default_output_cost   # $/token
+
+    @property
+    def value(self) -> str:
+        """Return the underlying model identifier required by the API."""
+        return self._model_str
 
     @classmethod
     def find_enum_value(cls: Type[T], model_name: Optional[str] = None) -> T:
