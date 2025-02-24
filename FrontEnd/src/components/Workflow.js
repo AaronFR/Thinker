@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 import ExpandableElement from "../utils/expandableElement";
 import './styles/Workflow.css';
 
+import blankImage from './styles/blank.png';
+
 /**
  * Workflow Component
  * 
@@ -85,9 +87,8 @@ const StepDetail = ({ step }) => {
                 <div key={key} className="site-container">
                   <img 
                     src={`${new URL(value).origin}/favicon.ico`} 
-                    alt={`${key} favicon`} 
                     className="site-image"
-                    onError={(e) => { e.target.src = 'fallback-icon-url'; }} // You can replace with a fallback icon URL
+                    onError={(e) => { e.target.src = blankImage; }}
                   />
                   <strong>{key}</strong>:{" "}
                   <a 
