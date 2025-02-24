@@ -156,6 +156,15 @@ const TextBlock = ({ text }) => (
   <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(text)) }} />
 );
 
+/** 
+ * Looks for fenced code blocks starting on a newline
+ * with or without a language identifier
+ * with an arbitrary number of characters inside the block till finding the next fence tripple comma
+ * On a new line with optional empty padding to the end of the line
+ * (to account for being the last output of the llm response) 
+ */
+const codeBlockRegex = /\n```(\w+)?\n([\s\S]*?)```\s*$/gm;
+
 /**
  * CodeHighlighter Component
  *
@@ -174,7 +183,7 @@ export const CodeHighlighter = ({ children }) => {
   const parts = useMemo(() => {
     const elements = [];
     let lastIndex = 0;
-    const codeBlockRegex = /\n```(\w+)?\n([\s\S]*?)```\n/g;
+    
     let match;
 
     while ((match = codeBlockRegex.exec(children)) !== null) {
