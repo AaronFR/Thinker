@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; 
 import PropTypes from 'prop-types';
+import { formatPrice } from '../utils/numberUtils';
 
 /**
  * Alerts the user when their balance is low.
@@ -14,11 +15,11 @@ const LowBalanceWarning = ({ balance }) => {
     const message = isCritical
         ? (
             <>
-                ⛽ Your balance is critically low (${balance}). Please{' '}
+                ⛽ Your balance is critically low : ${formatPrice(balance)}. Please{' '}
                 <Link to="/pricing">add funds</Link> to continue using The Thinker ⛽
             </>
         )
-        : `⛽ Your balance is low (${balance})`;
+        : `⛽ Your balance is low : ${formatPrice(balance)}`;
 
     return (
       <div
