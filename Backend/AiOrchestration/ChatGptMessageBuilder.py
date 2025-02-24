@@ -62,7 +62,7 @@ def build_role_messages(
          format_message(ChatGptRole.USER, prompt) for prompt in user_prompts
      ]
 
-    if model == ChatGptModel.CHAT_GPT_O1_MINI or model == ChatGptModel.CHAT_GPT_O1_PREVIEW:
+    if model == ChatGptModel.CHAT_GPT_O1_MINI or model == ChatGptModel.CHAT_GPT_O3_MINI:
         role_messages = _handle_o1_model_messages(role_messages)
 
     logging.info(f"Generated role messages - [{model}] : {role_messages}")

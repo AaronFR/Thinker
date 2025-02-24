@@ -126,7 +126,7 @@ function App () {
     }, [settings.defaultModel])
 
     const handleInputChange = (event, selectedMessages, selectedFiles, tags) => {
-      const newValue = event.target.value.trim();
+      const newValue = event.target.value;
       setUserInput(newValue);
 
       if (typingTimer.current) {

@@ -36,18 +36,18 @@ const CustomOption = (props) => {
 
 const ModelSelector = React.memo(({ selectedModel, setTags, forTags, economicalMode }) => {
   const economicalModels = useMemo(() => [
-    { value: "gpt-4o-mini", label: "gpt-4o-mini" },
     { value: "gemini-2.0-flash", label: "gemini-2.0-flash" },
     { value: "gemini-2.0-flash-lite-preview", label: "gemini-2.0-flash-lite-preview" },
+    { value: "gpt-4o-mini", label: "gpt-4o-mini" },
   ], []);
 
   const allModels = useMemo(() => [
-    { value: "gpt-4o-mini", label: "gpt-4o-mini" },
-    { value: "gpt-4o", label: "gpt-4o" },
-    { value: "o1-mini", label: "o1-mini" },
-    { value: "o1-preview", label: "o1-preview" },
     { value: "gemini-2.0-flash", label: "gemini-2.0-flash" },
     { value: "gemini-2.0-flash-lite-preview", label: "gemini-2.0-flash-lite-preview" },
+    { value: "gpt-4o-mini", label: "gpt-4o-mini" },
+    { value: "o3-mini", label: "o3-mini" },
+    { value: "o1-mini", label: "o1-mini" },
+    { value: "gpt-4o", label: "gpt-4o" },
   ], []);
 
   // Derive the models to display based on economicalMode

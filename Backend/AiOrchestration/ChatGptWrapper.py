@@ -36,15 +36,15 @@ class CostConfiguration:
         self.input_token_costs = {model: float(os.environ.get(f'INPUT_COST_{model.name}', default)) for model, default in {
             ChatGptModel.CHAT_GPT_4_OMNI_MINI: 0.00000015,  # $/token
             ChatGptModel.CHAT_GPT_4_OMNI: 0.0000025,  # $/token
-            ChatGptModel.CHAT_GPT_O1_MINI: 0.000003,  # $/token
-            ChatGptModel.CHAT_GPT_O1_PREVIEW: 0.000015,  # $/token
+            ChatGptModel.CHAT_GPT_O1_MINI: 0.00000055,  # $/token
+            ChatGptModel.CHAT_GPT_O3_MINI: 0.00000055,  # $/token
         }.items()}
 
         self.output_token_costs = {model: float(os.environ.get(f'OUTPUT_COST_{model.name}', default)) for model, default in {
             ChatGptModel.CHAT_GPT_4_OMNI_MINI: 0.0000006,  # $/token
             ChatGptModel.CHAT_GPT_4_OMNI: 0.00001,  # $/token
-            ChatGptModel.CHAT_GPT_O1_MINI: 0.000012,  # $/token
-            ChatGptModel.CHAT_GPT_O1_PREVIEW: 0.00006,  # $/token
+            ChatGptModel.CHAT_GPT_O1_MINI: 0.0000044,  # $/token
+            ChatGptModel.CHAT_GPT_O3_MINI: 0.0000044,  # $/token
         }.items()}
 
 
@@ -157,7 +157,7 @@ class ChatGptWrapper:
         :param model: The specific language model to use.
         :return: The content of the response from OpenAI or an error message to inform the next executor task
         """
-        if model == ChatGptModel.CHAT_GPT_O1_MINI or model == ChatGptModel.CHAT_GPT_O1_PREVIEW:
+        if model == ChatGptModel.CHAT_GPT_O1_MINI or model == ChatGptModel.CHAT_GPT_O3_MINI:
             raise Exception("O1 models do not support function calls!")
         chat_completion = self.open_ai_client.chat.completions.create(
             model=model.value,

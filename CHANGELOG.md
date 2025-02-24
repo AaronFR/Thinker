@@ -20,10 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Most sections start minimised
 - Full internet search: Relevant pages are used as reference for the user's prompt
   - Pages are sourced and displayed to the user per step
+- Added o3-mini, the cutting edge open-ai model
+  - o1-mini prices update (now lower)
 
 ### Removed
 
-- 
+- o1-preview (o1 is released but not as good as o3-mini, while being *much* more expensive)
 
 ## [0.9.5] - 2025-02-18 - Pre public beta
 
