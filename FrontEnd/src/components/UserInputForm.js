@@ -1,27 +1,29 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import FileUploadButton from './FileUploadButton';
 import TagsManager from './TagsManager';
-import { apiFetch } from '../utils/authUtils';
-import { getBasename } from '../utils/textUtils';
-import AutoExpandingTextarea from '../utils/AutoExpandingTextarea';
-import PersonaSelector from './Selectors/PersonaSelector'
-import WorkflowSelector from './Selectors/WorkflowSelector';
-import ModelSelector from './Selectors/ModelSelector';
-
-import './styles/UserInputForm.css';
 
 import { SettingsContext } from '../pages/Settings/SettingsContext';
 import { useSelection } from '../pages/Messages/SelectionContext';
+
+import PersonaSelector from './Selectors/PersonaSelector'
+import WorkflowSelector from './Selectors/WorkflowSelector';
+import ModelSelector from './Selectors/ModelSelector';
 import BestOfSelector from './Selectors/BestOfSelector';
 import LoopsSelector from './Selectors/LoopsSelector';
 import WriteSelector from './Selectors/WriteSelector';
 import PagesSelector from './Selectors/PagesSelector';
 
+import { apiFetch } from '../utils/authUtils';
+import { getBasename } from '../utils/textUtils';
+import AutoExpandingTextarea from '../utils/AutoExpandingTextarea';
 import { Tooltip } from 'react-tooltip';
 import TooltipConstants from '../constants/tooltips';
 import { readStagedFilesEndpoint } from '../constants/endpoints';
+
+import './styles/UserInputForm.css';
+
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
@@ -61,7 +63,6 @@ const UserInputForm = ({
   const [uploadCompleted, setUploadCompleted] = useState(true)
 
   const { settings } = useContext(SettingsContext);
-  //const { selectedMessages } = useContext(SelectionProvider)
   const { 
     selectedFiles,
     setSelectedFiles,
@@ -73,7 +74,7 @@ const UserInputForm = ({
   /**
    * Fetches the list of uploaded files from the backend API.
    */
-  const fetchStagedFiles = async () => {
+  const fetchStagedFiles = useCallback(async () => {
     try {
         const response = await apiFetch(readStagedFilesEndpoint, {
             method: "GET",
@@ -101,7 +102,7 @@ const UserInputForm = ({
     } finally {
         setUploadCompleted(false);
     }
-};
+  }, [selectedFiles, setSelectedFiles]);
 
   /**
    * fetch uploaded files after successful file upload.
@@ -117,27 +118,31 @@ const UserInputForm = ({
    *
    * @param {Object} file - The uploaded file object.
    */
-  const handleUploadSuccess = (file) => {
+  const handleUploadSuccess = useCallback((file) => {
     if (file && file.size > MAX_FILE_SIZE) {
       setFetchError('File size exceeds the maximum limit of 10MB.');
       return;
     }
     setUploadCompleted(true);
-  };
+  }, []);
 
   /**
    * Handles key down events for the textarea.
    *
    * @param {Event} e - The keyboard event object.
    */
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      if (!e.shiftKey) {
-        e.preventDefault();
-        handleSubmit(e);
-      }
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
     }
-  };
+  }, [handleSubmit]);
+
+  // Wrap the onChange callback so it gets passed down without inline creation
+  const handleChange = useCallback(
+    (event) => handleInputChange(event, selectedMessages, selectedFiles, tags),
+    [handleInputChange, selectedMessages, selectedFiles, tags]
+  );
 
   return (
     <div>
@@ -150,7 +155,7 @@ const UserInputForm = ({
               <button
                 className="deselect-button"
                 onClick={() => toggleMessageSelection(message)}
-                aria-label={`Deselect this message`}
+                aria-label="Deselect this message"
               >
                 ✖️
               </button>
@@ -185,7 +190,7 @@ const UserInputForm = ({
           id='prompt-input'
           value={userInput}
           onKeyDown={handleKeyDown}
-          onChange={(event) => handleInputChange(event, selectedMessages, selectedFiles, tags)}
+          onChange={handleChange}
           placeholder='Enter your prompt'
           className="textarea prompt-input"
           rows="2"
@@ -195,33 +200,36 @@ const UserInputForm = ({
 
         <div className='palette'>
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
-          {settings.augmentedPromptsEnabled !== 'off' && <button 
-            type="button"
-            className="button submit-button"
-            onClick={() => generateAugmentedPrompt(userInput)}
-            disabled={isProcessing}
-            aria-busy={isProcessing}
-            data-tooltip-id="tooltip"
-            data-tooltip-html={TooltipConstants.augmentButton}
-            data-tooltip-place="bottom"
-          >
-            {'Improve prompt'}
-          </button>}
-          {settings.questionUserPromptsEnabled !== 'off' &&
-          <button // settings.promptQuestioningMessage != 'off'
-            type="button"
-            className="button submit-button"
-            onClick={() => generateQuestionsForPrompt(userInput, selectedMessages, selectedFiles)}
-            disabled={isProcessing}
-            aria-busy={isProcessing}
-            data-tooltip-id="tooltip"
-            data-tooltip-html={TooltipConstants.questionButton}
-            data-tooltip-place="bottom"
-          >
-            {'Question'}
-          </button>}
-          {isProcessing
-            ? <button
+          {settings.augmentedPromptsEnabled !== 'off' && (
+            <button
+              type="button"
+              className="button submit-button"
+              onClick={() => generateAugmentedPrompt(userInput)}
+              disabled={isProcessing}
+              aria-busy={isProcessing}
+              data-tooltip-id="tooltip"
+              data-tooltip-html={TooltipConstants.augmentButton}
+              data-tooltip-place="bottom"
+            >
+              Improve prompt
+            </button>
+          )}
+          {settings.questionUserPromptsEnabled !== 'off' && (
+            <button
+              type="button"
+              className="button submit-button"
+              onClick={() => generateQuestionsForPrompt(userInput, selectedMessages, selectedFiles)}
+              disabled={isProcessing}
+              aria-busy={isProcessing}
+              data-tooltip-id="tooltip"
+              data-tooltip-html={TooltipConstants.questionButton}
+              data-tooltip-place="bottom"
+            >
+              Question
+            </button>
+          )}
+          {isProcessing ? (
+            <button
               type="button"
               className="button submit-button"
               onClick={disconnectFromRequest}
@@ -232,7 +240,8 @@ const UserInputForm = ({
             >
               New
             </button>
-            : <button 
+          ) : (
+            <button
               type="submit"
               className="button submit-button"
               disabled={isProcessing}
@@ -242,46 +251,52 @@ const UserInputForm = ({
             >
               Enter
             </button>
-          }
+          )}
         </div>
 
         <div className='palette'>
-        <PersonaSelector 
+          <PersonaSelector 
             selectedPersona={selectedPersona} 
             setSelectedPersona={setSelectedPersona}
           />
-
           <WorkflowSelector
             selectedWorkflow={tags.workflow}
             setTags={setTags}
           />
-          {tags.workflow === 'loop' && <LoopsSelector
-            selectedNumberOfLoops={tags.loops}
-            setTags={setTags}
-          />}
-          {tags.workflow === 'write' && <WriteSelector
-            write={tags.write}
-            setTags={setTags}
-          />}
-          {selectedPersona === 'writer' && tags.workflow === 'write' && <PagesSelector
-            pages={tags.pages}
-            setTags={setTags}
-          />}
-
+          {tags.workflow === 'loop' && (
+            <LoopsSelector
+              selectedNumberOfLoops={tags.loops}
+              setTags={setTags}
+            />
+          )}
+          {tags.workflow === 'write' && (
+            <WriteSelector
+              write={tags.write}
+              setTags={setTags}
+            />
+          )}
+          {selectedPersona === 'writer' && tags.workflow === 'write' && (
+            <PagesSelector
+              pages={tags.pages}
+              setTags={setTags}
+            />
+          )}
           <ModelSelector
             selectedModel={tags.model}
             setTags={setTags}
             forTags={true}
           />
-
-          {settings.bestOfEnabled !== 'off' && <BestOfSelector
-            bestOf={tags.bestOf}
-            setTags={setTags}
-          />}
-          
+          {settings.bestOfEnabled !== 'off' && (
+            <BestOfSelector
+              bestOf={tags.bestOf}
+              setTags={setTags}
+            />
+          )}
         </div>
 
-        {settings.debug === true && <TagsManager tags={tags} setTags={setTags} />}
+        {settings.debug === true && (
+          <TagsManager tags={tags} setTags={setTags} />
+        )}
         <Tooltip id="tooltip" />
       </form>
     </div>
@@ -309,4 +324,4 @@ UserInputForm.propTypes = {
   setTags: PropTypes.func.isRequired,
 };
 
-export default UserInputForm;
+export default React.memo(UserInputForm);

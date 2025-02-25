@@ -164,6 +164,9 @@ class BaseWorkflow:
         if not user_id:
             user_id = get_user_context()
 
+        # ToDo: We'll see if this degrades quality
+        message += "\nJust write the contents to be saved to the file without commentary"
+
         response = process_prompt(
             message,
             file_references,

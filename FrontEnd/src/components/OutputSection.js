@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import { CodeHighlighter } from '../utils/textUtils';
-import FileItem from './../pages/Messages/FileItem'; // Importing FileItem component
+import FileItem from './../pages/Messages/FileItem';
 import { useSelection } from '../pages/Messages/SelectionContext';
 
 import './styles/OutputSection.css';
@@ -29,8 +29,8 @@ const ensureMarkdownClosingTags = (message) => {
   const count = matches ? matches.length : 0;
 
   // Append closing code block if the count of backticks is odd and not already closed
-  return (count % 2 !== 0 && !message.endsWith("```")) 
-    ? message + "\n```\n" 
+  return (count % 2 !== 0 && !message.endsWith("```"))
+    ? message + "\n```\n"
     : message;
 };
 
@@ -45,86 +45,93 @@ const ensureMarkdownClosingTags = (message) => {
  * @param {array} files - An array of file UUIDs to be processed and displayed as FileItem components.
  * @param {string} error - Optional error message to display.
  * @param {boolean} isProcessing - Indicates if the message is currently being streamed/processed.
- * @param {function} onDelete - Callback function to handle file deletion.
- * @param {function} onSelect - Callback function to handle file selection.
  * @param {array} selectedFiles - Array of selected file objects to determine selection state.
  * @returns {JSX.Element|null} - Returns the rendered output or null if no content is available.
  */ 
 const OutputSection = ({ message, files, error = '', isProcessing }) => {
-  // State to hold detailed file data corresponding to each UUID
-  const [fileItems, setFileItems] = useState([]);
-  
-  // State to manage errors specific to file fetching
+  const [fileMap, setFileMap] = useState({});
   const [fileError, setFileError] = useState('');
 
-  const { 
-    selectedFiles,
-    toggleFileSelection, 
-    removeFile
-  } = useSelection();
+  const { selectedFiles, toggleFileSelection, removeFile } = useSelection();
+
+  // useRef to track already requested file UUIDs so we avoid duplicate fetches
+  const requestedFilesRef = useRef({});
 
   /**
-   * Fetches file details from the backend using the UUID.
-   *
-   * @param {string} uuid - The UUID of the file to fetch.
+   * Fetch file details from the backend for the given uuid unless already fetched.
    */
   const fetchFileByUUID = useCallback(async (uuid) => {
+    // Avoid duplicate requests
+    if (requestedFilesRef.current[uuid]) return;
+    requestedFilesRef.current[uuid] = true;
+
     try {
-      const response = await apiFetch(fileIdEndpoint(uuid), {
-        method: 'GET',
-      });
+      const response = await apiFetch(fileIdEndpoint(uuid), { method: 'GET' });
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch file with UUID: ${uuid}`);
-      }
-
+      if (!response.ok) throw new Error(`Failed to fetch file with UUID: ${uuid}`);
       const data = await response.json();
-      setFileItems(prevItems => [...prevItems, data.file]);
+
+      // Batch update fileMap (and avoid repeatedly copying arrays)
+      setFileMap(prev => ({ ...prev, [uuid]: data.file }));
     } catch (err) {
       console.error(`Error fetching file with UUID ${uuid}:`, err);
       setFileError(`Unable to load file with UUID: ${uuid}. Please try again.`);
     }
   }, []);
 
+  // When files change, start fetching new file details.
   useEffect(() => {
-    if (files) {
-      // Ensure files is always an array
-      const filesArray = Array.isArray(files) ? files : [files];
+    if (!files) return;
+    const filesArray = Array.isArray(files) ? files : [files];
 
-      if (filesArray.length > 0) {
-        filesArray.forEach(id => {
-          // Check if the file is already in the state to prevent duplicate fetches
-
-          const exists = fileItems.length === 0 ? false : fileItems.some(item => item?.id === id);
-          if (!exists) {
-            fetchFileByUUID(id);
-          }
-        });
-      }
+    if (filesArray.length) {
+      filesArray.forEach(uuid => {
+        // Only fetch if the file is not already in our fileMap.
+        if (!fileMap[uuid]) {
+          fetchFileByUUID(uuid);
+        }
+      });
     }
+    // We intentionally do not depend on fileMap to avoid re-triggering fetch requests.
   }, [files, fetchFileByUUID]);
 
+  // Clear fileMap and requestedFilesRef when processing begins.
   useEffect(() => {
     if (isProcessing) {
-      setFileItems([])
+      setFileMap({});
+      requestedFilesRef.current = {};
     }
   }, [isProcessing]);
 
-  /**
-   * Determines the message to display.
-   * Prioritizes displaying file-specific errors over general errors.
-   */
-  const displayMessage = error 
-    ? error 
-    : (isProcessing ? ensureMarkdownClosingTags(message) : message);
+  // Compute final message once – if processing then fix incomplete code blocks.
+  const displayMessage = useMemo(() => {
+    return error 
+      ? error 
+      : (isProcessing ? ensureMarkdownClosingTags(message) : message);
+  }, [error, isProcessing, message]);
+
+  // Convert fileMap into an array for rendering.
+  const fileItems = useMemo(() => Object.values(fileMap), [fileMap]);
+
+  const renderFileItem = useCallback(file => (
+    <FileItem
+      key={file.id}
+      file={file}
+      onDelete={removeFile}
+      onSelect={toggleFileSelection}
+      isSelected={selectedFiles?.some(selected => selected.id === file.id)}
+    />
+  ), [removeFile, selectedFiles, toggleFileSelection]);
 
   return (
     <div className="output-section">
-      {/* Render the message or error */}
-      {fileError && <p className="error-message" role="alert">{fileError}</p>}
+      {(error || fileError) && (
+        <p className="error-message" role="alert">
+          {fileError || error}
+        </p>
+      )}
+
       <div className="message-container">
-        {error && <p className="error-message" role="alert">{error}</p>}
-        {fileError && <p className="error-message" role="alert">{fileError}</p>}
         {displayMessage && (
           <div className="markdown-output">
             <CodeHighlighter>
@@ -134,27 +141,13 @@ const OutputSection = ({ message, files, error = '', isProcessing }) => {
         )}
       </div>
 
-      {/* Render the list of FileItem components based on fetched fileItems */}
       {fileItems && fileItems.length > 0 && fileItems[0] && (
         <div className="file-items-container">
           <h3>Generated Files</h3>
-          {fileItems
-            .filter(file => file) // This filters out undefined or null entries
-            .map(file => (
-              <FileItem
-                key={file.id}
-                file={file}
-                onDelete={removeFile}
-                onSelect={toggleFileSelection}
-                isSelected={selectedFiles?.some(selectedFile => selectedFile.id === file.id)}
-              />
-            ))
-          }
+          {fileItems.filter(Boolean).map(renderFileItem)}
         </div>
       )}
 
-
-      {/* Optionally, display a loading indicator while processing */}
       {isProcessing && (
         <div className="loading-indicator">
           <p>Processing...</p>
@@ -166,11 +159,9 @@ const OutputSection = ({ message, files, error = '', isProcessing }) => {
 
 OutputSection.propTypes = {
   message: PropTypes.string,
-  files: PropTypes.arrayOf(PropTypes.string).isRequired, // Array of file UUIDs
+  files: PropTypes.arrayOf(PropTypes.string).isRequired,
   error: PropTypes.string,
   isProcessing: PropTypes.bool.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  onSelect: PropTypes.func.isRequired,
   selectedFiles: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
   })),

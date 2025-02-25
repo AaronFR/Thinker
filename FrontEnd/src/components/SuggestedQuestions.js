@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { marked } from 'marked';
 
@@ -10,10 +10,10 @@ import './styles/SuggestedQuestions.css';
 
 /**
  * SuggestedQuestions Component
- * 
+ *
  * Renders a list of suggested questions extracted from a markdown prompt.
  * Allows users to input responses to each question and concatenates the answers.
- * 
+ *
  * @param {boolean} questionUserPromptsEnabled - Flag to enable or disable prompting.
  * @param {string} questionsForPrompt - Markdown string containing the questions.
  * @param {string} error - Error message to display, if any.
@@ -33,31 +33,12 @@ const SuggestedQuestions = ({
 }) => {
   const [responses, setResponses] = useState({});
 
-  /**
-   * Resets responses, forms filled state, and concatenated Q&A when triggered.
-   */
+  // Reset responses and concatenatedQA when resetResponsesTrigger changes.
   useEffect(() => {
     setResponses({});
-    onFormsFilled(false); // Reset formsFilled state
-    setConcatenatedQA(''); // Clear concatenatedQA
-  }, [resetResponsesTrigger]);
-
-  if (error) {
-    return (
-      <div className="markdown-questions-for-prompt" style={withLoadingOpacity(isQuestioning)}>
-        <div role="alert"  className="error-message">{error}</div>
-      </div>
-    );
-  }
-
-  // Display loading message if questions are not yet available
-  if (!questionsForPrompt) {
-    return (
-      <div style={withLoadingOpacity(isQuestioning)}>
-        {isQuestioning ? "Loading questions..." : ""}
-      </div>
-    );
-  }
+    onFormsFilled(false);
+    setConcatenatedQA('');
+  }, [resetResponsesTrigger, onFormsFilled, setConcatenatedQA]);
 
   /**
    * Parses the markdown prompt to extract a list of questions.
@@ -66,85 +47,102 @@ const SuggestedQuestions = ({
    * @param {string} markdownText - The markdown string containing questions.
    * @returns {Array<string>} - An array of question strings.
    */
-  const parseQuestions = (markdownText) => {
-    const tokens = marked.lexer(markdownText);
+  const questions = useMemo(() => {
+    if (!questionsForPrompt) return [];
+
+    const tokens = marked.lexer(questionsForPrompt);
     const listToken = tokens.find(token => token.type === 'list');
-    return listToken ? listToken.items.map(item => item.text) : [markdownText];
-  };
 
-  const questions = parseQuestions(questionsForPrompt);
+    return listToken ? listToken.items.map(item => item.text) : [questionsForPrompt];
+  }, [questionsForPrompt]);
 
-  /**
-   * Handles changes in the response textareas.
-   * Updates the responses state and concatenates Q&A.
-   * ToDo: Sometimes resets even if a question is filled
-   * 
-   * @param {number} index - The index of the question.
-   * @param {string} value - The user's response.
-   */
-  const handleResponseChange = (index, value) => {
-    setResponses((prevResponses) => {
-      const newResponses = { ...prevResponses, [index]: value };
-      const anyFilled = Object.values(newResponses).some((val) => val.trim() !== "");
-      
-      onFormsFilled(anyFilled); // Notify parent component
-      setConcatenatedQA(concatenateQA(questions, newResponses))
-
-      return newResponses;
-    });
-  };
-  
-  /**
-   * Concatenates questions and their corresponding answers into a single string.
-   * 
-   * @param {Array<string>} questionsList - Array of questions.
-   * @param {Object} answers - Object mapping question indices to answers.
-   * @returns {string} - Concatenated Q&A string.
-   */
-  const concatenateQA = (questionsList, answers) => {
+  const concatenateQA = useCallback((questionsList, answers) => {
     return questionsList
-      .map((question, index) => answers[index] ? `${question}: ${answers[index].trim()}` : null)
-      .filter(Boolean) // Remove nulls
+      .map((question, index) =>
+        answers[index] ? `${question}: ${answers[index].trim()}` : null
+      )
+      .filter(Boolean) // Remove nulls.
       .join('\n');
-  };
+  }, []);
 
-  const minContent = (
-    <MarkdownRenderer markdownText={"Questions and Answers +"} className="question-text" isLoading={isQuestioning} />
+  // Use useCallback to prevent unnecessary re-creations of the function on every render.
+  const handleResponseChange = useCallback(
+    (index, value) => {
+      setResponses(prevResponses => {
+        const newResponses = { ...prevResponses, [index]: value };
+        const anyFilled = Object.values(newResponses).some(val => val.trim() !== "");
+        onFormsFilled(anyFilled); // Notify parent component
+        
+        // Concatenate questions and answers and send the result upward.
+        setConcatenatedQA(concatenateQA(questions, newResponses));
+        return newResponses;
+      });
+    },
+    [onFormsFilled, setConcatenatedQA, questions, concatenateQA]
   );
-  const maxContent = (
+
+  // Memoize the minimal and max expandable elements.
+  const minContent = useMemo(() => (
+    <MarkdownRenderer 
+      markdownText="Questions and Answers" 
+      className="question-text" 
+      isLoading={isQuestioning} 
+    />
+  ), [isQuestioning]);
+
+  const maxContent = useMemo(() => (
     <div className="markdown-questions-for-prompt">
       <ol className="questions-list">
         {questions.map((question, index) => (
           <li key={index} className="question-item">
-            <MarkdownRenderer markdownText={question} className="question-text" isLoading={isQuestioning} />
+            <MarkdownRenderer 
+              markdownText={question} 
+              className="question-text" 
+              isLoading={isQuestioning} 
+            />
             <form className="response-form">
               <AutoExpandingTextarea
                 className="textarea response-textarea"
                 placeholder="Your answer"
                 disabled={isQuestioning}
                 value={responses[index] || ""}
-                onChange={(e) => handleResponseChange(index, e.target.value)}
+                onChange={e => handleResponseChange(index, e.target.value)}
               />
             </form>
           </li>
         ))}
       </ol>
     </div>
-  );
+  ), [questions, responses, isQuestioning, handleResponseChange]);
 
-  return (
-    <ExpandableElement
+  // Instead of returning early, conditionally render inside the JSX.
+  let content;
+  if (error) {
+    content = (
+      <div className="markdown-questions-for-prompt" style={withLoadingOpacity(isQuestioning)}>
+        <div role="alert" className="error-message">{error}</div>
+      </div>
+    );
+  } else if (!questionsForPrompt) {
+    content = (
+      <div style={withLoadingOpacity(isQuestioning)}>
+        {isQuestioning ? "Loading questions..." : ""}
+      </div>
+    );
+  } else {
+    content = (
+      <ExpandableElement
         minContent={minContent}
         maxContent={maxContent}
         initiallyExpanded={true}
         toggleButtonLabel=""
-    />
-  );
+      />
+    );
+  }
+
+  return content;
 };
 
-/**
- * PropTypes for SuggestedQuestions Component
- */
 SuggestedQuestions.propTypes = {
   questionUserPromptsEnabled: PropTypes.bool.isRequired,
   questionsForPrompt: PropTypes.string,
@@ -152,7 +150,7 @@ SuggestedQuestions.propTypes = {
   isQuestioning: PropTypes.bool.isRequired,
   onFormsFilled: PropTypes.func.isRequired,
   setConcatenatedQA: PropTypes.func.isRequired,
-  resetResponsesTrigger: PropTypes.any, // Can be more specific based on usage
+  resetResponsesTrigger: PropTypes.any, // Can be made more specific if needed.
 };
 
-export default SuggestedQuestions;
+export default React.memo(SuggestedQuestions);

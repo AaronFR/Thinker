@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import { MarkdownRenderer, withLoadingOpacity } from '../utils/textUtils';
@@ -20,47 +20,39 @@ import './styles/PromptAugmentation.css';
  * @param {boolean} isAugmenting (boolean): Indicates if the augmentation process is ongoing.
  * @param {function} copyAugmentedPrompt (function): Function to copy the augmented prompt.
  */
-const PromptAugmentation = ({
+const PromptAugmentation = React.memo(({
   augmentedPromptsEnabled,
   augmentedPrompt,
   error = '',
   isAugmenting,
   copyAugmentedPrompt,
 }) => {
+  // Always call hooks so that they have a consistent order
 
-  // Display loading message if an augmented prompt is not yet ready
-  if (!augmentedPrompt) {
-    return (
-      <div style={withLoadingOpacity(isAugmenting)}>
-        {isAugmenting ? "Engineering prompt..." : ""}
-      </div>
-    );
-  }
-
-  const handleCopyClick = (e) => {
+  const handleCopyClick = useCallback((e) => {
     e.stopPropagation();
     copyAugmentedPrompt();
-  };
+  }, [copyAugmentedPrompt]);
 
   const buttonLabel = isAugmenting ? 'Copying augmented prompt...' : 'Copy';
   const buttonText = isAugmenting ? 'Augmenting...' : 'Copy';
 
-  const minContent = (
-      <MarkdownRenderer
-          markdownText="Augmented Prompt +"
-          className="markdown-augmented"
-          isLoading={isAugmenting}
-      />
-  );
+  const minContent = useMemo(() => (
+    <MarkdownRenderer
+      markdownText="Augmented Prompt"
+      className="markdown-augmented"
+      isLoading={isAugmenting}
+    />
+  ), [isAugmenting]);
 
-  const maxContent = (
+  const maxContent = useMemo(() => (
     <div>
       {error ? (
         <p className="error-message" role="alert">
           {error}
         </p>
       ) : (
-        <div className='augmented-container'>
+        <div className="augmented-container">
           <MarkdownRenderer
             markdownText={augmentedPrompt}
             className="markdown-augmented"
@@ -77,26 +69,38 @@ const PromptAugmentation = ({
         </div>
       )}
     </div>
-  );
+  ), [error, augmentedPrompt, isAugmenting, handleCopyClick, buttonLabel, buttonText]);
+
+  if (!augmentedPromptsEnabled) {
+    return null;
+  }
+
+  if (!augmentedPrompt) {
+    return (
+      <div style={withLoadingOpacity(isAugmenting)}>
+        {isAugmenting ? "Engineering prompt..." : ""}
+      </div>
+    );
+  }
 
   return (
-      <div className="augmented-container">
-        <ExpandableElement
-          minContent={minContent}
-          maxContent={maxContent}
-          initiallyExpanded={true}
-          toggleButtonLabel=""
-        />
-      </div>
+    <div className="augmented-container">
+      <ExpandableElement
+        minContent={minContent}
+        maxContent={maxContent}
+        initiallyExpanded={true}
+        toggleButtonLabel=""
+      />
+    </div>
   );
-};
+});
 
 PromptAugmentation.propTypes = {
-    augmentedPromptsEnabled: PropTypes.bool.isRequired,
-    augmentedPrompt: PropTypes.string.isRequired,
-    error: PropTypes.string,
-    isAugmenting: PropTypes.bool.isRequired,
-    copyAugmentedPrompt: PropTypes.func.isRequired,
+  augmentedPromptsEnabled: PropTypes.bool.isRequired,
+  augmentedPrompt: PropTypes.string.isRequired,
+  error: PropTypes.string,
+  isAugmenting: PropTypes.bool.isRequired,
+  copyAugmentedPrompt: PropTypes.func.isRequired,
 };
 
 export default PromptAugmentation;

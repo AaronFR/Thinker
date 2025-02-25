@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { apiFetch } from '../utils/authUtils';
@@ -27,17 +27,31 @@ const TransactionForm = ({ onSuccess }) => {
      * @param {string} value - The input value to validate.
      * @returns {boolean} - Returns true if valid, else false.
      */
-    const validateAmount = (value) => {
+    const validateAmount = useCallback((value) => {
         const floatValue = parseFloat(value);
         return !isNaN(floatValue) && floatValue > 0 && AMOUNT_REGEX.test(value);
-    };
+    }, []);
+
+    /**
+     * Handles changes to accept only whole dollars and cents as a float.
+     *
+     * @param {Event} e - The input change event.
+     */
+    const handleAmountChange = useCallback((e) => {
+        const newValue = e.target.value;
+        if (AMOUNT_REGEX.test(newValue)) {
+            setAmount(newValue);
+            if (error) setError('');
+        }
+    }, [error]);
+
 
     /**
      * Attempts to process the transaction.
      *
      * @param {Event} event - The form submission event.
      */
-    const attemptTransaction = async (event) => {
+    const attemptTransaction = useCallback(async (event) => {
         event.preventDefault();
         setError('');
         setSuccess('');
@@ -63,29 +77,14 @@ const TransactionForm = ({ onSuccess }) => {
 
             setSuccess('Your balance has been successfully updated.');
             setAmount('');
-
-            // Call onSuccess to refresh the balance
-            onSuccess();
+            onSuccess(); // Refresh balance
         } catch (error) {
             console.error('Error topping up user balance:', error);
             setError('There was an issue processing your transaction. Please try again.');
         } finally {
             setIsLoading(false);
         }
-    };
-
-    /**
-     * Handles changes to accept only whole dollars and cents as a float
-     *
-     * @param {Event} e - The input change event.
-     */
-    const handleAmountChange = (e) => {
-        const value = e.target.value;
-        if (AMOUNT_REGEX.test(value)) {
-            setAmount(value);
-            if (error) setError('');
-        }
-    };
+    }, [amount, error, success, onSuccess, validateAmount]);
 
     return (
         <form onSubmit={attemptTransaction} aria-label="Transaction Form">
@@ -128,4 +127,4 @@ TransactionForm.propTypes = {
     onSuccess: PropTypes.func.isRequired,
 };
 
-export default TransactionForm;
+export default React.memo(TransactionForm);

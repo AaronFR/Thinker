@@ -25,13 +25,11 @@ const initialState = {
 const uploadReducer = (state, action) => {
   switch (action.type) {
     case 'UPLOAD_START':
-      return { ...state, isUploading: true, uploadStatus: 'Uploading...', uploadProgress: 0 };
-    case 'UPLOAD_PROGRESS':
-      return { ...state, uploadProgress: action.payload };
+      return { ...state, isUploading: true, uploadStatus: 'Uploading...' };
     case 'UPLOAD_SUCCESS':
-      return { ...state, isUploading: false, uploadStatus: 'File uploaded successfully!', uploadProgress: 0 };
+      return { ...state, isUploading: false, uploadStatus: 'File uploaded successfully!' };
     case 'UPLOAD_FAILURE':
-      return { ...state, isUploading: false, uploadStatus: action.payload, uploadProgress: 0 };
+      return { ...state, isUploading: false, uploadStatus: action.payload };
     case 'RESET':
       return initialState;
     default:
@@ -103,6 +101,7 @@ const FileUploadButton = ({ onUploadSuccess }) => {
     });
 
     await Promise.all(uploadPromises);
+    
     event.target.value = null; // Reset file input
   }, [onUploadSuccess]);
 

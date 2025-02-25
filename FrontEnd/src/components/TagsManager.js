@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import './styles/TagsManager.css';
 
@@ -6,7 +6,7 @@ import './styles/TagsManager.css';
  * Default tags and their corresponding preferred values.
  */
 const DEFAULT_TAGS = {
-    model: ['gemini-2.0-flash', 'gemini-2.0-flash-lite-preview', 'gpt-4o', 'gpt-4o-mini', 'o1-mini', 'o3-mini'],
+    model: ['gemini-2.0-flash', 'gemini-2.0-flash-lite-preview', 'o3-mini', 'gpt-4o-mini', 'gpt-4o', 'o1-mini'],
     category: [],
     write: ['example.txt'],
     'best of': [1, 2, 3],
@@ -23,51 +23,53 @@ const TagsManager = ({ tags, setTags }) => {
     const [isAdding, setIsAdding] = useState(false);
     const [newTag, setNewTag] = useState({ field: '', value: '' });
     const [fieldSuggestions] = useState(Object.keys(DEFAULT_TAGS));
-    const [valueSuggestions, setValueSuggestions] = useState([]);
 
     const fieldInputRef = useRef(null);
     const valueInputRef = useRef(null);
 
-    /**
-     * Focuses on the field input when adding a new tag.
-     */
+    // Compute value suggestions based on current newTag.field
+    const valueSuggestions = useMemo(() => {
+        const trimmedField = newTag.field.trim();
+        return DEFAULT_TAGS[trimmedField] || [];
+    }, [newTag.field]);
+
+    // Focus the field input when the form is shown
     useEffect(() => {
         if (isAdding) {
             fieldInputRef.current.focus();
         }
     }, [isAdding]);
 
-    /**
-     * Handles the Add button click to initiate tag addition.
-     */
-    const handleAddClick = () => setIsAdding(true);
+    const resetAddForm = useCallback(() => {
+        setIsAdding(false);
+        setNewTag({ field: '', value: '' });
+    }, []);
 
-    /**
-     * Handles key down events for the field input.
-     *
-     * @param {object} e - The keyboard event object.
-     */
-    const handleFieldKeyDown = (e) => {
+    const handleAddClick = useCallback(() => {
+        setIsAdding(true);
+    }, []);
+
+    const handleFieldChange = useCallback((e) => {
+        const value = e.target.value;
+        setNewTag((prev) => ({ ...prev, field: value }));
+        // valueSuggestions are computed via useMemo, no need to update state here.
+    }, []);
+
+    const handleValueChange = useCallback((e) => {
+        setNewTag((prev) => ({ ...prev, value: e.target.value }));
+    }, []);
+
+    const handleFieldKeyDown = useCallback((e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             if (newTag.field.trim()) {
-                const trimmedField = newTag.field.fieldtrim();
-                if (DEFAULT_TAGS[trimmedField]) {
-                    setValueSuggestions(DEFAULT_TAGS[trimmedField]);
-                } else {
-                    setValueSuggestions([]);
-                }
+                // Ensure suggestions are updated via useMemo and then move focus:
                 valueInputRef.current.focus();
             }
         }
-    };
+    }, [newTag.field]);
 
-    /**
-     * Handles key down events for the value input.
-     *
-     * @param {object} e - Event object.
-     */
-    const handleValueKeyDown = (e) => {
+    const handleValueKeyDown = useCallback((e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
             if (newTag.value.trim()) {
@@ -75,50 +77,18 @@ const TagsManager = ({ tags, setTags }) => {
                     ...prevTags,
                     [newTag.field.trim()]: newTag.value.trim(),
                 }));
-                resetAddForm(); 
+                resetAddForm();
             }
         }
-    };
+    }, [newTag, resetAddForm, setTags]);
 
-    /**
-     * Resets the addition form to its initial state.
-     */
-    const resetAddForm = () => {
-        setIsAdding(false);
-        setNewTag({ field: '', value: '' });
-        setValueSuggestions([]);
-    };
-
-    /**
-     * Handles the deletion of a tag.
-     *
-     * @param {string} key - Tag key to delete.
-     */
-    const handleDelete = (key) => {
-        const updatedTags = { ...tags };
-        delete updatedTags[key];
-        setTags(updatedTags);
-    };
-
-    /**
-     * Handles changes in the field input.
-     *
-     * @param {object} e - Event object.
-     */
-    const handleFieldChange = (e) => {
-        const value = e.target.value;
-        setNewTag((prev) => ({ ...prev, field: value }));
-        setValueSuggestions(DEFAULT_TAGS[value.trim()] || []);
-    };
-
-    /**
-     * Handles changes in the value input.
-     *
-     * @param {object} e - Event object.
-     */
-    const handleValueChange = (e) => {
-        setNewTag((prev) => ({ ...prev, value: e.target.value }));
-    };
+    const handleDelete = useCallback((key) => {
+        setTags((prevTags) => {
+            const updatedTags = { ...prevTags };
+            delete updatedTags[key];
+            return updatedTags;
+        });
+    }, [setTags]);
 
     return (
         <div className="tags-manager">
@@ -152,46 +122,53 @@ const TagsManager = ({ tags, setTags }) => {
                     </li>
                 )}
                 {isAdding && (
-                <div className="add-tag-form" role="dialog" aria-modal="true" aria-labelledby="add-tag-title">
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <input
-                            type="text"
-                            list="field-suggestions"
-                            placeholder="Tag"
-                            value={newTag.field}
-                            onChange={handleFieldChange}
-                            onKeyDown={handleFieldKeyDown}
-                            ref={fieldInputRef}
-                            className="input-field"
-                            aria-label="Tag Category"
-                            required
-                        />
-                        <datalist id="field-suggestions">
-                            {fieldSuggestions.map((field) => (
-                                <option key={field} value={field} />
-                            ))}
-                        </datalist>
-                        <input
-                            type="text"
-                            list="value-suggestions"
-                            placeholder="Content"
-                            value={newTag.value}
-                            onChange={handleValueChange}
-                            onKeyDown={handleValueKeyDown}
-                            ref={valueInputRef}
-                            className="input-value"
-                            aria-label="Tag Value"
-                            required
-                        />
-                        <datalist id="value-suggestions">
-                            {valueSuggestions.map((val) => (
-                                <option key={val} value={val} />
-                            ))}
-                        </datalist>
-                        <button onClick={resetAddForm} className="button delete-button" type="button">x</button>
+                    <div
+                        className="add-tag-form"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="add-tag-title"
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <input
+                                type="text"
+                                list="field-suggestions"
+                                placeholder="Tag"
+                                value={newTag.field}
+                                onChange={handleFieldChange}
+                                onKeyDown={handleFieldKeyDown}
+                                ref={fieldInputRef}
+                                className="input-field"
+                                aria-label="Tag Category"
+                                required
+                            />
+                            <datalist id="field-suggestions">
+                                {fieldSuggestions.map((field) => (
+                                    <option key={field} value={field} />
+                                ))}
+                            </datalist>
+                            <input
+                                type="text"
+                                list="value-suggestions"
+                                placeholder="Content"
+                                value={newTag.value}
+                                onChange={handleValueChange}
+                                onKeyDown={handleValueKeyDown}
+                                ref={valueInputRef}
+                                className="input-value"
+                                aria-label="Tag Value"
+                                required
+                            />
+                            <datalist id="value-suggestions">
+                                {valueSuggestions.map((val) => (
+                                    <option key={val} value={val} />
+                                ))}
+                            </datalist>
+                            <button onClick={resetAddForm} className="button delete-button" type="button">
+                                x
+                            </button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
             </ul>
         </div>
     );
