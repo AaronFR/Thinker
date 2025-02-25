@@ -27,7 +27,7 @@ body.dark-mode .category-list {
 /* Category Item */
 .category-item {
   padding: var(--spacing-md) var(--spacing-lg);
-  background-color: var(--color-white);
+  background: var(--background-gradient-light);
   border-radius: var(--border-radius-sm);
   cursor: pointer;
   transition: background-color var(--transition-duration-fast) var(--transition-ease);

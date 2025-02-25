@@ -142,6 +142,11 @@ div.react-tooltip.core-styles-module_tooltip__3vRRp {
   --opacity-muted: 0.75;
   
   /* Background Gradient */
+  --background-gradient-light: linear-gradient(
+    135deg,
+    rgb(232, 232, 232) 0%,
+    rgba(255, 255, 255, 0.162) 100%
+  );
   --background-gradient: linear-gradient(
     135deg,
     rgba(45, 45, 45, 0.9) 0%,

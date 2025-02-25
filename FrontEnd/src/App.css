@@ -8,7 +8,6 @@
   flex-direction: row;
   overflow-y: visible;
   color: var(--color-text);
-  padding: var(--spacing-md);
   margin: 0 auto;
   box-shadow: var(--box-shadow);
   border-radius: var(--border-radius-sm);
