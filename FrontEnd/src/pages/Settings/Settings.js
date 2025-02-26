@@ -36,78 +36,82 @@ const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiCo
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">User Interface</h2>), []);
 
   const maxContent = (
-  <div>
-    {sectionHeading}
-    <label className="settings-label">
-      <input
-        type="checkbox"
-        checked={settings.darkMode}
-        onChange={toggleDarkMode}
-        className="settings-checkbox"
-      />
-      Dark Mode
-    </label>
-    <label 
-      className="settings-label"
-      data-tooltip-id="tooltip"
-      data-tooltip-content={TooltipConstants.categoryColoursisationToggle}
-      data-tooltip-place="bottom"
-    >
-      <input
-        type="checkbox"
-        checked={settings.aiColour}
-        onChange={toggleAiColourisation}
-        className="settings-checkbox"
-      />
-      New Category Colourisation via LLM Prompt
-    </label>
+    <div>
+      {sectionHeading}
+      <label className="settings-label">
+        <input
+          type="checkbox"
+          checked={settings.darkMode}
+          onChange={toggleDarkMode}
+          className="settings-checkbox"
+        />
+        Dark Mode
+      </label>
+      <label 
+        className="settings-label"
+        data-tooltip-id="tooltip"
+        data-tooltip-content={TooltipConstants.categoryColoursisationToggle}
+        data-tooltip-place="bottom"
+      >
+        <input
+          type="checkbox"
+          checked={settings.aiColour}
+          onChange={toggleAiColourisation}
+          className="settings-checkbox"
+        />
+        New Category Colourisation via LLM Prompt
+      </label>
+      <TextSizeSlider />
+    </div>
+  );
 
-    <TextSizeSlider />
-  </div>)
-
-  return (<ExpandableElement
-    minContent={sectionHeading}
-    maxContent={maxContent}
-    initiallyExpanded={false}
-    toggleButtonLabel=""
-  />);
-};
-
+  return (
+    <ExpandableElement
+      minContent={sectionHeading}
+      maxContent={maxContent}
+      initiallyExpanded={false}
+      toggleButtonLabel=""
+    />
+  );
+});
 
 /**
  * Renders settings related to AI model utilisation.
  */
 const AiModelSettings = React.memo(({ settings, handleForegroundModelChange, handleBackgroundModelChange }) => {
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">AI Models</h2>), []);
+  
   const maxContent = (
-  <div>
-    {sectionHeading}
-    <h3>Foreground Model Default</h3>
-    <p>This will specifiy the foreground model to be selected by default, each step in each workflow will run on the selected model</p>
-    <ModelSelector
-      selectedModel={settings?.defaultForegroundModel || ''}
-      setTags={handleForegroundModelChange}
-    />
+    <div>
+      {sectionHeading}
+      <h3>Foreground Model Default</h3>
+      <p>This will specify the foreground model to be selected by default, each step in each workflow will run on the selected model</p>
+      <ModelSelector
+        selectedModel={settings?.defaultForegroundModel || ''}
+        setTags={handleForegroundModelChange}
+      />
+      <h3>Background Model</h3>
+      <p>
+        In the thinker many programs actually run in the background to try and improve the main 'foreground' prompt and the user experience overall, for this
+        purpose you want a functional economical, to the point LLM.
+      </p>
+      <ModelSelector
+        selectedModel={settings?.defaultBackgroundModel || ''}
+        setTags={handleBackgroundModelChange}
+        economicalMode={true}
+      />
+    </div>
+  );
 
-    <h3>Background Model</h3>
-    <p>
-      In the thinker many programs actually run in the background to try and improve the main 'foreground' prompt and the user experience overall, for this 
-      purpose you want a functional econonmical, to the point LLM.
-    </p>
-    <ModelSelector
-      selectedModel={settings?.defaultBackgroundModel || ''}
-      setTags={handleBackgroundModelChange}
-      economicalMode={true}
+  return (
+    <ExpandableElement
+      minContent={sectionHeading}
+      maxContent={maxContent}
+      initiallyExpanded={true}
+      toggleButtonLabel=""
     />
-  </div>)
-
-  return (<ExpandableElement
-    minContent={sectionHeading}
-    maxContent={maxContent}
-    initiallyExpanded={true}
-    toggleButtonLabel=""
-  />);
-}
+  );
+});
 
 /**
  * Renders Functionality related settings.
@@ -119,53 +123,55 @@ const FunctionalitySettings = React.memo(({
   userInfo
 }) => {
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">Functionality</h2>), []);
+  
+  const maxContent = (
+    <div>
+      {sectionHeading}
+      <div className='settings-subsection'>
+        <h3>Auto select persona</h3>
+        <p>Total costs {formatPrice(parseFloat(userInfo?.select_persona_cost))}</p>
+        <h3>Auto select worfklows</h3>
+        <p>Total costs {formatPrice(parseFloat(userInfo?.select_workflow_cost))}</p>
+      </div>
+     
+      <AutoPromptEngineeringSection
+        currentValue={settings.augmentedPromptsEnabled}
+        onChange={changeSetting}
+        promptMessage={settings.promptAugmentationMessage}
+        handleMessageChange={handleMessageChange}
+        cost={userInfo?.augmentation_cost}
+      />
+      <PromptQuestioningSection
+        currentValue={settings.questionUserPromptsEnabled}
+        onChange={changeSetting}
+        promptMessage={settings.promptQuestioningMessage}
+        handleMessageChange={handleMessageChange}
+        cost={userInfo?.questioning_cost}
+      />
+      <InternetSearchSection 
+        currentValue={settings.internetSearchEnabled}
+        onChange={changeSetting}
+        cost={userInfo?.internet_search_cost}
+      />
+      <BestOfSection 
+        currentValue={settings.bestOfEnabled}
+        promptMessage={settings.bestOfMessage}
+        onChange={changeSetting}
+        handleMessageChange={handleMessageChange}
+        cost={userInfo?.best_of_cost}
+      />
+    </div>
+  );
 
-  const maxContent = (<div>
-
-    <h3>Auto select persona</h3>
-    <p>Total costs {formatPrice(parseFloat(userInfo?.select_persona_cost))}</p>
-
-    <h3>Auto select worfklows</h3>
-    <p>Total costs {formatPrice(parseFloat(userInfo?.select_workflow_cost))}</p>
-
-    <AutoPromptEngineeringSection
-      currentValue={settings.augmentedPromptsEnabled}
-      onChange={changeSetting}
-      promptMessage={settings.promptAugmentationMessage}
-      handleMessageChange={handleMessageChange}
-      cost={userInfo?.augmentation_cost}
+  return (
+    <ExpandableElement
+      minContent={sectionHeading}
+      maxContent={maxContent}
+      initiallyExpanded={false}
+      toggleButtonLabel=""
     />
-
-    <PromptQuestioningSection
-      currentValue={settings.questionUserPromptsEnabled}
-      onChange={changeSetting}
-      promptMessage={settings.promptQuestioningMessage}
-      handleMessageChange={handleMessageChange}
-      cost={userInfo?.questioning_cost}
-    />
-
-    <InternetSearchSection 
-      currentValue={settings.internetSearchEnabled}
-      onChange={changeSetting}
-      cost={userInfo?.internet_search_cost}
-    />
-
-    <BestOfSection 
-      currentValue={settings.bestOfEnabled}
-      promptMessage={settings.bestOfMessage}
-      onChange={changeSetting}
-      handleMessageChange={handleMessageChange}
-      cost={userInfo?.best_of_cost}
-    />
-  </div>)
-
-  return (<ExpandableElement
-    minContent={sectionHeading}
-    maxContent={maxContent}
-    initiallyExpanded={false}
-    toggleButtonLabel=""
-  />);
-}
+  );
+});
 
 /**
  * Renders Workflows related settings.
@@ -177,33 +183,36 @@ const WorkflowsSettings = React.memo(({
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">Workflows</h2>), []);
   
   const maxContent = (
-  <div>
-    {sectionHeading}
+    <div>
+      {sectionHeading}
+      <div className='settings-subsection'>
+        <label className="settings-label">
+          <input
+            type="checkbox"
+            className="settings-checkbox"
+            checked={settings.writePagesInParallel}
+            onChange={toggleWritePagesInParallel}
+          />
+          Write Pages in Parallel
+        </label>
+        
+        <p>Write each page at once rather than in sequence - faster but means pages can't refer to prior content</p>
+      </div>
+      
+    </div>
+  );
 
-    <p>Write each page at once rather than in sequence - faster but means pages can't refer to prior content</p>
-    <label className="settings-label">
-      <input
-        type="checkbox"
-        className="settings-checkbox"
-        checked={settings.writePagesInParallel}
-        onChange={toggleWritePagesInParallel}  // ToDo: This approach might be a lot more efficient
-      />
-      Write Pages in Parallel
-    </label>
-  </div>)
-
-  return (<ExpandableElement
-    minContent={sectionHeading}
-    maxContent={maxContent}
-    initiallyExpanded={false}
-    toggleButtonLabel=""
-  />);
-}
-
+  return (
+    <ExpandableElement
+      minContent={sectionHeading}
+      maxContent={maxContent}
+      initiallyExpanded={false}
+      toggleButtonLabel=""
+    />
+  );
+});
 
 /**
- * SummariesSettings Component
- *
  * Renders Summaries related settings.
  */
 const SummariesSettings = React.memo(({
@@ -214,143 +223,144 @@ const SummariesSettings = React.memo(({
   summarise_workflows_cost,
   summarise_files_cost,
 }) => {
-
-  const maxContent = (
-  <div>
-    {sectionHeading}
-    <label className="settings-label">
-      <input
-        type="checkbox"
-        className="settings-checkbox"
-        id="summarise-checkbox"
-        checked={settings.summarisationEnabled}
-        onChange={toggleSummarisation}
-      />
-      Enables summaries on compatible workflows
-    </label>
-    <h4>Total cost: {formatPrice(parseFloat(summarise_workflows_cost))}</h4>
-    <div
-      data-tooltip-id="tooltip"
-      data-tooltip-content={TooltipConstants.summarisationSystemMessage}
-      data-tooltip-place="bottom"
-    >
-      <AutoExpandingTextarea
-        value={settings.summarisationMessage}
-        className="textarea"
-        onChange={(e) =>
-          handleMessageChange('summarisationMessage', e.target.value)
-        }
-        style={{ opacity: 0.9 }}
-      />
-    </div>
-
-    <label className="settings-label">
-      <input
-        type="checkbox"
-        className="settings-checkbox"
-        id="summarise-checkbox"
-        checked={settings.fileSummarisationEnabled}
-        onChange={toggleFileSummarisation}
-      />
-      Add a summary to new files after they've been created
-    </label>
-    <h4>Total cost: {formatPrice(parseFloat(summarise_files_cost))}</h4>
-    <div
-      data-tooltip-id="tooltip"
-      data-tooltip-content={TooltipConstants.summarisationSystemMessage}
-      data-tooltip-place="bottom"
-    >
-      <AutoExpandingTextarea
-        value={settings.fileSummarisationMessage}
-        className="textarea"
-        onChange={(e) =>
-          handleMessageChange('fileSummarisationMessage', e.target.value)
-        }
-        style={{ opacity: 0.9 }}
-      />
-    </div>
-  </div>)
-
-  return (<ExpandableElement
-    minContent={sectionHeading}
-    maxContent={maxContent}
-    initiallyExpanded={false}
-    toggleButtonLabel=""
-  />);
-}
-
-/**
- * SystemMessagesSettings Component
- *
- * Renders System Messages related settings without using the MessageSettings component.
- */
-const SystemMessagesSettings = ({ settings, handleMessageChange }) => {
-  const sectionHeading = (<h2 className="settings-heading">System Messages</h2>);
-
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">Summaries</h2>), []);
   
   const maxContent = (
-  <div>
-    {sectionHeading}
-    
-    <div className="message-settings">
-      {/* Coder Persona Message */}
-      <label className="message-label">
-        Coder Persona Message
-        <AutoExpandingTextarea
-          value={settings.coderPersonaMessage}
-          className="textarea"
-          onChange={(e) =>
-            handleMessageChange('coderPersonaMessage', e.target.value)
-          }
-          style={{ opacity: 0.9 }}
-        />
-      </label>
+    <div>
+      {sectionHeading}
 
-      {/* Writer Persona Message */}
-      <label className="message-label">
-        Writer Persona Message
-        <AutoExpandingTextarea
-          value={settings.writerPersonaMessage}
-          className="textarea"
-          onChange={(e) =>
-            handleMessageChange('writerPersonaMessage', e.target.value)
-          }
-          style={{ opacity: 0.9 }}
-        />
-      </label>
-
-      {/* Categorisation Message */}
-      <label className="message-label">
-        Categorisation Message
+      <div className='settings-subsection'>
+        <label className="settings-label">
+          <input
+            type="checkbox"
+            className="settings-checkbox"
+            id="summarise-checkbox"
+            checked={settings.summarisationEnabled}
+            onChange={toggleSummarisation}
+          />
+          Enables summaries on compatible workflows
+        </label>
+        <h4>Total cost: {formatPrice(parseFloat(summarise_workflows_cost))}</h4>
         <div
           data-tooltip-id="tooltip"
-          data-tooltip-content={TooltipConstants.categorisationSystemMessage}
+          data-tooltip-content={TooltipConstants.summarisationSystemMessage}
           data-tooltip-place="bottom"
         >
           <AutoExpandingTextarea
-            value={settings.categorisationMessage}
+            value={settings.summarisationMessage}
             className="textarea"
             onChange={(e) =>
-              handleMessageChange('categorisationMessage', e.target.value)
+              handleMessageChange('summarisationMessage', e.target.value)
             }
             style={{ opacity: 0.9 }}
           />
         </div>
-        
-      </label>
+      </div>
+      
+      <div className='settings-subsection'>
+        <label className="settings-label">
+        <input
+          type="checkbox"
+          className="settings-checkbox"
+          id="summarise-checkbox"
+          checked={settings.fileSummarisationEnabled}
+          onChange={toggleFileSummarisation}
+        />
+        Add a summary to new files after they've been created
+
+        </label>
+        <h4>Total cost: {formatPrice(parseFloat(summarise_files_cost))}</h4>
+        <div
+          data-tooltip-id="tooltip"
+          data-tooltip-content={TooltipConstants.summarisationSystemMessage}
+          data-tooltip-place="bottom"
+        >
+          <AutoExpandingTextarea
+            value={settings.fileSummarisationMessage}
+            className="textarea"
+            onChange={(e) =>
+              handleMessageChange('fileSummarisationMessage', e.target.value)
+            }
+            style={{ opacity: 0.9 }}
+          />
+        </div>
+      </div>
     </div>
-  </div>)
+      
+  );
 
+  return (
+    <ExpandableElement
+      minContent={sectionHeading}
+      maxContent={maxContent}
+      initiallyExpanded={false}
+      toggleButtonLabel=""
+    />
+  );
+});
 
-  return (<ExpandableElement
-    minContent={sectionHeading}
-    maxContent={maxContent}
-    initiallyExpanded={false}
-    toggleButtonLabel=""
-  />);
-}
+/**
+ * Renders System Messages related settings without using the MessageSettings component.
+ */
+const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) => {
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">System Messages</h2>), []);
+
+  const maxContent = (
+    <div>
+      {sectionHeading}
+      <div className="message-settings">
+        <label className="message-label">
+          Coder Persona Message
+          <AutoExpandingTextarea
+            value={settings.coderPersonaMessage}
+            className="textarea"
+            onChange={(e) =>
+              handleMessageChange('coderPersonaMessage', e.target.value)
+            }
+            style={{ opacity: 0.9 }}
+          />
+        </label>
+        <label className="message-label">
+          Writer Persona Message
+          <AutoExpandingTextarea
+            value={settings.writerPersonaMessage}
+            className="textarea"
+            onChange={(e) =>
+              handleMessageChange('writerPersonaMessage', e.target.value)
+            }
+            style={{ opacity: 0.9 }}
+          />
+        </label>
+        <label className="message-label">
+          Categorisation Message
+          <div
+            data-tooltip-id="tooltip"
+            data-tooltip-content={TooltipConstants.categorisationSystemMessage}
+            data-tooltip-place="bottom"
+          >
+            <AutoExpandingTextarea
+              value={settings.categorisationMessage}
+              className="textarea"
+              onChange={(e) =>
+                handleMessageChange('categorisationMessage', e.target.value)
+              }
+              style={{ opacity: 0.9 }}
+            />
+          </div>
+        </label>
+      </div>
+    </div>
+  );
+
+  return (
+    <ExpandableElement
+      minContent={sectionHeading}
+      maxContent={maxContent}
+      initiallyExpanded={false}
+      toggleButtonLabel=""
+    />
+  );
+});
 
 /**
  * Renders Beta Features related settings.
@@ -365,60 +375,57 @@ const BetaFeaturesSettings = React.memo(({
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">🚧 Beta Features</h2>), []);
 
   const maxContent = (
-  <div>
-    <h2 className="settings-heading">🚧 Beta Features</h2>
-    <label className="settings-label" style={{ paddingBottom: '30px' }}>
-      <input
-        type="checkbox"
-        className="settings-checkbox"
-        id="debug-checkbox"
-        checked={settings.debug}
-        onChange={toggleDebug}
-      />
-      Enable debug view (Directly view prompt tags)
-    </label>
+    <div>
+      <h2 className="settings-heading">🚧 Beta Features</h2>
+      <label className="settings-label" style={{ paddingBottom: '30px' }}>
+        <input
+          type="checkbox"
+          className="settings-checkbox"
+          id="debug-checkbox"
+          checked={settings.debug}
+          onChange={toggleDebug}
+        />
+        Enable debug view (Directly view prompt tags)
+      </label>
+      <label className="settings-label">
+        <input
+          type="checkbox"
+          checked={settings.userEncyclopediaEnabled}
+          onChange={toggleUserEncyclopedia}
+          className="settings-checkbox"
+        />
+        User knowledge - The thinker will remember details about the user and their preferences
+      </label>
+      <label className="settings-label">
+        <input
+          type="checkbox"
+          checked={settings.encyclopediaEnabled}
+          onChange={toggleEncyclopedia}
+          className="settings-checkbox"
+        />
+        Reference knowledge - The thinker will look up details online (Wikipedia currently) and use them in reference to your prompt where appropriate
+      </label>
+      <label className="settings-label">
+        <input
+          type="checkbox"
+          checked={settings.multiFileProcessingEnabled}
+          onChange={toggleMultiFileProcessing}
+          className="settings-checkbox"
+        />
+        Multi file processing - personas can operate on multiple files at once (unstable)
+      </label>
+    </div>
+  );
 
-    <label className="settings-label">
-      <input
-        type="checkbox"
-        checked={settings.userEncyclopediaEnabled}
-        onChange={toggleUserEncyclopedia}
-        className="settings-checkbox"
-      />
-      User knowledge - The thinker will remember details about the user and their preferences
-    </label>
-
-    <label className="settings-label">
-      <input
-        type="checkbox"
-        checked={settings.encyclopediaEnabled}
-        onChange={toggleEncyclopedia}
-        className="settings-checkbox"
-      />
-      Reference knowledge - The thinker will look up details online (Wikipedia currently) and use
-      them in reference to your prompt where appropriate
-    </label>
-
-    <label className="settings-label">
-      <input
-        type="checkbox"
-        checked={settings.multiFileProcessingEnabled}
-        onChange={toggleMultiFileProcessing}
-        className="settings-checkbox"
-      />
-      Multi file processing - personas can operate on multiple files at once (unstable)
-    </label>
-  </div>)
-
-  return (<ExpandableElement
-    minContent={sectionHeading}
-    maxContent={maxContent}
-    initiallyExpanded={false}
-    toggleButtonLabel=""
-  />);
-}
-
-/* Individual settings blocks */
+  return (
+    <ExpandableElement
+      minContent={sectionHeading}
+      maxContent={maxContent}
+      initiallyExpanded={false}
+      toggleButtonLabel=""
+    />
+  );
+});
 
 /**
  * PromptQuestioningSection Component
@@ -432,7 +439,7 @@ const PromptQuestioningSection = React.memo(({
   handleMessageChange,
   cost,
 }) => (
-  <div>
+  <div className='settings-subsection'>
     <h3>Prompt Questioning</h3>
     <h4>Total cost: {formatPrice(parseFloat(cost))}</h4>
     <label className="settings-label">
@@ -461,13 +468,13 @@ const PromptQuestioningSection = React.memo(({
       data-tooltip-place="bottom"
     >
       <AutoExpandingTextarea
-      value={promptMessage}
-      className="textarea"
-      onChange={(e) =>
-        handleMessageChange('promptQuestioningMessage', e.target.value)
-      }
-      style={{ opacity: 0.9 }}
-    />
+        value={promptMessage}
+        className="textarea"
+        onChange={(e) =>
+          handleMessageChange('promptQuestioningMessage', e.target.value)
+        }
+        style={{ opacity: 0.9 }}
+      />
     </div>
   </div>
 ));
@@ -482,7 +489,7 @@ const AutoPromptEngineeringSection = React.memo(({
   handleMessageChange,
   cost
 }) => (
-  <div>
+  <div className='settings-subsection'>
     <h3>Prompt Improvement</h3>
     <h4>Total cost: {formatPrice(parseFloat(cost))}</h4>
     <label className="settings-label">
@@ -520,7 +527,6 @@ const AutoPromptEngineeringSection = React.memo(({
       />
     </div>
     <small>And the shills told you it would be a career skill...</small>
-    
   </div>
 ));
 
@@ -534,7 +540,7 @@ const BestOfSection = React.memo(({
   handleMessageChange,
   cost
 }) => (
-  <div>
+  <div className='settings-subsection'>
     <h3>Best of multiple runs</h3>
     <h4>Total cost: {formatPrice(parseFloat(cost))}</h4>
     <label className="settings-label">
@@ -552,9 +558,8 @@ const BestOfSection = React.memo(({
         <option value={FUNCTIONALITY_STATES.OFF}>Off</option>
         <option value={FUNCTIONALITY_STATES.ON}>On</option>
       </select>
-      For a given step runs multiple prompts in parrallel, running an additional call to select for the best response.
+      For a given step runs multiple prompts in parallel, running an additional call to select for the best response.
     </label>
-
     <p>👍 Improving response coherency or any other selected metric</p>
     <p>👍 Helping inexpensive models compete against more expensive ones</p>
     <p>👎 Keeping costs low while running expensive models.</p>
@@ -585,7 +590,7 @@ const InternetSearchSection = React.memo(({
   onChange,
   cost
 }) => (
-  <div>
+  <div className='settings-subsection'>
     <h3>Internet Search</h3>
     <h4
       data-tooltip-id="tooltip"
@@ -611,9 +616,8 @@ const InternetSearchSection = React.memo(({
       </select>
       If enabled each step will search the internet, if applicable, for additional context
     </label>
-
     <p>👍 Additional context can improve the response, access information the AI doesn't know and mitigate hallucinations</p>
-    <p>👎 Increases costs and time per request (though input is cheaper than output)</p> 
+    <p>👎 Increases costs and time per request (though input is cheaper than output)</p>
   </div>
 ));
 
