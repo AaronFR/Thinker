@@ -6,6 +6,7 @@ import he from 'he';
 
 import TooltipConstants from '../constants/tooltips';
 
+import './styles/textUtils.css';
 /**
  * Strips the folder path from a given file path and returns the basename with extension.
  *
@@ -139,7 +140,7 @@ const CodeBlock = ({ lang, code, index }) => {
       <pre>
         <code
           ref={codeRef} 
-          className={`scrollable ${lang ? `language-${lang}` : ''}`}
+          className={`scrollable codeblock ${lang ? `language-${lang}` : ''}`}
           dangerouslySetInnerHTML={{ __html: escapedCode }}
         />
       </pre>

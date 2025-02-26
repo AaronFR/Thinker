@@ -1,6 +1,7 @@
 /* General container for the entire app */
 .app-container {
   font-family: var(--font-family-base);
+  line-height: 1.5;
   text-align: center;
   font-size: var(--font-size-base);
   display: flex;

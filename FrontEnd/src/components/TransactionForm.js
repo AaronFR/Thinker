@@ -114,7 +114,7 @@ const TransactionForm = ({ onSuccess }) => {
             <button
                 type="submit"
                 disabled={isLoading}
-                className={`submit-button ${isLoading ? 'button-loading' : ''}`}
+                className={`pay-button ${isLoading ? 'button-loading' : ''}`}
                 aria-busy={isLoading}
             >
                 {isLoading ? 'Processing...' : 'Pay'}

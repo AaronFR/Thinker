@@ -51,19 +51,18 @@
   background-color: #d4edda;
 }
 
-.submit-button {
-  background-color: #28a745;
+.pay-button {
   border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.75s;
 }
 
-.submit-button:hover:not(:disabled) {
-  background-color: #218838;
+.pay-button:hover:not(:disabled) {
+  background-color: #d3d3d3;
 }
 
-.submit-button:disabled {
+.pay-button:disabled {
   background-color: #6c757d;
   cursor: not-allowed;
 }
@@ -78,7 +77,7 @@
       padding: 15px;
   }
 
-  .submit-button {
+  .pay-button {
       font-size: 0.9rem;
   }
 }

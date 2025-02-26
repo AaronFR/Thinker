@@ -5,7 +5,7 @@
   margin: 2px;
   padding: var(--spacing-md) var(--spacing-md);
   margin-left: var(--spacing-md);
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-xxl);
   color: var(--color-white);
   background: linear-gradient(
     45deg, 

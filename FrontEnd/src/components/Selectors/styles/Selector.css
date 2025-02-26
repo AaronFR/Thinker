@@ -1,61 +1,73 @@
-.dropdown {
-  padding: var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
-  border: 2px solid var(--color-input-bg-dark);
-  outline: none;
+
+/* Base Control Styles */
+.select-base {
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-input-bg-dark);
   background-color: var(--color-input-bg);
   color: var(--color-input-text);
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  min-height: 2rem; /* modern, leaner feel */
+}
+.select-base:hover,
+.select-base:focus,
+.select-base:focus-within {
+  border-color: var(--color-border-active);
+  box-shadow: 0 0 0 2px rgba(var(--color-border-active-rgb), 0.2);
+  outline: none;
+}
+
+.dropdown,
+.react-select__control {
+  border-radius: var(--border-radius-lg-md);
+  border: 1px solid var(--color-input-bg-dark);
+  background-color: var(--color-input-bg);
+  color: var(--color-input-text);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  min-height: 2rem;
+  outline: none;
 }
 .dropdown:hover,
-.dropdown:focus {
-  border-color: var(--color-border-active); /* Similar focus effect to input */
-}
-body.dark-mode .dropdown {
-  background-color: var(--color-input-bg-dark);
-  color: var(--color-input-text-dark);
-  transition: background-color var(--transition-normal), color var(--transition-normal);
-}
-
-/* React Select Styles */
-.react-select__control {
-  padding: var(--spacing-sm);
-  border-radius: var(--border-radius-sm);
-  border: 2px solid var(--color-input-bg-dark);
-  background-color: var(--color-input-bg);
-  color: var(--color-input-text);
-  transition: border-color var(--transition-fast);
-  min-height: 30px; /* Ensures consistent height */
-}
-
+.dropdown:focus,
 .react-select__control:hover,
-.react-select__control:focus {
-  border-color: var(--color-border-active); /* Similar focus effect to input */
+.react-select__control:focus,
+.react-select__control--is-focused {
+  border-color: var(--color-border-active);
+  box-shadow: 0 0 0 2px rgba(var(--color-border-active-rgb), 0.2);
+}
+.body.dark-mode .dropdown,
+.body.dark-mode .react-select__control {
+  border: 1px solid var(--color-input-border-dark);
+  background-color: var(--color-input-bg-dark);
+  color: black;
+  transition: background-color var(--transition-normal),
+              color var(--transition-normal),
+              border-color var(--transition-fast),
+              box-shadow var(--transition-fast);
 }
 
-.body.dark-mode .react-select__control {
-  border: 2px solid var(--color-input-bg-dark);
+.body.dark-mode .react-select__menu {
   background-color: var(--color-input-bg-dark);
-  color: var(--color-input-text);
-  transition: border-color var(--transition-fast);
+  color: black;
 }
+
+/* React Select Inner Elements */
 
 .react-select__option {
   color: var(--color-input-text);
+  font-size: 0.75rem; /* refine option font size */
+}
+.body.dark-mode .react-select__option {
+    color: black;
 }
 
 .react-select__single-value {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
-.react-select__dropdown-indicator {
-  padding: 4px;
-  font-size: 12px;
-}
-
+.react-select__dropdown-indicator,
 .react-select__clear-indicator {
-  padding: 4px;
-  font-size: 12px;
+  padding: 0.25rem;
+  font-size: 0.75rem;
 }
 
 .react-select__indicator-separator {
@@ -63,7 +75,7 @@ body.dark-mode .dropdown {
 }
 
 .react-select__indicators {
-  height: 30px;
+  height: 2rem;
 }
 
 
@@ -71,22 +83,13 @@ body.dark-mode .dropdown {
   z-index: 9999; /* Ensure the dropdown appears on top */
   font-size: 12px;
 }
-.react-select__multi-value {
-  border-radius: 0px; /* Use CSS variable for multi-value border radius if needed */
-  padding: 0rem;
-}
-
-.option-logo {
-  width: 20px;
-  margin-right: 10px;
-}
-
-.react-select__control--is-focused {
-  border-color: var(--color-border-active);
-}
-
 .body.dark-mode .react-select__menu {
   background-color: var(--color-input-bg-dark);
   color: var(--color-input-text-dark);
 }
+.react-select__multi-value {
+  padding: 0;
+}
+
+
 

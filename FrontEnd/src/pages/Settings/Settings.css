@@ -17,46 +17,59 @@ body.dark-mode {
   background: var(--color-settings-bg);
   box-shadow: var(--box-shadow-settings);
   border-radius: var(--border-radius-lg-md);
-  font-family: var(--font-family-base);
 }
 
 /* Headings */
 .settings-heading {
   font-size: var(--font-size-xxl);
   font-weight: bold;
-  margin-bottom: var(--spacing-xl);
-  text-shadow: var(--text-shadow-settings); /* Subtle glowing effect */
+  margin: var(--spacing-xl) 0 var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--color-border-subtle);
+  text-shadow: var(--text-shadow-settings);
 }
 
 .settings-label {
   font-size: var(--font-size-lg-md);
-  margin-bottom: var(--spacing-xl);
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  padding-top: 10px
+}
+
+.settings-subsection {
+  padding: 0 20px 15px 15px;
+  margin: 15px 0 15px 15px;
+  border: 1px solid var(--color-border-secondary);
+  background-color: rgba(255, 255, 255, 0.114);
+  border-radius: 15px
 }
 
 .settings-checkbox {
   transform: scale(1.5);
-  accent-color: var(--color-border-active); /* Customized color for the checkbox */
+  accent-color: var(--color-border-active);
 }
 
+/* Active link feedback */
 .link:active {
   transform: translateY(0);
   background-color: var(--color-link-active-bg);
 }
 
+/* Navigation styling with clear separation */
 nav {
-  margin-bottom: var(--spacing-xxl-lg);
+  margin: var(--spacing-xxl);
   border-bottom: 1px solid var(--color-border-nav);
   padding-bottom: var(--spacing-lg);
 }
 
-/* Smooth Scrolling for Navigation Links */
+/* Smooth Scrolling */
 html {
   scroll-behavior: smooth;
 }
 
+/* Message settings textarea - enhanced spacing and focus styles */
 .message-settings textarea {
   width: 100%;
   min-height: 20px;
@@ -65,9 +78,12 @@ html {
   border-radius: var(--border-radius-sm);
   background-color: var(--color-body-bg-dark);
   resize: vertical;
-  overflow-y:auto
+  overflow-y: auto;
+  font-family: var(--font-family-base);
+  line-height: 1.4;
 }
-
 .message-settings textarea:focus {
-  border-color: var(--color-border-focus); /* Changing border color on focus */
+  border-color: var(--color-border-focus);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-border-focus-transparent);
 }

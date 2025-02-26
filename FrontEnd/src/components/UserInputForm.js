@@ -198,101 +198,104 @@ const UserInputForm = ({
           aria-label="User prompt input"
         />
 
-        <div className='palette'>
-          <FileUploadButton onUploadSuccess={handleUploadSuccess} />
-          {settings.augmentedPromptsEnabled !== 'off' && (
-            <button
-              type="button"
-              className="button submit-button"
-              onClick={() => generateAugmentedPrompt(userInput)}
-              disabled={isProcessing}
-              aria-busy={isProcessing}
-              data-tooltip-id="tooltip"
-              data-tooltip-html={TooltipConstants.augmentButton}
-              data-tooltip-place="bottom"
-            >
-              Improve prompt
-            </button>
-          )}
-          {settings.questionUserPromptsEnabled !== 'off' && (
-            <button
-              type="button"
-              className="button submit-button"
-              onClick={() => generateQuestionsForPrompt(userInput, selectedMessages, selectedFiles)}
-              disabled={isProcessing}
-              aria-busy={isProcessing}
-              data-tooltip-id="tooltip"
-              data-tooltip-html={TooltipConstants.questionButton}
-              data-tooltip-place="bottom"
-            >
-              Question
-            </button>
-          )}
-          {isProcessing ? (
-            <button
-              type="button"
-              className="button submit-button"
-              onClick={disconnectFromRequest}
-              aria-busy={isProcessing}
-              data-tooltip-id="tooltip"
-              data-tooltip-html={TooltipConstants.submitButton_whileProcessing}
-              data-tooltip-place="bottom"
-            >
-              New
-            </button>
-          ) : (
-            <button
-              type="submit"
-              className="button submit-button"
-              disabled={isProcessing}
-              data-tooltip-id="tooltip"
-              data-tooltip-html={TooltipConstants.submitButton}
-              data-tooltip-place="bottom"
-            >
-              Enter
-            </button>
-          )}
-        </div>
+        <div className='palette-container'>
+          <div className='palette'>
+            <FileUploadButton onUploadSuccess={handleUploadSuccess} />
+            {settings.augmentedPromptsEnabled !== 'off' && (
+              <button
+                type="button"
+                className="button submit-button"
+                onClick={() => generateAugmentedPrompt(userInput)}
+                disabled={isProcessing}
+                aria-busy={isProcessing}
+                data-tooltip-id="tooltip"
+                data-tooltip-html={TooltipConstants.augmentButton}
+                data-tooltip-place="bottom"
+              >
+                Improve prompt
+              </button>
+            )}
+            {settings.questionUserPromptsEnabled !== 'off' && (
+              <button
+                type="button"
+                className="button submit-button"
+                onClick={() => generateQuestionsForPrompt(userInput, selectedMessages, selectedFiles)}
+                disabled={isProcessing}
+                aria-busy={isProcessing}
+                data-tooltip-id="tooltip"
+                data-tooltip-html={TooltipConstants.questionButton}
+                data-tooltip-place="bottom"
+              >
+                Question
+              </button>
+            )}
+            {isProcessing ? (
+              <button
+                type="button"
+                className="button submit-button"
+                onClick={disconnectFromRequest}
+                aria-busy={isProcessing}
+                data-tooltip-id="tooltip"
+                data-tooltip-html={TooltipConstants.submitButton_whileProcessing}
+                data-tooltip-place="bottom"
+              >
+                New
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="button submit-button"
+                disabled={isProcessing}
+                data-tooltip-id="tooltip"
+                data-tooltip-html={TooltipConstants.submitButton}
+                data-tooltip-place="bottom"
+              >
+                Enter
+              </button>
+            )}
+          </div>
 
-        <div className='palette'>
-          <PersonaSelector 
-            selectedPersona={selectedPersona} 
-            setSelectedPersona={setSelectedPersona}
-          />
-          <WorkflowSelector
-            selectedWorkflow={tags.workflow}
-            setTags={setTags}
-          />
-          {tags.workflow === 'loop' && (
-            <LoopsSelector
-              selectedNumberOfLoops={tags.loops}
+          <div className='palette'>
+            <PersonaSelector 
+              selectedPersona={selectedPersona} 
+              setSelectedPersona={setSelectedPersona}
+            />
+            <WorkflowSelector
+              selectedWorkflow={tags.workflow}
               setTags={setTags}
             />
-          )}
-          {tags.workflow === 'write' && (
-            <WriteSelector
-              write={tags.write}
+            {tags.workflow === 'loop' && (
+              <LoopsSelector
+                selectedNumberOfLoops={tags.loops}
+                setTags={setTags}
+              />
+            )}
+            {tags.workflow === 'write' && (
+              <WriteSelector
+                write={tags.write}
+                setTags={setTags}
+              />
+            )}
+            {selectedPersona === 'writer' && tags.workflow === 'write' && (
+              <PagesSelector
+                pages={tags.pages}
+                setTags={setTags}
+              />
+            )}
+            <ModelSelector
+              selectedModel={tags.model}
               setTags={setTags}
+              forTags={true}
             />
-          )}
-          {selectedPersona === 'writer' && tags.workflow === 'write' && (
-            <PagesSelector
-              pages={tags.pages}
-              setTags={setTags}
-            />
-          )}
-          <ModelSelector
-            selectedModel={tags.model}
-            setTags={setTags}
-            forTags={true}
-          />
-          {settings.bestOfEnabled !== 'off' && (
-            <BestOfSelector
-              bestOf={tags.bestOf}
-              setTags={setTags}
-            />
-          )}
+            {settings.bestOfEnabled !== 'off' && (
+              <BestOfSelector
+                bestOf={tags.bestOf}
+                setTags={setTags}
+              />
+            )}
+          </div>
         </div>
+        
 
         {settings.debug === true && (
           <TagsManager tags={tags} setTags={setTags} />

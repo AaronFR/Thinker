@@ -1,5 +1,3 @@
-/* Workflow.css - Enhanced and Integrated with index.css Standards */
-
 /* Workflow Container */
 .workflow {
   font-family: var(--font-family-base);
@@ -7,11 +5,13 @@
   padding: var(--spacing-md);
   border-radius: var(--border-radius-md);
   box-shadow: var(--box-shadow);
-  transition: box-shadow var(--transition-duration-fast) ease-in-out, 
-              background-color var(--transition-duration-fast) ease-in-out;
-  background: var(--color-background);
+  /* Expand transition to include border-color for smooth state changes */
+  transition: box-shadow var(--transition-duration-fast) ease-in-out,
+              background-color var(--transition-duration-fast) ease-in-out,
+              border-color var(--transition-duration-fast) ease-in-out;
+  background: rgba(255, 255, 255, 0.9);
 }
-body.dark-mode .workflow{
+body.dark-mode .workflow {
   background: rgba(40, 40, 46, 0.9);
 }
 
@@ -52,10 +52,13 @@ body.dark-mode .workflow{
   margin-bottom: var(--spacing-sm);
   border-radius: var(--border-radius-sm);
   border: 1px solid var(--color-border-secondary);
-  transition: background-color var(--transition-duration-fast) ease, box-shadow var(--transition-duration-fast) ease;
-  background-color: var(--color-white);
+  /* Expand transition so that border changes smoothly as well */
+  transition: background-color var(--transition-duration-fast) ease,
+              box-shadow var(--transition-duration-fast) ease,
+              border-color var(--transition-duration-fast) ease;
+  background-color: rgba(255, 255, 255, 0.95);
 }
-body.dark-mode .step{
+body.dark-mode .step {
   background: var(--color-background-dark);
 }
 
@@ -100,9 +103,8 @@ body.dark-mode .step{
   text-align: right;
   font-size: var(--font-size-small);
 }
-
 .status.pending {
-  color: var(--color-status-pending)
+  color: var(--color-status-pending);
 }
 .status.in-progress {
   color: var(--color-status-in-progress);
@@ -117,6 +119,7 @@ body.dark-mode .step{
 /* Sites */
 .site-container {
   text-align: left;
+  margin-right: var(--spacing-md);
 }
 
 .site-link {
@@ -140,7 +143,7 @@ body.dark-mode .step{
   padding-bottom: var(--spacing-xs);
   margin-bottom: var(--spacing-sm);
 }
-body.dark-mode .workflow-details{
+body.dark-mode .workflow-details {
   border-bottom: 1px solid var(--color-border-secondary);
 }
 
@@ -161,6 +164,7 @@ body.dark-mode .workflow-details{
   align-items: center;
   padding: var(--spacing-xs);
   border-bottom: 1px solid var(--color-border-secondary);
+  gap: var(--spacing-md);
 }
 
 .step-index {
@@ -186,11 +190,9 @@ body.dark-mode .workflow-details{
   margin-bottom: var(--spacing-sm);
   font-size: var(--font-size-small-lg);
 }
-body.dark-mode .parameters{
+body.dark-mode .parameters {
   color: var(--color-text-muted);
 } 
-
-
 
 /* Additional Animations */
 @keyframes fadeIn {
