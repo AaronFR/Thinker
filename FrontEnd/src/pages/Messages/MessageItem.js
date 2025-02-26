@@ -23,14 +23,14 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
     /**
      * Toggles the expansion state of the message item.
      */
-    const toggleExpansion = () => {
+    const toggleExpansion = useCallback(() => {
         setIsExpanded(prev => !prev);
-    };
+    }, []);
 
     /**
      * Handles the deletion of the message by making an API call.
      */
-    const handleDelete = async (e) => {
+    const handleDelete = useCallback(async (e) => {
         e.stopPropagation(); // Prevent triggering the toggleExpansion
         
         if (isDeleting) return; // Prevent multiple deletions
@@ -55,7 +55,7 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
         } finally {
             setIsDeleting(false);
         }
-    };
+    }, [isDeleting, msg.id, onDelete]);
 
     /**
      * Handles the selection of the message.
@@ -63,6 +63,12 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
     const handleSelect = useCallback(() => {
         onSelect(msg);
     }, [msg, onSelect]);
+
+    const handleKeyPressExpansion = useCallback((e) => {
+        if (e.key === 'Enter') {
+            toggleExpansion();
+        }
+    }, [toggleExpansion]);
 
     return (
         <div
@@ -72,9 +78,7 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
             role="button"
             aria-pressed={isExpanded}
             tabIndex={0}
-            onKeyPress={(e) => {
-                if (e.key === 'Enter') toggleExpansion();
-            }}
+            onKeyPress={handleKeyPressExpansion}
         >
             <div 
                 className="message-header" 
@@ -88,7 +92,7 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
                 aria-expanded={isExpanded}
                 aria-controls={`message-content-${msg.id}`}
                 tabIndex={0}
-                onKeyPress={(e) => { if (e.key === 'Enter') toggleExpansion(); }}
+                onKeyPress={handleKeyPressExpansion}
             >
                 <div className="markdown-output">
                     <CodeHighlighter>

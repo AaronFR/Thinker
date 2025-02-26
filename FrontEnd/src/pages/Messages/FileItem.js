@@ -5,9 +5,7 @@ import { shortenText, getBasename, CodeHighlighter } from '../../utils/textUtils
 import { apiFetch } from '../../utils/authUtils';
 import { fileAddressEndpoint, fileIdEndpoint } from '../../constants/endpoints';
 
-/**
- * FileItem Component
- * 
+/** 
  * Displays an individual file with options to expand/collapse, select, and delete.
  *
  * @param file: The file object containing id, name, summary, content, category_id, and time. * 
@@ -21,24 +19,18 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (isExpanded && !content) {
-      fetchContent();
-    }
-  }, [isExpanded]);
-
-  /**
-   * Fetches file content and handles errors.
-   * Sets the content state or handles errors accordingly.
-   */
-  const fetchContent = async () => {
+  const fetchContent = useCallback(async (signal) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(fileAddressEndpoint(file.category_id, getBasename(file.name)), {
-        method: 'GET',
-        credentials: "include"
-      });
+      const response = await fetch(
+        fileAddressEndpoint(file.category_id, getBasename(file.name)),
+        {
+          method: 'GET',
+          credentials: 'include',
+          signal,
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch file content.");
@@ -47,70 +39,68 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
       const data = await response.json();
       setContent(data.content);
     } catch (err) {
+      if (err.name === 'AbortError') return;
+
       console.error("Error fetching file content:", err);
       setError("Unable to load content. Please try again.");
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [file.category_id, file.name]);
 
-  /**
-   * Toggles the expansion state of the file item.
-   */
+  useEffect(() => {
+    if (isExpanded && !content) {
+      const controller = new AbortController();
+      fetchContent(controller.signal);
+      
+      return () => {
+        controller.abort();
+      };
+    }
+  }, [isExpanded, content, fetchContent]);
+
   const toggleExpansion = useCallback(() => {
     setIsExpanded(prev => !prev);
   }, []);
 
-  /**
-     * Handles the deletion of the file by making an API call.
-     * Prevents multiple deletions and provides user feedback.
-     * 
-     * @param e: Event object.
-     */
   const handleDelete = useCallback(async (e) => {
-    e.stopPropagation(); // Prevent triggering the toggleExpansion
-    if (isDeleting) return; // Prevent multiple deletions
-
+    e.stopPropagation();
+    if (isDeleting) return;
     if (!window.confirm('Are you sure you want to delete this file?')) return;
 
     setIsDeleting(true);
     setError(null);
 
     try {
-        const response = await apiFetch(fileIdEndpoint(file.id), {
-            method: 'DELETE',
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to delete the file.');
-        }
-
-        onDelete(file.id); // Remove the file from the UI
+      const response = await apiFetch(fileIdEndpoint(file.id), {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete the file.');
+      }
+      onDelete(file.id);
     } catch (err) {
-        console.error('Error deleting the file:', err);
-        setError('Unable to delete the file. Please try again.');
+      console.error('Error deleting the file:', err);
+      setError('Unable to delete the file. Please try again.');
     } finally {
-        setIsDeleting(false);
+      setIsDeleting(false);
     }
-}, []);
+  }, [isDeleting, file.id, onDelete]);
 
-  /**
-   * Handles the selection of the file.
-   */
-  const handleSelect = () => {
+  const handleSelect = useCallback(() => {
     onSelect(file);
-  };
+  }, [file, onSelect]);
 
   return (
     <div
-    className={`file-item ${isSelected ? 'selected' : ''}`}  //isSelected ? 'selected' : ''
+      className={`file-item ${isSelected ? 'selected' : ''}`}
       onClick={handleSelect}
       style={{ cursor: 'pointer', opacity: isLoading ? 0.5 : 1 }}
       role="button"
       aria-pressed={isExpanded}
       tabIndex={0}
       onKeyPress={(e) => {
-          if (e.key === 'Enter') toggleExpansion();
+        if (e.key === 'Enter') toggleExpansion();
       }}
     >
       <div
@@ -120,49 +110,52 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
         role="button"
         tabIndex={0}
         onKeyPress={(e) => {
-            if (e.key === 'Enter') toggleExpansion();
+          if (e.key === 'Enter') toggleExpansion();
         }}
       >
         <p>
-          {isExpanded
-            ? getBasename(file.name)
-            : shortenText(getBasename(file.name))}
+          {isExpanded ? getBasename(file.name) : shortenText(getBasename(file.name))}
         </p>
       </div>
       
       {isExpanded && (
         <div className="file-details" style={{ padding: '10px 0' }}>
-          {file.summary && <div>
+          {file.summary && (
+            <div>
               <p><strong>Summary</strong></p>
               <small>{file.summary}</small>
             </div>
-          }
-
+          )}
           <p>
             <strong>Content:</strong>{' '}
-            {isLoading ? <span>Loading content...</span> 
-              : error ? <span className="error">{error}</span> 
-              : <div className="markdown-output">
-                  <CodeHighlighter>{content}</CodeHighlighter>
-                </div>}
+            {isLoading ? (
+              <span>Loading content...</span>
+            ) : error ? (
+              <span className="error">{error}</span>
+            ) : (
+              <div className="markdown-output">
+                <CodeHighlighter>{content}</CodeHighlighter>
+              </div>
+            )}
           </p>
         </div>
       )}
 
       <div className="message-footer">
-      {(isSelected || isExpanded) &&<button
-        onClick={handleDelete}
-        className="button delete-button"
-        type="button"
-        disabled={isDeleting}
-        aria-label={isDeleting ? 'Deleting file' : 'Delete this file'}
-      >
-        {isDeleting ? 'Deleting...' : 'Delete'}
-      </button>}
-      
-      <p className="time">
-        {new Date(file.time * 1000).toLocaleString()
-      }</p>
+        {(isSelected || isExpanded) && (
+          <button
+            onClick={handleDelete}
+            className="button delete-button"
+            type="button"
+            disabled={isDeleting}
+            aria-label={isDeleting ? 'Deleting file' : 'Delete this file'}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete'}
+          </button>
+        )}
+        <p className="time">
+          {new Date(file.time * 1000).toLocaleString()}
+        </p>
       </div>
     </div>
   );

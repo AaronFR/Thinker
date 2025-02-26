@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useCallback, useMemo } from 'react';
 
 import { handleLogout } from '../../utils/loginUtils';
 import { formatPrice } from '../../utils/numberUtils';
@@ -29,12 +29,11 @@ const FUNCTIONALITY_STATES = {
  */
 
 /**
- * UserInterfaceSettings Component
  *
  * Renders User Interface related settings.
  */
-const UserInterfaceSettings = ({ settings, toggleDarkMode, toggleAiColourisation }) => {
-  const sectionHeading = (<h2 className="settings-heading">User Interface</h2>)
+const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiColourisation }) => {
+  const sectionHeading = useMemo(() => (<h2 className="settings-heading">User Interface</h2>), []);
 
   const maxContent = (
   <div>
@@ -76,13 +75,10 @@ const UserInterfaceSettings = ({ settings, toggleDarkMode, toggleAiColourisation
 
 
 /**
- * AI Model Component
- *
  * Renders settings related to AI model utilisation.
  */
-const AiModelSettings = ({ settings, handleForegroundModelChange, handleBackgroundModelChange }) => {
-  const sectionHeading = (<h2 className="settings-heading">AI Models</h2>)
-
+const AiModelSettings = React.memo(({ settings, handleForegroundModelChange, handleBackgroundModelChange }) => {
+  const sectionHeading = useMemo(() => (<h2 className="settings-heading">AI Models</h2>), []);
   const maxContent = (
   <div>
     {sectionHeading}
@@ -114,20 +110,17 @@ const AiModelSettings = ({ settings, handleForegroundModelChange, handleBackgrou
 }
 
 /**
- * FunctionalitySettings Component
- *
  * Renders Functionality related settings.
  */
-const FunctionalitySettings = ({
+const FunctionalitySettings = React.memo(({
   settings,
   changeSetting,
   handleMessageChange,
   userInfo
 }) => {
-  const sectionHeading = (<h2 className="settings-heading">Functionality</h2>)
+  const sectionHeading = useMemo(() => (<h2 className="settings-heading">Functionality</h2>), []);
 
   const maxContent = (<div>
-    {sectionHeading}
 
     <h3>Auto select persona</h3>
     <p>Total costs {formatPrice(parseFloat(userInfo?.select_persona_cost))}</p>
@@ -175,15 +168,13 @@ const FunctionalitySettings = ({
 }
 
 /**
- * WorkflowsSettings Component
- *
  * Renders Workflows related settings.
  */
-const WorkflowsSettings = ({
-   settings,
-   toggleWritePagesInParallel,
+const WorkflowsSettings = React.memo(({
+  settings,
+  toggleWritePagesInParallel,
 }) => {
-  const sectionHeading = (<h2 className="settings-heading">Workflows</h2>);
+  const sectionHeading = useMemo(() => (<h2 className="settings-heading">Workflows</h2>), []);
   
   const maxContent = (
   <div>
@@ -215,7 +206,7 @@ const WorkflowsSettings = ({
  *
  * Renders Summaries related settings.
  */
-const SummariesSettings = ({
+const SummariesSettings = React.memo(({
   settings,
   toggleSummarisation,
   toggleFileSummarisation,
@@ -223,7 +214,6 @@ const SummariesSettings = ({
   summarise_workflows_cost,
   summarise_files_cost,
 }) => {
-  const sectionHeading = (<h2 className="settings-heading">Summaries</h2>)
 
   const maxContent = (
   <div>
@@ -297,6 +287,8 @@ const SummariesSettings = ({
 const SystemMessagesSettings = ({ settings, handleMessageChange }) => {
   const sectionHeading = (<h2 className="settings-heading">System Messages</h2>);
 
+  const sectionHeading = useMemo(() => (<h2 className="settings-heading">Summaries</h2>), []);
+  
   const maxContent = (
   <div>
     {sectionHeading}
@@ -358,20 +350,19 @@ const SystemMessagesSettings = ({ settings, handleMessageChange }) => {
     toggleButtonLabel=""
   />);
 }
+  const sectionHeading = useMemo(() => (<h2 className="settings-heading">System Messages</h2>), []);
 
 /**
- * BetaFeaturesSettings Component
- *
  * Renders Beta Features related settings.
  */
-const BetaFeaturesSettings = ({
+const BetaFeaturesSettings = React.memo(({
   settings,
   toggleDebug,
   toggleUserEncyclopedia,
   toggleEncyclopedia,
   toggleMultiFileProcessing,
 }) => {
-  const sectionHeading = (<h2 className="settings-heading">🚧 Beta Features</h2>);
+  const sectionHeading = useMemo(() => (<h2 className="settings-heading">🚧 Beta Features</h2>), []);
 
   const maxContent = (
   <div>
@@ -434,7 +425,7 @@ const BetaFeaturesSettings = ({
  *
  * Renders settings for Prompt Questioning.
  */
-const PromptQuestioningSection = ({
+const PromptQuestioningSection = React.memo(({
   currentValue,
   onChange,
   promptMessage,
@@ -478,16 +469,13 @@ const PromptQuestioningSection = ({
       style={{ opacity: 0.9 }}
     />
     </div>
-    
   </div>
-);
+));
 
 /**
- * AutoPromptEngineeringSection Component
- *
  * Renders settings for Auto Prompt Engineering.
  */
-const AutoPromptEngineeringSection = ({
+const AutoPromptEngineeringSection = React.memo(({
   currentValue,
   onChange,
   promptMessage,
@@ -534,14 +522,12 @@ const AutoPromptEngineeringSection = ({
     <small>And the shills told you it would be a career skill...</small>
     
   </div>
-);
+));
 
 /**
- * BestOfSection Component
- *
  * Renders settings for 'Best of' multiple reruns functionality.
  */
-const BestOfSection = ({
+const BestOfSection = React.memo(({
   currentValue,
   onChange,
   promptMessage,
@@ -586,18 +572,15 @@ const BestOfSection = ({
         style={{ opacity: 0.9 }}
       />
     </div>
-    
   </div>
-);
+));
 
 /**
- * InternetSearch Component
+ * Contains the settings and rules for internet search functionality
  * 
  * ToDo: system message for search after full implementation
- *
- * Contains the settings and rules for internet search functionality
  */
-const InternetSearchSection = ({
+const InternetSearchSection = React.memo(({
   currentValue,
   onChange,
   cost
@@ -632,13 +615,11 @@ const InternetSearchSection = ({
     <p>👍 Additional context can improve the response, access information the AI doesn't know and mitigate hallucinations</p>
     <p>👎 Increases costs and time per request (though input is cheaper than output)</p> 
   </div>
-);
+));
 
 /* Settings Page */
 
 /**
- * Settings Component
- *
  * Main component that aggregates all settings sections.
  */
 export function Settings() {
@@ -653,88 +634,78 @@ export function Settings() {
     handleMessageChange,
   } = useContext(SettingsContext);
 
-  // Toggle Handlers
-  const toggleDebug = () => toggleSetting('interface.debug', 'debug');
-  const toggleDarkMode = () =>
-    toggleSetting('interface.dark_mode', 'darkMode');
-  const toggleAiColourisation = () =>
-    toggleSetting('interface.ai_colour', 'aiColour');
-  const toggleUserEncyclopedia = () =>
-    toggleSetting(
-      'beta_features.user_context_enabled',
-      'userEncyclopediaEnabled'
-    );
-  const toggleEncyclopedia = () =>
-    toggleSetting('beta_features.encyclopedia_enabled', 'encyclopediaEnabled');
-  const toggleMultiFileProcessing = () =>
-    toggleSetting(
-      'beta_features.multi_file_processing_enabled',
-      'multiFileProcessingEnabled'
-    );
-  const toggleSummarisation = () =>
-    toggleSetting('optimization.summarise', 'summarisationEnabled');
-  const toggleFileSummarisation = () =>
-    toggleSetting('optimization.summariseFiles', 'fileSummarisationEnabled');
-  const toggleWritePagesInParallel = () =>
-    toggleSetting('optimization.writePagesInParallel', 'writePagesInParallel');
+  // Memoize toggle functions to prevent re-creation on every render.
+  const toggleDebug = useCallback(() => toggleSetting('interface.debug', 'debug'), [toggleSetting]);
+  const toggleDarkMode = useCallback(() => toggleSetting('interface.dark_mode', 'darkMode'), [toggleSetting]);
+  const toggleAiColourisation = useCallback(() => toggleSetting('interface.ai_colour', 'aiColour'), [toggleSetting]);
+  const toggleUserEncyclopedia = useCallback(() => toggleSetting('beta_features.user_context_enabled', 'userEncyclopediaEnabled'), [toggleSetting]);
+  const toggleEncyclopedia = useCallback(() => toggleSetting('beta_features.encyclopedia_enabled', 'encyclopediaEnabled'), [toggleSetting]);
+  const toggleMultiFileProcessing = useCallback(() => toggleSetting('beta_features.multi_file_processing_enabled', 'multiFileProcessingEnabled'), [toggleSetting]);
+  const toggleSummarisation = useCallback(() => toggleSetting('optimization.summarise', 'summarisationEnabled'), [toggleSetting]);
+  const toggleFileSummarisation = useCallback(() => toggleSetting('optimization.summariseFiles', 'fileSummarisationEnabled'), [toggleSetting]);
+  const toggleWritePagesInParallel = useCallback(() => toggleSetting('optimization.writePagesInParallel', 'writePagesInParallel'), [toggleSetting]);
 
-  const fetchUserInformation = async () => {
+  // Use AbortController to cancel unfinished fetch if component unmounts.
+  const fetchUserInformation = useCallback(() => {
     setError(null);
     setUserInfo(null);
-    try {
-      // Filter out empty parameters
-      const filteredParameters = parameters.filter(param => param.trim() !== '');
+    const controller = new AbortController();
+    const signal = controller.signal;
 
-      if (filteredParameters.length === 0) {
-        throw new Error('Please specify at least one parameter.');
-      }
+    // Filter out empty parameters
+    const filteredParameters = parameters.filter(param => param.trim() !== '');
+    if (filteredParameters.length === 0) {
+      throw new Error('Please specify at least one parameter.');
+    }
 
-      const response = await apiFetch(userInfoEndpoint, {
-        method: 'POST',
-        body: JSON.stringify({ parameters: filteredParameters }),
+    apiFetch(userInfoEndpoint, {
+      method: 'POST',
+      body: JSON.stringify({ parameters: filteredParameters }),
+      signal,
+    })
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(errorData => {
+            throw new Error(errorData.error || 'Failed to fetch user information.');
+          });
+        }
+        return response.json();
+      })
+      .then(data => {
+        setUserInfo(data.user_data);
+      })
+      .catch(err => {
+        if (err.name !== 'AbortError') {
+          console.error('Error fetching user information:', err);
+          setError(err.message || 'Unable to load user information. Please try again.');
+        }
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to fetch user information.');
-      }
-
-      const data = await response.json();
-      setUserInfo(data.user_data);
-    } catch (err) {
-      console.error('Error fetching user information:', err);
-      setError(err.message || 'Unable to load user information. Please try again.');
-    }
-  };
-
-  const handleForegroundModelChange = (selectedModelValue) => {
-    changeSetting(
-      'models.default_foreground_model',
-      selectedModelValue,
-      'defaultForegroundModel');
-  };
-
-  const handleBackgroundModelChange = (selectedModelValue) => {
-    changeSetting(
-      'models.default_background_model',
-      selectedModelValue,
-      'defaultBackgroundModel');
-  };
+    return () => {
+      controller.abort();
+    };
+  }, [parameters]);
 
   useEffect(() => {
-    fetchUserInformation();
-  }, [])
+    // Call fetchUserInformation and perform cleanup on unmount
+    const abortFetch = fetchUserInformation();
+    return abortFetch;
+  }, [fetchUserInformation]);
+
+  const handleForegroundModelChange = useCallback((selectedModelValue) => {
+    changeSetting('models.default_foreground_model', selectedModelValue, 'defaultForegroundModel');
+  }, [changeSetting]);
+
+  const handleBackgroundModelChange = useCallback((selectedModelValue) => {
+    changeSetting('models.default_background_model', selectedModelValue, 'defaultBackgroundModel');
+  }, [changeSetting]);
 
   return (
     <div className="scrollable settings-container">
       <Navigation />
-
       {error && <p>{error}</p>}
-
-      <small>
-        {userInfo?.email}
-      </small>
-
+      <small>{userInfo?.email}</small>
+      
       <UserInterfaceSettings
         settings={settings}
         toggleDarkMode={toggleDarkMode}

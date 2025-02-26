@@ -84,7 +84,7 @@ const TransactionForm = ({ onSuccess }) => {
         } finally {
             setIsLoading(false);
         }
-    }, [amount, error, success, onSuccess, validateAmount]);
+    }, [amount, onSuccess, validateAmount]);
 
     return (
         <form onSubmit={attemptTransaction} aria-label="Transaction Form">

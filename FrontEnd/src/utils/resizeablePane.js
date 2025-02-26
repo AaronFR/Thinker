@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import './styles/ResizablePane.css';
@@ -11,158 +11,78 @@ import './styles/ResizablePane.css';
  * @returns {JSX.Element} The rendered ResizablePane component.
  */
 const ResizablePane = ({ children, className }) => {
-    // Ensure exactly two children are provided
     if (React.Children.count(children) !== 2) {
-        console.error('ResizablePane expects exactly two children: left and right panes.')
+        console.error('ResizablePane expects exactly two children: left and right panes.');
     }
 
-    const [isDragging, setIsDragging] = useState(false)
-    const [paneWidth, setPaneWidth] = useState(45) // Initial width in percentage
-
-    const containerRef = useRef(null)
-
-    /**
-     * Starts the dragging process.
-     *
-     * @param {number} clientX - The x-coordinate where the drag starts.
-     */
-    const handleDragStart = useCallback((clientX) => {
-        setIsDragging(true)
-    }, [])
-
-    /**
-     * Handles the dragging action, updating the pane width based on mouse/touch movement.
-     *
-     * @param {number} clientX - The current x-coordinate during dragging.
-     */
-    const handleDrag = useCallback(
-        (clientX) => {
-            if (!isDragging || !containerRef.current) return
-
-            const containerRect = containerRef.current.getBoundingClientRect()
-            let newWidth = ((clientX - containerRect.left) / containerRect.width) * 100 // Convert to percentage
-            newWidth = Math.max(0, Math.min(newWidth, 90)) // Restrict between 10% and 90%
-            setPaneWidth(newWidth)
-        },
-        [isDragging]
-    )
-
-    /**
-     * Ends the dragging process.
-     */
-    const handleDragEnd = useCallback(() => {
-        setIsDragging(false)
-    }, [])
-
-    /**
-     * Handles mouse down event on the resizer.
-     *
-     * @param {React.MouseEvent} e - The mouse event.
-     */
-    const handleMouseDown = useCallback(
-        (e) => {
-            e.preventDefault()
-            handleDragStart(e.clientX)
-        },
-        [handleDragStart]
-    )
-
-    /**
-     * Handles mouse move event during dragging.
-     *
-     * @param {React.MouseEvent} e - The mouse event.
-     */
-    const handleMouseMove = useCallback(
-        (e) => {
-            handleDrag(e.clientX)
-        },
-        [handleDrag]
-    )
-
-    /**
-     * Handles mouse up event to terminate dragging.
-     */
-    const handleMouseUp = useCallback(() => {
-        handleDragEnd()
-    }, [handleDragEnd])
-
-    /**
-     * Handles touch start event on the resizer.
-     *
-     * @param {React.TouchEvent} e - The touch event.
-     */
-    const handleTouchStart = useCallback(
-        (e) => {
-            e.preventDefault()
-            const touch = e.touches[0]
-            handleDragStart(touch.clientX)
-        },
-        [handleDragStart]
-    )
-
-    /**
-     * Handles touch move event during dragging.
-     *
-     * @param {React.TouchEvent} e - The touch event.
-     */
-    const handleTouchMove = useCallback(
-        (e) => {
-            const touch = e.touches[0]
-            handleDrag(touch.clientX)
-        },
-        [handleDrag]
-    )
-
-    /**
-     * Handles touch end event to terminate dragging.
-     */
-    const handleTouchEnd = useCallback(() => {
-        handleDragEnd()
-    }, [handleDragEnd])
+    const [paneWidth, setPaneWidth] = useState(45);
+    const [isDragging, setIsDragging] = useState(false);
+    const containerRef = useRef(null);
+    const draggingRef = useRef(false);
 
     useEffect(() => {
-        if (isDragging) {
-            // Mouse Events
-            window.addEventListener('mousemove', handleMouseMove);
-            window.addEventListener('mouseup', handleMouseUp);
-            // Touch Events
-            window.addEventListener('touchmove', handleTouchMove, { passive: false });
-            window.addEventListener('touchend', handleTouchEnd);
-        } else {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
-            window.removeEventListener('touchmove', handleTouchMove);
-            window.removeEventListener('touchend', handleTouchEnd);
-        }
+        draggingRef.current = isDragging;
+    }, [isDragging]);
 
+    const onMouseMove = useCallback((e) => {
+        if (!draggingRef.current || !containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        let newWidth = ((e.clientX - rect.left) / rect.width) * 100;
+        newWidth = Math.max(10, Math.min(newWidth, 90));
+        setPaneWidth(newWidth);
+    }, []);
+
+    const onMouseUp = useCallback(() => {
+        if (draggingRef.current) setIsDragging(false);
+    }, []);
+
+    const onTouchMove = useCallback((e) => {
+        if (!draggingRef.current || !containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        const touch = e.touches[0];
+        let newWidth = ((touch.clientX - rect.left) / rect.width) * 100;
+        newWidth = Math.max(0, Math.min(newWidth, 90));
+        setPaneWidth(newWidth);
+        e.preventDefault();
+    }, []);
+
+    const onTouchEnd = useCallback(() => {
+        if (draggingRef.current) setIsDragging(false);
+    }, []);
+
+    useEffect(() => {
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+        window.addEventListener('touchmove', onTouchMove, { passive: false });
+        window.addEventListener('touchend', onTouchEnd);
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove)
-            window.removeEventListener('mouseup', handleMouseUp)
-            window.removeEventListener('touchmove', handleTouchMove)
-            window.removeEventListener('touchend', handleTouchEnd)
-        }
-    }, [isDragging, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd])
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+            window.removeEventListener('touchmove', onTouchMove);
+            window.removeEventListener('touchend', onTouchEnd);
+        };
+    }, [onMouseMove, onMouseUp, onTouchMove, onTouchEnd]);
 
-    /**
-     * Handles keyboard interactions for the resizer.
-     * 
-     * ToDo: this doesn't and hasn't worked
-     *
-     * @param {React.KeyboardEvent} e - The keyboard event.
-     */
-    const handleKeyDown = useCallback(
-        (e) => {
-            const increment = 2 // Percentage increment/decrement on each key press
-            if (e.key === 'ArrowLeft') {
-                e.preventDefault()
-                setPaneWidth((prevWidth) => Math.max(10, prevWidth - increment))
-            } else if (e.key === 'ArrowRight') {
-                e.preventDefault()
-                setPaneWidth((prevWidth) => Math.min(90, prevWidth + increment))
-            }
-        },
-        []
-    )
+    const onMouseDown = useCallback((e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    }, []);
+
+    const onTouchStart = useCallback((e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    }, []);
+
+    const onKeyDown = useCallback((e) => {
+        const increment = 2;
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            setPaneWidth((prev) => Math.max(10, prev - increment));
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            setPaneWidth((prev) => Math.min(90, prev + increment));
+        }
+    }, []);
 
     return (
         <div
@@ -174,32 +94,32 @@ const ResizablePane = ({ children, className }) => {
                 className="left-pane"
                 style={{ width: `${paneWidth}%`, flexShrink: 0, overflow: 'hidden' }}
             >
-                {children[0]} {/* Left pane content */}
+                {children[0]}
             </div>
             <div
                 className={`resizer ${isDragging ? 'resizing' : ''}`}
-                onMouseDown={handleMouseDown}
-                onTouchStart={handleTouchStart}
+                onMouseDown={onMouseDown}
+                onTouchStart={onTouchStart}
                 role="separator"
                 aria-orientation="vertical"
                 aria-label="Resize panes"
                 tabIndex={0}
-                onKeyDown={handleKeyDown}
+                onKeyDown={onKeyDown}
             />
             <div className="right-pane" style={{ flex: 1, overflow: 'auto' }}>
-                {children[1]} {/* Right pane content */}
+                {children[1]}
             </div>
         </div>
-    )
-}
+    );
+};
 
 ResizablePane.propTypes = {
-    children: PropTypes.node.isRequired, // Expecting exactly two children
+    children: PropTypes.node.isRequired,
     className: PropTypes.string,
-}
+};
 
 ResizablePane.defaultProps = {
     className: '',
-}
+};
 
-export default ResizablePane
+export default ResizablePane;

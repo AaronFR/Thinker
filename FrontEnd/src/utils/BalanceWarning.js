@@ -15,7 +15,7 @@ const LowBalanceWarning = ({ balance }) => {
     const message = isCritical
         ? (
             <>
-                ⛽ Your balance is critically low : ${formatPrice(balance)}. Please{' '}
+                ⛽ Your balance is critically low : {formatPrice(balance)}. Please{' '}
                 <Link to="/pricing">add funds</Link> to continue using The Thinker ⛽
             </>
         )
@@ -36,4 +36,4 @@ LowBalanceWarning.propTypes = {
     balance: PropTypes.number.isRequired,
 };
 
-export default LowBalanceWarning;
+export default React.memo(LowBalanceWarning);

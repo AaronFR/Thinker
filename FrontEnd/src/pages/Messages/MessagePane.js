@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 
 import { apiFetch } from '../../utils/authUtils';
 import { withLoadingOpacity, toTitleCase} from '../../utils/textUtils';
+import { fetchCategoriesEndpoint, messagesForCategoryEndpoint } from '../../constants/endpoints';
 
 import MessageItem from './MessageItem';
 
 import './styles/MessageHistory.css';
-import { fetchCategoriesEndpoint, messagesForCategoryEndpoint } from '../../constants/endpoints';
 
 /**
  * MessageHistory Component
