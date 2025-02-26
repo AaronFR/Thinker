@@ -9,7 +9,6 @@ from AiOrchestration.GeminiModel import GeminiModel
 from AiOrchestration.ChatGptMessageBuilder import generate_messages
 from Constants.Exceptions import AI_RESOURCE_FAILURE, FUNCTION_SCHEMA_EMPTY, NO_RESPONSE_OPEN_AI_API
 from Data.Configuration import Configuration
-from Data.NodeDatabaseManagement import NodeDatabaseManagement
 
 from Utilities.Decorators import handle_errors
 from Utilities.PaymentDecorators import specify_functionality_context
@@ -80,11 +79,6 @@ class AiOrchestrator:
         assistant_messages = assistant_messages or []
         messages = generate_messages(system_prompts, user_prompts, assistant_messages, model)
 
-        cost_estimate = self.cost_guesstimate(model, messages, rerun_count)
-        user_balance = NodeDatabaseManagement().get_user_balance()
-        if user_balance < cost_estimate - 0.05:  # 5 cents is the point where a possible overdraft is deemed unimportant
-            return "INSUFFICIENT WEALTH DETECTED"  # I mean it's not wrong
-
         logging.info(f"Executing LLM call with messages:\n{messages}")
         response = self._handle_rerun(messages, model, rerun_count, judgement_criteria, streaming)
 
@@ -94,39 +88,6 @@ class AiOrchestrator:
 
         logging.info(f"Execution finished with response:\n{response}")
         return response
-
-    @staticmethod
-    def cost_guesstimate(
-        model: AiModel,
-        messages: List[Dict[str, str]],
-        rerun_count: int = 1
-    ) -> float:
-        """
-        Estimates cost based on token usage. This is a rough estimation since the final output length is unknown.
-
-        :param model: The chosen AI model.
-        :param messages: The list of message dictionaries.
-        :param rerun_count: The number of reruns requested.
-        :return: The estimated cost as a float.
-        """
-        input_tokens = Utility().calculate_tokens_used(messages, model)
-        estimated_output_tokens = 2000
-
-        input_cost = input_tokens * model.input_cost
-        output_costs = estimated_output_tokens * model.output_cost
-        total_costs = input_cost + output_costs
-        if rerun_count > 1:
-            single_output_cost = output_costs
-
-            input_cost *= rerun_count  # inputs are rerun
-            output_costs *= rerun_count  # outputs are rerun
-
-            # Outputs fed into evaluation to select best of
-            input_cost += (estimated_output_tokens * rerun_count * model.input_cost)
-            output_costs += single_output_cost
-
-        logging.info(f"Total guesstimated cost: {total_costs}")
-        return total_costs
 
     def _handle_rerun(
         self,

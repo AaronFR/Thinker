@@ -3,12 +3,14 @@ import json
 import logging
 from typing import List, Dict
 
+from deprecated.classic import deprecated
 from flask_socketio import emit
 from openai import OpenAI, BadRequestError
 
 from AiOrchestration.AiWrapper import AiWrapper
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Constants import Globals
+from Constants.Constants import CANNOT_AFFORD_REQUEST
 from Constants.Exceptions import OPEN_AI_FLAGGED_REQUEST_INAPPROPRIATE, \
     SERVER_FAILURE_OPEN_AI_API, FAILURE_TO_STREAM
 from Utilities.Contexts import get_message_context, get_functionality_context
@@ -52,6 +54,9 @@ class ChatGptWrapper(AiWrapper):
         :param rerun_count: number of times to rerun the prompt
         :return: The content of the response from OpenAI or an error message to inform the next Executor
         """
+        if not self.can_afford_request(model, messages, rerun_count):
+            return CANNOT_AFFORD_REQUEST
+
         try:
             chat_completion = self.open_ai_client.chat.completions.create(
                 model=model.value, messages=messages, n=rerun_count
@@ -82,6 +87,9 @@ class ChatGptWrapper(AiWrapper):
         :param model: the actual llm being called
         :return: The content of the response from OpenAI or an error message to inform the next Executor
         """
+        if not self.can_afford_request(model, messages):
+            return CANNOT_AFFORD_REQUEST
+
         try:
             response_content = []
 
@@ -122,6 +130,7 @@ class ChatGptWrapper(AiWrapper):
 
         return full_response
 
+    @deprecated
     @handle_errors(debug_logging=True, raise_errors=True)
     def get_ai_function_response(self,
                                  messages: List[Dict[str, str]],
@@ -134,6 +143,9 @@ class ChatGptWrapper(AiWrapper):
         :param model: The specific language model to use.
         :return: The content of the response from OpenAI or an error message to inform the next executor task
         """
+        if not self.can_afford_request(model, messages):
+            return CANNOT_AFFORD_REQUEST
+
         if model == ChatGptModel.CHAT_GPT_O1_MINI or model == ChatGptModel.CHAT_GPT_O3_MINI:
             raise Exception("O1 models do not support function calls!")
         chat_completion = self.open_ai_client.chat.completions.create(

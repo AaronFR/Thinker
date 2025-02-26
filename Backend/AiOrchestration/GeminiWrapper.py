@@ -4,6 +4,7 @@ import logging
 import os
 from typing import List, Dict
 
+from deprecated.classic import deprecated
 from google import genai
 
 from flask_socketio import emit
@@ -13,7 +14,7 @@ from AiOrchestration.AiWrapper import AiWrapper
 from AiOrchestration.ChatGptMessageBuilder import format_message
 from AiOrchestration.GeminiModel import GeminiModel
 from Constants import Globals
-from Constants.Constants import GEMINI_API_KEY
+from Constants.Constants import GEMINI_API_KEY, CANNOT_AFFORD_REQUEST
 from Constants.Exceptions import FAILURE_TO_STREAM, SERVER_FAILURE_GEMINI_API, NO_RESPONSE_GEMINI_API
 from Utilities.Contexts import get_message_context, get_functionality_context
 from Utilities.Decorators import handle_errors
@@ -97,6 +98,9 @@ class GeminiWrapper(AiWrapper):
         :param rerun_count: number of times to rerun the prompt
         :return: The content of the response from Gemini or an error message to inform the next Executor
         """
+        if not self.can_afford_request(model, messages, rerun_count):
+            return CANNOT_AFFORD_REQUEST
+
         try:
             user_messages, system_messages = self._prepare_gemini_messages(messages)
             prompt = ' '.join([message['content'] for message in user_messages])  # Gemini takes single prompt
@@ -144,6 +148,9 @@ class GeminiWrapper(AiWrapper):
         :param model: the actual llm being called
         :return: The content of the response from Gemini or an error message to inform the next Executor
         """
+        if not self.can_afford_request(model, messages):
+            return CANNOT_AFFORD_REQUEST
+
         try:
             user_messages, system_messages = self._prepare_gemini_messages(messages)
             prompt = ' '.join([message['content'] for message in user_messages])  # Gemini takes single prompt
@@ -189,6 +196,7 @@ class GeminiWrapper(AiWrapper):
 
         return full_response
 
+    @deprecated
     @handle_errors(debug_logging=True, raise_errors=True)
     @evaluate_gemini_balance()
     def get_ai_function_response(self,
@@ -204,6 +212,9 @@ class GeminiWrapper(AiWrapper):
         :param model: The specific language model to use.
         :return: The content of the response from OpenAI or an error message to inform the next executor task
         """
+        if not self.can_afford_request(model, messages):
+            return CANNOT_AFFORD_REQUEST
+
         user_messages, system_messages = self._prepare_gemini_messages(messages)
         prompt = ' '.join([message['content'] for message in user_messages])  # Gemini takes single prompt
 

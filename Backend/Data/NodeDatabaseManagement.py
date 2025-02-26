@@ -15,7 +15,7 @@ from Data.Configuration import Configuration
 from Data.Neo4jDriver import Neo4jDriver
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context, get_message_context, get_functionality_context, \
-    set_functionality_context
+    set_functionality_context, get_earmarked_sum, set_earmarked_sum
 from Utilities.Decorators import handle_errors
 
 
@@ -576,6 +576,49 @@ class NodeDatabaseManagement:
         return records[0]["balance"]
 
     @handle_errors()
+    def get_user_earmarked_balance(self) -> Optional[float]:
+        """Returns the amount earmarked for currently occurring transactions
+
+        :return: The user earmarked sum if found, None otherwise.
+        """
+        parameters = {"user_id": get_user_context()}
+
+        records = self.neo4jDriver.execute_read(
+            CypherQueries.GET_EARMARKED_SUM,
+            parameters
+        )
+        if len(records) > 1:
+            logging.error(f"Database Catastrophe: Multiple records found for user ID: {get_user_context()}!")
+        return records[0]["earmarked_sum"]
+
+    @handle_errors()
+    def earmark_from_user_balance(self, earmarked_sum: float):
+        """
+        Reserves an estimated amount of currency in advance of a transaction after the transaction occurs this earmarked
+        amount is returned to the users balance and the real fee deduced.
+        """
+        if earmarked_sum <= 0:
+            logging.error("Earmarking amount must be positive.")
+            return
+
+        parameters = {
+            "user_id": get_user_context(),
+            "amount": earmarked_sum
+        }
+
+        earmarked_total = self.neo4jDriver.execute_write(
+            CypherQueries.EARMARK_AGAINST_USER_BALANCE,
+            parameters,
+            'total_earmarked'
+        )
+        set_earmarked_sum(earmarked_sum)
+
+        logging.info(
+            f"Earmarked from user balance for ongoing AI request: {earmarked_sum}"
+            f" - total currently earmarked: {earmarked_total}"
+        )
+
+    @handle_errors()
     def deduct_from_user_balance(self, amount: float) -> None:
         """Deducts a specific amount from the user's balance.
 
@@ -595,16 +638,18 @@ class NodeDatabaseManagement:
 
         :param amount: positive for an amount to add to the users balance. DON'T GET THE F###ING SIGN WRONG
         """
+        earmarked_sum = get_earmarked_sum()
         parameters = {
             "user_id": get_user_context(),
-            "amount": amount
+            "amount": amount,
+            "earmarkedAmount": earmarked_sum
         }
 
         self.neo4jDriver.execute_write(
             CypherQueries.UPDATE_USER_BALANCE,
             parameters
         )
-        logging.info(f"User balance updated by: {amount}")
+        logging.info(f"User balance updated by: {amount} (earmarked value: {earmarked_sum}")
 
     # Pricing - Gemini management
 

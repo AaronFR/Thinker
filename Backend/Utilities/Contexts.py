@@ -63,3 +63,26 @@ def get_functionality_context() -> str | None:
     Get the name of the current employed functionality from Flask's g object. Returns None if not set.
     """
     return getattr(g, 'functionality_context', None)
+
+
+# Payment
+
+
+def set_earmarked_sum(earmarked_sum: float):
+    """
+    Specify an amount of money that is earmarked for the upcoming LLM request, this sum will have been extracted from
+    the user's balance.
+    """
+    g.earmarked_sum = earmarked_sum
+
+
+def get_earmarked_sum() -> float | None:
+    """
+    Return the sum currently earmarked for the current request, if no sum is currently earmarked returns a zero valued
+    float.
+
+    Zero's the earmarked sum after retrival, by design of the system no request
+    """
+    earmarked_sum = getattr(g, 'earmarked_sum', 0.0)
+    set_earmarked_sum(0.0)
+    return earmarked_sum
