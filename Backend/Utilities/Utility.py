@@ -75,15 +75,21 @@ class Utility:
 
     @staticmethod
     def execute_with_retries(func: Callable[[], Any], max_retries: int = Constants.MAX_PROMPT_RETRIES) -> Any:
-        """Execute a callable with retries on failure.
+        """
+        Execute a callable with retries on failure or None result
+        (not suitable for methods that can return None for a successful operation)
 
         :param func: A callable that will be executed
         :param max_retries: Maximum number of retries for the callable
         :return: The return value of the callable if successful, or None if all retries fail
         """
-        for attempt in range(max_retries):
+        for attempt in range(1, max_retries + 1):
             try:
-                return func()
+                result = func()
+                if not result:
+                    raise Exception("Function failed to return result")
+                else:
+                    return result
             except Exception as e:
                 wait_time = Constants.BACKOFF_INITIAL ** attempt  # Exponential backoff
                 logging.exception(f"Attempt {attempt + 1} failed: {e}. Retrying in {wait_time} seconds...")
