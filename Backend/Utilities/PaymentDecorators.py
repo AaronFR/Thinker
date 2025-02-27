@@ -34,12 +34,13 @@ def evaluate_gemini_balance():
         @functools.wraps(method)
         def wrapper(*args, **kwargs):
             try:
-                if NodeDB().get_system_gemini_balance() > 0:
-                    result = method(*args, **kwargs)
-                    return result
-                else:
+                if NodeDB().get_system_gemini_balance() <= 0:
                     raise Exception("System cannot afford call")
-            except:
-                logging.exception("Failed to evaluate gemini total balance!")
+            except Exception:
+                logging.exception("System cannot make Gemini Calls!")
+                return "SYSTEM ERROR : INCAPABLE OF MAKING GEMINI REQUESTS"
+
+            result = method(*args, **kwargs)
+            return result
         return wrapper
     return decorator
