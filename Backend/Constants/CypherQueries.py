@@ -42,12 +42,14 @@ RETURN user.verified AS verified_status;
 
 # CREATE
 
-CREATE_CATEGORY = """
+CREATE_USER_PROMPT_BLANK_AND_CATEGORY = """
 MATCH (user:USER {id: $user_id})
 WITH user
 MERGE (category:CATEGORY {name: $category_name, description: $category_description, colour: $colour})
 ON CREATE SET category.id = $category_id
 MERGE (user)-[:HAS_CATEGORY]->(category)
+CREATE (user_prompt:USER_PROMPT {id: $message_id}) 
+MERGE (user_prompt)-[:BELONGS_TO]->(category) 
 RETURN category.id AS category_id;
 """
 

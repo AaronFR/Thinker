@@ -1,3 +1,5 @@
+import logging
+
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.CategoryManagement import CategoryManagement
 from Data.Configuration import Configuration
@@ -5,6 +7,7 @@ from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.UserContextManagement import UserContextManagement
 from Utilities.Contexts import set_functionality_context
 from Constants.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
+from Utilities.Utility import Utility
 
 
 class Organising:
@@ -22,9 +25,9 @@ class Organising:
         return file_references
 
     @staticmethod
-    def categorize_and_store_prompt(user_prompt: str,
-                                    response_message: str,
-                                    category: str = None):
+    def store_prompt_data(user_prompt: str,
+                          response_message: str,
+                          category: str):
         """
         ToDo: Look into celery and async processing
 
@@ -36,11 +39,9 @@ class Organising:
         config = Configuration.load_config()
         set_functionality_context(None)  # ToDo: Really different contexts should be isolated by thread.
 
-        if not category:
-            category = CategoryManagement.categorise_prompt_input(user_prompt, response_message)
-        else:
-            category = CategoryManagement.possibly_create_category(category)
-        nodeDB().populate_user_prompt_node(category, user_prompt, response_message)
+        Utility.execute_with_retries(
+            lambda: nodeDB().populate_user_prompt_node(category, user_prompt, response_message)
+        )
 
         if config['beta_features']['user_context_enabled']:
             terms = UserContextManagement.extract_terms_from_input([user_prompt])

@@ -3,6 +3,8 @@ import os
 import re
 from typing import Optional
 
+import shortuuid
+
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Constants.Constants import RESULT_AS_TAG_REGEX, SENTENCE_WITH_FULL_STOP_REGEX
 from Constants.Exceptions import failure_to_suggest_colour_for_category, failure_to_create_description_for_category
@@ -13,6 +15,7 @@ from Utilities import Colour
 from Constants.Instructions import DEFAULT_USER_CATEGORISATION_INSTRUCTIONS, categorisation_system_message, \
     categorisation_prompt, SELECT_COLOUR_SYSTEM_MESSAGE, CATEGORY_DESCRIPTION_SYSTEM_MESSAGE, \
     category_description_prompt
+from Utilities.Contexts import set_category_context, get_category_context
 
 
 class CategoryManagement:
@@ -34,12 +37,13 @@ class CategoryManagement:
     def sanitise_category_name(category: str) -> str:
         """
         Sanitize the category name to remove invalid characters like '/'.
+        Then lowercase the category in line with DB expectations
 
 
         :param category: The category name to be sanitized.
         :return: A sanitized category name.
         """
-        return category.replace('/', '_')  # Replace '/' to avoid routing issues
+        return category.replace('/', '_').lower()  # Replace '/' to avoid routing issues
 
     @staticmethod
     def categorise_prompt_input(user_prompt: str, llm_response: Optional[str] = None) -> str | None:
@@ -69,29 +73,29 @@ class CategoryManagement:
             logging.warning("Failure to categorize! Invalid category provided.")
             return None
 
-        return CategoryManagement.possibly_create_category(category, category_reasoning)
+        return CategoryManagement.sanitise_category_name(category)
 
     @staticmethod
-    def possibly_create_category(category: str, additional_context: str = None) -> str:
-        """
-        Creates a category in the database if it does not already exist.
-
-        :param category: The category to potentially add to the node database.
-        :param additional_context: Additional context for determining parameters
-        :return: The existing or newly created category.
-        """
-        sanitized_category = CategoryManagement.sanitise_category_name(category)
+    def create_initial_user_prompt_and_possibly_new_category(category: str):
         categories = nodeDB().list_category_names()
 
-        if sanitized_category not in categories:
-            color = CategoryManagement.generate_colour(sanitized_category)
-            description = CategoryManagement.generate_category_description(
-                sanitized_category,
-                additional_context
-            )
-            nodeDB().create_category(sanitized_category, description, color)
+        if category not in categories:
+            category_id = str(shortuuid.uuid())
+            set_category_context(category_id)
 
-        return sanitized_category
+            color = CategoryManagement.generate_colour(category)
+            description = CategoryManagement.generate_category_description(
+                category,
+                category
+            )
+
+            nodeDB().create_category_and_user_prompt(category_id, category, description, color)
+        else:
+            set_category_context(nodeDB().get_category_id(category))
+
+            nodeDB().create_user_prompt_node(category)
+
+        return categories
 
     @staticmethod
     def extract_result(input_string: str) -> Optional[str]:
@@ -121,7 +125,7 @@ class CategoryManagement:
         files = StorageMethodology.select().list_staged_files()
         logging.info(f"Staged files: {files}")
 
-        category_id = CategoryManagement._get_or_create_category_id(category)
+        category_id = CategoryManagement._get_or_create_category_id()
         logging.info(f"Category selected: [{category_id}] - {category}")
 
         if not files:
@@ -135,14 +139,12 @@ class CategoryManagement:
         logging.info(f"All files moved to category: {category_id}.")
 
     @staticmethod
-    def _get_or_create_category_id(category_name: str) -> Optional[str]:
+    def _get_or_create_category_id() -> Optional[str]:
         """Retrieves or creates a category ID for the specified category name.
 
-        :param category_name: The name of the category.
         :return: The category ID if found; otherwise None.
         """
-        sanitized_category_name = CategoryManagement.sanitise_category_name(category_name)
-        category_id = nodeDB().get_category_id(sanitized_category_name)
+        category_id = get_category_context()
 
         StorageMethodology.select().add_new_category_folder(category_id)
 

@@ -15,7 +15,7 @@ from Data.Configuration import Configuration
 from Data.Neo4jDriver import Neo4jDriver
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context, get_message_context, get_functionality_context, \
-    set_functionality_context, get_earmarked_sum, set_earmarked_sum
+    set_functionality_context, get_earmarked_sum, set_earmarked_sum, set_category_context
 from Utilities.Decorators import handle_errors
 
 
@@ -200,14 +200,16 @@ class NodeDatabaseManagement:
             "user_prompt_id"
         )
 
-        logging.info(f"User prompt node created with ID: {user_prompt_id}")
+        logging.info(f"User prompt node created with ID: {user_prompt_id} for category: {category}")
         return user_prompt_id
 
     @handle_errors()
-    def populate_user_prompt_node(self, category: str, user_prompt: str, llm_response: str) -> str:
+    def populate_user_prompt_node(self, category: str, user_prompt: str, llm_response: str) -> str | None:
         """
         Populates the data for a USER_PROMPT prompt - response pairing, in the neo4j database
         Categorising the prompt and staging any attached files under that category
+
+        Returns None if it fails to find the USER_PROMPT to populate
 
         :param category: Category of the user prompt.
         :param user_prompt: The user prompt content.
@@ -215,6 +217,10 @@ class NodeDatabaseManagement:
         :return: The category associated with the user prompt node.
         """
         time = int(datetime.now().timestamp())
+        logging.info(
+            f"Attempting to populate USER_PROMPT: user_id{get_user_context()}, message_id: {get_message_context()}, "
+            f"category: {category}")
+
         parameters = {
             "user_id": get_user_context(),
             "message_id": get_message_context(),
@@ -230,10 +236,8 @@ class NodeDatabaseManagement:
             "user_prompt_id"
         )
 
-        self.create_file_nodes_for_user_prompt(user_prompt_id, category)
-
         logging.info(f"User prompt node populated with ID: {user_prompt_id}")
-        return category
+        return user_prompt_id
 
     @handle_errors()
     def get_messages_by_category(self, category_name: str) -> List[Dict[str, Any]]:
@@ -274,18 +278,30 @@ class NodeDatabaseManagement:
     # Categories
 
     @handle_errors()
-    def create_category(self, category_name: str, category_description: str, colour: str = "#111111") -> None:
-        """Creates a new category in the database.
+    def create_category_and_user_prompt(
+            self,
+            category_id: str,
+            category_name: str,
+            category_description: str,
+            colour: str = "#111111",
+            ) -> None:
+        """
+        Creates a new category in the database and user prompt when the conditions have been established that the prompt
+        doesn't belong to an existing category.
+
+        Required as certain models (Gemini) are so fast they can execute before the neo4j has actually finalised a new
+        category transaction record and can return said category later in the request.
 
         :param category_name: The name of the new category.
         :param category_description: A concise one sentence description of the new category
         :param colour: the HEX colour assigned to the category
         """
-        category_id = str(shortuuid.uuid())
+
         logging.info(f"Creating new category [{category_id}]: {category_name} - {category_description}")
 
         parameters = {
             "user_id": get_user_context(),
+            "message_id": get_message_context(),
             "category_name": category_name.lower(),
             "category_description": category_description,
             "category_id": category_id,
@@ -293,7 +309,7 @@ class NodeDatabaseManagement:
         }
 
         self.neo4jDriver.execute_write(
-            CypherQueries.CREATE_CATEGORY,
+            CypherQueries.CREATE_USER_PROMPT_BLANK_AND_CATEGORY,
             parameters
         )
 
@@ -306,7 +322,9 @@ class NodeDatabaseManagement:
         """
         parameters = {"category_name": category_name}
 
-        records = self.neo4jDriver.execute_read(CypherQueries.GET_CATEGORY_ID, parameters)
+        records = self.neo4jDriver.execute_read(
+            CypherQueries.GET_CATEGORY_ID,
+            parameters)
         category_id = records[0]["category_id"]
 
         logging.info(f"Category ID for {category_name}: {category_id}")

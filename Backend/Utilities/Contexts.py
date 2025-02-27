@@ -1,5 +1,6 @@
+import logging
+
 from flask import g
-from typing import List
 
 
 # User Request Info
@@ -30,6 +31,27 @@ def get_message_context() -> str | None:
     Get the message_id from Flask's g object. Returns None if not set.
     """
     return getattr(g, 'message_context', None)
+
+
+def set_category_context(category_id: str):
+    """
+    Set the category_id for the current Flask context, corresponds directly with the CATEGORY node in the DB.
+    Necessary as the code can be faster than getting category id from the DB which causes nothing to be returned for
+    new categories
+    """
+    g.category_context = category_id
+
+
+def get_category_context():
+    """
+    Get the message_id from Flask's g object. Returns None if not set.
+    """
+    category_id = getattr(g, 'category_context', None)
+    if not category_id:
+        logging.error("No category id found!")
+
+    return category_id
+
 
 
 # Workflow step context
