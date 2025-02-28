@@ -4,6 +4,8 @@ import os
 from flask import Blueprint, jsonify, request
 from werkzeug.utils import secure_filename
 
+from App import limiter
+from Constants.Constants import LIGHTLY_RESTRICTED, MODERATELY_RESTRICTED
 from Constants.Exceptions import file_not_deleted
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
@@ -19,12 +21,14 @@ files_bp = Blueprint('files', __name__)
 
 @files_bp.route('/file/<file_id>', methods=['GET'])
 @login_required
+@limiter.limit(LIGHTLY_RESTRICTED)
 def get_file_by_id(file_id):
     return fetch_entity(nodeDB().get_file_by_id(file_id), "file")
 
 
 @files_bp.route('/file', methods=['POST'])
 @login_required
+@limiter.limit(MODERATELY_RESTRICTED)
 def upload_file():
     """
     Accept a user file and try uploading it for staging
@@ -74,6 +78,7 @@ def delete_file(file_id):
 
 @files_bp.route('/files/category/<category_name>', methods=['GET'])
 @login_required
+@limiter.limit(LIGHTLY_RESTRICTED)
 def list_files_in_category(category_name):
     category_name = category_name.lower()
     return fetch_entity(nodeDB().get_files_by_category(category_name), "files")
@@ -81,6 +86,7 @@ def list_files_in_category(category_name):
 
 @files_bp.route('/files/list_staged_files', methods=['GET'])
 @login_required
+@limiter.limit(LIGHTLY_RESTRICTED)
 def list_staged_files():
     """
     Lists the staged files for the user on prompt submission
@@ -95,6 +101,7 @@ def list_staged_files():
 
 @files_bp.route('/file_address/<file_category>/<file_name>', methods=['GET'])
 @login_required
+@limiter.limit(LIGHTLY_RESTRICTED)
 def get_file_content_by_address(file_category, file_name):
     full_path = str(file_category) + "/" + file_name
 

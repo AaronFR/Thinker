@@ -2,6 +2,8 @@ import logging
 
 from flask import Blueprint, jsonify, request
 
+from App import limiter
+from Constants.Constants import LIGHTLY_RESTRICTED
 from Data.Pricing import Pricing
 from Utilities.Routing import fetch_entity, parse_and_validate_data
 from Utilities.AuthUtils import login_required
@@ -15,12 +17,14 @@ TOP_UP_USER_BALANCE_SCHEMA = {
 
 @pricing_bp.route('/pricing/session', methods=['GET'])
 @login_required
+@limiter.limit(LIGHTLY_RESTRICTED)
 def get_session_cost():
     return fetch_entity(Pricing.get_session_cost(), "cost")
 
 
 @pricing_bp.route('/pricing/balance', methods=['GET'])
 @login_required
+@limiter.limit(LIGHTLY_RESTRICTED)
 def get_user_balance():
     return fetch_entity(Pricing.get_user_balance(), "balance")
 

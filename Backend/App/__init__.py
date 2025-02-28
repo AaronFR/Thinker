@@ -5,9 +5,13 @@ from datetime import timedelta
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask_socketio import SocketIO
 
-from Constants.Constants import JWT_SECRET_KEY, THINKER_ENV, THE_THINKER_FRONTEND_URL, THE_THINKER_AI_DOMAIN_URL
+from App.extensions import limiter
+from Constants.Constants import JWT_SECRET_KEY, THINKER_ENV, THE_THINKER_FRONTEND_URL, THE_THINKER_AI_DOMAIN_URL, \
+    DEV_ENV
 
 # Instantiate SocketIO and jwt manager globally
 socketio = SocketIO()
@@ -24,7 +28,7 @@ def create_app():
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)
     app.config['JWT_TOKEN_LOCATION'] = ['cookies']
     app.config['JWT_COOKIE_CSRF_PROTECT'] = True
-    app.config['ENV'] = os.getenv(THINKER_ENV, "development")
+    app.config['ENV'] = os.getenv(THINKER_ENV, DEV_ENV)
 
     # Secure cookie settings
     app.config['JWT_COOKIE_SECURE'] = True  # app.config['ENV'] == "production"
@@ -55,6 +59,8 @@ def create_app():
         cors_allowed_origins=allowed_domains,
         async_mode="eventlet"
     )
+
+    limiter.init_app(app)
 
     # Register blueprints
     from .routes.home_bp import home_bp

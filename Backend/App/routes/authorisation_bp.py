@@ -9,7 +9,9 @@ from flask_jwt_extended import create_access_token, decode_token, unset_jwt_cook
 
 from App import jwt as flask_jwt
 import jwt
-from Constants.Constants import JWT_SECRET_KEY
+from App.extensions import limiter
+
+from Constants.Constants import JWT_SECRET_KEY, HIGHLY_RESTRICTED, RESTRICTED_HIGH_FREQUENCY, RESTRICTED
 from Constants.Exceptions import FAILURE_TO_LOGIN, FAILURE_TO_VALIDATE_SESSION, FAILURE_TO_LOGOUT_SESSION
 from Utilities.Encryption import hash_password, check_password
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB, NodeDatabaseManagement
@@ -35,6 +37,7 @@ LOGIN_USER_SCHEMA = {
 
 # ToDo: Limit to once per user per minute
 @authorisation_bp.route('/register', methods=['POST'])
+@limiter.limit(HIGHLY_RESTRICTED)
 def register():
     """
     ToDo: Add in user warnings or at least logging if a method fails to find a user in the db, failing a query
@@ -73,8 +76,8 @@ def register():
         return jsonify({"Failure": "Failed to register user"}), 500
 
 
-# ToDo: Limit to one use per user per minute
 @authorisation_bp.route('/verify', methods=['GET'])
+@limiter.limit(RESTRICTED_HIGH_FREQUENCY)
 def verify_email():
     token = request.args.get('token')
     if not token:
@@ -104,6 +107,7 @@ def verify_email():
 
 
 @authorisation_bp.route('/login', methods=['POST'])
+@limiter.limit(RESTRICTED)
 def login():
     data = request.json
     parsed_data = parse_and_validate_data(data, REGISTER_USER_SCHEMA)
