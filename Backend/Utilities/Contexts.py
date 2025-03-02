@@ -3,6 +3,22 @@ import logging
 from flask import g
 
 
+# Request Info
+
+def set_streaming(streaming: bool):
+    """
+    Specifies if the request is a streaming request or not. Which affects how the program will send back data
+    """
+    g.streaming = streaming
+
+
+def is_streaming():
+    """
+    Returns if the current request is a streamed request or regular
+    """
+    return getattr(g, 'streaming', False)
+
+
 # User Request Info
 
 def set_user_context(user_id: str):
@@ -51,7 +67,6 @@ def get_category_context():
         logging.error("No category id found!")
 
     return category_id
-
 
 
 # Workflow step context

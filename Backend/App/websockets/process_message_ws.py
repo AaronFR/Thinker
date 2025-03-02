@@ -6,6 +6,7 @@ from flask import abort
 
 from App import limiter
 from App.extensions import socket_rate_limit, user_key_func
+from Constants.Constants import BASE_LIMIT
 from Data.CategoryManagement import CategoryManagement
 from Data.Files.StorageMethodology import StorageMethodology
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
@@ -13,7 +14,8 @@ from Functionality.Organising import Organising
 from Personas.Coder import Coder
 from Personas.Writer import Writer
 from Utilities.AuthUtils import login_required_ws
-from Utilities.Contexts import set_message_context, get_message_context, get_category_context, get_user_context
+from Utilities.Contexts import set_message_context, get_message_context, get_category_context, get_user_context, \
+    set_streaming
 from Utilities.CostingUtils import balance_required
 from Utilities.Routing import parse_and_validate_data
 
@@ -62,8 +64,9 @@ def init_process_message_ws(socketio: SocketIO):
         :raises ValueError: If the prompt or persona is invalid.
         """
         logging.info(f"process_message triggered with data: {data}")
-
         try:
+            set_streaming(True)
+
             message_uuid = str(shortuuid.uuid())
             set_message_context(message_uuid)
             parsed_data = parse_and_validate_data(data, PROCESS_MESSAGE_SCHEMA)
@@ -84,7 +87,7 @@ def init_process_message_ws(socketio: SocketIO):
             file_references = Organising.process_files(files) + StorageMethodology.select().list_staged_files()
 
             category = CategoryManagement.determine_category(user_prompt, tags.get("category"))
-            CategoryManagement.create_initial_user_prompt_and_possibly_new_category(category)
+            CategoryManagement.create_initial_user_prompt_and_possibly_new_category(category, user_prompt)
 
             response_message = selected_persona.query(
                 user_prompt,
@@ -110,10 +113,10 @@ def init_process_message_ws(socketio: SocketIO):
 
             full_message = "".join(chunk_content)
 
-            # ToDo: should be an ancillary side job, currently slows down receiving a response if the database doesn't respond quickly
+            # ToDo: should be an ancillary side job, currently slows down receiving a response if the database doesn't
+            #  respond quickly
             Organising.store_prompt_data(user_prompt, full_message, category)
-
-            NodeDB().create_file_nodes_for_user_prompt(get_user_context(), category)
+            NodeDB().create_file_nodes_for_user_prompt(category)
 
             logging.info(f"response message: {response_message}")
 

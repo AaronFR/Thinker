@@ -15,7 +15,7 @@ from Data.Configuration import Configuration
 from Data.Neo4jDriver import Neo4jDriver
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context, get_message_context, get_functionality_context, \
-    set_functionality_context, get_earmarked_sum, set_earmarked_sum, set_category_context
+    set_functionality_context, get_earmarked_sum, set_earmarked_sum, is_streaming
 from Utilities.Decorators import handle_errors
 
 
@@ -278,13 +278,43 @@ class NodeDatabaseManagement:
     # Categories
 
     @handle_errors()
+    def create_category(
+        self,
+        category_id: str,
+        category_name: str,
+        category_description: str,
+        colour: str = "#111111"
+    ) -> None:
+        """Creates a new category in the database.
+
+        :param category_id: The id of the new category node
+        :param category_name: The name of the new category.
+        :param category_description: A concise one sentence description of the new category
+        :param colour: the HEX colour assigned to the category
+        """
+        logging.info(f"Creating new category [{category_id}]: {category_name} - {category_description}")
+
+        parameters = {
+            "user_id": get_user_context(),
+            "category_name": category_name.lower(),
+            "category_description": category_description,
+            "category_id": category_id,
+            "colour": colour
+        }
+
+        self.neo4jDriver.execute_write(
+            CypherQueries.CREATE_CATEGORY,
+            parameters
+        )
+
+    @handle_errors()
     def create_category_and_user_prompt(
-            self,
-            category_id: str,
-            category_name: str,
-            category_description: str,
-            colour: str = "#111111",
-            ) -> None:
+        self,
+        category_id: str,
+        category_name: str,
+        category_description: str,
+        colour: str = "#111111",
+    ) -> None:
         """
         Creates a new category in the database and user prompt when the conditions have been established that the prompt
         doesn't belong to an existing category.
@@ -292,6 +322,7 @@ class NodeDatabaseManagement:
         Required as certain models (Gemini) are so fast they can execute before the neo4j has actually finalised a new
         category transaction record and can return said category later in the request.
 
+        :param category_id: The id of the new category node
         :param category_name: The name of the new category.
         :param category_description: A concise one sentence description of the new category
         :param colour: the HEX colour assigned to the category
@@ -369,27 +400,26 @@ class NodeDatabaseManagement:
 
     # Files
 
-    def create_file_nodes_for_user_prompt(self, user_prompt_id: str, category: str) -> None:
+    def create_file_nodes_for_user_prompt(self, category: str) -> None:
         """Creates file nodes associated with the user prompt.
 
-        :param user_prompt_id: The ID of the user prompt.
         :param category: The category associated with the user prompt.
         """
         file_names = StorageMethodology.select().list_staged_files()
         for file_name in file_names:
-            self.create_file_node(user_prompt_id, category, file_name)
+            self.create_file_node(category, file_name)
 
     @handle_errors()
-    def create_file_node(self, user_prompt_id: str, category: str, file_path: str) -> None:
+    def create_file_node(self, category: str, file_path: str) -> None:
         """Creates a file node in the database representing the file content.
 
-        :param user_prompt_id: ID of the associated user prompt.
         :param category: Category of the file.
         :param file_path: Path to the file.
         """
         file_uuid = str(shortuuid.uuid())
         time = int(datetime.now().timestamp())
         file_name = os.path.basename(file_path)
+        user_prompt_id = get_user_context()
 
         summary = self.summarise_file(file_path)
 
@@ -405,9 +435,13 @@ class NodeDatabaseManagement:
         }
 
         logging.info(f"Creating file node: {category}/{file_name} against prompt [{user_prompt_id}]\nSummary: {summary}")
-        self.neo4jDriver.execute_write(CypherQueries.CREATE_FILE_NODE, parameters)
+        self.neo4jDriver.execute_write(
+            CypherQueries.CREATE_FILE_NODE,
+            parameters
+        )
 
-        emit('output_file', {'file': file_uuid})
+        if is_streaming():
+            emit('output_file', {'file': file_uuid})
 
     @staticmethod
     def summarise_file(file_path: str):

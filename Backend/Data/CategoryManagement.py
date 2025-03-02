@@ -46,11 +46,11 @@ class CategoryManagement:
         return category.replace('/', '_').lower()  # Replace '/' to avoid routing issues
 
     @staticmethod
-    def categorise_prompt_input(user_prompt: str, llm_response: Optional[str] = None) -> str | None:
+    def categorise_input(content: str, llm_response: Optional[str] = None) -> str | None:
         """
-        Categorizes the user input based on prompt and optional response using the AI orchestrator.
+        Categorizes the user input based on content and optional response using the AI orchestrator.
 
-        :param user_prompt: The user's input prompt string.
+        :param content: The content to be categorised
         :param llm_response: The optional llm response for additional context
         :return: Name of the selected category.
         """
@@ -64,7 +64,7 @@ class CategoryManagement:
 
         category_reasoning = AiOrchestrator().execute(
             [categorisation_prompt(category_names, user_categorisation_instructions)],
-            [categorisation_system_message(user_prompt, llm_response)]
+            [categorisation_system_message(content, llm_response)]
         )
         logging.info(f"Category Reasoning: {category_reasoning}")
 
@@ -75,27 +75,64 @@ class CategoryManagement:
 
         return CategoryManagement.sanitise_category_name(category)
 
+    # Define category context
+
     @staticmethod
-    def create_initial_user_prompt_and_possibly_new_category(category: str):
+    def create_initial_user_prompt_and_possibly_new_category(category: str, user_prompt: str):
+        """
+        Defines a blank user_prompt to be populated later at the end of the request, using the original user_prompt as
+        extra contextual information for defining the category_node at the same time.
+
+        We define both simultaneously to avoid any race conditions where a newly created category is created but not made
+        available in time for a subsequent request within the prompt
+
+        :param category: The category name that has been decided upon
+        :param user_prompt: used as context for deciding the category's description
+        :return:
+        """
         categories = nodeDB().list_category_names()
 
         if category not in categories:
-            category_id = str(shortuuid.uuid())
-            set_category_context(category_id)
-
-            color = CategoryManagement.generate_colour(category)
-            description = CategoryManagement.generate_category_description(
-                category,
-                category
-            )
-
+            category_id, description, color = CategoryManagement.define_new_category(category, user_prompt)
             nodeDB().create_category_and_user_prompt(category_id, category, description, color)
         else:
-            set_category_context(nodeDB().get_category_id(category))
-
+            category_id = nodeDB().get_category_id(category)
             nodeDB().create_user_prompt_node(category)
 
-        return categories
+        set_category_context(category_id)
+
+    @staticmethod
+    def possibly_create_new_category(category: str):
+        categories = nodeDB().list_category_names()
+
+        if category not in categories:
+            category_id, description, color = CategoryManagement.define_new_category(category)
+            nodeDB().create_category(category_id, category, description, color)
+        else:
+            category_id = nodeDB().get_category_id(category)
+
+        set_category_context(category_id)
+
+    @staticmethod
+    def define_new_category(category: str, additional_context: str = None):
+        """
+        ToDo: Obvious speed up to be gained by putting generate colour and category in separate asynchronous threads.
+
+        :param category: The category name
+        :param additional_context: The user's prompt which is used as context when creating descriptions
+        :return: The id, description and color of the new category
+        """
+        category_id = str(shortuuid.uuid())
+        set_category_context(category_id)
+
+        color = CategoryManagement.generate_colour(category)
+        description = CategoryManagement.generate_category_description(
+            category_name=category,
+            additional_context=additional_context
+        )
+
+        return category_id, description, color
+
 
     @staticmethod
     def extract_result(input_string: str) -> Optional[str]:
@@ -160,7 +197,7 @@ class CategoryManagement:
         :return: The determined category.
         """
         if not tag_category:
-            category = CategoryManagement.categorise_prompt_input(user_prompt)
+            category = CategoryManagement.categorise_input(user_prompt)
             logging.info(f"Prompt categorised: {category}")
             return category
 

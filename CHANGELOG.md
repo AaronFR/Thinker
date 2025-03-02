@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pages are sourced and displayed to the user per step
 - Added o3-mini, the cutting edge open-ai model
   - o1-mini prices update (now lower)
+- More intuitive file upload, files are uploaded ..after file upload
 
 ### Removed
 

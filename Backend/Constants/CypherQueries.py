@@ -42,6 +42,15 @@ RETURN user.verified AS verified_status;
 
 # CREATE
 
+CREATE_CATEGORY = """
+MATCH (user:USER {id: $user_id})
+WITH user
+MERGE (category:CATEGORY {name: $category_name, description: $category_description, colour: $colour})
+ON CREATE SET category.id = $category_id
+MERGE (user)-[:HAS_CATEGORY]->(category)
+RETURN category.id AS category_id;
+"""
+
 CREATE_USER_PROMPT_BLANK_AND_CATEGORY = """
 MATCH (user:USER {id: $user_id})
 WITH user
@@ -117,9 +126,9 @@ Return the files Data
 """
 CREATE_FILE_NODE = """
 MATCH (user:USER {id: $user_id})
-MERGE (category:CATEGORY {name: $category})
+MATCH (user)--(category:CATEGORY {name: $category})
 WITH user, category
-MATCH (user_prompt:USER_PROMPT {id: $user_prompt_id})
+OPTIONAL MATCH (user_prompt:USER_PROMPT {id: $user_prompt_id})
 OPTIONAL MATCH (existingFile:FILE)-[:BELONGS_TO]->(category)
 WHERE existingFile.name = $name
 WITH existingFile, user_prompt, category
@@ -129,7 +138,9 @@ SET newFile.version = COALESCE(existingFile.version, 0) + 1,
     newFile.time = $time,
     newFile.summary = $summary,
     newFile.structure = $structure
-CREATE (newFile)-[:ORIGINATES_FROM {version: newFile.version}]->(user_prompt)
+FOREACH (up IN CASE WHEN user_prompt IS NOT NULL THEN [user_prompt] ELSE [] END |
+    CREATE (newFile)-[:ORIGINATES_FROM {version: newFile.version}]->(up)
+)
 RETURN newFile;
 """
 

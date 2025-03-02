@@ -1,17 +1,20 @@
 import logging
 import os
+import sys
 
 from flask import Blueprint, jsonify, request
 from werkzeug.utils import secure_filename
 
 from App import limiter
-from Constants.Constants import LIGHTLY_RESTRICTED, MODERATELY_RESTRICTED
+from Constants.Constants import LIGHTLY_RESTRICTED, MODERATELY_RESTRICTED, MAX_FILE_SIZE
 from Constants.Exceptions import file_not_deleted
+from Data.CategoryManagement import CategoryManagement
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
+from Functionality.Organising import Organising
 from Utilities.AuthUtils import login_required
 from Utilities.Routing import fetch_entity
-from Utilities.Contexts import get_user_context
+from Utilities.Contexts import get_user_context, get_category_context
 
 files_bp = Blueprint('files', __name__)
 
@@ -43,11 +46,16 @@ def upload_file():
     # Secure the filename to prevent directory traversal attacks
     filename = secure_filename(file.filename)
 
-    user_id = get_user_context()
-    staged_file_path = os.path.join(user_id, filename)
+    content = file.read().decode()
+    if sys.getsizeof(content) > MAX_FILE_SIZE:
+        raise Exception("File is far too large. 10 MB max.")
+
+    category = CategoryManagement.categorise_input(content)
+    CategoryManagement.possibly_create_new_category(category)
+    file_path = os.path.join(get_category_context(), filename)
 
     try:
-        StorageMethodology.select().save_file(file.read().decode(), staged_file_path, overwrite=True)
+        Organising.save_file(content, category, file_path, overwrite=True)
         return jsonify({'message': 'File uploaded successfully.', 'filename': filename}), 200
     except Exception as e:
         logging.info(f"Error saving file: {e}")
