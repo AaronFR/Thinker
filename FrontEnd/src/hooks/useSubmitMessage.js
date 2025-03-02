@@ -258,30 +258,27 @@ const useSubmitMessage = (
   /**
    * Function to cancel the ongoing request
    */
-  /**
- * Function to cancel the ongoing request
- */
-const disconnectFromRequest = useCallback(() => {
-  if (socketRef.current && socketRef.current.connected) {
+  const disconnectFromRequest = useCallback(() => {
+    if (socketRef.current && socketRef.current.connected) {
 
-    // ToDo: Consider adding msgId for terminating ongoing requests
-    socketRef.current.emit('disconnect_from_request', (response) => {
-      console.info("Disconnecting from request view", response);
-      // Disconnect after acknowledgment
-      socketRef.current.disconnect();
+      // ToDo: Consider adding msgId for terminating ongoing requests
+      socketRef.current.emit('disconnect_from_request', (response) => {
+        console.info("Disconnecting from request view", response);
+        // Disconnect after acknowledgment
+        socketRef.current.disconnect();
 
-      // Reset state variables
-      setIsProcessing(false);
-      setMessage('');
-      setTotalCost(null);
-      setWorkflow(null);
-      pendingSubmitRef.current = null;
-      updateQueueRef.current = [];
-    });
-  } else {
-    console.warn('No active socket connection to disconnect.');
-  }
-}, []);
+        // Reset state variables
+        setIsProcessing(false);
+        setMessage('');
+        setTotalCost(null);
+        setWorkflow(null);
+        pendingSubmitRef.current = null;
+        updateQueueRef.current = [];
+      });
+    } else {
+      console.warn('No active socket connection to disconnect.');
+    }
+  }, []);
 
 
   return { message, files, totalCost, error, isProcessing, handleSubmit, disconnectFromRequest, refreshCategory };

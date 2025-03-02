@@ -55,8 +55,15 @@ def upload_file():
 
     try:
         # needs to be category id not category name
-        Organising.save_file(content, get_category_context(), filename, overwrite=True)
-        return jsonify({'message': 'File uploaded successfully.', 'filename': filename}), 200
+        category_id = get_category_context()
+        file_id = Organising.save_file(content, category_id, filename, overwrite=True)
+
+        return jsonify({
+            'message': 'File uploaded successfully.',
+            'category_id': category_id,
+            'id': file_id,
+            'name': filename
+        }), 200
     except Exception as e:
         logging.info(f"Error saving file: {e}")
         return jsonify({'message': 'File upload failed due to server error.'}), 500

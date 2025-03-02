@@ -89,6 +89,17 @@ const UserInputForm = ({
       return;
     }
     setUploadCompleted(true);
+
+      const existingFileNames = new Set(selectedFiles.map(file => file.name));
+
+      if (!existingFileNames.has(file.filename)) {
+        setSelectedFiles(prevFiles => [
+          ...prevFiles,
+          {'category_id': file.category_id, 'id': file.id, 'name': file.name}
+      ]);
+      }
+
+      
   }, []);
 
   /**
