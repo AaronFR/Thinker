@@ -84,7 +84,7 @@ def init_process_message_ws(socketio: SocketIO):
 
             selected_persona = get_selected_persona(data)
 
-            file_references = Organising.process_files(files) + StorageMethodology.select().list_staged_files()
+            file_references = Organising.process_files(files)
 
             category = CategoryManagement.determine_category(user_prompt, tags.get("category"))
             CategoryManagement.create_initial_user_prompt_and_possibly_new_category(category, user_prompt)
@@ -113,10 +113,7 @@ def init_process_message_ws(socketio: SocketIO):
 
             full_message = "".join(chunk_content)
 
-            # ToDo: should be an ancillary side job, currently slows down receiving a response if the database doesn't
-            #  respond quickly
             Organising.store_prompt_data(user_prompt, full_message, category)
-            NodeDB().create_file_nodes_for_user_prompt(category)
 
             logging.info(f"response message: {response_message}")
 

@@ -11,7 +11,7 @@ from AiOrchestration.ChatGptModel import ChatGptModel
 from Constants.Exceptions import failure_to_process_file_in_workflow
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_message_context, get_user_context, set_message_context, set_user_context, \
-    set_iteration_context
+    set_iteration_context, set_category_context, get_category_context
 from Utilities.Decorators import return_for_error
 from Constants.Instructions import multiple_pages_summary_message, for_each_focus_on_prompt
 from Utilities.models import find_model_enum_value
@@ -111,21 +111,40 @@ class AutoWorkflow(BaseWorkflow):
         """
         message_id = get_message_context()
         user_id = get_user_context()
+        category_id = get_category_context()
 
-        def wrapped_process_file(file_ref, iteration_id, message_id, user_id):
+        def wrapped_process_file(file_ref, iteration_id, message_id, user_id, category_id):
             """
             Note: it's at this exact point that the flask g context isn't passed and needs to be re-initialised for the
             thread
+
+            ToDo: Create a utility method shell for creating threads based on a function call
             """
             set_message_context(message_id)
             set_user_context(user_id)
             set_iteration_context(iteration_id)
-            return self._process_file(process_prompt, initial_message, file_ref, selected_message_ids, best_of, model,
-                                      iteration_id, message_id, user_id)
+            set_category_context(category_id)
+
+            return self._process_file(
+                process_prompt,
+                initial_message,
+                file_ref,
+                selected_message_ids,
+                best_of,
+                model,
+                iteration_id
+            )
 
         with ThreadPoolExecutor(max_workers=len(file_references)) as executor:
             future_to_file = {
-                executor.submit(copy_current_request_context(wrapped_process_file), file_ref, iteration_id + 1, message_id, user_id): file_ref
+                executor.submit(
+                    copy_current_request_context(wrapped_process_file),
+                    file_ref,
+                    iteration_id + 1,
+                    message_id,
+                    user_id,
+                    category_id,
+                ): file_ref
                 for iteration_id, file_ref in enumerate(file_references)
             }
 
@@ -185,9 +204,7 @@ class AutoWorkflow(BaseWorkflow):
             selected_message_ids: List[str],
             best_of: int,
             model: AiModel,
-            iteration_id: int,
-            message_id: str = None,
-            user_id: str = None,
+            iteration_id: int
     ) -> (int, str):
         """
         Helper method to process a single file in the workflow with a unique iteration ID.
@@ -211,8 +228,6 @@ class AutoWorkflow(BaseWorkflow):
             file_name=file_name,
             best_of=best_of,
             model=model,
-            overwrite=True,
-            message_id=message_id,
-            user_id=user_id
+            overwrite=True
         )
         return iteration_id, response

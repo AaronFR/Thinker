@@ -182,8 +182,8 @@ class NodeDatabaseManagement:
     @handle_errors()
     def create_user_prompt_node(self, category: str) -> str:
         """
-        Creates a placeholder USER_PROMPT node in the neo4j database, to be populated later
-        Categorising the prompt and staging any attached files under that category
+        Creates a placeholder USER_PROMPT node in the neo4j database, to be populated and connected to a
+        CATEGORY and thereby to a USER later in the request.
 
         :param category: Category the new user prompt will belong to
         :return: The user_prompt_id associated with the new user prompt node.
@@ -206,8 +206,8 @@ class NodeDatabaseManagement:
     @handle_errors()
     def populate_user_prompt_node(self, category: str, user_prompt: str, llm_response: str) -> str | None:
         """
-        Populates the data for a USER_PROMPT prompt - response pairing, in the neo4j database
-        Categorising the prompt and staging any attached files under that category
+        Populates the data for a USER_PROMPT prompt - response pairing, in the neo4j database.
+        Additionally connecting it to a CATEGORY and therefore made accessible to the USER.
 
         Returns None if it fails to find the USER_PROMPT to populate
 
@@ -351,7 +351,10 @@ class NodeDatabaseManagement:
         :param category_name: Name of the category.
         :return: The ID of the category if found, None otherwise.
         """
-        parameters = {"category_name": category_name}
+        parameters = {
+            "user_id": get_user_context(),
+            "category_name": category_name
+        }
 
         records = self.neo4jDriver.execute_read(
             CypherQueries.GET_CATEGORY_ID,
@@ -367,7 +370,9 @@ class NodeDatabaseManagement:
 
         :return: A list of category names.
         """
-        parameters = {"user_id": get_user_context()}
+        parameters = {
+            "user_id": get_user_context()
+        }
 
         result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES, parameters)
         return [record["category_name"] for record in result]
@@ -400,21 +405,13 @@ class NodeDatabaseManagement:
 
     # Files
 
-    def create_file_nodes_for_user_prompt(self, category: str) -> None:
-        """Creates file nodes associated with the user prompt.
-
-        :param category: The category associated with the user prompt.
-        """
-        file_names = StorageMethodology.select().list_staged_files()
-        for file_name in file_names:
-            self.create_file_node(category, file_name)
-
     @handle_errors()
-    def create_file_node(self, category: str, file_path: str) -> None:
+    def create_file_node(self, category_id: str, file_path: str) -> str:
         """Creates a file node in the database representing the file content.
 
-        :param category: Category of the file.
+        :param category_id: Category id of the file.
         :param file_path: Path to the file.
+        :returns: The UUID of the new file node
         """
         file_uuid = str(shortuuid.uuid())
         time = int(datetime.now().timestamp())
@@ -426,7 +423,7 @@ class NodeDatabaseManagement:
         parameters = {
             "file_id": file_uuid,
             "user_id": get_user_context(),
-            "category": category,
+            "category_id": category_id,
             "user_prompt_id": user_prompt_id,
             "name": file_name,
             "time": time,
@@ -434,14 +431,13 @@ class NodeDatabaseManagement:
             "structure": "PROTOTYPING"
         }
 
-        logging.info(f"Creating file node: {category}/{file_name} against prompt [{user_prompt_id}]\nSummary: {summary}")
+        logging.info(f"Creating file node: {file_path} against prompt [{user_prompt_id}]\nSummary: {summary}")
         self.neo4jDriver.execute_write(
             CypherQueries.CREATE_FILE_NODE,
             parameters
         )
 
-        if is_streaming():
-            emit('output_file', {'file': file_uuid})
+        return file_uuid
 
     @staticmethod
     def summarise_file(file_path: str):

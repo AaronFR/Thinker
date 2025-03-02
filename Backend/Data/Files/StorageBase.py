@@ -61,9 +61,9 @@ class StorageBase(ABC):
         pass
 
     @abstractmethod
-    def list_staged_files(self) -> List[str]:
+    def list_files(self, category_id: str) -> List[str]:
         """
-        List all files in the storage.
+        List all files that belong to a specified category
 
         :return: A list of file paths.
         """
@@ -92,17 +92,6 @@ class StorageBase(ABC):
         :param data: The dictionary to write.
         :param yaml_path: The path where the YAML file should be saved.
         :param overwrite: Flag indicating whether to overwrite existing files.
-        """
-        pass
-
-    def add_new_user_file_folder(self, user_id: str) -> None:
-        """
-        Create a new file folder for a user.
-
-        This method is not abstract because the implementation can be 
-        defined in subclasses based on specific storage requirements.
-
-        :param user_id: The ID of the user for whom the folder will be created.
         """
         pass
 

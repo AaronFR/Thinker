@@ -20,7 +20,6 @@ import { getBasename } from '../utils/textUtils';
 import AutoExpandingTextarea from '../utils/AutoExpandingTextarea';
 import { Tooltip } from 'react-tooltip';
 import TooltipConstants from '../constants/tooltips';
-import { readStagedFilesEndpoint } from '../constants/endpoints';
 
 import './styles/UserInputForm.css';
 
@@ -70,46 +69,12 @@ const UserInputForm = ({
     selectedMessages,
     toggleMessageSelection 
   } = useSelection();
-  
-  /**
-   * Fetches the list of uploaded files from the backend API.
-   */
-  const fetchStagedFiles = useCallback(async () => {
-    try {
-        const response = await apiFetch(readStagedFilesEndpoint, {
-            method: "GET",
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to fetch files.');
-        }
-
-        const data = await response.json();
-
-        const existingFileNames = new Set(selectedFiles.map(file => file.name));
-        const newFiles = data.files
-            .map(fileName => ({ name: getBasename(fileName) }))
-            .filter(file => !existingFileNames.has(file.name)); // Filter out duplicates
-
-        setSelectedFiles(prevFiles => [
-            ...prevFiles,
-            ...newFiles
-        ]);
-    } catch (error) {
-        setFetchError(`Error fetching files: ${error.message}`);
-        console.error(error);
-    } finally {
-        setUploadCompleted(false);
-    }
-  }, [selectedFiles, setSelectedFiles]);
 
   /**
    * fetch uploaded files after successful file upload.
    */
   useEffect(() => {
     if (uploadCompleted) {
-      fetchStagedFiles();
     }
   }, [uploadCompleted]);
 

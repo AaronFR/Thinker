@@ -8,7 +8,8 @@ from AiOrchestration.AiModel import AiModel
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
-from Utilities.Contexts import get_user_context, set_iteration_context
+from Functionality.Organising import Organising
+from Utilities.Contexts import get_user_context, set_iteration_context, get_category_context
 from Utilities.PaymentDecorators import specify_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
 from Constants.Instructions import SIMPLE_SUMMARY_PROMPT
@@ -144,11 +145,9 @@ class BaseWorkflow:
         best_of: int = 1,
         model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
         overwrite: bool = True,
-        message_id: str = None,
-        user_id: str = None,
     ) -> str:
         """
-        Handles the process of saving files to the staging directory.
+        Handles the process of saving files to the selected category.
 
         ToDo: If chatgpt fails it shouldn't save (overwrite) the input files
 
@@ -158,11 +157,11 @@ class BaseWorkflow:
         :param file_references: References to files.
         :param file_name: Name of the file to save including extension
         :param model: The AI model to use.
+        :param overwrite: Whether or not any existing files should be overwrote
         :return: AI's response.
         """
         BaseWorkflow.emit_step_started_events(iteration)
-        if not user_id:
-            user_id = get_user_context()
+        category_id = get_category_context()
 
         # ToDo: We'll see if this degrades quality
         message += "\nJust write the contents to be saved to the file without commentary"
@@ -178,11 +177,9 @@ class BaseWorkflow:
         
         """  # Otherwise if a new section is appended on it won't be on a new line
 
-        file_path = Path(user_id).joinpath(file_name)
+        file_uuid = Organising.save_file(response, get_category_context(), file_name, overwrite=overwrite)
 
-        StorageMethodology.select().save_file(response, str(file_path), overwrite=overwrite)
-
-        BaseWorkflow.emit_step_completed_events(iteration, streaming=False, response=response)
+        BaseWorkflow.emit_step_completed_events(iteration, streaming=False, response=response, file_uuid=file_uuid)
         return response
 
     @staticmethod
@@ -191,7 +188,10 @@ class BaseWorkflow:
         set_iteration_context(iteration)
 
     @staticmethod
-    def emit_step_completed_events(iteration: int, streaming: bool, response: str):
+    def emit_step_completed_events(iteration: int, streaming: bool, response: str, file_uuid: str = None):
+        if file_uuid:
+            emit('output_file', {'file': file_uuid})
+
         if streaming:
             emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "streaming"})
         else:

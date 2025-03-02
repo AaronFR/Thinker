@@ -51,8 +51,8 @@ def file_not_deleted(file_id: str):
     return f"Failed to delete file {file_id}"
 
 
-def user_staging_area_not_found(staging_directory: str):
-    return f"The directory {staging_directory} does not exist."
+def category_directory_not_found(directory: str):
+    return f"The directory {directory} does not exist."
 
 
 FAILURE_TO_READ_FILE = "An unexpected error occurred while reading the file."

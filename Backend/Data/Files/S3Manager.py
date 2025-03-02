@@ -156,9 +156,11 @@ class S3Manager(StorageBase):
         except ClientError as e:
             logging.error(f"FAILED TO MOVE {current_path} TO {new_path}: {e}")
 
-    def list_staged_files(self) -> List[str]:
+    def list_files(self, category_id: str) -> List[str]:
         """
-        List files in a specific directory within an S3 bucket.
+        List files in a specific directory within an S3 bucket category folder.
+
+        NOTE: Currently unused.
 
         :return: List of file names.
         """
@@ -166,7 +168,7 @@ class S3Manager(StorageBase):
             paginator = self.s3_client.get_paginator('list_objects_v2')
             pages = paginator.paginate(
                 Bucket=os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
-                Prefix=get_user_context()
+                Prefix=category_id
             )
 
             files = []
@@ -244,14 +246,6 @@ class S3Manager(StorageBase):
             else:
                 logging.error(f"Error checking if file exists: {e}")
                 raise
-
-    def add_new_user_file_folder(self, user_id: str) -> None:
-        """
-        Add a new user file folder. (Not necessary in S3, as folders are virtual.)
-
-        :param user_id: The ID of the user for which to create a folder.
-        """
-        pass
 
     def add_new_category_folder(self, category_id: str) -> None:
         """

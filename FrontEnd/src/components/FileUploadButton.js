@@ -117,26 +117,29 @@ const FileUploadButton = ({ onUploadSuccess }) => {
         multiple
         style={{ display: 'none' }}
       />
+      <div className='centered'>
+        <label 
+          htmlFor="file-input"
+          className='custom-file-label'
+          role="button"
+          tabIndex={0}
+          aria-label="Upload files"
+          data-tooltip-id="tooltip"
+          data-tooltip-content={TooltipConstants.fileUploadButton}
+          data-tooltip-place="bottom"
+        >
+          📂 {/* Upload Emoji */}
+        </label>
 
-      <label 
-        htmlFor="file-input"
-        className='custom-file-label'
-        role="button"
-        tabIndex={0}
-        aria-label="Upload files"
-        data-tooltip-id="tooltip"
-        data-tooltip-content={TooltipConstants.fileUploadButton}
-        data-tooltip-place="bottom"
-      >
-        📂 {/* Upload Emoji */}
-      </label>
+        {state.isUploading && (
+          <div className='upload-progress' aria-live="polite">
+            <ProgressBar progress={state.uploadProgress} />
+            <p>{state.uploadProgress}%</p>
+          </div>
+        )}
+      </div>
 
-      {state.isUploading && (
-        <div className='upload-progress' aria-live="polite">
-          <ProgressBar progress={state.uploadProgress} />
-          <p>{state.uploadProgress}%</p>
-        </div>
-      )}
+      
     </div>
   );
 };

@@ -16,7 +16,7 @@ from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Writing import Writing
 from Utilities.Contexts import get_message_context, get_user_context, set_message_context, set_user_context, \
-    set_iteration_context
+    set_iteration_context, set_category_context, get_category_context
 from Utilities.Decorators import return_for_error
 from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
@@ -152,6 +152,7 @@ class WritePagesWorkflow(BaseWorkflow):
         """
         message_id = get_message_context()
         user_id = get_user_context()
+        category_id = get_category_context()
 
         num_pages = len(pages)
         results = [None] * num_pages  # Pre-allocate list for results
@@ -169,7 +170,8 @@ class WritePagesWorkflow(BaseWorkflow):
                     best_of,
                     model,
                     message_id,
-                    user_id
+                    user_id,
+                    category_id,
                 )
                 futures.append((i, future))  # Store index with the future
 
@@ -185,11 +187,12 @@ class WritePagesWorkflow(BaseWorkflow):
         return ("\n\n".join(results)).strip()  # concatenate the results to one string.
 
     def threaded_page_process(self, page_instruction, iteration, process_prompt, file_references,
-                              selected_message_ids, best_of, model, message_id, user_id):
+                              selected_message_ids, best_of, model, message_id, user_id, category_id):
         """Helper function to process a single page instruction."""
         set_message_context(message_id)
         set_user_context(user_id)
         set_iteration_context(iteration)
+        set_category_context(category_id)
 
         response = self._chat_step(
             iteration=iteration,

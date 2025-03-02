@@ -133,7 +133,6 @@ class CategoryManagement:
 
         return category_id, description, color
 
-
     @staticmethod
     def extract_result(input_string: str) -> Optional[str]:
         """
@@ -148,32 +147,6 @@ class CategoryManagement:
 
         logging.warning("Failed to categorize input string.")
         return None
-
-    @staticmethod
-    def stage_files(category: Optional[str] = None) -> None:
-        """
-        Stages files into a specific category based on the user prompt.
-
-        This method retrieves files from the staging area, summarises them, and categorises them
-        according to their content with the help of an AI orchestrator.
-
-        :param category: The category for staged files. If None, a category will be generated.
-        """
-        files = StorageMethodology.select().list_staged_files()
-        logging.info(f"Staged files: {files}")
-
-        category_id = CategoryManagement._get_or_create_category_id()
-        logging.info(f"Category selected: [{category_id}] - {category}")
-
-        if not files:
-            return
-
-        for file in files:
-            staged_file_path = os.path.join(file)
-            new_file_path = os.path.join(str(category_id), os.path.basename(file))
-
-            StorageMethodology.select().move_file(staged_file_path, new_file_path)
-        logging.info(f"All files moved to category: {category_id}.")
 
     @staticmethod
     def _get_or_create_category_id() -> Optional[str]:
@@ -194,7 +167,7 @@ class CategoryManagement:
 
         :param user_prompt: The user's input prompt.
         :param tag_category: Optional tag category from the front end.
-        :return: The determined category.
+        :return: The determined category's name.
         """
         if not tag_category:
             category = CategoryManagement.categorise_input(user_prompt)
@@ -286,4 +259,4 @@ class CategoryManagement:
 
 
 if __name__ == '__main__':
-    CategoryManagement().stage_files("Put this file in Notes please")
+    CategoryManagement().generate_category_description("Please categorise this as 'testing'.")

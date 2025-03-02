@@ -22,11 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Pages are sourced and displayed to the user per step
 - Added o3-mini, the cutting edge open-ai model
   - o1-mini prices update (now lower)
-- More intuitive file upload, files are uploaded ..after file upload
+- More intuitive file upload, files are uploaded ..after file upload, not after sending a prompt with the uploaded files
+ attached.
 
 ### Removed
 
 - o1-preview (o1 is released but not as good as o3-mini, while being *much* more expensive)
+- staging-directory: was used at the end of a request, saving files (typically in threads) is faster.
 
 ## [0.9.5] - 2025-02-18 - Pre public beta
 

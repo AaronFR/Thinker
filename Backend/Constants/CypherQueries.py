@@ -126,7 +126,7 @@ Return the files Data
 """
 CREATE_FILE_NODE = """
 MATCH (user:USER {id: $user_id})
-MATCH (user)--(category:CATEGORY {name: $category})
+MATCH (user)--(category:CATEGORY {id: $category_id})
 WITH user, category
 OPTIONAL MATCH (user_prompt:USER_PROMPT {id: $user_prompt_id})
 OPTIONAL MATCH (existingFile:FILE)-[:BELONGS_TO]->(category)
@@ -174,7 +174,7 @@ DETACH DELETE category;
 # Categories
 
 GET_CATEGORY_ID = """
-MATCH (category:CATEGORY {name: $category_name})
+MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY {name: $category_name})
 RETURN category.id AS category_id;
 """
 
@@ -261,16 +261,6 @@ SET user.balance = user.balance - $amount,
 RETURN user.earmarked as total_earmarked;
 """
 
-GET_SYSTEM_GEMINI_BALANCE = """
-MATCH (system:SYSTEM)
-RETURN system.gemini_balance AS gemini_balance;
-"""
-
-UPDATE_SYSTEM_GEMINI_BALANCE = """
-MATCH (system:SYSTEM)
-SET system.gemini_balance = system.gemini_balance + $amount;
-"""
-
 # Will create the node if it doesn't already yet exist
 EXPENSE_NODE = """
 MERGE (n {id: $node_id})
@@ -296,6 +286,19 @@ def fetch_user_params_query(user_id, params):
     MATCH (user:USER {{id: "{user_id}"}})
     RETURN {projection}
     """
+
+
+# SYSTEM prompts
+
+GET_SYSTEM_GEMINI_BALANCE = """
+MATCH (system:SYSTEM)
+RETURN system.gemini_balance AS gemini_balance;
+"""
+
+UPDATE_SYSTEM_GEMINI_BALANCE = """
+MATCH (system:SYSTEM)
+SET system.gemini_balance = system.gemini_balance + $amount;
+"""
 
 
 # Promotions

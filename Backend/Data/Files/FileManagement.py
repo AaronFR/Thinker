@@ -8,7 +8,7 @@ from typing import List, Dict, Any
 from deprecated.classic import deprecated
 
 from Constants.Exceptions import file_not_found, file_not_loaded, FAILURE_TO_LIST_STAGED_FILES, \
-    user_staging_area_not_found, FAILURE_TO_READ_FILE, cannot_read_image_file
+    FAILURE_TO_READ_FILE, cannot_read_image_file, category_directory_not_found
 from Data.Files.StorageBase import StorageBase
 from Constants.Constants import DEFAULT_ENCODING
 from Utilities.Decorators import handle_errors
@@ -144,24 +144,25 @@ class FileManagement(StorageBase):
         return existing_data
 
     @staticmethod
-    def list_staged_files() -> List[str]:
+    def list_files(category_id: str) -> List[str]:
         """
-        List all files in the user's staging directory.
+        List all files in a specific category folder
+
+        NOTE: Currently unused.
 
         :return: A list of staged file paths.
         """
-        user_id = get_user_context()
-        staging_directory = os.path.join(FileManagement.file_data_directory, user_id)
+        directory = os.path.join(FileManagement.file_data_directory, category_id)
 
         try:
-            entries = os.listdir(staging_directory)
-            file_paths = [os.path.join(user_id, entry) for entry in entries
-                          if os.path.isfile(os.path.join(staging_directory, entry))]
+            entries = os.listdir(directory)
+            file_paths = [os.path.join(category_id, entry) for entry in entries
+                          if os.path.isfile(os.path.join(category_id, entry))]
 
-            logging.info(f"Found the following files in the user's staging directory: {file_paths}")
+            logging.info(f"Found the following files in category directory {category_id}: {file_paths}")
             return file_paths
         except FileNotFoundError:
-            logging.exception(user_staging_area_not_found(staging_directory))
+            logging.exception(category_directory_not_found(directory))
             return []
         except Exception:
             logging.exception(FAILURE_TO_LIST_STAGED_FILES)
@@ -231,16 +232,6 @@ class FileManagement(StorageBase):
             raise ValueError(f"No matches found for the target string: {target_string}")
 
         FileManagement.save_file(modified_text, file_path)
-
-    @staticmethod
-    def add_new_user_file_folder(user_id: int) -> None:
-        """
-        Creates a new file staging folder for the new user.
-
-        :param user_id: The new folder id to create.
-        """
-        new_directory = os.path.join(FileManagement.file_data_directory, str(user_id))
-        os.makedirs(new_directory, exist_ok=True)  # Create new folder for the given id
 
     @staticmethod
     def add_new_category_folder(category_id: str) -> None:

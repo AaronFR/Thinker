@@ -34,7 +34,7 @@ def get_file_by_id(file_id):
 @limiter.limit(MODERATELY_RESTRICTED)
 def upload_file():
     """
-    Accept a user file and try uploading it for staging
+    Accept a user file and try uploading it to an applicable category
 
     :returns: A Flask Response object containing a JSON representation of the processed message.
     """
@@ -52,10 +52,10 @@ def upload_file():
 
     category = CategoryManagement.categorise_input(content)
     CategoryManagement.possibly_create_new_category(category)
-    file_path = os.path.join(get_category_context(), filename)
 
     try:
-        Organising.save_file(content, category, file_path, overwrite=True)
+        # needs to be category id not category name
+        Organising.save_file(content, get_category_context(), filename, overwrite=True)
         return jsonify({'message': 'File uploaded successfully.', 'filename': filename}), 200
     except Exception as e:
         logging.info(f"Error saving file: {e}")
@@ -90,18 +90,6 @@ def delete_file(file_id):
 def list_files_in_category(category_name):
     category_name = category_name.lower()
     return fetch_entity(nodeDB().get_files_by_category(category_name), "files")
-
-
-@files_bp.route('/files/list_staged_files', methods=['GET'])
-@login_required
-@limiter.limit(LIGHTLY_RESTRICTED)
-def list_staged_files():
-    """
-    Lists the staged files for the user on prompt submission
-
-    :return:
-    """
-    return fetch_entity(StorageMethodology.select().list_staged_files(), "files")
 
 
 # By File Address

@@ -34,7 +34,6 @@ export function fileIdEndpoint(uuid) {
 export function filesForCategoryNameEndpoint(categoryName) {
   return `${FLASK_PORT}/files/category/${categoryName.toLowerCase()}`
 }
-export const readStagedFilesEndpoint = `${FLASK_PORT}/files/list_staged_files`
 
 export function fileAddressEndpoint(categoryId, fileName) {
   return `${FLASK_PORT}/file_address/${categoryId}/${fileName}`
