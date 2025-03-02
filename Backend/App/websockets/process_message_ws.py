@@ -5,6 +5,7 @@ from flask_socketio import emit, SocketIO
 from flask import abort
 
 from App import limiter
+from App.extensions import socket_rate_limit, user_key_func
 from Data.CategoryManagement import CategoryManagement
 from Data.Files.StorageMethodology import StorageMethodology
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
@@ -48,7 +49,7 @@ def init_process_message_ws(socketio: SocketIO):
     @socketio.on('start_stream')
     @login_required_ws
     @balance_required
-    @limiter.limit("1 per day")
+    @socket_rate_limit(key_func=user_key_func, limit=BASE_LIMIT, period=86400)  # 1 per day (86400 seconds)
     def process_message(data):
         """
         Accept a user prompt and process it through the selected persona.
