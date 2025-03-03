@@ -16,7 +16,7 @@ import WriteSelector from './Selectors/WriteSelector';
 import PagesSelector from './Selectors/PagesSelector';
 
 import { apiFetch } from '../utils/authUtils';
-import { getBasename } from '../utils/textUtils';
+import { getBasename, shortenText } from '../utils/textUtils';
 import AutoExpandingTextarea from '../utils/AutoExpandingTextarea';
 import { Tooltip } from 'react-tooltip';
 import TooltipConstants from '../constants/tooltips';
@@ -123,7 +123,7 @@ const UserInputForm = ({
         <ul style={{ listStyleType: 'none', padding: 0 }}>
           {selectedMessages.map((message, index) => (
             <li key={index} className="selected-item">
-              <span role="img" aria-label="message">✉</span> {message.prompt}
+              <span role="img" aria-label="message">✉</span> {shortenText(message.prompt, 80)}
               <button
                 className="deselect-button"
                 onClick={() => toggleMessageSelection(message)}
