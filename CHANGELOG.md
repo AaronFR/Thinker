@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - More intuitive file upload, files are uploaded ..after file upload, not after sending a prompt with the uploaded files
  attached.
 - Ongoing requests won't be affected by a change in configuration mid-run.
+- A step's output is properly formatted when displayed
 
 ### Removed
 
