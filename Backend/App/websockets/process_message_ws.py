@@ -101,8 +101,8 @@ def init_process_message_ws(socketio: SocketIO):
                     emit('response', {'content': content})
                 elif 'stream_end' in chunk:
                     emit('stream_end', {
-                        "category_name": category,
-                        "category_id": get_category_context()
+                        "prompt": user_prompt,
+                        "message_id": get_message_context()
                     })
                     emit("update_workflow", {"status": "finished"})
                     break  # Exit the loop after emitting 'stream_end
@@ -115,8 +115,11 @@ def init_process_message_ws(socketio: SocketIO):
 
             emit('trigger_refresh', {
                 "category_name": category,
-                "category_id": get_category_context()
+                "category_id": get_category_context(),
+                "prompt": user_prompt
             })
+
+            # ToDo: termination needed for closing flask request?
 
         except ValueError as ve:
             logging.error("Value error: %s", str(ve))

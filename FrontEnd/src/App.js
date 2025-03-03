@@ -80,7 +80,7 @@ function App () {
     const [workflow, setWorkflow] = useState()
  
     // Custom hooks
-    const { message, files, error: messageError, isProcessing, handleSubmit, disconnectFromRequest, refreshCategory } = useSubmitMessage(concatenatedQA, selectedFiles, selectedMessages, tags, workflow, setWorkflow);
+    const { message, messageId, files, error: messageError, isProcessing, handleSubmit, disconnectFromRequest, refreshCategory } = useSubmitMessage(concatenatedQA, selectedFiles, selectedMessages, tags, workflow, setWorkflow);
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt();
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions();
     const { selectedWorkflow, workflowIsLoading, selectMessageError, selectWorkflow } = useSelectedWorkflow();
@@ -126,6 +126,17 @@ function App () {
     useEffect(() => {
       setTags(prevTags => ({ ...prevTags, model: settingsRef.current.models.default_foreground_model }));
     }, [settings.defaultModel])
+
+    useEffect(() => {
+      if (messageId == null || messageId == '') {
+        return
+      }
+      
+      setSelectedMessages(prevMessages => ([
+        ...prevMessages,
+        messageId,
+      ]));
+    }, [messageId])
 
     const handleInputChange = (event, selectedMessages, selectedFiles, tags) => {
       const newValue = event.target.value;

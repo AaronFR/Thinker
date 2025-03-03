@@ -17,6 +17,7 @@ const useSubmitMessage = (
   setWorkflow
 ) => {
   const [message, setMessage] = useState('');
+  const [messageId, setMessageId] = useState('')
   const [files, setFiles] = useState([]);
   const [error, setError] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -149,7 +150,11 @@ const useSubmitMessage = (
       /* End Stream Events */
 
       socket.on('stream_end', (data) => {
-        console.log('Stream has ended');
+        console.log(`Stream has ended, prompt ${data.message_id} complete`);
+        setMessageId({
+          id: data.message_id,
+          prompt: data.prompt,
+        })
         setIsProcessing(false);
       });
 
@@ -281,7 +286,7 @@ const useSubmitMessage = (
   }, []);
 
 
-  return { message, files, totalCost, error, isProcessing, handleSubmit, disconnectFromRequest, refreshCategory };
+  return { message, messageId, files, totalCost, error, isProcessing, handleSubmit, disconnectFromRequest, refreshCategory };
 };
 
 export default useSubmitMessage;
