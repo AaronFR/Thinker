@@ -14,7 +14,6 @@ import './styles/SuggestedQuestions.css';
  * Renders a list of suggested questions extracted from a markdown prompt.
  * Allows users to input responses to each question and concatenates the answers.
  *
- * @param {boolean} questionUserPromptsEnabled - Flag to enable or disable prompting.
  * @param {string} questionsForPrompt - Markdown string containing the questions.
  * @param {string} error - Error message to display, if any.
  * @param {boolean} isQuestioning - Indicates if a questioning process is ongoing.
@@ -23,7 +22,6 @@ import './styles/SuggestedQuestions.css';
  * @param {any} resetResponsesTrigger - Dependency to trigger resetting responses.
  */
 const SuggestedQuestions = ({
-  questionUserPromptsEnabled,
   questionsForPrompt,
   error = '',
   isQuestioning,

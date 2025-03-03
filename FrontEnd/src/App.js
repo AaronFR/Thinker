@@ -53,8 +53,6 @@ function App () {
       settingsRef.current = settings;
     }, [settings]);
 
-    const { augmentedPromptsEnabled, questionUserPromptsEnabled } = settings;
-
     // QA management
     const [concatenatedQA, setConcatenatedQA] = useState('');
     const [resetResponsesTrigger, setResetResponsesTrigger] = useState(0);
@@ -197,7 +195,7 @@ function App () {
 
     const copyAugmentedPrompt = () => {
       setUserInput(augmentedPrompt); // Copy augmentedPrompt into userInput
-      if (questionUserPromptsEnabled && !formsFilled && settings.questionUserPromptsEnabled == 'auto') {
+      if (settingsRef.current?.beta_features?.augmented_prompts_enabled != "off" && !formsFilled && settings.questionUserPromptsEnabled == 'auto') {
         generateQuestionsForPrompt(augmentedPrompt, selectedMessages, selectedFiles); // Retrigger questions for prompt
         setResetResponsesTrigger(prev => prev + 1);
       }
@@ -246,23 +244,23 @@ function App () {
               setRefreshFiles={setRefreshFiles}
             />
             
+            {settingsRef.current?.beta_features?.question_user_prompts_enabled != "off" && 
             <SuggestedQuestions
-              questionUserPromptsEnabled={questionUserPromptsEnabled}
               questionsForPrompt={questionsForPrompt}
               error={questionsError}
               isQuestioning={isQuestioning}
               onFormsFilled={setFormsFilled}
               setConcatenatedQA={setConcatenatedQA}
               resetResponsesTrigger={resetResponsesTrigger}
-            />
+            />}
     
+            {settingsRef.current?.beta_features?.augmented_prompts_enabled != "off" && 
             <PromptAugmentation 
-              augmentedPromptsEnabled={augmentedPromptsEnabled}
               augmentedPrompt={augmentedPrompt}
               error={augmentedError}
               isAugmenting={isAugmenting}
               copyAugmentedPrompt={copyAugmentedPrompt}
-            />
+            />}
     
             <Workflow
               workflowData={workflow}

@@ -14,7 +14,6 @@ import './styles/PromptAugmentation.css';
  * ToDo: the augmentedPromptsEnabled check should probably be higher up. 
  *  A component should not have to worry about disabling itself
  * 
- * @param {boolean} augmentedPromptsEnabled (boolean): Flag to enable or disable augmented prompts.
  * @param {string} augmentedPrompt (string): The augmented prompt text.
  * @param {string} [error=''] - Optional error message to display.
  * @param {boolean} isAugmenting (boolean): Indicates if the augmentation process is ongoing.
@@ -70,10 +69,6 @@ const PromptAugmentation = React.memo(({
       )}
     </div>
   ), [error, augmentedPrompt, isAugmenting, handleCopyClick, buttonLabel, buttonText]);
-
-  if (!augmentedPromptsEnabled) {
-    return null;
-  }
 
   if (!augmentedPrompt) {
     return (
