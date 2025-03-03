@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - o1-preview (o1 is released but not as good as o3-mini, while being *much* more expensive)
 - staging-directory: was used at the end of a request, saving files (typically in threads) is faster.
+- EncyclopediaManagement - made redundant by internet search
 
 ## [0.9.5] - 2025-02-18 - Pre public beta
 

@@ -1,5 +1,7 @@
 """
 ⚠ WIP: Not Currently in Use!
+
+There may be some potential for internet search results that bring up Wikipedia articles.
 """
 
 import logging

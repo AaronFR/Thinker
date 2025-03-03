@@ -369,7 +369,6 @@ const BetaFeaturesSettings = React.memo(({
   settings,
   toggleDebug,
   toggleUserEncyclopedia,
-  toggleEncyclopedia,
   toggleMultiFileProcessing,
 }) => {
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">🚧 Beta Features</h2>), []);
@@ -633,7 +632,6 @@ export function Settings() {
   const toggleDarkMode = useCallback(() => toggleSetting('interface', 'dark_mode'), [toggleSetting]);
   const toggleAiColourisation = useCallback(() => toggleSetting('interface', 'ai_colour'), [toggleSetting]);
   const toggleUserEncyclopedia = useCallback(() => toggleSetting('beta_features', 'user_context_enabled'), [toggleSetting]);
-  const toggleEncyclopedia = useCallback(() => toggleSetting('beta_features', 'encyclopedia_enabled'), [toggleSetting]);
   const toggleMultiFileProcessing = useCallback(() => toggleSetting('beta_features', 'multi_file_processing_enabled'), [toggleSetting]);
   const toggleSummarisation = useCallback(() => toggleSetting('optimization', 'summarise'), [toggleSetting]);
   const toggleFileSummarisation = useCallback(() => toggleSetting('optimization', 'summariseFiles'), [toggleSetting]);
@@ -742,7 +740,6 @@ export function Settings() {
         settings={settings}
         toggleDebug={toggleDebug}
         toggleUserEncyclopedia={toggleUserEncyclopedia}
-        toggleEncyclopedia={toggleEncyclopedia}
         toggleMultiFileProcessing={toggleMultiFileProcessing}
       />
 

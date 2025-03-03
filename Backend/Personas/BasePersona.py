@@ -9,7 +9,6 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Constants.Exceptions import FAILURE_TO_REVIEW_RELEVANT_HISTORY
 from Data.Configuration import Configuration
-from Data.EncyclopediaManagement import EncyclopediaManagement
 from Data.InternetSearch import InternetSearch
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
@@ -202,12 +201,6 @@ class BasePersona:
         config = Configuration.load_config()
 
         system_messages = [self.instructions, self.configuration]
-
-        if config['beta_features']['encyclopedia_enabled']:
-            encyclopedia_manager = EncyclopediaManagement()
-            additional_context = encyclopedia_manager.search_encyclopedia(user_messages)
-            if additional_context:
-                system_messages.append(additional_context)
 
         if config['beta_features']['user_context_enabled']:
             user_encyclopedia_manager = UserContextManagement()
