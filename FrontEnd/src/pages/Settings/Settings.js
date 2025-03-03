@@ -41,7 +41,7 @@ const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiCo
       <label className="settings-label">
         <input
           type="checkbox"
-          checked={settings.darkMode}
+          checked={settings?.interface?.dark_mode}
           onChange={toggleDarkMode}
           className="settings-checkbox"
         />
@@ -55,7 +55,7 @@ const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiCo
       >
         <input
           type="checkbox"
-          checked={settings.aiColour}
+          checked={settings?.interface?.ai_colour}
           onChange={toggleAiColourisation}
           className="settings-checkbox"
         />
@@ -87,7 +87,7 @@ const AiModelSettings = React.memo(({ settings, handleForegroundModelChange, han
       <h3>Foreground Model Default</h3>
       <p>This will specify the foreground model to be selected by default, each step in each workflow will run on the selected model</p>
       <ModelSelector
-        selectedModel={settings?.defaultForegroundModel || ''}
+        selectedModel={settings?.models?.default_foreground_model || ''}
         setTags={handleForegroundModelChange}
       />
       <h3>Background Model</h3>
@@ -96,7 +96,7 @@ const AiModelSettings = React.memo(({ settings, handleForegroundModelChange, han
         purpose you want a functional economical, to the point LLM.
       </p>
       <ModelSelector
-        selectedModel={settings?.defaultBackgroundModel || ''}
+        selectedModel={settings?.models.default_background_model || ''}
         setTags={handleBackgroundModelChange}
         economicalMode={true}
       />
@@ -135,27 +135,27 @@ const FunctionalitySettings = React.memo(({
       </div>
      
       <AutoPromptEngineeringSection
-        currentValue={settings.augmentedPromptsEnabled}
+        currentValue={settings?.beta_features?.augmented_prompts_enabled}
         onChange={changeSetting}
-        promptMessage={settings.promptAugmentationMessage}
+        promptMessage={settings?.systemMessages?.promptAugmentationMessage}
         handleMessageChange={handleMessageChange}
         cost={userInfo?.augmentation_cost}
       />
       <PromptQuestioningSection
-        currentValue={settings.questionUserPromptsEnabled}
+        currentValue={settings?.beta_features?.question_user_prompts_enabled}
         onChange={changeSetting}
-        promptMessage={settings.promptQuestioningMessage}
+        promptMessage={settings?.systemMessages?.promptQuestioningMessage}
         handleMessageChange={handleMessageChange}
         cost={userInfo?.questioning_cost}
       />
       <InternetSearchSection 
-        currentValue={settings.internetSearchEnabled}
+        currentValue={settings?.features?.internet_search_enabled}
         onChange={changeSetting}
         cost={userInfo?.internet_search_cost}
       />
       <BestOfSection 
-        currentValue={settings.bestOfEnabled}
-        promptMessage={settings.bestOfMessage}
+        currentValue={settings?.features?.multiple_reruns_enabled}
+        promptMessage={settings?.systemMessages?.bestOfMessage}
         onChange={changeSetting}
         handleMessageChange={handleMessageChange}
         cost={userInfo?.best_of_cost}
@@ -190,7 +190,7 @@ const WorkflowsSettings = React.memo(({
           <input
             type="checkbox"
             className="settings-checkbox"
-            checked={settings.writePagesInParallel}
+            checked={settings?.optimization?.writePagesInParallel}
             onChange={toggleWritePagesInParallel}
           />
           Write Pages in Parallel
@@ -235,7 +235,7 @@ const SummariesSettings = React.memo(({
             type="checkbox"
             className="settings-checkbox"
             id="summarise-checkbox"
-            checked={settings.summarisationEnabled}
+            checked={settings?.optimization?.summarise}
             onChange={toggleSummarisation}
           />
           Enables summaries on compatible workflows
@@ -247,10 +247,10 @@ const SummariesSettings = React.memo(({
           data-tooltip-place="bottom"
         >
           <AutoExpandingTextarea
-            value={settings.summarisationMessage}
+            value={settings?.systemMessages?.summarisationMessage}
             className="textarea"
             onChange={(e) =>
-              handleMessageChange('summarisationMessage', e.target.value)
+              handleMessageChange('systemMessages', 'summarisationMessage', e.target.value)
             }
             style={{ opacity: 0.9 }}
           />
@@ -263,7 +263,7 @@ const SummariesSettings = React.memo(({
           type="checkbox"
           className="settings-checkbox"
           id="summarise-checkbox"
-          checked={settings.fileSummarisationEnabled}
+          checked={settings?.optimization?.summariseFiles}
           onChange={toggleFileSummarisation}
         />
         Add a summary to new files after they've been created
@@ -276,10 +276,10 @@ const SummariesSettings = React.memo(({
           data-tooltip-place="bottom"
         >
           <AutoExpandingTextarea
-            value={settings.fileSummarisationMessage}
+            value={settings?.systemMessages?.fileSummarisationMessage}
             className="textarea"
             onChange={(e) =>
-              handleMessageChange('fileSummarisationMessage', e.target.value)
+              handleMessageChange('systemMessages', 'fileSummarisationMessage', e.target.value)
             }
             style={{ opacity: 0.9 }}
           />
@@ -312,10 +312,10 @@ const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) =>
         <label className="message-label">
           Coder Persona Message
           <AutoExpandingTextarea
-            value={settings.coderPersonaMessage}
+            value={settings?.systemMessages?.coderPersonaMessage}
             className="textarea"
             onChange={(e) =>
-              handleMessageChange('coderPersonaMessage', e.target.value)
+              handleMessageChange('systemMessages', 'coderPersonaMessage', e.target.value)
             }
             style={{ opacity: 0.9 }}
           />
@@ -323,10 +323,10 @@ const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) =>
         <label className="message-label">
           Writer Persona Message
           <AutoExpandingTextarea
-            value={settings.writerPersonaMessage}
+            value={settings?.systemMessages?.writerPersonaMessage}
             className="textarea"
             onChange={(e) =>
-              handleMessageChange('writerPersonaMessage', e.target.value)
+              handleMessageChange('systemMessages', 'writerPersonaMessage', e.target.value)
             }
             style={{ opacity: 0.9 }}
           />
@@ -339,10 +339,10 @@ const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) =>
             data-tooltip-place="bottom"
           >
             <AutoExpandingTextarea
-              value={settings.categorisationMessage}
+              value={settings?.systemMessages?.categorisationMessage}
               className="textarea"
               onChange={(e) =>
-                handleMessageChange('categorisationMessage', e.target.value)
+                handleMessageChange('systemMessages', 'categorisationMessage', e.target.value)
               }
               style={{ opacity: 0.9 }}
             />
@@ -382,7 +382,7 @@ const BetaFeaturesSettings = React.memo(({
           type="checkbox"
           className="settings-checkbox"
           id="debug-checkbox"
-          checked={settings.debug}
+          checked={settings?.interface?.debug}
           onChange={toggleDebug}
         />
         Enable debug view (Directly view prompt tags)
@@ -390,7 +390,7 @@ const BetaFeaturesSettings = React.memo(({
       <label className="settings-label">
         <input
           type="checkbox"
-          checked={settings.userEncyclopediaEnabled}
+          checked={settings?.beta_features?.user_context_enabled}
           onChange={toggleUserEncyclopedia}
           className="settings-checkbox"
         />
@@ -399,16 +399,7 @@ const BetaFeaturesSettings = React.memo(({
       <label className="settings-label">
         <input
           type="checkbox"
-          checked={settings.encyclopediaEnabled}
-          onChange={toggleEncyclopedia}
-          className="settings-checkbox"
-        />
-        Reference knowledge - The thinker will look up details online (Wikipedia currently) and use them in reference to your prompt where appropriate
-      </label>
-      <label className="settings-label">
-        <input
-          type="checkbox"
-          checked={settings.multiFileProcessingEnabled}
+          checked={settings?.beta_features?.multi_file_processing_enabled}
           onChange={toggleMultiFileProcessing}
           className="settings-checkbox"
         />
@@ -448,9 +439,8 @@ const PromptQuestioningSection = React.memo(({
         value={currentValue}
         onChange={(e) =>
           onChange(
-            'beta_features.question_user_prompts_enabled',
+            'beta_features', 'question_user_prompts_enabled',
             e.target.value,
-            'questionUserPromptsEnabled'
           )
         }
       >
@@ -471,7 +461,7 @@ const PromptQuestioningSection = React.memo(({
         value={promptMessage}
         className="textarea"
         onChange={(e) =>
-          handleMessageChange('promptQuestioningMessage', e.target.value)
+          handleMessageChange('systemMessages', 'promptQuestioningMessage', e.target.value)
         }
         style={{ opacity: 0.9 }}
       />
@@ -498,9 +488,9 @@ const AutoPromptEngineeringSection = React.memo(({
         value={currentValue}
         onChange={(e) =>
           onChange(
-            'beta_features.augmented_prompts_enabled',
+            'beta_features',
+            'augmented_prompts_enabled',
             e.target.value,
-            'augmentedPromptsEnabled'
           )
         }
       >
@@ -521,7 +511,7 @@ const AutoPromptEngineeringSection = React.memo(({
         value={promptMessage}
         className="textarea"
         onChange={(e) =>
-          handleMessageChange('promptAugmentationMessage', e.target.value)
+          handleMessageChange('systemMessages', 'promptAugmentationMessage', e.target.value)
         }
         style={{ opacity: 0.9 }}
       />
@@ -549,9 +539,9 @@ const BestOfSection = React.memo(({
         value={currentValue}
         onChange={(e) =>
           onChange(
-            'features.multiple_reruns_enabled',
+            'features',
+            'multiple_reruns_enabled',
             e.target.value,
-            'bestOfEnabled'
           )
         }
       >
@@ -572,7 +562,7 @@ const BestOfSection = React.memo(({
         value={promptMessage}
         className="textarea"
         onChange={(e) =>
-          handleMessageChange('bestOfMessage', e.target.value)
+          handleMessageChange('systemMessages', 'bestOfMessage', e.target.value)
         }
         style={{ opacity: 0.9 }}
       />
@@ -605,9 +595,9 @@ const InternetSearchSection = React.memo(({
         value={currentValue}
         onChange={(e) =>
           onChange(
-            'features.internet_search_enabled',
+            'features',
+            'internet_search_enabled',
             e.target.value,
-            'internetSearchEnabled'
           )
         }
       >
@@ -639,15 +629,15 @@ export function Settings() {
   } = useContext(SettingsContext);
 
   // Memoize toggle functions to prevent re-creation on every render.
-  const toggleDebug = useCallback(() => toggleSetting('interface.debug', 'debug'), [toggleSetting]);
-  const toggleDarkMode = useCallback(() => toggleSetting('interface.dark_mode', 'darkMode'), [toggleSetting]);
-  const toggleAiColourisation = useCallback(() => toggleSetting('interface.ai_colour', 'aiColour'), [toggleSetting]);
-  const toggleUserEncyclopedia = useCallback(() => toggleSetting('beta_features.user_context_enabled', 'userEncyclopediaEnabled'), [toggleSetting]);
-  const toggleEncyclopedia = useCallback(() => toggleSetting('beta_features.encyclopedia_enabled', 'encyclopediaEnabled'), [toggleSetting]);
-  const toggleMultiFileProcessing = useCallback(() => toggleSetting('beta_features.multi_file_processing_enabled', 'multiFileProcessingEnabled'), [toggleSetting]);
-  const toggleSummarisation = useCallback(() => toggleSetting('optimization.summarise', 'summarisationEnabled'), [toggleSetting]);
-  const toggleFileSummarisation = useCallback(() => toggleSetting('optimization.summariseFiles', 'fileSummarisationEnabled'), [toggleSetting]);
-  const toggleWritePagesInParallel = useCallback(() => toggleSetting('optimization.writePagesInParallel', 'writePagesInParallel'), [toggleSetting]);
+  const toggleDebug = useCallback(() => toggleSetting('interface', 'debug'), [toggleSetting]);
+  const toggleDarkMode = useCallback(() => toggleSetting('interface', 'dark_mode'), [toggleSetting]);
+  const toggleAiColourisation = useCallback(() => toggleSetting('interface', 'ai_colour'), [toggleSetting]);
+  const toggleUserEncyclopedia = useCallback(() => toggleSetting('beta_features', 'user_context_enabled'), [toggleSetting]);
+  const toggleEncyclopedia = useCallback(() => toggleSetting('beta_features', 'encyclopedia_enabled'), [toggleSetting]);
+  const toggleMultiFileProcessing = useCallback(() => toggleSetting('beta_features', 'multi_file_processing_enabled'), [toggleSetting]);
+  const toggleSummarisation = useCallback(() => toggleSetting('optimization', 'summarise'), [toggleSetting]);
+  const toggleFileSummarisation = useCallback(() => toggleSetting('optimization', 'summariseFiles'), [toggleSetting]);
+  const toggleWritePagesInParallel = useCallback(() => toggleSetting('optimization', 'writePagesInParallel'), [toggleSetting]);
 
   // Use AbortController to cancel unfinished fetch if component unmounts.
   const fetchUserInformation = useCallback(() => {
@@ -697,11 +687,11 @@ export function Settings() {
   }, [fetchUserInformation]);
 
   const handleForegroundModelChange = useCallback((selectedModelValue) => {
-    changeSetting('models.default_foreground_model', selectedModelValue, 'defaultForegroundModel');
+    changeSetting('models', 'default_foreground_model', selectedModelValue);
   }, [changeSetting]);
 
   const handleBackgroundModelChange = useCallback((selectedModelValue) => {
-    changeSetting('models.default_background_model', selectedModelValue, 'defaultBackgroundModel');
+    changeSetting('models', 'default_background_model', selectedModelValue);
   }, [changeSetting]);
 
   return (

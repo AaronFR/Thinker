@@ -3,47 +3,48 @@ import { apiFetch } from '../../utils/authUtils';
 import { userConfigEndpoint } from '../../constants/endpoints';
 
 /**
- * SettingsContext
- *
  * Provides context for managing and accessing application settings globally,
  * including font size, dark mode, and various feature toggles.
  */
 export const SettingsContext = createContext();
 
 /**
- * SettingsProvider Component
+ * Fetches configuration settings from the server.
  *
+ * :returns {Promise<Object|null>} Loaded configuration or null if fetch fails.
+ */
+export const fetchConfig = async () => {
+    try {
+        console.log("Fetching user config")
+        const response = await apiFetch(userConfigEndpoint, {
+            method: 'GET',
+        });
+
+        if (response.ok) {
+            const loadedConfig = await response.json();
+            const hasRequiredFields =
+                loadedConfig.interface &&
+                loadedConfig.beta_features &&
+                loadedConfig.systemMessages;
+                
+            return hasRequiredFields ? loadedConfig : null;
+        }
+
+        console.error('Failed to load config');
+        return null;
+    } catch (error) {
+        console.error('Error loading config:', error);
+        return null;
+    }
+};
+
+/**
  * Wraps the application components and provides settings-related state and functions.
  *
  * @param {object} props - The component props.
  * @param {React.ReactNode} props.children - React components that consume this context.
  */
-export const SettingsProvider = ({ children }) => {
-    const initialSettings = {
-        debug: false,
-        darkMode: true,
-        defaultForegroundModel: "gpt-4o-mini",
-        defaultBackgroundModel: "gpt-4o-mini",
-        aiColour: false,
-        language: 'en',
-        augmentedPromptsEnabled: "off",
-        questionUserPromptsEnabled: "off",
-        bestOfEnabled: 'off',
-        internetSearchEnabled: 'off',
-        userEncyclopediaEnabled: false,
-        summarisationEnabled: false,
-        encyclopediaEnabled: false,
-        multiFileProcessingEnabled: false,
-        promptAugmentationMessage: 'Default prompt augmentation message...',
-        promptQuestioningMessage: 'Default prompt questioning message...',
-        coderPersonaMessage: 'Default coder persona message...',
-        writerPersonaMessage: 'Default writer persona message...',
-        categorisationMessage: 'Default categorisation message...',
-        bestOfMessage: 'Default best of judgement criteria...',
-        summarisationMessage: 'Default summarisation message...',
-        filesSummarisationMessage: 'Default file summarisation message...',
-    };
-
+export const SettingsProvider = ({ children, initialSettings }) => {
     const [settings, setSettings] = useState(initialSettings);
 
     const [fontSize, setFontSize] = useState(() => {
@@ -53,33 +54,6 @@ export const SettingsProvider = ({ children }) => {
 
     const typingTimer = useRef(null);
     const idleTime = 2000; // Time before processing user message changes
-
-    /**
-     * Fetches configuration settings from the server.
-     *
-     * :returns {Promise<Object|null>} Loaded configuration or null if fetch fails.
-     */
-    const fetchConfig = async () => {
-        try {
-            const response = await apiFetch(userConfigEndpoint, {
-                method: 'GET',
-            });
-            if (response.ok) {
-                const loadedConfig = await response.json();
-                const hasRequiredFields =
-                    loadedConfig.interface &&
-                    loadedConfig.beta_features &&
-                    loadedConfig.systemMessages;
-                    
-                return hasRequiredFields ? loadedConfig : null;
-            }
-            console.error('Failed to load config');
-            return null;
-        } catch (error) {
-            console.error('Error loading config:', error);
-            return null;
-        }
-    };
 
     /**
      * Saves a setting to the server.
@@ -105,70 +79,51 @@ export const SettingsProvider = ({ children }) => {
     // Load config from server on component mount
     useEffect(() => {
         const loadConfig = async () => {
-            const loadedConfig = await fetchConfig();
-            if (loadedConfig) {
-                setSettings((prevSettings) => ({
-                    ...prevSettings,
-                    debug: loadedConfig.interface.debug ?? initialSettings.debug,
-                    darkMode: loadedConfig.interface.dark_mode ?? initialSettings.darkMode,
-                    defaultForegroundModel: loadedConfig.models.default_foreground_model ?? initialSettings.defaultForegroundModel,
-                    defaultBackgroundModel: loadedConfig.models.default_background_model ?? initialSettings.defaultBackgroundModel,
-                    aiColour: loadedConfig.interface.ai_colour ?? initialSettings.aiColour,
-                    augmentedPromptsEnabled:
-                        loadedConfig.beta_features.augmented_prompts_enabled ?? initialSettings.augmentedPromptsEnabled,
-                    questionUserPromptsEnabled:
-                        loadedConfig.beta_features.question_user_prompts_enabled ?? initialSettings.questionUserPromptsEnabled,
-                    bestOfEnabled:
-                        loadedConfig.features.multiple_reruns_enabled ?? initialSettings.bestOfEnabled,
-                    internetSearchEnabled:
-                        loadedConfig.features.internet_search_enabled ?? initialSettings.internetSearchEnabled,
-                    summarisationEnabled:
-                        loadedConfig.optimization.summarise ?? initialSettings.summarisationEnabled,
-                    userEncyclopediaEnabled:
-                        loadedConfig.beta_features.user_context_enabled ?? initialSettings.userEncyclopediaEnabled,
-                    encyclopediaEnabled:
-                        loadedConfig.beta_features.encyclopedia_enabled ?? initialSettings.encyclopediaEnabled,
-                    multiFileProcessingEnabled:
-                        loadedConfig.beta_features.multi_file_processing_enabled ?? initialSettings.multiFileProcessingEnabled,
-                    promptAugmentationMessage:
-                        loadedConfig.systemMessages.promptAugmentationMessage || initialSettings.promptAugmentationMessage,
-                    promptQuestioningMessage:
-                        loadedConfig.systemMessages.promptQuestioningMessage || initialSettings.promptQuestioningMessage,
-                    coderPersonaMessage:
-                        loadedConfig.systemMessages.coderPersonaMessage || initialSettings.coderPersonaMessage,
-                    writerPersonaMessage:
-                        loadedConfig.systemMessages.writerPersonaMessage || initialSettings.writerPersonaMessage,
-                    categorisationMessage:
-                        loadedConfig.systemMessages.categorisationMessage || initialSettings.categorisationMessage,
-                    bestOfMessage:
-                        loadedConfig.systemMessages.bestOfMessage || initialSettings.bestOfMessage,
-                    summarisationMessage:
-                        loadedConfig.systemMessages.summarisationMessage || initialSettings.summarisationMessage,
-                    fileSummarisationMessage:
-                        loadedConfig.systemMessages.fileSummarisationMessage || initialSettings.filesSummarisationMessage,
-                }));
+            if (!initialSettings) {
+                const loadedConfig = await fetchConfig();
+                if (loadedConfig) {
+                    setSettings((prevSettings) => ({
+                        ...prevSettings,
+                        loadedConfig
+                    }));
+                };
+                loadConfig();
+            } else {
+                // If initialSettings is provided, we assume settings are already loaded.
+                setSettings(initialSettings);
             }
-        };
-        loadConfig();
+        }
     }, []);
 
     /**
      * Toggles a boolean setting and saves the updated config to the server.
      *
-     * @param {string} field - The config field to update.
-     * @param {string} key - The key in the settings state to toggle.
+     * @param {string} section - The section in the settings to update
+     * @param {string} field - The field in this settings subsection to update.
      */
-    const toggleSetting = useCallback((field, key) => {
+    const toggleSetting = useCallback((section, field) => {
         setSettings((prev) => {
-            const newValue = !prev[key];
-            saveConfig(field, newValue);
-            return { ...prev, [key]: newValue };
+          const newValue = !prev[section][field];
+          saveConfig(section + '.' + field, newValue);
+          return {
+            ...prev,
+            [section]: {
+              ...prev[section],
+              [field]: newValue,
+            },
+          };
         });
-    }, [saveConfig]);
-    const changeSetting = useCallback((field, value, settingKey) => {
+      }, [saveConfig]);
+    const changeSetting = useCallback((section, field, value, settingKey) => {
         setSettings((prev) => {
-            saveConfig(field, value);
-            return { ...prev, [settingKey]: value };
+            saveConfig(section + '.' + field, value);
+            return {
+            ...prev,
+            [section]: {
+                ...prev[section],
+                [field]: value,
+            },
+            };
         });
     }, []);
 
@@ -178,13 +133,19 @@ export const SettingsProvider = ({ children }) => {
      * @param {string} key - The key of the message to update.
      * @param {string} value - The new message value.
      */
-    const handleMessageChange = useCallback((key, value) => {
-        setSettings((prev) => ({ ...prev, [key]: value }));
+    const handleMessageChange = useCallback((section, field, value) => {
+        setSettings((prev) => ({
+            ...prev,
+            [section]: {
+                ...prev[section],
+                [field]: value,
+            },
+        }));
         if (typingTimer.current) {
             clearTimeout(typingTimer.current);
         }
 
-        const configField = `systemMessages.${key}`;
+        const configField = section + '.' + field;
         typingTimer.current = setTimeout(() => {
             saveConfig(configField, value);
         }, idleTime);
@@ -192,11 +153,11 @@ export const SettingsProvider = ({ children }) => {
 
     // Apply Dark Mode to Document Body
     useEffect(() => {
-        document.body.classList.toggle('dark-mode', settings.darkMode);
+        document.body.classList.toggle('dark-mode', settings?.interface?.dark_mode);
         return () => {
             document.body.classList.remove('dark-mode');
         };
-    }, [settings.darkMode]);
+    }, [settings?.interface?.dark_mode]);
     
 
     // Apply Font Size to Document

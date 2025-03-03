@@ -10,7 +10,7 @@ import Login from './pages/Login/Login';
 import Guide from './pages/Guide/Guide';
 import { apiFetch } from "./utils/authUtils";
 
-import { SettingsProvider } from "./pages/Settings/SettingsContext";
+import { SettingsProvider, fetchConfig } from "./pages/Settings/SettingsContext";
 import { SelectionProvider } from "./pages/Messages/SelectionContext";
 
 import 'highlight.js/styles/atom-one-dark.css';
@@ -18,33 +18,48 @@ import Messages from "./pages/Messages/Messages";
 import { validateSessionEndpoint } from "./constants/endpoints";
 import VerifyEmail from "./pages/Verify/VerifyEmail";
 
+
 function RootApp() {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const [initialSettings, setInitialSettings] = useState(null);
 
   useEffect(() => {
-    const validateSession = async () => {
+    const initialiseApp = async () => {
       try {
         const response = await apiFetch(validateSessionEndpoint, {
             method: "GET",
         });
+        const sessionIsValid = response.ok;
+        setIsAuthenticated(sessionIsValid);
 
-        setIsAuthenticated(response.ok);
+        if (sessionIsValid) {
+          const loadedConfig = await fetchConfig();
+          setInitialSettings(loadedConfig);
+        }
+
       } catch (error) {
         console.error("Error validating session:", error);
         setIsAuthenticated(false);
+        setInitialSettings({});
       }
     };
 
-    validateSession();
+    initialiseApp();
   }, []);
 
-  if (isAuthenticated === null) {
+  useEffect(() => {
+    if (initialSettings !== null) {
+      console.log("initialSettings have been loaded:", initialSettings);
+    }
+  }, [initialSettings]);
+
+  if (isAuthenticated === null || initialSettings === null) {
     // Show a loading state while session is being validated
     return <div>Loading...</div>;
   }
 
   return (
-    <SettingsProvider>
+    <SettingsProvider initialSettings={initialSettings}>
       <SelectionProvider>
         <BrowserRouter>
           <Routes>

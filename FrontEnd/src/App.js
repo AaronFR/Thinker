@@ -124,7 +124,7 @@ function App () {
     }, [automaticallySelectedPersona]);
 
     useEffect(() => {
-      setTags(prevTags => ({ ...prevTags, model: settingsRef.current.defaultForegroundModel }));
+      setTags(prevTags => ({ ...prevTags, model: settingsRef.current.models.default_foreground_model }));
     }, [settings.defaultModel])
 
     const handleInputChange = (event, selectedMessages, selectedFiles, tags) => {
@@ -147,10 +147,10 @@ function App () {
       
       selectPersona(value)
       selectWorkflow(value, tags)
-      if (currentSettings.augmentedPromptsEnabled  === "auto") {
+      if (currentSettings?.beta_features?.augmented_prompts_enabled  === "auto") {
         generateAugmentedPrompt(value);
       }
-      if (currentSettings.questionUserPromptsEnabled  === "auto" && !formsFilled) {
+      if (currentSettings?.beta_features?.question_user_prompts_enabled  === "auto" && !formsFilled) {
         generateQuestionsForPrompt(value, selectedMessages, selectedFiles);
       }
     };
@@ -216,10 +216,8 @@ function App () {
           </div>
         
           <div className="scrollable right-pane">
-
             <LowBalanceWarning balance={balance} />
     
-            {/* ToDo: Should expand out on hover */}
             <UserInputForm 
               handleSubmit={handleFormSubmit}
               disconnectFromRequest={disconnectFromRequest}

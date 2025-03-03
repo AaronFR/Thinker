@@ -269,7 +269,7 @@ const UserInputForm = ({
         </div>
         
 
-        {settings.debug === true && (
+        {settings?.interface?.debug === true && (
           <TagsManager tags={tags} setTags={setTags} />
         )}
         <Tooltip id="tooltip" />
