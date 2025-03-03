@@ -131,7 +131,7 @@ function App () {
       if (messageId == null || messageId == '') {
         return
       }
-      
+
       setSelectedMessages(prevMessages => ([
         ...prevMessages,
         messageId,
@@ -216,12 +216,14 @@ function App () {
               isProcessing={isProcessing}
               onFileSelect={toggleFileSelection}
               selectedFiles={selectedFiles}
+              setSelectedFiles={setSelectedFiles}
               refreshFiles={refreshFiles}
             />
             <MessagePane 
               isProcessing={isProcessing}
               onMessageSelect={toggleMessageSelection}
               selectedMessages={selectedMessages}
+              setSelectedMessages={setSelectedMessages}
               refreshCategory={refreshCategory}
             />
           </div>
