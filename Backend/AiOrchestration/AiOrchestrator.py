@@ -9,6 +9,7 @@ from AiOrchestration.GeminiModel import GeminiModel
 from AiOrchestration.ChatGptMessageBuilder import generate_messages
 from Constants.Exceptions import AI_RESOURCE_FAILURE, FUNCTION_SCHEMA_EMPTY, NO_RESPONSE_OPEN_AI_API
 from Data.Configuration import Configuration
+from Utilities.Contexts import get_user_configuration
 
 from Utilities.Decorators import handle_errors
 from Utilities.PaymentDecorators import specify_functionality_context

@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - o1-mini prices update (now lower)
 - More intuitive file upload, files are uploaded ..after file upload, not after sending a prompt with the uploaded files
  attached.
+- Ongoing requests won't be affected by a change in configuration mid-run.
 
 ### Removed
 

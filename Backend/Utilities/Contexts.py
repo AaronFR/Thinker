@@ -1,4 +1,5 @@
 import logging
+from typing import Dict
 
 from flask import g
 
@@ -67,6 +68,20 @@ def get_category_context():
         logging.error("No category id found!")
 
     return category_id
+
+
+def set_user_configuration(user_configuration: Dict):
+    """
+    Sets the user config, a dictionary of settings and sub-settings, in the flask context
+    """
+    g.user_configuration = user_configuration
+
+
+def get_user_configuration():
+    """
+    Retrieves the user configuration, returns None if not yet set during the course of the request
+    """
+    return getattr(g, 'user_configuration', None)
 
 
 # Workflow step context

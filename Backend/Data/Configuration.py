@@ -3,7 +3,7 @@ import os
 from typing import Mapping, Dict, Any
 
 from Data.Files.StorageMethodology import StorageMethodology
-from Utilities.Contexts import get_user_context
+from Utilities.Contexts import get_user_context, get_user_configuration, set_user_configuration
 from Utilities.Decorators import handle_errors
 
 
@@ -41,13 +41,17 @@ class Configuration:
         :returns: A dictionary containing the extracted configuration values
         :raises FileNotFoundError: If the specified YAML file does not exist.
         """
-        default_config = StorageMethodology.select().load_yaml(yaml_file)
-        user_config = StorageMethodology.select().load_yaml(f"{get_user_context()}.yaml")
+        full_config = get_user_configuration()
+        if not full_config:
+            default_config = StorageMethodology.select().load_yaml(yaml_file)
+            user_config = StorageMethodology.select().load_yaml(f"{get_user_context()}.yaml")
 
-        # Merge user_config into config
-        merged_config = Configuration.deep_merge(default_config, user_config)
+            # Merge user_config into config
+            full_config = Configuration.deep_merge(default_config, user_config)
 
-        return merged_config
+            set_user_configuration(full_config)
+
+        return full_config
 
     @staticmethod
     def update_config_field(field_path: str, value: Any) -> None:
