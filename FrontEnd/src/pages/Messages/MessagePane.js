@@ -90,7 +90,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages, refre
       return
     }
 
-    fetchMessagesByCategory(refreshCategory?.name, refreshCategory?.id)
+    fetchCategories()
   }, [refreshCategory])
 
   /**

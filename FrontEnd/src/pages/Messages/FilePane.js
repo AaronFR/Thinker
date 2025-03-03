@@ -14,8 +14,10 @@ import { categoriesWithFilesEndpoint, filesForCategoryNameEndpoint } from '../..
  * 
  * @param onFileSelect - Callback function to handle file selection.
  * @param isProcessing - Indicates if the app is currently processing data.
+ * @param selectedFiles - Currently selected files
+ * @param refreshFiles - trigger for a refresh of the files
  */
-const FilePane = ({ onFileSelect, isProcessing, selectedFiles }) => {
+const FilePane = ({ onFileSelect, isProcessing, selectedFiles, refreshFiles }) => {
   const [categories, setCategories] = useState([]);
   // Store file arrays separately keyed by category id.
   const [filesByCategory, setFilesByCategory] = useState({});
@@ -97,7 +99,7 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles }) => {
     if (!isProcessing) {
       fetchCategories();
     }
-  }, [isProcessing, fetchCategories]);
+  }, [isProcessing, refreshFiles, fetchCategories]);
 
   return (
     <div className="files-container" style={withLoadingOpacity(isProcessing)}>

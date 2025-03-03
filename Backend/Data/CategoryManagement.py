@@ -114,7 +114,7 @@ class CategoryManagement:
         set_category_context(category_id)
 
     @staticmethod
-    def define_new_category(category: str, additional_context: str = None):
+    def define_new_category(category: str, additional_context: str = ""):
         """
         ToDo: Obvious speed up to be gained by putting generate colour and category in separate asynchronous threads.
 

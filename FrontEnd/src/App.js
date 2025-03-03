@@ -74,6 +74,8 @@ function App () {
       toggleFileSelection,
     } = useContext(SelectionContext);
 
+    const [refreshFiles, setRefreshFiles] = useState(false)
+
     // Workflow display
     const [workflow, setWorkflow] = useState()
  
@@ -203,6 +205,7 @@ function App () {
               isProcessing={isProcessing}
               onFileSelect={toggleFileSelection}
               selectedFiles={selectedFiles}
+              refreshFiles={refreshFiles}
             />
             <MessagePane 
               isProcessing={isProcessing}
@@ -229,6 +232,7 @@ function App () {
               generateQuestionsForPrompt={generateQuestionsForPrompt}
               tags={tags}
               setTags={setTags}
+              setRefreshFiles={setRefreshFiles}
             />
             
             <SuggestedQuestions

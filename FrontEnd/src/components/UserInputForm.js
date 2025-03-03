@@ -44,6 +44,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
  * @param {function} generateQuestionsForPrompt - Trigger a new set of questions against the users prompt
  * @param {Array} tags - Current tags.
  * @param {function} setTags - Set function for tags.
+ * @param {function} setRefreshFiles - trigger to refresh files after file upload
  */
 const UserInputForm = ({
   handleSubmit,
@@ -56,7 +57,8 @@ const UserInputForm = ({
   generateAugmentedPrompt,
   generateQuestionsForPrompt,
   tags,
-  setTags
+  setTags,
+  setRefreshFiles
 }) => {
   const [fetchError, setFetchError] = useState('');
   const [uploadCompleted, setUploadCompleted] = useState(true)
@@ -71,14 +73,6 @@ const UserInputForm = ({
   } = useSelection();
 
   /**
-   * fetch uploaded files after successful file upload.
-   */
-  useEffect(() => {
-    if (uploadCompleted) {
-    }
-  }, [uploadCompleted]);
-
-  /**
    * Handles successful file uploads by updating the selectedFiles state.
    *
    * @param {Object} file - The uploaded file object.
@@ -90,14 +84,16 @@ const UserInputForm = ({
     }
     setUploadCompleted(true);
 
-      const existingFileNames = new Set(selectedFiles.map(file => file.name));
+    const existingFileNames = new Set(selectedFiles.map(file => file.name));
 
-      if (!existingFileNames.has(file.filename)) {
-        setSelectedFiles(prevFiles => [
-          ...prevFiles,
-          {'category_id': file.category_id, 'id': file.id, 'name': file.name}
+    if (!existingFileNames.has(file.filename)) {
+      setSelectedFiles(prevFiles => [
+        ...prevFiles,
+        {'category_id': file.category_id, 'id': file.id, 'name': file.name}
       ]);
-      }
+    }
+
+    setRefreshFiles(file.name)
 
       
   }, []);
