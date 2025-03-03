@@ -14,6 +14,7 @@ from Constants.Constants import EXTRACT_ELEMENTS_FROM_LIST
 from Constants.Exceptions import failure_to_process_individual_page_iteration
 from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
+from Functionality.Organising import Organising
 from Functionality.Writing import Writing
 from Utilities.Contexts import get_message_context, get_user_context, set_message_context, set_user_context, \
     set_iteration_context, set_category_context, get_category_context
@@ -122,8 +123,9 @@ class WritePagesWorkflow(BaseWorkflow):
                 )
                 iteration += 1
 
-        file_path = Path(get_user_context()).joinpath(file_name)
-        StorageMethodology.select().save_file(content, str(file_path), overwrite=False)
+        file_uuid = Organising.save_file(content, get_category_context(), file_name)
+        if file_uuid:
+            emit('output_file', {'file': file_uuid})
 
         summary = self._summary_step(
             iteration=iteration,
@@ -175,14 +177,12 @@ class WritePagesWorkflow(BaseWorkflow):
                 )
                 futures.append((i, future))  # Store index with the future
 
-            for i, future in futures:
-                try:
-                    # ToDo: Doesn't ACTUALLY appear to be in order
-                    results[i] = future.result()  # Retrieve results in order
-                except Exception:
-                    logging.exception(failure_to_process_individual_page_iteration(i))
-                    # Handle the error appropriately, e.g., log it, return an error string, etc.
-                    results[i] = ""  # set to empty string if there's an error so other operations don't fail
+        for i, future in sorted(futures):
+            try:
+                results[i] = future.result()
+            except Exception:
+                logging.exception(f"Failure processing individual page iteration {i}")
+                results[i] = ""
 
         return ("\n\n".join(results)).strip()  # concatenate the results to one string.
 

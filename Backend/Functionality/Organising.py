@@ -2,12 +2,11 @@ import logging
 import os
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Data.CategoryManagement import CategoryManagement
 from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.UserContextManagement import UserContextManagement
-from Utilities.Contexts import set_functionality_context, get_category_context
+from Utilities.Contexts import set_functionality_context
 from Constants.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
 from Utilities.Utility import Utility
 

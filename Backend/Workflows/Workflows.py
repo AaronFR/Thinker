@@ -180,7 +180,7 @@ def generate_write_pages_workflow(
     :raises ValueError: If any of the parameters are invalid.
     """
     workflow = {
-        "version": "1.0",
+        "version": "1.1",
         "workflow_name": "Write Pages Workflow",
         "steps": [],
         "status": "pending",
@@ -209,7 +209,7 @@ def generate_write_pages_workflow(
     for i in range(1, page_count + 1):
         save_to_file_step = {
             "step_id": step_id,
-            "module": f"Save to File - Page {i}",
+            "module": f"Append to File - Page {i}",
             "description": f"Append content to the specified file for page {i}.",
             "parameters": {
                 "model": model
