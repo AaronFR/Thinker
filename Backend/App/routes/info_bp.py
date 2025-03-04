@@ -20,7 +20,7 @@ UPDATE_CONFIG_SCHEMA = {
 
 @info_bp.route('/user', methods=['POST'])
 @login_required
-@limiter.limit("100000 per day")
+@limiter.limit(LIGHTLY_RESTRICTED)
 def get_user_info():
     """
     Endpoint to fetch user information based on provided parameters.
@@ -53,7 +53,7 @@ def get_user_info():
 
 @info_bp.route('/config', methods=['GET'])
 @login_required
-@limiter.limit("100000 per day")
+@limiter.limit(LIGHTLY_RESTRICTED)
 def load_config():
     """
     Load the configuration from the YAML file and return it as a JSON response.

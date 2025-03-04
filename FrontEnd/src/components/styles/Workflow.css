@@ -78,6 +78,10 @@ body.dark-mode .step {
   border-left: 4px solid var(--color-border-active);
   box-shadow: var(--box-shadow-deep);
 }
+.step.error {
+  border-left: 4px solid red;
+  box-shadow: var(--box-shadow-deep);
+}
 
 .step:hover {
   background-color: var(--color-secondary-bg);
@@ -114,6 +118,9 @@ body.dark-mode .step {
 }
 .status.finished {
   color: var(--color-border-active);
+}
+.status.error {
+  color: red;
 }
 
 /* Sites */

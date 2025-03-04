@@ -1,8 +1,12 @@
 import functools
 import logging
+import types
 from typing import Union, Callable
 
+from flask_socketio import emit
+
 from Constants.Exceptions import error_in_function
+from Utilities.Contexts import set_iteration_context
 from Utilities.ErrorHandler import ErrorHandler
 
 ErrorHandler.setup_logging()
@@ -74,3 +78,69 @@ def return_for_error(return_object: Union[object, Callable], debug_logging: bool
     return decorator
 
 
+def workflow_step_handler(func):
+    """
+    Decorator for step methods to automatically emit start/complete events, and handle errors.
+    It assumes that an 'iteration' argument is provided either as the first positional argument
+    or via keyword arguments.
+
+    Be careful adding any yields or other generators to a step, this can trigger the if iterator flow -even if the
+    iterator isn't a streamed response.
+    """
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        # Retrieve iteration from kwargs or first positional parameter.
+        iteration = kwargs.get('iteration')
+        if iteration is None and args:
+            iteration = args[0]
+        if iteration is None:
+            raise ValueError("The 'iteration' parameter must be provided.")
+
+        emit_step_started_events(iteration)
+
+        try:
+            result = func(*args, **kwargs)
+
+            # Determine if this step uses streaming (defaulting to False)
+            streaming = kwargs.get('streaming', False)
+
+            # For steps that return generators, you might need custom handling.
+            # Here, if the result is a generator, we wrap its iteration to ensure complete event is called at the end.
+            if isinstance(result, types.GeneratorType):
+                emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "streaming"})
+
+                def generator_wrapper():
+                    try:
+                        for item in result:
+                            yield item  # Use "yield from" for transparent streaming.
+                    finally:
+                        emit_step_completed_events(iteration, streaming, response="")
+
+                return generator_wrapper()
+
+            # For non-generator steps, emit completion after function returns.
+            emit_step_completed_events(iteration, streaming, response=result)
+            return result
+
+        except Exception as e:
+            # Log the error and emit an error event.
+            logging.exception(f"Error in step {iteration}: {e}")
+            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "error", "error": str(e)})
+
+    return wrapper
+
+
+UPDATE_WORKFLOW_STEP = "update_workflow_step"
+
+
+def emit_step_started_events(iteration: int):
+    emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
+    set_iteration_context(iteration)
+
+
+def emit_step_completed_events(iteration: int, streaming: bool, response: str):
+    emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
+
+    if not streaming:
+        emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "response": response})

@@ -1,3 +1,4 @@
+import logging
 from abc import abstractmethod
 from typing import Callable, Any, List
 
@@ -8,6 +9,7 @@ from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Configuration import Configuration
 from Functionality.Organising import Organising
 from Utilities.Contexts import set_iteration_context, get_category_context
+from Utilities.Decorators import workflow_step_handler
 from Utilities.PaymentDecorators import specify_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
 from Constants.Instructions import SIMPLE_SUMMARY_PROMPT
@@ -35,6 +37,7 @@ class BaseWorkflow:
         pass
 
     @staticmethod
+    @workflow_step_handler
     def _chat_step(
         iteration: int,
         process_prompt: Callable,
@@ -58,7 +61,6 @@ class BaseWorkflow:
         :param model: The AI model to use.
         :return: AI's response.
         """
-        BaseWorkflow.emit_step_started_events(iteration)
 
         response = process_prompt(
             message,
@@ -69,11 +71,11 @@ class BaseWorkflow:
             model=model,
         )
 
-        BaseWorkflow.emit_step_completed_events(iteration, streaming, response)
         return response
 
     @staticmethod
     @specify_functionality_context("summarise_workflows")
+    @workflow_step_handler
     def _summary_step(
         iteration: int,
         process_prompt: Callable,
@@ -101,38 +103,35 @@ class BaseWorkflow:
         :return: AI's response.
         """
         config = Configuration.load_config()
-
         should_summarize = config['workflows'].get("summarise", False)
-        if should_summarize:
-            BaseWorkflow.emit_step_started_events(iteration)
 
-            summarisation_system_message = config.get('system_messages', {}).get(
-                "summarisation_message",
-                SIMPLE_SUMMARY_PROMPT
-            ) + f"<initial_message>\n{message}\n</initial_message>"
+        if not should_summarize:
+            # If summarization is disabled, yield a completion message and exit
+            yield {'content': "Workflow finished.", 'stream_end': True}
+            return
 
-            output = process_prompt(
-                summarisation_system_message,
-                file_references,
-                selected_message_ids,
-                best_of=best_of,
-                streaming=streaming,
-                model=model,
-            )
-            BaseWorkflow.emit_step_completed_events(iteration, streaming, output)
-            if streaming and hasattr(output, '__iter__'):
-                # If streaming and output is a generator, yield each chunk
-                for chunk in output:
-                    yield chunk
-            else:
-                # If not streaming, ensure output is a string and yield it
-                yield {'content': output}
-        else:
-            output = "Workflow finished."
-            yield {'content': output}
-            yield {'stream_end': True}
+        summarisation_system_message = config.get('system_messages', {}).get(
+            "summarisation_message",
+            SIMPLE_SUMMARY_PROMPT
+        ) + f"<initial_message>\n{message}\n</initial_message>"
+
+        logging.info(f"Summary Step {iteration}: Calling process_prompt")
+
+        output = process_prompt(
+            summarisation_system_message,
+            file_references,
+            selected_message_ids,
+            best_of=best_of,
+            streaming=streaming,
+            model=model,
+        )
+
+        logging.info(f"Summary Step {iteration}: process_prompt returned: {output}")
+
+        yield from output
 
     @staticmethod
+    @workflow_step_handler
     def _save_file_step(
         iteration: int,
         process_prompt: Callable,
@@ -158,7 +157,6 @@ class BaseWorkflow:
         :param overwrite: Whether or not any existing files should be overwrote
         :return: AI's response.
         """
-        BaseWorkflow.emit_step_started_events(iteration)
 
         # ToDo: We'll see if this degrades quality
         message += "\nJust write the contents to be saved to the file without commentary"
@@ -170,27 +168,11 @@ class BaseWorkflow:
             best_of=best_of,
             model=model,
         )
-        response = response + """
-        
-        """  # Otherwise if a new section is appended on it won't be on a new line
+        response += "\n\n"  # Otherwise if a new section is appended on it won't be on a new line
 
         file_uuid = Organising.save_file(response, get_category_context(), file_name, overwrite=overwrite)
-
-        BaseWorkflow.emit_step_completed_events(iteration, streaming=False, response=response, file_uuid=file_uuid)
-        return response
-
-    @staticmethod
-    def emit_step_started_events(iteration: int):
-        emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
-        set_iteration_context(iteration)
-
-    @staticmethod
-    def emit_step_completed_events(iteration: int, streaming: bool, response: str, file_uuid: str = None):
         if file_uuid:
             emit('output_file', {'file': file_uuid})
 
-        if streaming:
-            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "streaming"})
-        else:
-            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
-            emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "response": response})
+        return response
+

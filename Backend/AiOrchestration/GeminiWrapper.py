@@ -13,14 +13,11 @@ from google.genai.types import GenerateContentResponse, GenerateContentConfig
 from AiOrchestration.AiWrapper import AiWrapper
 from AiOrchestration.ChatGptMessageBuilder import format_message
 from AiOrchestration.GeminiModel import GeminiModel
-from Constants import Globals
 from Constants.Constants import GEMINI_API_KEY, CANNOT_AFFORD_REQUEST
 from Constants.Exceptions import FAILURE_TO_STREAM, SERVER_FAILURE_GEMINI_API, NO_RESPONSE_GEMINI_API
-from Utilities.Contexts import get_message_context, get_functionality_context
 from Utilities.Decorators import handle_errors
 from Utilities.PaymentDecorators import evaluate_gemini_balance
 from Utilities.ErrorHandler import ErrorHandler
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 
 
 #  For now assuming that google only has text and vision available

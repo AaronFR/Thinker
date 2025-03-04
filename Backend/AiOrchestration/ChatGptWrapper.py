@@ -9,15 +9,12 @@ from openai import OpenAI, BadRequestError
 
 from AiOrchestration.AiWrapper import AiWrapper
 from AiOrchestration.ChatGptModel import ChatGptModel
-from Constants import Globals
 from Constants.Constants import CANNOT_AFFORD_REQUEST
 from Constants.Exceptions import OPEN_AI_FLAGGED_REQUEST_INAPPROPRIATE, \
     SERVER_FAILURE_OPEN_AI_API, FAILURE_TO_STREAM
-from Utilities.Contexts import get_message_context, get_functionality_context
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 
 
 class ChatGptRole(enum.Enum):
