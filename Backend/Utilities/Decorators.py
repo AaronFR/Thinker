@@ -120,7 +120,7 @@ def workflow_step_handler(func):
                 return generator_wrapper()
 
             # For non-generator steps, emit completion after function returns.
-            emit_step_completed_events(iteration, streaming, response=result)
+            emit_step_completed_events(iteration, streaming, response=str(result))
             return result
 
         except Exception as e:
