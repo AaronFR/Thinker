@@ -26,6 +26,12 @@ body.dark-mode .app-container {
   overflow-y: auto;
 }
 
+.side-by-side {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 /* Heading styles for error or message */
 .app-heading {
   font-size: var(--font-size-large);

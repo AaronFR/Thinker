@@ -128,10 +128,15 @@ const FunctionalitySettings = React.memo(({
     <div>
       {sectionHeading}
       <div className='settings-subsection'>
-        <h3>Auto select persona</h3>
-        <p>Total costs {formatPrice(parseFloat(userInfo?.select_persona_cost))}</p>
-        <h3>Auto select worfklows</h3>
-        <p>Total costs {formatPrice(parseFloat(userInfo?.select_workflow_cost))}</p>
+        <div className='side-by-side'>
+          <h3>Auto select persona</h3>
+          <p>{formatPrice(parseFloat(userInfo?.select_persona_cost))}</p>
+        </div>
+        <div className='side-by-side'>
+          <h3>Auto select worfklows</h3>
+          <p>{formatPrice(parseFloat(userInfo?.select_workflow_cost))}</p>
+        </div>
+        
       </div>
      
       <AutoPromptEngineeringSection
@@ -204,7 +209,8 @@ const WorkflowsSettings = React.memo(({
       </div>
 
       <div className='settings-subsection'>
-        <label className="settings-label">
+        <div className='side-by-side'>
+          <label className="settings-label">
           <input
             type="checkbox"
             className="settings-checkbox"
@@ -214,7 +220,9 @@ const WorkflowsSettings = React.memo(({
           />
           Enables summaries on compatible workflows
         </label>
-        <h4>Total cost: {formatPrice(parseFloat(summarise_workflows_cost))}</h4>
+        <h4>{formatPrice(parseFloat(summarise_workflows_cost))}</h4>
+        </div>
+        
         <div
           data-tooltip-id="tooltip"
           data-tooltip-content={TooltipConstants.summarisationSystemMessage}
@@ -261,18 +269,20 @@ const FilesSettings = React.memo(({
       {sectionHeading}
 
       <div className='settings-subsection'>
-        <label className="settings-label">
-          <input
-            type="checkbox"
-            className="settings-checkbox"
-            id="summarise-checkbox"
-            checked={settings?.files?.summarise_files}
-            onChange={toggleFileSummarisation}
-          />
-          Add a summary to new files after they've been created
-
-        </label>
-        <h4>Total cost: {formatPrice(parseFloat(summarise_files_cost))}</h4>
+        <div className='side-by-side'>
+          <label className="settings-label">
+            <input
+              type="checkbox"
+              className="settings-checkbox"
+              id="summarise-checkbox"
+              checked={settings?.files?.summarise_files}
+              onChange={toggleFileSummarisation}
+            />
+            Add a summary to new files after they've been created
+          </label>
+          <h4>{formatPrice(parseFloat(summarise_files_cost))}</h4>
+        </div>
+        
         <div
           data-tooltip-id="tooltip"
           data-tooltip-content={TooltipConstants.summarisationSystemMessage}
@@ -446,8 +456,11 @@ const PromptQuestioningSection = React.memo(({
   cost,
 }) => (
   <div className='settings-subsection'>
-    <h3>Prompt Questioning</h3>
-    <h4>Total cost: {formatPrice(parseFloat(cost))}</h4>
+    <div className='side-by-side'>
+      <h3>Prompt Questioning</h3>
+      <h4>{formatPrice(parseFloat(cost))}</h4>
+    </div>
+
     <label className="settings-label">
       <select
         className="settings-select"
@@ -495,8 +508,11 @@ const AutoPromptEngineeringSection = React.memo(({
   cost
 }) => (
   <div className='settings-subsection'>
-    <h3>Prompt Improvement</h3>
-    <h4>Total cost: {formatPrice(parseFloat(cost))}</h4>
+    <div className='side-by-side'>
+      <h3>Prompt Improvement</h3>
+      <h4>{formatPrice(parseFloat(cost))}</h4>
+    </div>
+    
     <label className="settings-label">
       <select
         className="settings-select"
@@ -546,8 +562,10 @@ const BestOfSection = React.memo(({
   cost
 }) => (
   <div className='settings-subsection'>
-    <h3>Best of multiple runs</h3>
-    <h4>Total cost: {formatPrice(parseFloat(cost))}</h4>
+    <div className='side-by-side'>
+      <h3>Best of multiple runs</h3>
+      <h4>{formatPrice(parseFloat(cost))}</h4>
+    </div>
     <label className="settings-label">
       <select
         className="settings-select"
@@ -596,14 +614,17 @@ const InternetSearchSection = React.memo(({
   cost
 }) => (
   <div className='settings-subsection'>
-    <h3>Internet Search</h3>
-    <h4
-      data-tooltip-id="tooltip"
-      data-tooltip-content={TooltipConstants.internetSearchCosting}
-      data-tooltip-place="bottom"
-    >
-      Total cost: {formatPrice(parseFloat(cost))}
-    </h4>
+    <div className='side-by-side'>
+      <h3>Internet Search</h3>
+      <h4
+        data-tooltip-id="tooltip"
+        data-tooltip-content={TooltipConstants.internetSearchCosting}
+        data-tooltip-place="bottom"
+      >
+        {formatPrice(parseFloat(cost))}
+      </h4>
+    </div>
+    
     <label className="settings-label">
       <select
         className="settings-select"
