@@ -127,10 +127,10 @@ const FileUploadButton = ({ onUploadSuccess }) => {
           📂
         </span>
 
-        {!state.isUploading && (
+        {state.isUploading && (
           <div className='upload-progress' aria-live="polite">
             <ProgressBar progress={state.uploadProgress} />
-            <p>{state.uploadProgress}%</p>
+            <div>{state.uploadProgress}%</div>
           </div>
         )}
       </div>
