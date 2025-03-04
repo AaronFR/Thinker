@@ -161,27 +161,27 @@ const FunctionalitySettings = React.memo(({
      
       <AutoPromptEngineeringSection
         currentValue={settings?.beta_features?.augmented_prompts_enabled}
-        onChange={changeSetting}
+        changeSetting={changeSetting}
         promptMessage={settings?.system_messages?.prompt_augmentation_message}
         handleMessageChange={handleMessageChange}
         cost={userInfo?.augmentation_cost}
       />
       <PromptQuestioningSection
         currentValue={settings?.beta_features?.question_user_prompts_enabled}
-        onChange={changeSetting}
+        changeSetting={changeSetting}
         promptMessage={settings?.system_messages?.prompt_questioning_message}
         handleMessageChange={handleMessageChange}
         cost={userInfo?.questioning_cost}
       />
       <InternetSearchSection 
         currentValue={settings?.features?.internet_search_enabled}
-        onChange={changeSetting}
+        changeSetting={changeSetting}
         cost={userInfo?.internet_search_cost}
       />
       <BestOfSection 
         currentValue={settings?.features?.multiple_reruns_enabled}
         promptMessage={settings?.system_messages?.best_of_message}
-        onChange={changeSetting}
+        changeSetting={changeSetting}
         handleMessageChange={handleMessageChange}
         cost={userInfo?.best_of_cost}
       />
@@ -470,7 +470,7 @@ const BetaFeaturesSettings = React.memo(({
  */
 const PromptQuestioningSection = React.memo(({
   currentValue,
-  onChange,
+  changeSetting,
   promptMessage,
   handleMessageChange,
   cost,
@@ -486,7 +486,7 @@ const PromptQuestioningSection = React.memo(({
         className="settings-select"
         value={currentValue}
         onChange={(e) =>
-          onChange(
+          changeSetting(
             'beta_features', 'question_user_prompts_enabled',
             e.target.value,
           )
@@ -522,7 +522,7 @@ const PromptQuestioningSection = React.memo(({
  */
 const AutoPromptEngineeringSection = React.memo(({
   currentValue,
-  onChange,
+  changeSetting,
   promptMessage,
   handleMessageChange,
   cost
@@ -538,7 +538,7 @@ const AutoPromptEngineeringSection = React.memo(({
         className="settings-select"
         value={currentValue}
         onChange={(e) =>
-          onChange(
+          changeSetting(
             'beta_features',
             'augmented_prompts_enabled',
             e.target.value,
@@ -576,7 +576,7 @@ const AutoPromptEngineeringSection = React.memo(({
  */
 const BestOfSection = React.memo(({
   currentValue,
-  onChange,
+  changeSetting,
   promptMessage,
   handleMessageChange,
   cost
@@ -591,7 +591,7 @@ const BestOfSection = React.memo(({
         className="settings-select"
         value={currentValue}
         onChange={(e) =>
-          onChange(
+          changeSetting(
             'features',
             'multiple_reruns_enabled',
             e.target.value,
@@ -630,7 +630,7 @@ const BestOfSection = React.memo(({
  */
 const InternetSearchSection = React.memo(({
   currentValue,
-  onChange,
+  changeSetting,
   cost
 }) => (
   <div className='settings-subsection'>
@@ -650,7 +650,7 @@ const InternetSearchSection = React.memo(({
         className="settings-select"
         value={currentValue}
         onChange={(e) =>
-          onChange(
+          changeSetting(
             'features',
             'internet_search_enabled',
             e.target.value,
