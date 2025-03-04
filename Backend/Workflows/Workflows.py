@@ -1,9 +1,10 @@
 import logging
 from typing import List, Dict
 
+from AiOrchestration.GeminiModel import GeminiModel
 from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
-
+from Utilities.models import find_model_enum_value
 
 UPDATE_WORKFLOW_STEP = "update_workflow_step"
 
@@ -111,7 +112,7 @@ def generate_write_workflow(
                 "module": "Summarise",
                 "description": "Quickly summarise the workflow's results",
                 "parameters": {
-                    "model": "gpt-4o-mini"
+                    "model": get_background_model()
                 },
                 "status": "pending",
                 "response": {}
@@ -233,7 +234,7 @@ def generate_write_pages_workflow(
             "description": "Quickly summarise the workflow",
             "parameters": display_parameters(
                 initial_message=None,
-                model="Background model",
+                model=get_background_model(),
                 file_references=file_references,
                 selected_messages=selected_messages
             ),
@@ -296,7 +297,7 @@ def generate_auto_workflow(
             "description": "Quickly summarise the workflow",
             "parameters": display_parameters(
                 initial_message=None,
-                model="Background model",
+                model=get_background_model(),
                 file_references=file_references,
                 selected_messages=selected_messages
             ),
@@ -358,7 +359,7 @@ def generate_loop_workflow(
         "description": "Bring together the improvements in each loop into one response",
         "parameters": display_parameters(
             initial_message=None,
-            model="Background model",
+            model=get_background_model(),
             file_references=file_references,
             selected_messages=selected_messages
         ),
@@ -368,3 +369,10 @@ def generate_loop_workflow(
     workflow["steps"].append(final_output)
 
     return workflow
+
+
+def get_background_model():
+    config = Configuration.load_config()
+    model_string = config.get("models", {}).get("default_background_model", GeminiModel.GEMINI_2_FLASH.value)
+
+    return model_string

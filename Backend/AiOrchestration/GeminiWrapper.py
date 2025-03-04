@@ -135,9 +135,9 @@ class GeminiWrapper(AiWrapper):
     @evaluate_gemini_balance()
     @handle_errors(debug_logging=True, raise_errors=True)
     def get_ai_streaming_response(
-            self,
-            messages: List[Dict[str, str]],
-            model: GeminiModel = GeminiModel.GEMINI_2_FLASH
+        self,
+        messages: List[Dict[str, str]],
+        model: GeminiModel = GeminiModel.GEMINI_2_FLASH
     ) -> str | List[str]:
         """Request a streaming response from the Gemini API.
 
@@ -196,10 +196,12 @@ class GeminiWrapper(AiWrapper):
     @deprecated
     @handle_errors(debug_logging=True, raise_errors=True)
     @evaluate_gemini_balance()
-    def get_ai_function_response(self,
-                                 messages: List[Dict[str, str]],
-                                 function_schema,
-                                 model=GeminiModel.GEMINI_2_FLASH) -> Dict[str, object]:
+    def get_ai_function_response(
+        self,
+        messages: List[Dict[str, str]],
+        function_schema,
+        model=GeminiModel.GEMINI_2_FLASH
+    ) -> Dict[str, object]:
         """
         Function calling isn't currently supported by Gemini API outside of beta, so for now we just treat them like
         regular calls

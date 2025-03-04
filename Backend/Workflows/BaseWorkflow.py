@@ -84,7 +84,7 @@ class BaseWorkflow:
         selected_message_ids: List[str],
         best_of: int = 1,
         streaming: bool = True,
-        model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+        model: AiModel = None,
     ) -> str:
         """
         Summarises the results of a workflow.

@@ -84,7 +84,6 @@ class AutoWorkflow(BaseWorkflow):
             file_references=file_references,
             selected_message_ids=[],
             streaming=True,
-            model=ChatGptModel.CHAT_GPT_4_OMNI_MINI
         )
 
         return summary

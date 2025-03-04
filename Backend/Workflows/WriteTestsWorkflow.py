@@ -85,7 +85,6 @@ class WriteTestsWorkflow(BaseWorkflow):
                     file_references=file_references or [],
                     selected_message_ids=selected_message_ids or [],
                     streaming=True,
-                    model=model,
                 )
 
             emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})

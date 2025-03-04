@@ -4,7 +4,6 @@ from typing import Callable, Optional, List, Dict
 
 from flask_socketio import emit
 
-from AiOrchestration.ChatGptModel import ChatGptModel
 from Functionality.Coding import Coding
 from Functionality.Writing import Writing
 
@@ -93,7 +92,6 @@ class WriteWorkflow(BaseWorkflow):
             file_references=file_references,
             selected_message_ids=[],
             streaming=True,
-            model=ChatGptModel.CHAT_GPT_4_OMNI_MINI,
         )
 
         return summary

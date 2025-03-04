@@ -9,7 +9,6 @@ from flask_socketio import emit
 
 from AiOrchestration.AiModel import AiModel
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from AiOrchestration.ChatGptModel import ChatGptModel
 from Constants.Constants import EXTRACT_ELEMENTS_FROM_LIST
 from Data.Configuration import Configuration
 from Functionality.Organising import Organising
@@ -132,7 +131,6 @@ class WritePagesWorkflow(BaseWorkflow):
             file_references=file_references or [],
             selected_message_ids=selected_message_ids or [],
             streaming=True,
-            model=ChatGptModel.CHAT_GPT_4_OMNI_MINI
         )
 
         return summary

@@ -134,7 +134,7 @@ class BasePersona:
                        selected_message_ids: List[str] = None,
                        best_of: int = 1,
                        streaming: bool = False,
-                       model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str:
+                       model: AiModel = None) -> str:
         """
         Process and store the user's question.
 
@@ -183,7 +183,7 @@ class BasePersona:
               history_messages: List[str] = None,
               best_of: int = 1,
               streaming: bool = False,
-              model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str:
+              model: AiModel = None) -> str:
         """
         Process the input question and create a response.
 
