@@ -29,53 +29,15 @@ def get_file_by_id(file_id):
     return fetch_entity(nodeDB().get_file_by_id(file_id), "file")
 
 
-@files_bp.route('/file', methods=['POST'])
-@login_required
-@limiter.limit(MODERATELY_RESTRICTED)
-def upload_file():
-    """
-    Accept a user file and try uploading it to an applicable category
-
-    :returns: A Flask Response object containing a JSON representation of the processed message.
-    """
-    if 'file' not in request.files:
-        return jsonify({'message': 'No file part in the request.'}), 400
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'message': 'No selected file.'}), 400
-    # Secure the filename to prevent directory traversal attacks
-    filename = secure_filename(file.filename)
-
-    content = file.read().decode()
-    if sys.getsizeof(content) > MAX_FILE_SIZE:
-        raise Exception("File is far too large. 10 MB max.")
-
-    category = CategoryManagement.categorise_input(content)
-    CategoryManagement.possibly_create_new_category(category)
-
-    try:
-        # needs to be category id not category name
-        category_id = get_category_context()
-        file_id = Organising.save_file(content, category_id, filename, overwrite=True)
-
-        return jsonify({
-            'message': 'File uploaded successfully.',
-            'category_id': category_id,
-            'id': file_id,
-            'name': filename
-        }), 200
-    except Exception as e:
-        logging.info(f"Error saving file: {e}")
-        return jsonify({'message': 'File upload failed due to server error.'}), 500
-
-
 @files_bp.route('/files', methods=['POST'])
 @login_required
-@limiter.limit(RESTRICTED)
-def upload_multiple_files():
+@limiter.limit(MODERATELY_RESTRICTED)
+def upload_files():
     """
     Accept multiple user files and categorise them together with the same category,
     then upload each file individually.
+
+    ToDo: you might want to directly limit the size of incoming data
 
     :returns: A Flask Response object containing a JSON representation of the processed message.
     """
@@ -84,7 +46,10 @@ def upload_multiple_files():
         return jsonify({'message': 'No files found in the request.'}), 400
 
     file_details = []
-    aggregated_content = []
+    samples = []
+    content_aggregation = ""
+
+    BULK_CATEGORISATION = True
 
     for file in files:
         if file.filename == '':
@@ -101,19 +66,32 @@ def upload_multiple_files():
             return jsonify({'message': f"Error decoding file {filename}."}), 400
 
         if sys.getsizeof(content) > MAX_FILE_SIZE:
-            return jsonify({'message': f"File {filename} is too large. 10 MB max allowed."}), 400
+            return jsonify({'message': f"File {filename} is too large. 10 MB allowed max."}), 400
 
-        aggregated_content.append(sample_content)
-        # Keep the content in memory (or in a temp structure) to be used later for saving
-        file_details.append({'content': content, 'filename': filename})
+        # Attach the files name and a sample of its contents for categorisation
+        samples.append(filename + ": " + sample_content)
+        content_aggregation += content
 
-    # Combine all contents into one block for categorisation:
-    combined_content = "\n".join(aggregated_content)
-    if sys.getsizeof(combined_content) > MAX_FILE_SIZE:
-        return jsonify({'message': f"Total size of files is too large. 10 MB max allowed."}), 400
+        if sys.getsizeof(content_aggregation) > MAX_FILE_SIZE:
+            return jsonify({'message': f"Too much data uploaded at once. 10 MB allowed max."}), 400
 
-    category = CategoryManagement.categorise_input(combined_content)
-    CategoryManagement.possibly_create_new_category(category)
+        if not BULK_CATEGORISATION:
+            category = CategoryManagement.categorise_input(sample_content)
+            CategoryManagement.possibly_create_new_category(category)
+            category_id = get_category_context()
+            file_details.append({'category_id': category_id, 'content': content, 'filename': filename})
+        else:
+            file_details.append({'content': content, 'filename': filename})
+
+    if BULK_CATEGORISATION:
+        combined_content = "\n".join(samples)  # Combine all contents into one block for categorisation:
+
+        category = CategoryManagement.categorise_input(combined_content)
+        CategoryManagement.possibly_create_new_category(category)
+        category_id = get_category_context()
+
+        for file_detail in file_details:
+            file_detail["category_id"] = category_id
 
     try:
         category_id = get_category_context()
@@ -122,6 +100,7 @@ def upload_multiple_files():
         for details in file_details:
             file_id = Organising.save_file(details['content'], category_id, details['filename'], overwrite=True)
             result_list.append({
+                'category_id': details['category_id'],
                 'id': file_id,
                 'name': details['filename']
             })

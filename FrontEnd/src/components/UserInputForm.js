@@ -24,7 +24,6 @@ import TooltipConstants from '../constants/tooltips';
 import './styles/UserInputForm.css';
 
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 /**
  * UserInputForm Component
@@ -78,55 +77,34 @@ const UserInputForm = ({
    * @param {Object} file - The uploaded file object.
    */
   const handleUploadSuccess = useCallback((response) => {
-    if (!response) {
+    if (!response || !response.files || !Array.isArray(response.files)) {
       setFetchError('Failed to upload file');
       return;
     }
 
     // Bulk upload pattern: response has a "files" array
-    if (response.files && Array.isArray(response.files)) {
-      setUploadCompleted(true);
+    
+    setUploadCompleted(true);
 
-      // Build a set of file names we already have
-      const existingFileNames = new Set(selectedFiles.map(file => file.name))
+    // Build a set of file names we already have
+    const existingFileNames = new Set(selectedFiles.map(file => file.name))
 
-      const newFiles = response.files
-        .filter(file => !existingFileNames.has(file.name))
-        .map(file => ({
-          category_id: response.category_id,
-          id: file.id,
-          name: file.name
-        }));
+    const newFiles = response.files
+      .filter(file => !existingFileNames.has(file.name))
+      .map(file => ({
+        category_id: file.category_id,
+        id: file.id,
+        name: file.name
+      }));
 
-      if (newFiles.length > 0) {
-        setSelectedFiles(prevFiles => [
-          ...prevFiles,
-          ...newFiles
-        ]);
-        // Trigger refresh with the first sent file
-        setRefreshFiles(newFiles[0].name);
-      }
-
-    } else {
-      // Single file upload pattern.
-      setUploadCompleted(true);
-
-      const existingFileNames = new Set(selectedFiles.map(file => file.name));
-
-      if (!existingFileNames.has(response.name)) {
-        setSelectedFiles(prevFiles => [
-          ...prevFiles,
-          {
-            'category_id': response.category_id,
-            'id': response.id,
-            'name': response.name
-          }
-        ]);
-      }
-
-      setRefreshFiles(response.name)
+    if (newFiles.length > 0) {
+      setSelectedFiles(prevFiles => [
+        ...prevFiles,
+        ...newFiles
+      ]);
+      // Trigger refresh with the first sent file
+      setRefreshFiles(newFiles[0].name);
     }
-      
   }, []);
 
   /**

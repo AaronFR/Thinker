@@ -26,7 +26,6 @@ export const categoriesWithFilesEndpoint = `${FLASK_PORT}/categories_with_files`
 
 /* Files */
 
-export const fileEndpoint = `${FLASK_PORT}/file`;
 export const filesEndpoint = `${FLASK_PORT}/files`;
 export function fileIdEndpoint(uuid) {
   return `${FLASK_PORT}/file/${uuid}`
