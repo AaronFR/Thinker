@@ -2,14 +2,12 @@ from abc import abstractmethod
 from typing import Callable, Any, List
 
 from flask_socketio import emit
-from pathlib import Path
 
 from AiOrchestration.AiModel import AiModel
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Configuration import Configuration
-from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Organising import Organising
-from Utilities.Contexts import get_user_context, set_iteration_context, get_category_context
+from Utilities.Contexts import set_iteration_context, get_category_context
 from Utilities.PaymentDecorators import specify_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
 from Constants.Instructions import SIMPLE_SUMMARY_PROMPT
@@ -161,7 +159,6 @@ class BaseWorkflow:
         :return: AI's response.
         """
         BaseWorkflow.emit_step_started_events(iteration)
-        category_id = get_category_context()
 
         # ToDo: We'll see if this degrades quality
         message += "\nJust write the contents to be saved to the file without commentary"

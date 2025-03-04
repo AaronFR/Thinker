@@ -6,15 +6,16 @@ from flask import Blueprint, jsonify, request
 from werkzeug.utils import secure_filename
 
 from App import limiter
-from Constants.Constants import LIGHTLY_RESTRICTED, MODERATELY_RESTRICTED, MAX_FILE_SIZE, RESTRICTED
+from Constants.Constants import LIGHTLY_RESTRICTED, MODERATELY_RESTRICTED, MAX_FILE_SIZE
 from Constants.Exceptions import file_not_deleted
 from Data.CategoryManagement import CategoryManagement
+from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Organising import Organising
 from Utilities.AuthUtils import login_required
 from Utilities.Routing import fetch_entity
-from Utilities.Contexts import get_user_context, get_category_context
+from Utilities.Contexts import get_category_context, get_user_configuration
 
 files_bp = Blueprint('files', __name__)
 
@@ -49,8 +50,8 @@ def upload_files():
     samples = []
     content_aggregation = ""
 
-    BULK_CATEGORISATION = True
-
+    config = Configuration.load_config()
+    bulk_upload_categorisation = config.get('features', {}).get("bulk_upload_categorisation")
     for file in files:
         if file.filename == '':
             return jsonify({'message': 'One or more files have no selected filename.'}), 400
@@ -75,7 +76,7 @@ def upload_files():
         if sys.getsizeof(content_aggregation) > MAX_FILE_SIZE:
             return jsonify({'message': f"Too much data uploaded at once. 10 MB allowed max."}), 400
 
-        if not BULK_CATEGORISATION:
+        if not bulk_upload_categorisation:
             category = CategoryManagement.categorise_input(sample_content)
             CategoryManagement.possibly_create_new_category(category)
             category_id = get_category_context()
@@ -83,7 +84,7 @@ def upload_files():
         else:
             file_details.append({'content': content, 'filename': filename})
 
-    if BULK_CATEGORISATION:
+    if bulk_upload_categorisation:
         combined_content = "\n".join(samples)  # Combine all contents into one block for categorisation:
 
         category = CategoryManagement.categorise_input(combined_content)

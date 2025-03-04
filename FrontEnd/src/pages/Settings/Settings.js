@@ -179,6 +179,9 @@ const FunctionalitySettings = React.memo(({
 const WorkflowsSettings = React.memo(({
   settings,
   toggleWritePagesInParallel,
+  toggleSummarisation,
+  summarise_workflows_cost,
+  handleMessageChange,
 }) => {
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">Workflows</h2>), []);
   
@@ -197,37 +200,8 @@ const WorkflowsSettings = React.memo(({
         </label>
         
         <p>Write each page at once rather than in sequence - faster but means pages can't refer to prior content</p>
+        <p>If enabled it can't reference what it did in 'prior' pages - this will make it cheaper to run however</p>
       </div>
-      
-    </div>
-  );
-
-  return (
-    <ExpandableElement
-      minContent={sectionHeading}
-      maxContent={maxContent}
-      initiallyExpanded={false}
-      toggleButtonLabel=""
-    />
-  );
-});
-
-/**
- * Renders Summaries related settings.
- */
-const SummariesSettings = React.memo(({
-  settings,
-  toggleSummarisation,
-  toggleFileSummarisation,
-  handleMessageChange,
-  summarise_workflows_cost,
-  summarise_files_cost,
-}) => {
-  const sectionHeading = useMemo(() => (<h2 className="settings-heading">Summaries</h2>), []);
-  
-  const maxContent = (
-    <div>
-      {sectionHeading}
 
       <div className='settings-subsection'>
         <label className="settings-label">
@@ -257,16 +231,45 @@ const SummariesSettings = React.memo(({
         </div>
       </div>
       
+    </div>
+  );
+
+  return (
+    <ExpandableElement
+      minContent={sectionHeading}
+      maxContent={maxContent}
+      initiallyExpanded={false}
+      toggleButtonLabel=""
+    />
+  );
+});
+
+/**
+ * Renders Messages and Files related settings.
+ */
+const FilesSettings = React.memo(({
+  settings,
+  toggleFileSummarisation,
+  toggleBulkUploadCategorisation,
+  handleMessageChange,
+  summarise_files_cost,
+}) => {
+  const sectionHeading = useMemo(() => (<h2 className="settings-heading">Messages & Files</h2>), []);
+  
+  const maxContent = (
+    <div>
+      {sectionHeading}
+
       <div className='settings-subsection'>
         <label className="settings-label">
-        <input
-          type="checkbox"
-          className="settings-checkbox"
-          id="summarise-checkbox"
-          checked={settings?.optimization?.summariseFiles}
-          onChange={toggleFileSummarisation}
-        />
-        Add a summary to new files after they've been created
+          <input
+            type="checkbox"
+            className="settings-checkbox"
+            id="summarise-checkbox"
+            checked={settings?.optimization?.summariseFiles}
+            onChange={toggleFileSummarisation}
+          />
+          Add a summary to new files after they've been created
 
         </label>
         <h4>Total cost: {formatPrice(parseFloat(summarise_files_cost))}</h4>
@@ -285,8 +288,21 @@ const SummariesSettings = React.memo(({
           />
         </div>
       </div>
+
+      <div className='settings-subsection'>
+        <label className="settings-label">
+          <input
+            type="checkbox"
+            className="settings-checkbox"
+            id="summarise-checkbox"
+            checked={settings?.optimization?.bulk_upload_categorisation}
+            onChange={toggleBulkUploadCategorisation}
+          />
+          Bulk file upload categorisation
+        </label>
+        <p>If you upload multiple files they will be categorised together</p>
+      </div>
     </div>
-      
   );
 
   return (
@@ -636,6 +652,7 @@ export function Settings() {
   const toggleSummarisation = useCallback(() => toggleSetting('optimization', 'summarise'), [toggleSetting]);
   const toggleFileSummarisation = useCallback(() => toggleSetting('optimization', 'summariseFiles'), [toggleSetting]);
   const toggleWritePagesInParallel = useCallback(() => toggleSetting('optimization', 'writePagesInParallel'), [toggleSetting]);
+  const toggleBulkUploadCategorisation = useCallback(() => toggleSetting('optimization', 'bulk_upload_categorisation'), [toggleSetting]);
 
   // Use AbortController to cancel unfinished fetch if component unmounts.
   const fetchUserInformation = useCallback(() => {
@@ -720,14 +737,16 @@ export function Settings() {
       <WorkflowsSettings
         settings={settings}
         toggleWritePagesInParallel={toggleWritePagesInParallel}
+        toggleSummarisation={toggleSummarisation}
+        summarise_workflows_cost={userInfo?.summarise_workflows_cost}
+        handleMessageChange={handleMessageChange}
       />
 
-      <SummariesSettings
+      <FilesSettings
         settings={settings}
-        toggleSummarisation={toggleSummarisation}
         toggleFileSummarisation={toggleFileSummarisation}
+        toggleBulkUploadCategorisation={toggleBulkUploadCategorisation}
         handleMessageChange={handleMessageChange}
-        summarise_workflows_cost={userInfo?.summarise_workflows_cost}
         summarise_files_cost={userInfo?.summarise_files_cost}
       />
 
