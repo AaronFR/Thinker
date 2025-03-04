@@ -3,6 +3,7 @@ import '../../App.css';
 import './Guide.css'
 
 import TooltipConstants from '../../constants/tooltips';
+import { Tooltip } from "react-tooltip";
 
 export const About = () => {
   return (
@@ -241,7 +242,9 @@ export function Guide() {
 
       <About />
 
-      <Tutorial />      
+      <Tutorial />
+
+      <Tooltip id="tooltip" />
     </div>
   )
 }
