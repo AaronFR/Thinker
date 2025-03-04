@@ -23,7 +23,7 @@ class LoopWorkflow(BaseWorkflow):
 
     # Define enhancement qualities for each loop iteration
     ENHANCEMENT_QUALITIES = [
-        "refactor the code for better structure and efficiency.",
+        "refactor your prior output for better structure and efficiency.",
         "improve readability and maintainability with clear comments and documentation.",
         "optimize performance to reduce execution time and resource usage.",
         "enhance security by identifying and mitigating potential vulnerabilities.",
@@ -66,13 +66,18 @@ class LoopWorkflow(BaseWorkflow):
         emit("send_workflow", {"workflow": workflow_data})
 
         for iteration in range(1, n_loops + 1):
-            enhancement_quality = self.ENHANCEMENT_QUALITIES[iteration - 1] if iteration <= len(self.ENHANCEMENT_QUALITIES) else "enhance the code as needed."
+            DIFFERENTIATED_LOOPS = False
+            if DIFFERENTIATED_LOOPS:
+                enhancement_quality = self.ENHANCEMENT_QUALITIES[iteration - 1] if iteration <= len(self.ENHANCEMENT_QUALITIES) else "enhance the code as needed."
+                message = for_each_focus_on_prompt(initial_message, enhancement_quality, iteration),
+            else:
+                message = initial_message
             logging.info(f"Iteration {iteration}: with prompt enhancement.")
 
             self._chat_step(
                 iteration=iteration,
                 process_prompt=process_prompt,
-                message=for_each_focus_on_prompt(initial_message, enhancement_quality, iteration),
+                message=message,
                 file_references=file_references or [],
                 selected_message_ids=selected_message_ids or [],
                 best_of=best_of,
