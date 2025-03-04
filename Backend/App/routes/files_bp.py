@@ -51,7 +51,7 @@ def upload_files():
     content_aggregation = ""
 
     config = Configuration.load_config()
-    bulk_upload_categorisation = config.get('features', {}).get("bulk_upload_categorisation")
+    bulk_upload_categorisation = config.get('files', {}).get("bulk_upload_categorisation")
     for file in files:
         if file.filename == '':
             return jsonify({'message': 'One or more files have no selected filename.'}), 400

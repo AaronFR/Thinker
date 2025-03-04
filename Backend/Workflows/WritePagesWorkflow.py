@@ -98,7 +98,7 @@ class WritePagesWorkflow(BaseWorkflow):
 
         content = ""
         config = Configuration.load_config()
-        if config.get('optimization', {}).get('writePagesInParallel', False):
+        if config.get('workflows', {}).get('write_pages_in_parallel', False):
             content = self.efficient_process_pages(
                 pages,
                 process_prompt,

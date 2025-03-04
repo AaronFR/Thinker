@@ -214,8 +214,8 @@ class BasePersona:
             recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]
         recent_history.extend(history_messages)
 
-        best_of_system_message = config['systemMessages'].get(
-            "bestOfMessage",
+        best_of_system_message = config['system_messages'].get(
+            "best_of_message",
             DEFAULT_BEST_OF_SYSTEM_MESSAGE
         )
         judgement_criteria = (

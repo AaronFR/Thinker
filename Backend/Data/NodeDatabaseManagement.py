@@ -448,7 +448,7 @@ class NodeDatabaseManagement:
         """
         config = Configuration.load_config()
 
-        if config.get('optimization', {}).get('summariseFiles', False):
+        if config.get('files', {}).get('summarise_files', False):
             prior_functionality_context = get_functionality_context()
             set_functionality_context("summarise_files")
 
@@ -456,8 +456,8 @@ class NodeDatabaseManagement:
 
             from AiOrchestration.AiOrchestrator import AiOrchestrator
             summary = AiOrchestrator().execute(
-                [config.get("systemMessages", {}).get(
-                    'fileSummarisationMessage',
+                [config.get("system_messages", {}).get(
+                    'file_summarisation_message',
                     SUMMARISER_SYSTEM_INSTRUCTIONS
                 )],
                 [content]

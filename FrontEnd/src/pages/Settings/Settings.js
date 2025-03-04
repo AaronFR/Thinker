@@ -92,7 +92,7 @@ const AiModelSettings = React.memo(({ settings, handleForegroundModelChange, han
       />
       <h3>Background Model</h3>
       <p>
-        In the thinker many programs actually run in the background to try and improve the main 'foreground' prompt and the user experience overall, for this
+        In The Thinker many programs actually run in the background to try and improve the main 'foreground' prompt and the user experience overall, for this
         purpose you want a functional economical, to the point LLM.
       </p>
       <ModelSelector
@@ -137,14 +137,14 @@ const FunctionalitySettings = React.memo(({
       <AutoPromptEngineeringSection
         currentValue={settings?.beta_features?.augmented_prompts_enabled}
         onChange={changeSetting}
-        promptMessage={settings?.systemMessages?.promptAugmentationMessage}
+        promptMessage={settings?.system_messages?.prompt_augmentation_message}
         handleMessageChange={handleMessageChange}
         cost={userInfo?.augmentation_cost}
       />
       <PromptQuestioningSection
         currentValue={settings?.beta_features?.question_user_prompts_enabled}
         onChange={changeSetting}
-        promptMessage={settings?.systemMessages?.promptQuestioningMessage}
+        promptMessage={settings?.system_messages?.prompt_questioning_message}
         handleMessageChange={handleMessageChange}
         cost={userInfo?.questioning_cost}
       />
@@ -155,7 +155,7 @@ const FunctionalitySettings = React.memo(({
       />
       <BestOfSection 
         currentValue={settings?.features?.multiple_reruns_enabled}
-        promptMessage={settings?.systemMessages?.bestOfMessage}
+        promptMessage={settings?.system_messages?.best_of_message}
         onChange={changeSetting}
         handleMessageChange={handleMessageChange}
         cost={userInfo?.best_of_cost}
@@ -193,7 +193,7 @@ const WorkflowsSettings = React.memo(({
           <input
             type="checkbox"
             className="settings-checkbox"
-            checked={settings?.optimization?.writePagesInParallel}
+            checked={settings?.workflows?.write_pages_in_parallel}
             onChange={toggleWritePagesInParallel}
           />
           Write Pages in Parallel
@@ -209,7 +209,7 @@ const WorkflowsSettings = React.memo(({
             type="checkbox"
             className="settings-checkbox"
             id="summarise-checkbox"
-            checked={settings?.optimization?.summarise}
+            checked={settings?.workflows?.summarise}
             onChange={toggleSummarisation}
           />
           Enables summaries on compatible workflows
@@ -221,10 +221,10 @@ const WorkflowsSettings = React.memo(({
           data-tooltip-place="bottom"
         >
           <AutoExpandingTextarea
-            value={settings?.systemMessages?.summarisationMessage}
+            value={settings?.system_messages?.summarisation_message}
             className="textarea"
             onChange={(e) =>
-              handleMessageChange('systemMessages', 'summarisationMessage', e.target.value)
+              handleMessageChange('system_messages', 'summarisation_message', e.target.value)
             }
             style={{ opacity: 0.9 }}
           />
@@ -266,7 +266,7 @@ const FilesSettings = React.memo(({
             type="checkbox"
             className="settings-checkbox"
             id="summarise-checkbox"
-            checked={settings?.optimization?.summariseFiles}
+            checked={settings?.files?.summarise_files}
             onChange={toggleFileSummarisation}
           />
           Add a summary to new files after they've been created
@@ -279,10 +279,10 @@ const FilesSettings = React.memo(({
           data-tooltip-place="bottom"
         >
           <AutoExpandingTextarea
-            value={settings?.systemMessages?.fileSummarisationMessage}
+            value={settings?.system_messages?.file_summarisation_message}
             className="textarea"
             onChange={(e) =>
-              handleMessageChange('systemMessages', 'fileSummarisationMessage', e.target.value)
+              handleMessageChange('system_messages', 'file_summarisation_message', e.target.value)
             }
             style={{ opacity: 0.9 }}
           />
@@ -295,7 +295,7 @@ const FilesSettings = React.memo(({
             type="checkbox"
             className="settings-checkbox"
             id="summarise-checkbox"
-            checked={settings?.optimization?.bulk_upload_categorisation}
+            checked={settings?.files?.bulk_upload_categorisation}
             onChange={toggleBulkUploadCategorisation}
           />
           Bulk file upload categorisation
@@ -328,10 +328,10 @@ const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) =>
         <label className="message-label">
           Coder Persona Message
           <AutoExpandingTextarea
-            value={settings?.systemMessages?.coderPersonaMessage}
+            value={settings?.system_messages?.coder_persona_message}
             className="textarea"
             onChange={(e) =>
-              handleMessageChange('systemMessages', 'coderPersonaMessage', e.target.value)
+              handleMessageChange('system_messages', 'coder_persona_message', e.target.value)
             }
             style={{ opacity: 0.9 }}
           />
@@ -339,10 +339,10 @@ const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) =>
         <label className="message-label">
           Writer Persona Message
           <AutoExpandingTextarea
-            value={settings?.systemMessages?.writerPersonaMessage}
+            value={settings?.system_messages?.writer_persona_message}
             className="textarea"
             onChange={(e) =>
-              handleMessageChange('systemMessages', 'writerPersonaMessage', e.target.value)
+              handleMessageChange('system_messages', 'writer_persona_message', e.target.value)
             }
             style={{ opacity: 0.9 }}
           />
@@ -355,10 +355,10 @@ const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) =>
             data-tooltip-place="bottom"
           >
             <AutoExpandingTextarea
-              value={settings?.systemMessages?.categorisationMessage}
+              value={settings?.system_messages?.categorisation_message}
               className="textarea"
               onChange={(e) =>
-                handleMessageChange('systemMessages', 'categorisationMessage', e.target.value)
+                handleMessageChange('system_messages', 'categorisation_message', e.target.value)
               }
               style={{ opacity: 0.9 }}
             />
@@ -476,7 +476,7 @@ const PromptQuestioningSection = React.memo(({
         value={promptMessage}
         className="textarea"
         onChange={(e) =>
-          handleMessageChange('systemMessages', 'promptQuestioningMessage', e.target.value)
+          handleMessageChange('system_messages', 'prompt_questioning_message', e.target.value)
         }
         style={{ opacity: 0.9 }}
       />
@@ -526,7 +526,7 @@ const AutoPromptEngineeringSection = React.memo(({
         value={promptMessage}
         className="textarea"
         onChange={(e) =>
-          handleMessageChange('systemMessages', 'promptAugmentationMessage', e.target.value)
+          handleMessageChange('system_messages', 'prompt_augmentation_message', e.target.value)
         }
         style={{ opacity: 0.9 }}
       />
@@ -577,7 +577,7 @@ const BestOfSection = React.memo(({
         value={promptMessage}
         className="textarea"
         onChange={(e) =>
-          handleMessageChange('systemMessages', 'bestOfMessage', e.target.value)
+          handleMessageChange('system_messages', 'best_of_message', e.target.value)
         }
         style={{ opacity: 0.9 }}
       />
@@ -647,12 +647,12 @@ export function Settings() {
   const toggleDebug = useCallback(() => toggleSetting('interface', 'debug'), [toggleSetting]);
   const toggleDarkMode = useCallback(() => toggleSetting('interface', 'dark_mode'), [toggleSetting]);
   const toggleAiColourisation = useCallback(() => toggleSetting('interface', 'ai_colour'), [toggleSetting]);
+  const toggleWritePagesInParallel = useCallback(() => toggleSetting('workflows', 'write_pages_in_parallel'), [toggleSetting]);
+  const toggleSummarisation = useCallback(() => toggleSetting('workflows', 'summarise'), [toggleSetting]);
+  const toggleFileSummarisation = useCallback(() => toggleSetting('files', 'summarise_files'), [toggleSetting]);
+  const toggleBulkUploadCategorisation = useCallback(() => toggleSetting('files', 'bulk_upload_categorisation'), [toggleSetting]);
   const toggleUserEncyclopedia = useCallback(() => toggleSetting('beta_features', 'user_context_enabled'), [toggleSetting]);
   const toggleMultiFileProcessing = useCallback(() => toggleSetting('beta_features', 'multi_file_processing_enabled'), [toggleSetting]);
-  const toggleSummarisation = useCallback(() => toggleSetting('optimization', 'summarise'), [toggleSetting]);
-  const toggleFileSummarisation = useCallback(() => toggleSetting('optimization', 'summariseFiles'), [toggleSetting]);
-  const toggleWritePagesInParallel = useCallback(() => toggleSetting('optimization', 'writePagesInParallel'), [toggleSetting]);
-  const toggleBulkUploadCategorisation = useCallback(() => toggleSetting('optimization', 'bulk_upload_categorisation'), [toggleSetting]);
 
   // Use AbortController to cancel unfinished fetch if component unmounts.
   const fetchUserInformation = useCallback(() => {

@@ -8,8 +8,8 @@ def load_configuration() -> str:
     """
     config = Configuration.load_config()
 
-    return config.get("systemMessages", {}).get(
-        "coderPersonaMessage",
+    return config.get("system_messages", {}).get(
+        "coder_persona_message",
         f"""Following the following guidelines when writing code. Docstrings and class definitions style: reStructuredText
         indentation: 4_spaces (or typical for the language)
         max line length: 120

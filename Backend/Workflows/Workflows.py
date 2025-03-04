@@ -94,7 +94,7 @@ def generate_write_workflow(
         }
     ]
 
-    if config['optimization'].get("summarise", False):
+    if config['workflows'].get("summarise", False):
         steps.append(
             {
                 "step_id": 3,
@@ -221,7 +221,7 @@ def generate_write_pages_workflow(
         step_id += 1
 
     config = Configuration.load_config()
-    if config['optimization'].get("summarise", False):
+    if config['workflows'].get("summarise", False):
         summarise_step = {
             "step_id": step_id,
             "module": "Summarise",
@@ -282,7 +282,7 @@ def generate_auto_workflow(
 
     # Step N: Summarise
     config = Configuration.load_config()
-    if config['optimization'].get("summarise", False):
+    if config['workflows'].get("summarise", False):
         summarise_step = {
             "step_id": step_id,
             "module": "Summarise",

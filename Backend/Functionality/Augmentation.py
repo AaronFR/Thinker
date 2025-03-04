@@ -37,7 +37,7 @@ class Augmentation:
         :returns Persona: The selected persona based on the content of the user prompt.
         """
         config = Configuration.load_config()
-        persona_selection_system_message = config.get('systemMessages', {}).get(
+        persona_selection_system_message = config.get('system_messages', {}).get(
             "personaSelectionMessage",
             AUTO_SELECT_PERSONA_SYSTEM_MESSAGE
         )
@@ -74,7 +74,7 @@ class Augmentation:
                 return Workflow.AUTO
 
         config = Configuration.load_config()
-        workflow_selection_system_message = config.get('systemMessages', {}).get(
+        workflow_selection_system_message = config.get('system_messages', {}).get(
             "workflowSelectionMessage",
             AUTO_SELECT_WORKFLOW_SYSTEM_MESSAGE
         )
@@ -105,8 +105,8 @@ class Augmentation:
 
         # ToDo: It shouldn't be possible to inject code by mal-forming a string in a compiled process right?
         #  You should check.
-        prompt_augmentation_system_message = config.get('systemMessages', {}).get(
-            "promptAugmentationMessage",
+        prompt_augmentation_system_message = config.get('system_messages', {}).get(
+            "prompt_augmentation_message",
             AUTO_ENGINEER_PROMPT_SYSTEM_MESSAGE
         )
 
@@ -131,8 +131,8 @@ class Augmentation:
         # Append the initial prompt at the end
         final_payload.append(initial_prompt)
 
-        prompt_questioning_system_message = config.get('systemMessages', {}).get(
-            "promptQuestioningMessage",
+        prompt_questioning_system_message = config.get('system_messages', {}).get(
+            "prompt_questioning_message",
             QUESTION_PROMPT_SYSTEM_MESSAGE
         )
 

@@ -25,7 +25,7 @@ export const fetchConfig = async () => {
             const hasRequiredFields =
                 loadedConfig.interface &&
                 loadedConfig.beta_features &&
-                loadedConfig.systemMessages;
+                loadedConfig.system_messages;
                 
             return hasRequiredFields ? loadedConfig : null;
         }

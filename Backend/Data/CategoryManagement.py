@@ -57,8 +57,8 @@ class CategoryManagement:
         category_names = nodeDB().list_category_names()
         config = Configuration.load_config()
 
-        user_categorisation_instructions = config.get('systemMessages', {}).get(
-            "categorisationMessage",
+        user_categorisation_instructions = config.get('system_messages', {}).get(
+            "categorisation_message",
             DEFAULT_USER_CATEGORISATION_INSTRUCTIONS
         )
 

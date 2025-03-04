@@ -102,12 +102,12 @@ class BaseWorkflow:
         """
         config = Configuration.load_config()
 
-        should_summarize = config['optimization'].get("summarise", False)
+        should_summarize = config['workflows'].get("summarise", False)
         if should_summarize:
             BaseWorkflow.emit_step_started_events(iteration)
 
-            summarisation_system_message = config.get('systemMessages', {}).get(
-                "summarisationMessage",
+            summarisation_system_message = config.get('system_messages', {}).get(
+                "summarisation_message",
                 SIMPLE_SUMMARY_PROMPT
             ) + f"<initial_message>\n{message}\n</initial_message>"
 
