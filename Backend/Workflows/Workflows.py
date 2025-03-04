@@ -8,6 +8,26 @@ from Data.Files.StorageMethodology import StorageMethodology
 UPDATE_WORKFLOW_STEP = "update_workflow_step"
 
 
+def display_parameters(
+    initial_message: str = None,
+    model: str = None,
+    file_references: List[str] = None,
+    selected_messages: List[str] = None,
+
+) -> Dict[str, str]:
+    result = {}
+    if initial_message:
+        result["user_message"] = initial_message
+    if model:
+        result["model"] = model
+    if file_references:
+        result["file_references"] = "\n".join(file_references)
+    if selected_messages:
+        result["selected_message_ids"] = "\n".join(selected_messages)
+
+    return result
+
+
 def generate_chat_workflow(
         initial_message: str,
         file_references: List[str],
@@ -33,12 +53,7 @@ def generate_chat_workflow(
                 "step_id": 1,
                 "module": "Chat",
                 "description": "Respond to the prompt and any additional files or reference messages",
-                "parameters": {
-                    "user_message": initial_message,
-                    "file_references": '\n'.join(file_references),
-                    "selected_message_ids": '\n'.join(selected_messages),
-                    "model": model
-                },
+                "parameters": display_parameters(initial_message, model, file_references, selected_messages),
                 "status": "pending",
                 "response": {}
             }
@@ -72,12 +87,7 @@ def generate_write_workflow(
             "step_id": 1,
             "module": "Planning Response",
             "description": "Plan out a Response",
-            "parameters": {
-                "user_message": initial_message,
-                "file_references": '\n'.join(file_references),
-                "selected_message_ids": '\n'.join(selected_messages),
-                "model": model
-            },
+            "parameters": display_parameters(initial_message, model, file_references, selected_messages),
             "status": "pending",
             "response": {}
         },
@@ -193,12 +203,7 @@ def generate_write_pages_workflow(
         "step_id": step_id,
         "module": "Define Pages",
         "description": "Writes out a list of instructions for how to write each iteration",
-        "parameters": {
-            "user_message": initial_message,
-            "file_references": '\n'.join(file_references),
-            "selected_message_ids": '\n'.join(selected_messages),
-            "model": model
-        },
+        "parameters": display_parameters(initial_message, model, file_references, selected_messages),
         "status": "pending",
         "response": {}
     }
@@ -226,11 +231,12 @@ def generate_write_pages_workflow(
             "step_id": step_id,
             "module": "Summarise",
             "description": "Quickly summarise the workflow",
-            "parameters": {
-                "file_references": file_references,
-                "selected_message_ids": selected_messages,
-                "model": "gpt-4o-mini"
-            },
+            "parameters": display_parameters(
+                initial_message=None,
+                model="Background model",
+                file_references=file_references,
+                selected_messages=selected_messages
+            ),
             "status": "pending",
             "response": {}
         }
@@ -269,11 +275,12 @@ def generate_auto_workflow(
             "step_id": step_id,
             "module": f"Process {file_name}",
             "description": "Processing file in accordance with user's initial message.",
-            "parameters": {
-                "file_reference": file_reference,
-                "selected_message_ids": '\n'.join(selected_messages),
-                "model": model
-            },
+            "parameters": display_parameters(
+                initial_message=None,
+                model=model,
+                file_references=file_references,
+                selected_messages=selected_messages
+            ),
             "status": "pending",
             "response": {}
         }
@@ -287,9 +294,12 @@ def generate_auto_workflow(
             "step_id": step_id,
             "module": "Summarise",
             "description": "Quickly summarise the workflow",
-            "parameters": {
-                "model": "gpt-4o-mini"
-            },
+            "parameters": display_parameters(
+                initial_message=None,
+                model="Background model",
+                file_references=file_references,
+                selected_messages=selected_messages
+            ),
             "status": "pending",
             "response": {}
         }
@@ -329,11 +339,12 @@ def generate_loop_workflow(
             "step_id": step_id,
             "module": f"Loop improving on response",
             "description": "Processing file in accordance with user's initial message.",
-            "parameters": {
-                "file_reference": file_references,
-                "selected_message_ids": '\n'.join(selected_messages),
-                "model": model
-            },
+            "parameters": display_parameters(
+                initial_message=None,
+                model=model,
+                file_references=file_references,
+                selected_messages=selected_messages
+            ),
             "status": "pending",
             "response": {}
         }
@@ -345,11 +356,12 @@ def generate_loop_workflow(
         "step_id": step_id,
         "module": "Final Output",
         "description": "Bring together the improvements in each loop into one response",
-        "parameters": {
-            "file_reference": file_references,
-            "selected_message_ids": '\n'.join(selected_messages),
-            "model": model
-        },
+        "parameters": display_parameters(
+            initial_message=None,
+            model="Background model",
+            file_references=file_references,
+            selected_messages=selected_messages
+        ),
         "status": "pending",
         "response": {}
     }
