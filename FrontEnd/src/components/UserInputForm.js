@@ -77,24 +77,55 @@ const UserInputForm = ({
    *
    * @param {Object} file - The uploaded file object.
    */
-  const handleUploadSuccess = useCallback((file) => {
-    if (file && file.size > MAX_FILE_SIZE) {
-      setFetchError('File size exceeds the maximum limit of 10MB.');
+  const handleUploadSuccess = useCallback((response) => {
+    if (!response) {
+      setFetchError('Failed to upload file');
       return;
     }
-    setUploadCompleted(true);
 
-    const existingFileNames = new Set(selectedFiles.map(file => file.name));
+    // Bulk upload pattern: response has a "files" array
+    if (response.files && Array.isArray(response.files)) {
+      setUploadCompleted(true);
 
-    if (!existingFileNames.has(file.filename)) {
-      setSelectedFiles(prevFiles => [
-        ...prevFiles,
-        {'category_id': file.category_id, 'id': file.id, 'name': file.name}
-      ]);
+      // Build a set of file names we already have
+      const existingFileNames = new Set(selectedFiles.map(file => file.name))
+
+      const newFiles = response.files
+        .filter(file => !existingFileNames.has(file.name))
+        .map(file => ({
+          category_id: response.category_id,
+          id: file.id,
+          name: file.name
+        }));
+
+      if (newFiles.length > 0) {
+        setSelectedFiles(prevFiles => [
+          ...prevFiles,
+          ...newFiles
+        ]);
+        // Trigger refresh with the first sent file
+        setRefreshFiles(newFiles[0].name);
+      }
+
+    } else {
+      // Single file upload pattern.
+      setUploadCompleted(true);
+
+      const existingFileNames = new Set(selectedFiles.map(file => file.name));
+
+      if (!existingFileNames.has(response.name)) {
+        setSelectedFiles(prevFiles => [
+          ...prevFiles,
+          {
+            'category_id': response.category_id,
+            'id': response.id,
+            'name': response.name
+          }
+        ]);
+      }
+
+      setRefreshFiles(response.name)
     }
-
-    setRefreshFiles(file.name)
-
       
   }, []);
 

@@ -6,7 +6,7 @@ import ProgressBar from '../utils/ProgressBar';
 import './styles/FileUploadButton.css';
 
 import TooltipConstants from '../constants/tooltips';
-import { fileEndpoint } from '../constants/endpoints';
+import { fileEndpoint, filesEndpoint } from '../constants/endpoints';
 
 // Define initial state for the reducer
 const initialState = {
@@ -37,10 +37,95 @@ const uploadReducer = (state, action) => {
   }
 };
 
+const BULK_FILE_UPLOAD = true;
+
 /**
- * FileUploadButton Component
- *
- * Allows users to upload files with real-time progress feedback.
+ * Upload a list of files individually to the single file endpoint.
+ * @param {Array<File>} files - The list of selected files.
+ */
+async function uploadFilesIndividually(files, dispatch, onUploadSuccess) {
+  // Map over the files to generate promises
+  const uploadPromises = files.map(async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    try {
+      const response = await fetch(fileEndpoint, {
+        method: 'POST',
+        body: formData,
+        signal,
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Unknown error occurred');
+      }
+
+      const data = await response.json();
+      dispatch({ type: 'UPLOAD_SUCCESS' });
+      if (onUploadSuccess) {
+        onUploadSuccess(data);
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.warn('Upload aborted');
+      } else {
+        dispatch({ type: 'UPLOAD_FAILURE', payload: `Upload failed: ${error.message}` });
+        console.error('Error uploading file:', error);
+      }
+    }
+  });
+
+  // Await all file upload promises
+  await Promise.all(uploadPromises);
+}
+
+/**
+ * Upload a group of files in one bulk request to the bulk file endpoint.
+ * @param {Array<File>} files - The list of selected files.
+ */
+async function uploadFilesBulk(files, dispatch, onUploadSuccess) {
+  const formData = new FormData();
+  // Append each file under the same 'files' key to send them all in one request.
+  files.forEach(file => formData.append('files', file));
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  try {
+    const response = await fetch(filesEndpoint, {
+      method: 'POST',
+      body: formData,
+      signal,
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Unknown error occurred');
+    }
+
+    const data = await response.json();
+    dispatch({ type: 'UPLOAD_SUCCESS' });
+    if (onUploadSuccess) {
+      onUploadSuccess(data);
+    }
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      console.warn('Upload aborted');
+    } else {
+      dispatch({ type: 'UPLOAD_FAILURE', payload: `Upload failed: ${error.message}` });
+      console.error('Error uploading files:', error);
+    }
+  }
+}
+
+/**
+ * Allows users to upload files
  * 
  * ToDo: I should be able to click on the edges of the button and upload, currently you 
  *  have to click on the file emoji directly
@@ -56,53 +141,32 @@ const FileUploadButton = ({ onUploadSuccess }) => {
    * @param {Event} event - The file input change event.
    */
   const handleFileChange = useCallback(async (event) => {
+    // Convert the FileList into an Array of file objects.
     const files = Array.from(event.target.files);
+
+    // ToDo: this should be BEFORE upload not after
+    // if (file && file.size > MAX_FILE_SIZE) {
+    //   setFetchError('File size exceeds the maximum limit of 10MB.');
+    //   return;
+    // }
 
     if (files.length === 0) {
       dispatch({ type: 'UPLOAD_FAILURE', payload: 'No file selected.' });
       return;
     }
 
+    // Dispatch to indicate the start of the upload process.
     dispatch({ type: 'UPLOAD_START' });
 
-    const uploadPromises = files.map(async (file) => {
-      const formData = new FormData();
-      formData.append('file', file);
+    // Determine which upload method to call based on BULK_FILE_UPLOAD.
+    if (BULK_FILE_UPLOAD) {
+      await uploadFilesBulk(files, dispatch, onUploadSuccess);
+    } else {
+      await uploadFilesIndividually(files, dispatch, onUploadSuccess);
+    }
 
-      const controller = new AbortController();
-      const signal = controller.signal;
-
-      try {
-        const response = await fetch(fileEndpoint, {
-          method: 'POST',
-          body: formData,
-          signal,
-          credentials: "include"
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Unknown error occurred');
-        }
-
-        const data = await response.json();
-        dispatch({ type: 'UPLOAD_SUCCESS' });
-        if (onUploadSuccess) {
-          onUploadSuccess(data);
-        }
-      } catch (error) {
-        if (error.name === 'AbortError') {
-          console.warn('Upload aborted');
-        } else {
-          dispatch({ type: 'UPLOAD_FAILURE', payload: `Upload failed: ${error.message}` });
-          console.error('Error uploading file:', error);
-        }
-      }
-    });
-
-    await Promise.all(uploadPromises);
-    
-    event.target.value = null; // Reset file input
+    // Reset file input.
+    event.target.value = null;
   }, [onUploadSuccess]);
 
   return (
