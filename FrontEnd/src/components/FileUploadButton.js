@@ -9,8 +9,6 @@ import TooltipConstants from '../constants/tooltips';
 import { filesEndpoint } from '../constants/endpoints';
 
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
-
 // Define initial state for the reducer
 const initialState = {
   uploadStatus: '',
@@ -97,7 +95,6 @@ const FileUploadButton = ({ onUploadSuccess }) => {
     // Convert the FileList into an Array of file objects.
     const files = Array.from(event.target.files);
 
-
     if (files.length === 0) {
       dispatch({ type: 'UPLOAD_FAILURE', payload: 'No file selected.' });
       return;
@@ -112,41 +109,32 @@ const FileUploadButton = ({ onUploadSuccess }) => {
   }, [onUploadSuccess]);
 
   return (
-    <div className="button file-upload-button">
+    <label 
+      className="button file-upload-button"
+      data-tooltip-id="tooltip"
+      data-tooltip-content={TooltipConstants.fileUploadButton}
+      data-tooltip-place="bottom"
+    >
       <input
         type="file"
-        id="file-input"
         onChange={handleFileChange}
         disabled={state.isUploading}
         className='file-input'
-        aria-disabled={state.isUploading}
         multiple
-        style={{ display: 'none' }}
       />
       <div className='centered'>
-        <label 
-          htmlFor="file-input"
-          className='custom-file-label'
-          role="button"
-          tabIndex={0}
-          aria-label="Upload files"
-          data-tooltip-id="tooltip"
-          data-tooltip-content={TooltipConstants.fileUploadButton}
-          data-tooltip-place="bottom"
-        >
-          📂 {/* ToDo: Currently you have to click directly on the text rather than the button.. it's not a button..*/}
-        </label>
+        <span className='custom-file-label' role="button" tabIndex={0} aria-label="Upload files">
+          📂
+        </span>
 
-        {state.isUploading && (
+        {!state.isUploading && (
           <div className='upload-progress' aria-live="polite">
             <ProgressBar progress={state.uploadProgress} />
             <p>{state.uploadProgress}%</p>
           </div>
         )}
       </div>
-
-      
-    </div>
+    </label>
   );
 };
 
