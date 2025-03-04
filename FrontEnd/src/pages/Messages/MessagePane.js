@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useContext } from 'react';
 import PropTypes from 'prop-types';
 
 import { apiFetch } from '../../utils/authUtils';
@@ -8,6 +8,7 @@ import { fetchCategoriesEndpoint, messagesForCategoryEndpoint } from '../../cons
 import MessageItem from './MessageItem';
 
 import './styles/MessageHistory.css';
+import { SettingsContext } from '../Settings/SettingsContext';
 
 /**
  * MessageHistory Component
@@ -21,6 +22,10 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages, setSe
   const [categories, setCategories] = useState([])
   const [error, setError] = useState('');
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
+
+  const {
+    settings
+  } = useContext(SettingsContext);
   
   /**
    * Fetches message categories from the backend API.
@@ -163,9 +168,13 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages, setSe
                 >
                   {category.name}
                 </header>
-                <small style={{opacity: '80%'}}>
-                  {category.description}
-                </small>
+                {(settings?.interface?.display_category_description === "always" ||
+                  (settings?.interface?.display_category_description === "when selected" && expandedCategoryId === category.id)) && (
+                  <small style={{ opacity: '80%' }}>
+                    {category.description}
+                  </small>
+                )}
+                
               </div>
               
               {expandedCategoryId === category.id && (

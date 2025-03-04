@@ -25,14 +25,14 @@ const FUNCTIONALITY_STATES = {
 };
 
 /* Sections 
- * ToDo: Add config checks to leave sections open if they user left them
+ * ToDo: Add config checks to leave sections open if they user left them open
  */
 
 /**
  *
  * Renders User Interface related settings.
  */
-const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiColourisation }) => {
+const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiColourisation, changeSetting }) => {
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">User Interface</h2>), []);
 
   const maxContent = (
@@ -61,6 +61,26 @@ const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiCo
         />
         New Category Colourisation via LLM Prompt
       </label>
+      <label className="settings-label">
+      <select
+        className="settings-select"
+        value={settings?.interface?.display_category_description}
+        onChange={(e) =>
+          changeSetting(
+            'interface',
+            'display_category_description',
+             e.target.value,
+          )
+        }
+      >
+        <option value={"always"}>Always</option>
+        <option value={"when selected"}>When selected</option>
+        <option value={"never"}>never</option>
+      </select>
+      Generates a copy of your prompt that meets 'prompt engineering' standards.
+    </label>
+
+
       <TextSizeSlider />
     </div>
   );
@@ -740,6 +760,7 @@ export function Settings() {
         settings={settings}
         toggleDarkMode={toggleDarkMode}
         toggleAiColourisation={toggleAiColourisation}
+        changeSetting={changeSetting}
       />
 
       <AiModelSettings
