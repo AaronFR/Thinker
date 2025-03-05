@@ -18,7 +18,7 @@ import { SettingsContext } from '../Settings/SettingsContext';
  * @param {boolean} isProcessing - Indicates if the application is currently processing data.
  * @param {function} onMessageSelect - Callback to handle message selection.
  */
-const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages, setSelectedMessages, refreshCategory }) => {
+const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages, removeMessage, refreshCategory }) => {
   const [categories, setCategories] = useState([])
   const [error, setError] = useState('');
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
@@ -113,9 +113,7 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages, setSe
       )
     );
 
-    setSelectedMessages(prevMessages =>
-      prevMessages.filter(msg => msg.id !== messageId)
-    );
+    removeMessage(messageId)
   }, []);
   
   /**

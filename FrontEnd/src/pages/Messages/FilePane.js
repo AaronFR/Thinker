@@ -17,7 +17,7 @@ import { categoriesWithFilesEndpoint, filesForCategoryNameEndpoint } from '../..
  * @param selectedFiles - Currently selected files
  * @param refreshFiles - trigger for a refresh of the files
  */
-const FilePane = ({ onFileSelect, isProcessing, selectedFiles, setSelectedFiles, refreshFiles }) => {
+const FilePane = ({ onFileSelect, isProcessing, selectedFiles, removeFile, refreshFiles }) => {
   const [categories, setCategories] = useState([]);
   // Store file arrays separately keyed by category id.
   const [filesByCategory, setFilesByCategory] = useState({});
@@ -93,9 +93,7 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles, setSelectedFiles,
       [categoryId]: prev[categoryId]?.filter(file => file.id !== fileId)
     }));
 
-    setSelectedFiles(prevFiles =>
-      prevFiles.filter(file => file.id !== fileId)
-    );
+    removeFile(fileId)
   }, []);
 
   // Fetch categories when component mounts and when processing completes.

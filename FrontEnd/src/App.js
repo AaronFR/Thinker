@@ -66,9 +66,11 @@ function App () {
     const { 
       selectedMessages,
       setSelectedMessages,
+      removeMessage,
       toggleMessageSelection,
       selectedFiles,
       setSelectedFiles,
+      removeFile,
       toggleFileSelection,
     } = useContext(SelectionContext);
 
@@ -210,18 +212,18 @@ function App () {
       <div className="app-container">
         <ResizablePane>
           <div className="scrollable left-pane">
-            <FilePane 
+            <FilePane
               isProcessing={isProcessing}
               onFileSelect={toggleFileSelection}
               selectedFiles={selectedFiles}
-              setSelectedFiles={setSelectedFiles}
+              removeFile={removeFile}
               refreshFiles={refreshFiles}
             />
-            <MessagePane 
+            <MessagePane
               isProcessing={isProcessing}
               onMessageSelect={toggleMessageSelection}
               selectedMessages={selectedMessages}
-              setSelectedMessages={setSelectedMessages}
+              removeMessage={removeMessage}
               refreshCategory={refreshCategory}
             />
           </div>
@@ -229,7 +231,7 @@ function App () {
           <div className="scrollable right-pane">
             <LowBalanceWarning balance={balance} />
     
-            <UserInputForm 
+            <UserInputForm
               handleSubmit={handleFormSubmit}
               disconnectFromRequest={disconnectFromRequest}
               handleInputChange={handleInputChange}

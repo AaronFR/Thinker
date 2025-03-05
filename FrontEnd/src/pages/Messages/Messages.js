@@ -28,9 +28,11 @@ export function Messages() {
 
   // Manage selected file / message context
   const { 
-    selectedFiles, 
+    selectedFiles,
+    removeFile,
     toggleFileSelection, 
     selectedMessages,
+    removeMessage,
     toggleMessageSelection 
   } = useSelection();
 
@@ -43,11 +45,13 @@ export function Messages() {
           onFileSelect={toggleFileSelection}
           isProcessing={isProcessing}
           selectedFiles={selectedFiles}
+          removeFile={removeFile}
         />
         <MessageHistory 
           onMessageSelect={toggleMessageSelection}
           isProcessing={isProcessing}
           selectedMessages={selectedMessages}
+          removeMessage={removeMessage}
         />
       </div>
     </div>
