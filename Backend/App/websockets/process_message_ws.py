@@ -111,6 +111,7 @@ def init_process_message_ws(socketio: SocketIO):
                 "prompt": user_prompt,
                 "message_id": get_message_context()
             })
+            emit("update_workflow", {"status": "finished"})
 
 
 def stream_response(response_stream, user_prompt) -> str:

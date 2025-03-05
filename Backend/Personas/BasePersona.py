@@ -124,8 +124,6 @@ class BasePersona:
         emit("update_workflow", {"status": "in-progress"})
 
         result = self.WORKFLOWS[name].execute(*args, **kwargs)
-
-        emit("update_workflow", {"status": "finished"})
         return result
 
     def process_prompt(self,
