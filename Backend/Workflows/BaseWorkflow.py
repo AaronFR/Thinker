@@ -104,10 +104,8 @@ class BaseWorkflow:
         """
         config = Configuration.load_config()
         should_summarize = config['workflows'].get("summarise", False)
-
         if not should_summarize:
-            # If summarization is disabled, yield a completion message and exit
-            yield {'content': "Workflow finished.", 'stream_end': True}
+            # If summarization is disabled, exit
             return
 
         summarisation_system_message = config.get('system_messages', {}).get(

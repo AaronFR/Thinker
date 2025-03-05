@@ -51,9 +51,6 @@ def init_process_message_ws(socketio: SocketIO):
     def process_message(data):
         """
         Accept a user prompt and process it through the selected persona.
-
-        ToDo: refresh tokens on streams are a bit difficult. Implement if its possible in the release
-         to not hit a regular automatically-refreshing request
         ToDo: user input sanitization needs to be employed.
 
         :param data: A dictionary containing the user prompt and additional parameters.
@@ -85,33 +82,17 @@ def init_process_message_ws(socketio: SocketIO):
             category = CategoryManagement.determine_category(user_prompt, tags.get("category"))
             CategoryManagement.create_initial_user_prompt_and_possibly_new_category(category, user_prompt)
 
-            response_message = selected_persona.query(
+            response_stream = selected_persona.query(
                 user_prompt,
                 file_references,
                 [message["id"] for message in messages],
                 tags
             )
-            logging.info(f"Response generated [%s]: %s", get_message_context(), response_message)
+            logging.info(f"Response generated [%s]: %s", get_message_context())
 
-            chunk_content = []
-            for chunk in response_message:
-                if 'content' in chunk:
-                    content = chunk['content']
-                    chunk_content += content
-                    emit('response', {'content': content})
-                elif 'stream_end' in chunk:
-                    emit('stream_end', {
-                        "prompt": user_prompt,
-                        "message_id": get_message_context()
-                    })
-                    emit("update_workflow", {"status": "finished"})
-                    break  # Exit the loop after emitting 'stream_end
-
-            full_message = "".join(chunk_content)
+            full_message = stream_response(response_stream, user_prompt)
 
             Organising.store_prompt_data(user_prompt, full_message, category)
-
-            logging.info(f"response message: {response_message}")
 
             emit('trigger_refresh', {
                 "category_name": category,
@@ -119,14 +100,36 @@ def init_process_message_ws(socketio: SocketIO):
                 "prompt": user_prompt
             })
 
-            # ToDo: termination needed for closing flask request?
-
         except ValueError as ve:
             logging.error("Value error: %s", str(ve))
             emit('error', {"error": str(ve)})
         except Exception as e:
             logging.exception("Failed to process message")
             emit('error', {"error": str(e)})
+        finally:
+            emit('stream_end', {
+                "prompt": user_prompt,
+                "message_id": get_message_context()
+            })
+
+
+def stream_response(response_stream, user_prompt) -> str:
+    """
+    Iterates over the streaming response from the persona and emits events.
+    Combines all content parts and ensures a stream_end event is sent.
+    :param response_stream: Generator yielding response chunks.
+    :param user_prompt: The original user prompt, to be sent with metadata on stream end.
+    :return: The full concatenated response message.
+    """
+    full_message_parts = []
+    for chunk in response_stream:
+        # Emit content if present
+        if 'content' in chunk:
+            content = chunk['content']
+            full_message_parts.append(content)
+            emit('response', {'content': content})
+
+    return "".join(full_message_parts)
 
 
 def get_selected_persona(data):

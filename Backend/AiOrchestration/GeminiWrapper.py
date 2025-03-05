@@ -188,7 +188,6 @@ class GeminiWrapper(AiWrapper):
             emit('response', {'content': str(e)})
             logging.exception(FAILURE_TO_STREAM)
         finally:
-            yield {'stream_end': True}
             pass
 
         return full_response
