@@ -6,7 +6,7 @@ from typing import Union, Callable
 from flask_socketio import emit
 
 from Constants.Exceptions import error_in_function
-from Utilities.Contexts import set_iteration_context
+from Utilities.Contexts import set_iteration_context, get_functionality_context, set_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
 
 ErrorHandler.setup_logging()
@@ -97,7 +97,7 @@ def workflow_step_handler(func):
         if iteration is None:
             raise ValueError("The 'iteration' parameter must be provided.")
 
-        emit_step_started_events(iteration)
+        _emit_step_started_events(iteration)
 
         try:
             result = func(*args, **kwargs)
@@ -115,12 +115,12 @@ def workflow_step_handler(func):
                         for item in result:
                             yield item  # Use "yield from" for transparent streaming.
                     finally:
-                        emit_step_completed_events(iteration, streaming, response="")
+                        _emit_step_completed_events(iteration, streaming, response="")
 
                 return generator_wrapper()
 
             # For non-generator steps, emit completion after function returns.
-            emit_step_completed_events(iteration, streaming, response=str(result))
+            _emit_step_completed_events(iteration, streaming, response=str(result))
             return result
 
         except Exception as e:
@@ -134,13 +134,36 @@ def workflow_step_handler(func):
 UPDATE_WORKFLOW_STEP = "update_workflow_step"
 
 
-def emit_step_started_events(iteration: int):
+def _emit_step_started_events(iteration: int):
     emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "in-progress"})
     set_iteration_context(iteration)
 
 
-def emit_step_completed_events(iteration: int, streaming: bool, response: str):
+def _emit_step_completed_events(iteration: int, streaming: bool, response: str):
     emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "status": "finished"})
 
     if not streaming:
         emit(UPDATE_WORKFLOW_STEP, {"step": iteration, "response": response})
+
+
+def specify_functionality_context(function_name: str):
+    """
+    Sets a specific functionality context for the duration of the method call and no longer
+
+    :param function_name: The functionality to enable and then disable for the duration of the method
+    """
+    def decorator(method):
+        @functools.wraps(method)
+        def wrapper(*args, **kwargs):
+            prior_functionality_context = get_functionality_context()
+            set_functionality_context(function_name)
+
+            result = method(*args, **kwargs)
+
+            if not isinstance(result, types.GeneratorType):
+                # Otherwise a generator is defined, ready to go and instantly the functionality context will be wiped
+                set_functionality_context(prior_functionality_context)
+
+            return result
+        return wrapper
+    return decorator

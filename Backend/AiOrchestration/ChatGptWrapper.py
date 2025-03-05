@@ -120,10 +120,6 @@ class ChatGptWrapper(AiWrapper):
         except Exception as e:
             emit('response', {'content': e})
             logging.exception(FAILURE_TO_STREAM)
-        finally:
-            pass
-        # ToDo: ideally workflow_step_finished events should be sent here
-        #  Could change the prior event to 'Streaming' and this new one to complete
 
         return full_response
 

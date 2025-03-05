@@ -6,7 +6,7 @@ from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.UserContextManagement import UserContextManagement
-from Utilities.Contexts import set_functionality_context
+from Utilities.Contexts import get_functionality_context
 from Constants.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
 from Utilities.Utility import Utility
 
@@ -57,7 +57,6 @@ class Organising:
         :return:
         """
         config = Configuration.load_config()
-        set_functionality_context(None)  # ToDo: Really different functionalities should be isolated by thread.
 
         Utility.execute_with_retries(
             lambda: nodeDB().populate_user_prompt_node(category, user_prompt, response_message)

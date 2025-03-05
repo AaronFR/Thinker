@@ -8,7 +8,7 @@ from Constants.Constants import IDENTIFY_CONTEXT_NODE_PATTERN
 from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 from Constants.Instructions import extract_memory_node_terms_system_message, PARSE_MEMORY_NODES_SYSTEM_MESSAGE
-from Utilities.Decorators import return_for_error
+from Utilities.Decorators import return_for_error, specify_functionality_context
 
 ENCYCLOPEDIA_NAME = "User Context"
 
@@ -38,6 +38,7 @@ class UserContextManagement(EncyclopediaManagementInterface):
 
     @staticmethod
     @return_for_error([])
+    @specify_functionality_context("user_context")
     def extract_terms_from_input(user_input: List[str]) -> List[Dict[str, Any]]:
         """Extracts user_topic contextual information based on the users information
         ToDo: The parameters should be all in lowercase

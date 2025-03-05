@@ -11,7 +11,8 @@ from Functionality.Organising import Organising
 from Personas.Coder import Coder
 from Personas.Writer import Writer
 from Utilities.AuthUtils import login_required_ws
-from Utilities.Contexts import set_message_context, get_message_context, get_category_context, set_streaming
+from Utilities.Contexts import set_message_context, get_message_context, get_category_context, set_streaming, \
+    set_functionality_context
 from Utilities.CostingUtils import balance_required
 from Utilities.Routing import parse_and_validate_data
 
@@ -90,7 +91,7 @@ def init_process_message_ws(socketio: SocketIO):
             )
             logging.info(f"Response generated [%s]: %s", get_message_context())
 
-            full_message = stream_response(response_stream, user_prompt)
+            full_message = stream_response(response_stream)
 
             Organising.store_prompt_data(user_prompt, full_message, category)
 
@@ -114,12 +115,11 @@ def init_process_message_ws(socketio: SocketIO):
             emit("update_workflow", {"status": "finished"})
 
 
-def stream_response(response_stream, user_prompt) -> str:
+def stream_response(response_stream) -> str:
     """
     Iterates over the streaming response from the persona and emits events.
     Combines all content parts and ensures a stream_end event is sent.
     :param response_stream: Generator yielding response chunks.
-    :param user_prompt: The original user prompt, to be sent with metadata on stream end.
     :return: The full concatenated response message.
     """
     full_message_parts = []
@@ -130,6 +130,7 @@ def stream_response(response_stream, user_prompt) -> str:
             full_message_parts.append(content)
             emit('response', {'content': content})
 
+    set_functionality_context(None)  # Wiping any previously set context for a stream
     return "".join(full_message_parts)
 
 

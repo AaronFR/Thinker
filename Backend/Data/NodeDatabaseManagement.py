@@ -6,17 +6,14 @@ import shortuuid
 from datetime import datetime
 from typing import List, Dict, Optional, Any
 
-from flask_socketio import emit
-
 from Constants import CypherQueries
 from Constants.Exceptions import failed_to_create_user_topic
 from Constants.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
 from Data.Configuration import Configuration
 from Data.Neo4jDriver import Neo4jDriver
 from Data.Files.StorageMethodology import StorageMethodology
-from Utilities.Contexts import get_user_context, get_message_context, get_functionality_context, \
-    set_functionality_context, get_earmarked_sum, set_earmarked_sum, is_streaming
-from Utilities.Decorators import handle_errors
+from Utilities.Contexts import get_user_context, get_message_context, get_earmarked_sum, set_earmarked_sum
+from Utilities.Decorators import handle_errors, specify_functionality_context
 
 
 class NodeDatabaseManagement:
@@ -440,6 +437,7 @@ class NodeDatabaseManagement:
         return file_uuid
 
     @staticmethod
+    @specify_functionality_context("summarise_files")
     def summarise_file(file_path: str):
         """
         ToDo: May need to refactor @specify_functionality_context because it can't be locally imported, NodeDB should be
@@ -449,9 +447,6 @@ class NodeDatabaseManagement:
         config = Configuration.load_config()
 
         if config.get('files', {}).get('summarise_files', False):
-            prior_functionality_context = get_functionality_context()
-            set_functionality_context("summarise_files")
-
             content = StorageMethodology.select().read_file(file_path)
 
             from AiOrchestration.AiOrchestrator import AiOrchestrator
@@ -462,7 +457,6 @@ class NodeDatabaseManagement:
                 )],
                 [content]
             )
-            set_functionality_context(prior_functionality_context)
         else:
             summary = ""
 

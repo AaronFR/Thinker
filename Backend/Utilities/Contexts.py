@@ -103,7 +103,7 @@ def get_iteration_context():
 # Functionalities
 
 
-def set_functionality_context(function_name: str):
+def set_functionality_context(function_name: str | None):
     """
     The specific functionality being used, primarily used for cost estimating purposes.
     """

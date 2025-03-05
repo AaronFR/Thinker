@@ -8,9 +8,8 @@ from AiOrchestration.AiModel import AiModel
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Data.Configuration import Configuration
 from Functionality.Organising import Organising
-from Utilities.Contexts import set_iteration_context, get_category_context
-from Utilities.Decorators import workflow_step_handler
-from Utilities.PaymentDecorators import specify_functionality_context
+from Utilities.Contexts import get_category_context, set_functionality_context
+from Utilities.Decorators import workflow_step_handler, specify_functionality_context
 from Utilities.ErrorHandler import ErrorHandler
 from Constants.Instructions import SIMPLE_SUMMARY_PROMPT
 
@@ -74,8 +73,8 @@ class BaseWorkflow:
         return response
 
     @staticmethod
-    @specify_functionality_context("summarise_workflows")
     @workflow_step_handler
+    @specify_functionality_context("summarise_workflows")
     def _summary_step(
         iteration: int,
         process_prompt: Callable,
@@ -102,6 +101,8 @@ class BaseWorkflow:
         :param model: The AI model to use.
         :return: AI's response.
         """
+        set_functionality_context("summarise_workflows")
+
         config = Configuration.load_config()
         should_summarize = config['workflows'].get("summarise", False)
         if not should_summarize:
