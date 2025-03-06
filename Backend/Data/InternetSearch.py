@@ -140,59 +140,78 @@ class InternetSearch:
 
         responses: List[str] = []
         site_hrefs: List[str] = []
+        timed_out_urls = []
         for search_result in search_results:
             response_url = search_result.get("href")
             logging.info(f"Reading content from - {response_url}")
 
             website_content = self.read_website_content(response_url)
-            responses.append(Utility.encapsulate_in_tag(website_content, response_url))
-            site_hrefs.append(response_url)
+            if website_content:
+                responses.append(Utility.encapsulate_in_tag(website_content, response_url))
+                site_hrefs.append(response_url)
+            else:
+                # ToDo: Handle in frontend later
+                timed_out_urls.append(response_url)
 
         # ToDo: It's messy to have InternetSearch worry about communicating to the workflow, a helper method in a
         #  file dedicated to emitting methods would be clearer
-        emit(UPDATE_WORKFLOW_STEP, {"step": get_iteration_context(), "sites": site_hrefs})
+
+        emit_data = {"step": get_iteration_context(), "sites": site_hrefs}
+        if timed_out_urls:
+            emit_data["timed_out_urls"] = timed_out_urls
+
+        emit(UPDATE_WORKFLOW_STEP, emit_data)
 
         return responses
 
 
     @staticmethod
-    def read_website_content(url):
+    def read_website_content(url, timeout: float = 5.0):
         """
         A bit of a grayzone, we *will* check the robots.txt and if a site doesn't want automated bot, we won't go there.
         Ideally the user will be notified, and they can go there in person.
         """
         headers = {'User-Agent': USER_AGENT}
-        res = requests.get(url, headers=headers)
-        html_page = res.content
-        soup = BeautifulSoup(html_page, 'html.parser')
-        text = soup.find_all(text=True)
+        try:
+            res = requests.get(url, headers=headers, timeout=timeout)
+            res.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
+            html_page = res.content
+            soup = BeautifulSoup(html_page, 'html.parser')
+            text = soup.find_all(text=True)
 
-        output = ''
-        blacklist = [
-            '[document]',
-            'noscript',
-            'header',
-            'html',
-            'meta',
-            'head',
-            'input',
-            'script',
-            'source',
-            'style',
-            'link',
-            'img',
-            'svg',
-            'button',
-            'iframe'
-        ]
-        for t in text:
-            if t.parent.name not in blacklist:
-                output += '{} '.format(t)
+            output = ''
+            blacklist = [
+                '[document]',
+                'noscript',
+                'header',
+                'html',
+                'meta',
+                'head',
+                'input',
+                'script',
+                'source',
+                'style',
+                'link',
+                'img',
+                'svg',
+                'button',
+                'iframe'
+            ]
+            for t in text:
+                if t.parent.name not in blacklist:
+                    output += '{} '.format(t)
 
-        # character limit - first 50000 characters
-        output = output[:50000]
+            # character limit - first 50000 characters
+            output = output[:50000]
 
-        return output
+            return output
+
+        except requests.exceptions.Timeout:
+            logging.warning(f"Timeout occurred while reading website content from {url}")
+            return ""
+        except requests.exceptions.RequestException as e:
+            logging.warning(f"RequestException occurred while reading website content from {url}: {e}")
+            return ""
 
     @staticmethod
     def can_fetch(url: str, user_agent: str = USER_AGENT):
