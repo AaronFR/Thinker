@@ -140,7 +140,8 @@ const FunctionalitySettings = React.memo(({
   settings,
   changeSetting,
   handleMessageChange,
-  userInfo
+  userInfo,
+  toggleUserEncyclopedia
 }) => {
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">Functionality</h2>), []);
   
@@ -177,6 +178,11 @@ const FunctionalitySettings = React.memo(({
         currentValue={settings?.features?.internet_search_enabled}
         changeSetting={changeSetting}
         cost={userInfo?.internet_search_cost}
+      />
+      <UserContextSection
+        userContextEnabled={settings?.beta_features?.user_context_enabled}
+        toggleUserEncyclopedia={toggleUserEncyclopedia}
+        cost={userInfo?.user_context_cost}
       />
       <BestOfSection 
         currentValue={settings?.features?.multiple_reruns_enabled}
@@ -414,7 +420,6 @@ const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) =>
 const BetaFeaturesSettings = React.memo(({
   settings,
   toggleDebug,
-  toggleUserEncyclopedia,
   toggleMultiFileProcessing,
 }) => {
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">🚧 Beta Features</h2>), []);
@@ -431,15 +436,6 @@ const BetaFeaturesSettings = React.memo(({
           onChange={toggleDebug}
         />
         Enable debug view (Directly view prompt tags)
-      </label>
-      <label className="settings-label">
-        <input
-          type="checkbox"
-          checked={settings?.beta_features?.user_context_enabled}
-          onChange={toggleUserEncyclopedia}
-          className="settings-checkbox"
-        />
-        User knowledge - The thinker will remember details about the user and their preferences
       </label>
       <label className="settings-label">
         <input
@@ -660,10 +656,46 @@ const InternetSearchSection = React.memo(({
         <option value={FUNCTIONALITY_STATES.OFF}>Off</option>
         <option value={FUNCTIONALITY_STATES.ON}>On</option>
       </select>
-      If enabled each step will search the internet, if applicable, for additional context
+      Searches the internet for related information
     </label>
-    <p>👍 Additional context can improve the response, access information the AI doesn't know and mitigate hallucinations</p>
-    <p>👎 Increases costs and time per request (though input is cheaper than output)</p>
+    <p>📰 Allows the AI to access information it didn't know. E.g. read the news</p>
+    <p>👍 Additional context can improve the response and mitigate hallucinations</p>
+    <p>⏰ Increases duration of requests (2x)</p>
+  </div>
+));
+
+/**
+ * Contains the settings and rules for User Context functionality
+ */
+const UserContextSection = React.memo(({
+  userContextEnabled,
+  toggleUserEncyclopedia,
+  cost
+}) => (
+  <div className='settings-subsection'>
+    <div className='side-by-side'>
+      <h3>User Context</h3>
+      <h4
+        data-tooltip-id="tooltip"
+        data-tooltip-content={TooltipConstants.userContextCosting}
+        data-tooltip-place="bottom"
+      >
+        {formatPrice(parseFloat(cost))}
+      </h4>
+    </div>
+    
+    <label className="settings-label">
+      <input
+        type="checkbox"
+        checked={userContextEnabled}
+        onChange={toggleUserEncyclopedia}
+        className="settings-checkbox"
+      />
+      Store and retrieve details about the user and their preferences
+    </label>
+    <p>📝 Remembers user facts and preferences</p>
+    <p>🤔 Not always reliable</p>
+    <p>⏰ Increases duration of requests (2.1x)</p>
   </div>
 ));
 
@@ -673,7 +705,7 @@ const InternetSearchSection = React.memo(({
  * Main component that aggregates all settings sections.
  */
 export function Settings() {
-  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'internet_search_cost', 'summarise_workflows_cost', 'summarise_files_cost']);
+  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'internet_search_cost', 'summarise_workflows_cost', 'summarise_files_cost', 'user_context_cost']);
   const [userInfo, setUserInfo] = useState(null);
   const [error, setError] = useState(null);
 
@@ -774,6 +806,7 @@ export function Settings() {
         changeSetting={changeSetting}
         handleMessageChange={handleMessageChange}
         userInfo={userInfo}
+        toggleUserEncyclopedia={toggleUserEncyclopedia}
       />
 
       <WorkflowsSettings
@@ -800,7 +833,6 @@ export function Settings() {
       <BetaFeaturesSettings
         settings={settings}
         toggleDebug={toggleDebug}
-        toggleUserEncyclopedia={toggleUserEncyclopedia}
         toggleMultiFileProcessing={toggleMultiFileProcessing}
       />
 

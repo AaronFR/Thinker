@@ -65,7 +65,9 @@ const TooltipConstants = {
   `,
   byCheapest: `Gemini-2.0- Flash lite - preview
   At time of writing`,
-  internetSearchCosting: `This is the minimum cost, page content will also add to the input costs of evaluating a response`,
+  internetSearchCosting: `This is the minimum cost, page content will also increase the input costs of a prompt`,
+  userContextCosting: `This is just the minimum cost for deciding what user info to store and retrive. 
+  The referenced context will also increase the input costs of a prompt.`,
 };
 
 export default TooltipConstants;

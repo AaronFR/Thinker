@@ -28,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  attached.
 - Ongoing requests won't be affected by a change in configuration mid-run.
 - A step's output is properly formatted when displayed
+- 'User context' is no longer in 'beta'
+  - (Usually) Remembers user facts and preferences, but increases prompt durations significantly
 
 ### Removed
 
