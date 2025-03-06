@@ -1,4 +1,5 @@
 import logging
+import time
 
 import shortuuid
 from flask_socketio import emit, SocketIO
@@ -57,6 +58,7 @@ def init_process_message_ws(socketio: SocketIO):
         :param data: A dictionary containing the user prompt and additional parameters.
         :raises ValueError: If the prompt or persona is invalid.
         """
+        start_time = time.time()
         logging.info(f"process_message triggered with data: {data}")
         try:
             set_streaming(True)
@@ -108,11 +110,18 @@ def init_process_message_ws(socketio: SocketIO):
             logging.exception("Failed to process message")
             emit('error', {"error": str(e)})
         finally:
+            finish_time = time.time()
+            job_duration = finish_time - start_time
+
+            logging.info(f"This request took: {job_duration}s")
             emit('stream_end', {
                 "prompt": user_prompt,
                 "message_id": get_message_context()
             })
-            emit("update_workflow", {"status": "finished"})
+            emit("update_workflow", {
+                "status": "finished",
+                "duration": job_duration
+            })
 
 
 def stream_response(response_stream) -> str:

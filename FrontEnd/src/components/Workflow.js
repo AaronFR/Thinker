@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 import ExpandableElement from "../utils/expandableElement";
 import { CodeHighlighter } from '../utils/textUtils';
+import { formatTime } from "../utils/numberUtils";
 
 import './styles/Workflow.css';
 
@@ -39,6 +40,9 @@ const Workflow = React.memo(({ workflowData }) => {
           <StepDetail key={step.step_id} step={step} />
         ))}
       </div>
+      {workflowData.duration && <div>
+        <small>{formatTime(workflowData.duration)}</small>
+      </div>}
     </div>
   );
 });

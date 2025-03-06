@@ -67,6 +67,9 @@ const useSubmitMessage = (
         if (updateData.type === 'status') {
           return { ...prevWorkflow, status: updateData.status };
         }
+        if (updateData.type === 'duration') {
+          return { ...prevWorkflow, duration: updateData.duration };
+        }
         
         if (prevWorkflow.steps[stepIndex]) {
           const currentStep = { ...prevWorkflow.steps[stepIndex], ...updateData };
@@ -130,6 +133,9 @@ const useSubmitMessage = (
       socket.on('update_workflow', (data) => {
         console.log("Received workflow status update", data);
         updateQueueRef.current.push({ type: 'status', status: data.status });
+        if (data?.duration) {
+          updateQueueRef.current.push({ type: 'duration', duration: data.duration });
+        }
         processUpdateQueue();
       });
 
