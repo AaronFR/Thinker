@@ -229,6 +229,7 @@ function App () {
           </div>
         
           <div className="scrollable right-pane">
+            <Navigation />
             <LowBalanceWarning balance={balance} />
     
             <UserInputForm
@@ -275,7 +276,7 @@ function App () {
               isProcessing={isProcessing}
             />
     
-            <Navigation />
+
           </div>
         </ResizablePane>
       </div>
