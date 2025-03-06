@@ -9,6 +9,13 @@
  */
 export function formatPrice(price) {
   const scale = 100
+  if (price < 0.0001) {
+    // In the event the price is less than one percent of a cent
+    console.log(price)
+    const scale = 1000
+    const cents = Math.round(price * 100 * scale) / scale
+      return `¢ ${cents}`;
+  }
   if (price < 1) {
       const cents = Math.round(price * 100 * scale) / scale
       return `¢ ${cents}`;
