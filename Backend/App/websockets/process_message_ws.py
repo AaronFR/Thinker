@@ -3,7 +3,6 @@ import time
 
 import shortuuid
 from flask_socketio import emit, SocketIO
-from flask import abort
 
 from App.extensions import socket_rate_limit, user_key_func
 from Constants.Constants import BASE_LIMIT
@@ -24,26 +23,27 @@ PROCESS_MESSAGE_SCHEMA = {
     "tags": {"required": False, "default": {}, "type": dict},
     "files": {"required": False, "default": [], "type": list},
     "messages": {"required": False, "default": [], "type": list},
+    "persona": {"required": False, "default": "coder"}
 }
+
+PERSONA_MAPPING = {
+    "coder": Coder,
+    "writer": Writer,
+}
+DEFAULT_PERSONA = "coder"
 
 
 def init_process_message_ws(socketio: SocketIO):
-    """
-    Initializes the SocketIO event handlers for processing and terminating messages.
-
-    :param socketio: The Flask-SocketIO instance.
-    """
+    """Initializes SocketIO event handlers for message processing."""
 
     @socketio.on('connect')
     def handle_connect():
-        logging.info(f"🟢 Client connected")
+        logging.info("🟢 Client connected")
 
     @socketio.on('disconnect_from_request')
     @login_required_ws
     def disconnect_from_request():
-        logging.info(f"🔴 Client disconnected")
-
-        # Send acknowledgment back to client
+        logging.info("🔴 Client disconnected")
         return {'status': 'Disconnecting from request'}
 
     @socketio.on('start_stream')
@@ -53,33 +53,33 @@ def init_process_message_ws(socketio: SocketIO):
     def process_message(data):
         """
         Accept a user prompt and process it through the selected persona.
-        ToDo: user input sanitization needs to be employed.
 
         :param data: A dictionary containing the user prompt and additional parameters.
         :raises ValueError: If the prompt or persona is invalid.
         """
         start_time = time.time()
-        logging.info(f"process_message triggered with data: {data}")
+        message_uuid = str(shortuuid.uuid())
+        set_message_context(message_uuid)
+        logging.info(f"process_message triggered [{message_uuid}] with data: {data}")
+
         try:
             set_streaming(True)
-
-            message_uuid = str(shortuuid.uuid())
-            set_message_context(message_uuid)
             parsed_data = parse_and_validate_data(data, PROCESS_MESSAGE_SCHEMA)
 
             user_prompt = parsed_data["prompt"]
             if not user_prompt:
-                abort(400)
+                raise ValueError(ERROR_NO_PROMPT)
 
-            if parsed_data["additionalQA"]:
-                user_prompt += f"\nAdditional Q&A context: \n{parsed_data['additionalQA']}"
+            additional_qa = parsed_data.get("additionalQA")
+            if additional_qa:
+                user_prompt += f"\nAdditional Q&A context:\n{additional_qa}"
 
             tags = parsed_data["tags"]
             files = parsed_data["files"]
             messages = parsed_data["messages"]
+            persona_name = parsed_data.get("persona")
 
-            selected_persona = get_selected_persona(data)
-
+            selected_persona = get_selected_persona(persona_name)
             file_references = Organising.process_files(files)
 
             category = CategoryManagement.determine_category(user_prompt, tags.get("category"))
@@ -91,10 +91,9 @@ def init_process_message_ws(socketio: SocketIO):
                 [message["id"] for message in messages],
                 tags
             )
-            logging.info(f"Response generated [%s]: %s", get_message_context())
+            logging.info(f"[{message_uuid}] Response generated, streaming...")
 
-            full_message = stream_response(response_stream)
-
+            full_message = stream_response(response_stream, message_uuid)
             Organising.store_prompt_data(user_prompt, full_message, category)
 
             emit('trigger_refresh', {
@@ -104,16 +103,16 @@ def init_process_message_ws(socketio: SocketIO):
             })
 
         except ValueError as ve:
-            logging.error("Value error: %s", str(ve))
+            logging.exception(f"[{message_uuid}] Validation error {str(ve)}")
             emit('error', {"error": str(ve)})
         except Exception as e:
-            logging.exception("Failed to process message")
+            logging.exception(f"[{message_uuid}] Failed to process message")
             emit('error', {"error": str(e)})
         finally:
             finish_time = time.time()
             job_duration = finish_time - start_time
+            logging.info(f"[{message_uuid}] Request completed in {job_duration:.2f}s", )
 
-            logging.info(f"This request took: {job_duration}s")
             emit('stream_end', {
                 "prompt": user_prompt,
                 "message_id": get_message_context()
@@ -124,33 +123,32 @@ def init_process_message_ws(socketio: SocketIO):
             })
 
 
-def stream_response(response_stream) -> str:
+def stream_response(response_stream, message_uuid: str) -> str:
     """
     Iterates over the streaming response from the persona and emits events.
     Combines all content parts and ensures a stream_end event is sent.
     :param response_stream: Generator yielding response chunks.
     :return: The full concatenated response message.
+
     """
     full_message_parts = []
-    for chunk in response_stream:
-        # Emit content if present
-        if 'content' in chunk:
-            content = chunk['content']
-            full_message_parts.append(content)
-            emit('response', {'content': content})
+    try:
+        for chunk in response_stream:
+            if 'content' in chunk:
+                content = chunk['content']
+                full_message_parts.append(content)
+                emit('response', {'content': content})
+    except Exception as e:
+        logging.exception(f"[{message_uuid}] Streaming error {e}")
+        emit('error', {"error": "Streaming interrupted."})
+    finally:
+        set_functionality_context(None)  # Wiping any previously set context for a stream
+        return "".join(full_message_parts)
 
-    set_functionality_context(None)  # Wiping any previously set context for a stream
-    return "".join(full_message_parts)
 
-
-def get_selected_persona(data):
-    """ Determine the selected persona or default to 'coder'. """
-    persona_selection = data.get("persona")
-    if persona_selection == 'coder':
-        persona = Coder("Coder")
-    if persona_selection == 'writer':
-        persona = Writer("Writer")
-    if persona_selection not in ['coder', 'writer']:
-        logging.warning("Invalid persona selected, defaulting to coder")
-        return Coder("Default")
-    return persona
+def get_selected_persona(persona_name: str):
+    """
+    Determines the selected persona based on the provided name, defaulting to Coder if the persona name is invalid.
+    """
+    persona_class = PERSONA_MAPPING.get(persona_name.lower(), PERSONA_MAPPING[DEFAULT_PERSONA])
+    return persona_class(persona_name)

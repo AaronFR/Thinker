@@ -8,9 +8,11 @@ from Constants.Constants import LOCAL_STORAGE, STORAGE_TYPE
 
 
 class ErrorHandler:
-    """Centralized error handling class for consistent logging and exception management.
+    """
+    Centralized error handling class for consistent logging and exception management.
     ToDo: Currently has to be initialised in every class for logs to *actually* be logged, which can easily lead to
      mistakes
+    ToDo: Add the message_id prefix to each log if said id is set in context
     """
 
     @staticmethod

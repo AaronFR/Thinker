@@ -6,8 +6,8 @@ from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.UserContextManagement import UserContextManagement
-from Utilities.Contexts import get_functionality_context
 from Constants.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
+from Utilities.Decorators import handle_errors
 from Utilities.Utility import Utility
 
 
@@ -43,13 +43,14 @@ class Organising:
         return file_uuid
 
     @staticmethod
+    @handle_errors
     def store_prompt_data(
         user_prompt: str,
         response_message: str,
         category: str
     ):
         """
-        ToDo: Look into celery and async processing
+        Populate the initialised message node with the information created by the request workflow
 
         :param user_prompt: The given user prompt starting the evaluation process
         :param response_message: The systems response
