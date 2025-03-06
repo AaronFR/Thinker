@@ -11,7 +11,7 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Constants.Exceptions import NOT_IMPLEMENTED_IN_INTERFACE
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Constants.Constants import DEFAULT_ENCODING, EXTRACT_LIST_REGEX
-from Utilities.Decorators import handle_errors
+from Utilities.Decorators import handle_errors, specify_functionality_context
 from Constants.Instructions import select_topic_prompt, SELECT_TOPIC_SYSTEM_MESSAGE, \
     SUMMARISE_WHILE_RETAINING_DETAIL_SYSTEM_MESSAGE, string_of_existing_topics_prompt, SCHEMA_FOR_CONCEPT_TERMS
 
@@ -76,8 +76,12 @@ class EncyclopediaManagementInterface:
         return redirects_df.set_index('redirect_term')['target_term'].to_dict()
 
     @handle_errors(raise_errors=True)
+    @specify_functionality_context("user_context")
     def search_encyclopedia(self, user_messages: List[str]) -> str | None:
         """Searches the encyclopedia for terms derived from user messages.
+
+        ToDo: Only user context will be using this interface from now on, at a later stage it needs to be refactored
+         away
 
         :param user_messages: List of user input messages containing the terms.
         :return: A string representation of the additional context found.
