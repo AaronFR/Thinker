@@ -100,15 +100,15 @@ class GeminiWrapper(AiWrapper):
 
         try:
             user_messages, system_messages = self._prepare_gemini_messages(messages)
-            prompt = ' '.join([message['content'] for message in user_messages])  # Gemini takes single prompt
-            system_instructions = ' '.join([message['content'] for message in system_messages])
+            prompt = ' '.join([message.get('content') for message in user_messages])  # Gemini takes single prompt
+            system_instructions = ' '.join([message.get('content') for message in system_messages])
 
             response: GenerateContentResponse = self.gemini_client.models.generate_content(
                 model=model.value,
                 contents=prompt,
                 config=GenerateContentConfig(
                     candidate_count=rerun_count,
-                    system_instruction=system_instructions
+                    system_instruction=system_instructions if system_instructions.strip() else None
                 )
             )
             # response.candidates[0].content.parts[0].thought worth remembering for later
