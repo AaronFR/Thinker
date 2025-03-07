@@ -74,7 +74,7 @@ const ModelSelector = React.memo(({ selectedModel, setTags, forTags, economicalM
     <div
       className="model-selector"
       data-tooltip-id="tooltip"
-      data-tooltip-html={TooltipConstants.modelSelector}
+      data-tooltip-html={economicalMode ? TooltipConstants.backgroundModelSelector : TooltipConstants.modelSelector}
       data-tooltip-place="top"
     >
       {forTags ? <TagSelector

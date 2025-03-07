@@ -77,7 +77,7 @@ const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiCo
         <option value={"when selected"}>When selected</option>
         <option value={"never"}>never</option>
       </select>
-      Generates a copy of your prompt that meets 'prompt engineering' standards.
+      Display category description
     </label>
 
 
@@ -113,7 +113,7 @@ const AiModelSettings = React.memo(({ settings, handleForegroundModelChange, han
       <h3>Background Model</h3>
       <p>
         In The Thinker many programs actually run in the background to try and improve the main 'foreground' prompt and the user experience overall, for this
-        purpose you want a functional economical, to the point LLM.
+        purpose you want a functional, economical and to the point LLM.
       </p>
       <ModelSelector
         selectedModel={settings?.models.default_background_model || ''}
