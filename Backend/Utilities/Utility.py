@@ -57,10 +57,22 @@ class Utility:
         token_count = 0
         model_type = type(model)
 
+        # Each message might have additional tokens for formatting.
+        # For instance, OpenAI documentation notes that there are usually extra tokens per message.
+        # The exact count varies, but assume a base count per message (e.g., 4 tokens per message).
+        extra_tokens_per_message = 4
+
         if model_type == ChatGptModel:
-            enc = tiktoken.encoding_for_model(model.value)
+            encoding = tiktoken.encoding_for_model(model.value)
             for message in messages:
-                token_count += len(enc.encode(str(message['content'])))
+                token_count += len(encoding.encode(message.get("content", "")))
+                token_count += extra_tokens_per_message
+
+            # Depending on the API’s wrapping of the conversation prompt,
+            # you might need to account for additional tokens.
+            # For example, if there's an overall prefix or suffix added to the conversation.
+            overall_extra_tokens = 2
+            token_count += overall_extra_tokens
 
         if model_type == GeminiModel:
             character_soup = ""

@@ -11,10 +11,13 @@ from AiOrchestration.AiWrapper import AiWrapper
 from AiOrchestration.ChatGptModel import ChatGptModel
 from Constants.Constants import CANNOT_AFFORD_REQUEST
 from Constants.Exceptions import OPEN_AI_FLAGGED_REQUEST_INAPPROPRIATE, \
-    SERVER_FAILURE_OPEN_AI_API, FAILURE_TO_STREAM
+    SERVER_FAILURE_OPEN_AI_API, FAILURE_TO_STREAM, NO_USAGE_DATA_OPEN_AI
 from Utilities.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
 from Utilities.Utility import Utility
+
+
+REASONING_MODELS = {ChatGptModel.CHAT_GPT_O3_MINI, ChatGptModel.CHAT_GPT_O1_MINI}
 
 
 class ChatGptRole(enum.Enum):
@@ -26,6 +29,9 @@ class ChatGptRole(enum.Enum):
 
 
 class ChatGptWrapper(AiWrapper):
+    """
+    ToDo: investigate other chat completion parameters, reasoning_effort and temperature being good starting places
+    """
 
     _instance = None
 
@@ -38,6 +44,33 @@ class ChatGptWrapper(AiWrapper):
 
     def __init__(self):
         ErrorHandler.setup_logging()
+
+    def _calculate_cost(
+        self,
+        input_messages: List[Dict[str, str]],
+        output: str,
+        model: ChatGptModel,
+        input_tokens: int,
+        output_tokens: int
+    ):
+        """Helper method to calculate the cost using token usage information.
+
+        If token counts are missing, recalculate using Utility.calculate_tokens_used.
+        """
+        if not input_tokens:
+            logging.warning(NO_USAGE_DATA_OPEN_AI)
+            input_tokens = Utility().calculate_tokens_used(input_messages, model)
+
+        if not output_tokens:
+            if model in REASONING_MODELS:
+                logging.error(f"{NO_USAGE_DATA_OPEN_AI} - on REASONING model!")
+                raise Exception(SERVER_FAILURE_OPEN_AI_API)
+
+            logging.warning(f"{NO_USAGE_DATA_OPEN_AI} - streamed output")
+            response_as_message = [{"content": output}]
+            output_tokens = Utility().calculate_tokens_used(response_as_message, model)
+
+        self.calculate_prompt_cost(input_tokens, output_tokens, model)
 
     def get_ai_response(
             self,
@@ -58,20 +91,21 @@ class ChatGptWrapper(AiWrapper):
             chat_completion = self.open_ai_client.chat.completions.create(
                 model=model.value, messages=messages, n=rerun_count
             )
-            self.calculate_prompt_cost(
-                chat_completion.usage.prompt_tokens,
-                chat_completion.usage.completion_tokens,
-                model
-            )
+
+            responses = [choice.message.content for choice in chat_completion.choices]
+
+            input_tokens = chat_completion.usage.prompt_tokens
+            output_tokens = chat_completion.usage.completion_tokens
+
+            return responses[0] if rerun_count == 1 else responses or None
         except BadRequestError:
             logging.exception(OPEN_AI_FLAGGED_REQUEST_INAPPROPRIATE)
             return "OpenAi ChatGpt Server Flagged Your Request as Inappropriate. Try again, it does this alot."
         except Exception as e:
             logging.exception(SERVER_FAILURE_OPEN_AI_API)
             raise e
-
-        responses = [choice.message.content for choice in chat_completion.choices]
-        return responses[0] if rerun_count == 1 else responses or None
+        finally:
+            self._calculate_cost(messages, ''.join(responses), model, input_tokens, output_tokens)
 
     @handle_errors(debug_logging=True, raise_errors=True)
     def get_ai_streaming_response(
@@ -88,38 +122,41 @@ class ChatGptWrapper(AiWrapper):
             return CANNOT_AFFORD_REQUEST
 
         try:
-            response_content = []
-
             chat_completion = self.open_ai_client.chat.completions.create(
                 model=model.value,
                 messages=messages,
-                stream=True
+                stream=True,
+                stream_options={"include_usage": True}
             )
 
+            response_content = []
+            input_tokens = None
+            output_tokens = None
             for chunk in chat_completion:
-                delta = chunk.choices[0].delta
-                content = getattr(delta, 'content', None)
+                content = None
+                if chunk.choices:
+                    delta = chunk.choices[0].delta
+                    content = getattr(delta, 'content', None)
+                usage = chunk.usage
 
                 if content:
                     response_content.append(content)
                     yield {'content': content}
+                if usage:
+                    input_tokens = usage.prompt_tokens
+                    output_tokens = usage.completion_tokens
 
                 # ToDo: Check for user termination condition here
                 # if user_requested_stop():  # Placeholder for actual stop condition
                 #     user_terminated = True
                 #     break  # Exit the loop if user interrupts
 
-            # Combine all parts of the response for final cost calculation
             full_response = ''.join(response_content)
-            final_message = [{"content": full_response}]
-            self.calculate_prompt_cost(
-                Utility().calculate_tokens_used(messages, model),
-                Utility().calculate_tokens_used(final_message, model),
-                model
-            )
         except Exception as e:
             emit('response', {'content': e})
             logging.exception(FAILURE_TO_STREAM)
+        finally:
+            self._calculate_cost(messages, full_response, model, input_tokens, output_tokens)
 
         return full_response
 

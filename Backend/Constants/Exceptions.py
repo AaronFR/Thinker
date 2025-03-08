@@ -19,6 +19,8 @@ SERVER_FAILURE_OPEN_AI_API = "OpenAI API Server Failure"
 SERVER_FAILURE_GEMINI_API = "Gemini Server Failure"
 NO_RESPONSE_OPEN_AI_API = "OpenAI API returned no response."
 NO_RESPONSE_GEMINI_API = "Gemini API returned no response."
+NO_USAGE_DATA_GEMINI = "Gemini failed to send token usage metrics"
+NO_USAGE_DATA_OPEN_AI = "OpenAi failed to send token usage metrics"
 OPEN_AI_FLAGGED_REQUEST_INAPPROPRIATE = "OpenAi ChatGpt Flagged user request as Inappropriate"
 
 # Route Failures
