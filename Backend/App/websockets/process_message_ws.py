@@ -18,7 +18,7 @@ from Utilities.Routing import parse_and_validate_data
 
 ERROR_NO_PROMPT = "No prompt found"
 PROCESS_MESSAGE_SCHEMA = {
-    "prompt": {"required": True},
+    "prompt": {"required": True, "type": str},
     "additionalQA": {"required": False, "default": None},
     "tags": {"required": False, "default": {}, "type": dict},
     "files": {"required": False, "default": [], "type": list},
@@ -150,5 +150,8 @@ def get_selected_persona(persona_name: str):
     """
     Determines the selected persona based on the provided name, defaulting to Coder if the persona name is invalid.
     """
+    if not persona_name:
+        return PERSONA_MAPPING[DEFAULT_PERSONA]("default")
+
     persona_class = PERSONA_MAPPING.get(persona_name.lower(), PERSONA_MAPPING[DEFAULT_PERSONA])
     return persona_class(persona_name)
