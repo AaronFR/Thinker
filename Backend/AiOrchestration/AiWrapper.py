@@ -130,7 +130,7 @@ class AiWrapper(abc.ABC):
             NodeDB().expense_functionality(functionality, total_cost)
 
         logging.info(
-            f"Request cost [{model}] - Input tokens: {input_tokens} ${input_cost}, "
+            f"Request cost [{model}] - Input tokens: {input_tokens}, ${input_cost}, "
             f"Output tokens: {output_tokens}, ${output_cost} \n"
             f"Total cost: ${total_cost:.4f}"
         )

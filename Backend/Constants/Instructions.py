@@ -175,24 +175,26 @@ def determine_pages_prompt(multi_file_processing_enabled: bool = False) -> str:
     )
 
 
-
-
 EXTRACT_SEARCH_TERMS_PROMPT = (
     "Extract a key phrase from the following prompt to use for an internet search. "
     "Respond with the phrases separated by commas only, without additional text."
 )
 
 
-def categorisation_prompt(
-        category_names: List[dict[str, str]],
+def categorisation_system_messages(
         user_categorisation_instructions: str
-) -> str:
-    return (
-        f"LIGHTLY suggested existing categories, you DONT need to follow: {str(category_names)} "
-        f"{user_categorisation_instructions} "
-        "and categorize the data with the most suitable single-word answer."
-        "Write it as <result=\"(your_selection)\">"
-    )
+) -> List[str]:
+    return [
+        f"{user_categorisation_instructions} ",
+        (
+            "The existing categories are supplied, by suggesting a new more appropriate category, said category will "
+            "be created in the system."
+        ),
+        (
+            "Categorize the data with the most suitable single-word answer."
+            "Write it as <result=\"(your_selection)\">"
+        )
+    ]
 
 
 DETERMINE_PAGES_SCHEMA = (
@@ -226,14 +228,20 @@ DEFAULT_USER_CATEGORISATION_INSTRUCTIONS = (
 )
 
 
-def categorisation_system_message(user_prompt: str, llm_response: str = None) -> str:
+def categorisation_inputs(user_prompt: str, llm_response: str = None, category_names: List[dict[str, str]] = []) -> List[str]:
     response_part = ""
     if llm_response:
         response_part = f"\n<response>{llm_response}</response>"
 
-    return (
-        f"<user prompt>{user_prompt}</user prompt>" + response_part
-    )
+    if len(category_names) > 0:
+        existing_categories = f"Existing categories: {', '.join(category_names)}"
+    else:
+        existing_categories = "No categories yet created"
+
+    return [
+        f"<input>{user_prompt}</input>" + response_part,
+        existing_categories
+    ]
 
 
 CATEGORY_DESCRIPTION_SYSTEM_MESSAGE = (

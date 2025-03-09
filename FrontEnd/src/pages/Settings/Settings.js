@@ -360,6 +360,9 @@ const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) =>
   const maxContent = (
     <div>
       {sectionHeading}
+
+      <p>Bear in mind, LLMs pay particular attention to the first or last instructions</p>
+      
       <div className="message-settings">
         <label className="message-label">
           Coder Persona Message

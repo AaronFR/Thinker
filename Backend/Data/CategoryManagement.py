@@ -12,9 +12,9 @@ from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities import Colour
-from Constants.Instructions import DEFAULT_USER_CATEGORISATION_INSTRUCTIONS, categorisation_system_message, \
-    categorisation_prompt, SELECT_COLOUR_SYSTEM_MESSAGE, CATEGORY_DESCRIPTION_SYSTEM_MESSAGE, \
-    category_description_prompt
+from Constants.Instructions import DEFAULT_USER_CATEGORISATION_INSTRUCTIONS, categorisation_inputs, \
+    SELECT_COLOUR_SYSTEM_MESSAGE, CATEGORY_DESCRIPTION_SYSTEM_MESSAGE, category_description_prompt, \
+    categorisation_system_messages
 from Utilities.Contexts import set_category_context, get_category_context
 
 
@@ -63,8 +63,8 @@ class CategoryManagement:
         )
 
         category_reasoning = AiOrchestrator().execute(
-            [categorisation_prompt(category_names, user_categorisation_instructions)],
-            [categorisation_system_message(content, llm_response)]
+            categorisation_system_messages(user_categorisation_instructions),
+            categorisation_inputs(content, llm_response, category_names)
         )
         logging.info(f"Category Reasoning: {category_reasoning}")
 
