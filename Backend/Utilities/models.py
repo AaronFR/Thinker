@@ -8,7 +8,7 @@ chat_gpt_models = {model.value for model in ChatGptModel}
 gemini_models = {model.value for model in GeminiModel}
 
 
-def determine_prompter(model_string: str):
+def determine_llm_client(model_string: str):
     if model_string in chat_gpt_models:
         return ChatGptWrapper()
     elif model_string in gemini_models:
