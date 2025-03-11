@@ -123,7 +123,12 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
           {file.summary && (
             <div>
               <p><strong>Summary</strong></p>
-              <small>{file.summary}</small>
+              <small>
+                <div className="markdown-output">
+                  <CodeHighlighter>{file.summary}</CodeHighlighter>
+                </div>
+                
+              </small>
             </div>
           )}
           <p>
