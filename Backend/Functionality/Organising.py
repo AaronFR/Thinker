@@ -7,7 +7,7 @@ from Data.Files.StorageMethodology import StorageMethodology
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.UserContextManagement import UserContextManagement
 from Constants.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
-from Utilities.Decorators import handle_errors
+from Utilities.Decorators import handle_errors, specify_functionality_context
 from Utilities.Utility import Utility
 
 
@@ -36,11 +36,29 @@ class Organising:
         :parameter overwrite: Whether any existing file should be overwritten with this files content
         """
         file_path = os.path.join(category_id, filename)
+        config = Configuration.load_config()
 
-        file_uuid = nodeDB().create_file_node(category_id, file_path)
+        summary = None
+        if config.get('files', {}).get('summarise_files', False):
+            summary = Organising.summarise_content(content)
+
+        file_uuid = nodeDB().create_file_node(category_id, file_path, summary)
         StorageMethodology().select().save_file(content, file_path, overwrite=overwrite)
 
         return file_uuid
+
+    @staticmethod
+    @specify_functionality_context("summarise_files")
+    def summarise_content(content: str) -> str:
+        config = Configuration.load_config()
+
+        return AiOrchestrator().execute(
+            [config.get("system_messages", {}).get(
+                'file_summarisation_message',
+                SUMMARISER_SYSTEM_INSTRUCTIONS
+            )],
+            [content]
+        )
 
     @staticmethod
     @handle_errors

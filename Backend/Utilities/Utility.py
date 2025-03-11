@@ -89,7 +89,7 @@ class Utility:
     def execute_with_retries(func: Callable[[], Any], max_retries: int = Constants.MAX_PROMPT_RETRIES) -> Any:
         """
         Execute a callable with retries on failure or None result
-        (not suitable for methods that can return None for a successful operation)
+        (not suitable for methods that can return None or False for a successful operation)
 
         :param func: A callable that will be executed
         :param max_retries: Maximum number of retries for the callable

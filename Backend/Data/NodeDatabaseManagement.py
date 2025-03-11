@@ -14,6 +14,7 @@ from Data.Neo4jDriver import Neo4jDriver
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context, get_message_context, get_earmarked_sum, set_earmarked_sum
 from Utilities.Decorators import handle_errors, specify_functionality_context
+from Utilities.Utility import Utility
 
 
 class NodeDatabaseManagement:
@@ -403,19 +404,18 @@ class NodeDatabaseManagement:
     # Files
 
     @handle_errors()
-    def create_file_node(self, category_id: str, file_path: str) -> str:
+    def create_file_node(self, category_id: str, file_path: str, summary: str = None) -> str:
         """Creates a file node in the database representing the file content.
 
         :param category_id: Category id of the file.
         :param file_path: Path to the file.
+        :param summary: An optional summary describing the document for the user
         :returns: The UUID of the new file node
         """
         file_uuid = str(shortuuid.uuid())
         time = int(datetime.now().timestamp())
         file_name = os.path.basename(file_path)
         user_prompt_id = get_user_context()
-
-        summary = self.summarise_file(file_path)
 
         parameters = {
             "file_id": file_uuid,
@@ -435,32 +435,6 @@ class NodeDatabaseManagement:
         )
 
         return file_uuid
-
-    @staticmethod
-    @specify_functionality_context("summarise_files")
-    def summarise_file(file_path: str):
-        """
-        ToDo: May need to refactor @specify_functionality_context because it can't be locally imported, NodeDB should be
-         low on the dependency tree but it occasionally needs to run methods like this from classes which themselves
-         must use NodeDB
-        """
-        config = Configuration.load_config()
-
-        if config.get('files', {}).get('summarise_files', False):
-            content = StorageMethodology.select().read_file(file_path)
-
-            from AiOrchestration.AiOrchestrator import AiOrchestrator
-            summary = AiOrchestrator().execute(
-                [config.get("system_messages", {}).get(
-                    'file_summarisation_message',
-                    SUMMARISER_SYSTEM_INSTRUCTIONS
-                )],
-                [content]
-            )
-        else:
-            summary = ""
-
-        return summary
 
     @handle_errors()
     def get_file_by_id(self, file_id: int):

@@ -150,6 +150,8 @@ def specify_functionality_context(function_name: str):
     """
     Sets a specific functionality context for the duration of the method call and no longer
 
+    ToDo: There may be an issue where this decorator or others 'absorbs' the logs of the functions they run
+
     :param function_name: The functionality to enable and then disable for the duration of the method
     """
     def decorator(method):
