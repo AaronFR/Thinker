@@ -45,7 +45,9 @@ const TooltipConstants = {
   /* System Messages */
   categorisationSystemMessage: "Categorization helps organize your files and messages by assigning them to existing or new 'folders'.",
   questioningSystemMessage: "When generating questions, the AI references your prompt, uploaded files, and previous messages. (As of yet it does not reference user knowledge)",
-  autoPromptEngigneeringSystemMessage: "Prompt Augmentation uses only your initial promptt. It does not reference selected files or messages.",
+  autoPromptEngigneeringSystemMessage: `Prompt Augmentation uses only your initial prompt. It does not reference selected files or messages.
+
+  Trade-off: keeping especially long reference text reduces the 'space' the AI has to plan out a better answer, condensing the actual prompt. It may be preferable to organise the prompt first and (re)include any references afterwards`,
   summarisationSystemMessage: "The summarisation step will be provided with every single file and message reference supplied originally, this means a For All workflow can see each re-written file",
   fileSummarisationSystemMessage: "File summaries only access the content of the file. TIP: be creative: it doesn't <i>have</i> to be a generic summary, prioritise what you want.",
   bestOfSystemMessage: "The AI compares all generated responses with your original prompt request to select the best response",

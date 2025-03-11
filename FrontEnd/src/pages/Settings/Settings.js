@@ -550,8 +550,8 @@ const AutoPromptEngineeringSection = React.memo(({
       </select>
       Generates a copy of your prompt that meets 'prompt engineering' standards.
     </label>
-    <p>👍 Simple prompts</p>
-    <p>👎 Complex, specific and precisely worded prompts with exacting long references</p>
+    <p>⚙ Creating more comprehensive, considered and detailed responses</p>
+    <p>🦥 Expanding on simple, quick prompts</p>
     <div
       data-tooltip-id="tooltip"
       data-tooltip-content={TooltipConstants.autoPromptEngigneeringSystemMessage}
@@ -604,7 +604,7 @@ const BestOfSection = React.memo(({
     </label>
     <p>👍 Improving response coherency or any other selected metric</p>
     <p>👍 Helping inexpensive models compete against more expensive ones</p>
-    <p>👎 Keeping costs low while running expensive models.</p>
+    <p>💲 Expensive. 5 runs would cost roughly 6x a regular prompt</p>
     <div
       data-tooltip-id="tooltip"
       data-tooltip-content={TooltipConstants.bestOfSystemMessage}
