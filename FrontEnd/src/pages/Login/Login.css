@@ -46,13 +46,23 @@ body.dark-mode .background:before {
   font-size: 11em;
   transform: rotate(-15deg);
   pointer-events: none; /* Ensures the beta symbol doesn't interfere with other elements */
-
+  z-index: 3;
 }
 
 .thinker {
   font-size: 10rem;
   font-family: 'Montserrat';
   color: #bbbbbb;
+  text-shadow:
+  1px 1px 2px rgb(124, 124, 124),
+  0 0 1em rgb(255, 255, 255),
+  0 0 0.3em rgb(255, 255, 255);
+}
+body.dark-mode .thinker {
+  text-shadow:
+  1px 1px 2px rgb(255, 255, 255),
+  0 0 1em rgb(0, 0, 0),
+  0 0 0.3em rgb(0, 0, 0);
 }
 @media (max-width: 1024px) {
   .thinker {
@@ -182,13 +192,18 @@ button:hover {
   padding: 2%;
 }
 
+
 .card {
-  border: 1px solid #ccc;
-  background-color: #000;
+  border: 1px solid #959595;
+  background-color: #ffffff5f;
   border-radius: 15px;
   padding: 16px;
   margin: 16px;
   flex: 1;
+}
+body.dark-mode .card {
+  border: 1px solid #ccc;
+  background-color: #00000076;
 }
 
 .card .header {

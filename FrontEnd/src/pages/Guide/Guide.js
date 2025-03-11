@@ -233,7 +233,7 @@ export function Guide() {
     <div className="scrollable container">
       <Navigation />
 
-      <h1 className="centered thinker">
+      <h1 className="centered thinker logo-bg">
         The Thinker AI
       </h1>
       <h2 className="centered">
