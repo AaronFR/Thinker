@@ -162,6 +162,7 @@ def question_user_prompt():
         if selected_files:
             reference_files = []
             for file in selected_files:
+                # ToDo: Should be a helper method
                 file_category = file.get("category_id")
                 file_name = file.get("name")
                 full_path = str(file_category) + "/" + file_name

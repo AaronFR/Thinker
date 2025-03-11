@@ -122,21 +122,18 @@ class Augmentation:
     def question_user_prompt(initial_prompt: str, reference_messages: list = None, reference_files: list = None):
         config = Configuration.load_config()
 
-        final_payload = []
+        # Initial prompt first in the list
+        final_payload = [initial_prompt]
         if reference_messages:
             final_payload.extend(reference_messages)
         if reference_files:
             final_payload.extend(reference_files)
-
-        # Append the initial prompt at the end
-        final_payload.append(initial_prompt)
 
         prompt_questioning_system_message = config.get('system_messages', {}).get(
             "prompt_questioning_message",
             QUESTION_PROMPT_SYSTEM_MESSAGE
         )
 
-        # ToDo: Indepth study of what makes for the best questions (after graph database has been developed)
         result = AiOrchestrator().execute(
             [prompt_questioning_system_message],
             final_payload

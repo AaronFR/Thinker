@@ -497,8 +497,7 @@ const PromptQuestioningSection = React.memo(({
       </select>
       Generates questions against the user's prompt and reference material.
     </label>
-    <p>👍 Difficult, 'knotty' technical questions, where extra context can help clarify the problem - for the machine and potentially for <i>you</i></p>
-    <p>👎 When you <i>just</i> want an answer quickly</p>
+    <p>👍 Difficult, technical problems, where extra context can help clarify the issues - for the machine and potentially for <i>you</i>.</p>
     <div
       data-tooltip-id="tooltip"
       data-tooltip-content={TooltipConstants.questioningSystemMessage}
