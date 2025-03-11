@@ -52,11 +52,6 @@ const PromptAugmentation = React.memo(({
         </p>
       ) : (
         <div className="augmented-container">
-          <MarkdownRenderer
-            markdownText={augmentedPrompt}
-            className="markdown-augmented"
-            isLoading={isAugmenting}
-          />
           <button
             className="button augment-button"
             onClick={handleCopyClick}
@@ -65,6 +60,11 @@ const PromptAugmentation = React.memo(({
           >
             {buttonText}
           </button>
+          <MarkdownRenderer
+            markdownText={augmentedPrompt}
+            className="markdown-augmented"
+            isLoading={isAugmenting}
+          />
         </div>
       )}
     </div>

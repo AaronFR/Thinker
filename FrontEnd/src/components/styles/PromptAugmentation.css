@@ -1,5 +1,4 @@
 .augmented-container {
-  display: flex;
   align-items: center; /* Vertically centers the items */
   justify-content: center; /* Horizontally centers the items */
   gap: 10px; /* Space between the content and the button */
