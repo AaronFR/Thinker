@@ -3,7 +3,7 @@ from typing import Callable, Optional, List, Dict
 from flask_socketio import emit
 
 from AiOrchestration.ChatGptModel import ChatGptModel
-from Utilities.Decorators import return_for_error
+from Utilities.Decorators.Decorators import return_for_error
 from Constants.Instructions import for_each_focus_on_prompt
 from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow

@@ -6,7 +6,7 @@ from App import limiter
 from Constants.Constants import LIGHTLY_RESTRICTED
 from Data.Pricing import Pricing
 from Utilities.Routing import fetch_entity, parse_and_validate_data
-from Utilities.AuthUtils import login_required
+from Utilities.Decorators.AuthorisationDecorators import login_required
 
 pricing_bp = Blueprint('pricing', __name__)
 

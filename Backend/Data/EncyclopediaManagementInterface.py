@@ -11,7 +11,7 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Constants.Exceptions import NOT_IMPLEMENTED_IN_INTERFACE
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Constants.Constants import DEFAULT_ENCODING, EXTRACT_LIST_REGEX
-from Utilities.Decorators import handle_errors, specify_functionality_context
+from Utilities.Decorators.Decorators import handle_errors, specify_functionality_context
 from Constants.Instructions import select_topic_prompt, SELECT_TOPIC_SYSTEM_MESSAGE, \
     SUMMARISE_WHILE_RETAINING_DETAIL_SYSTEM_MESSAGE, string_of_existing_topics_prompt, SCHEMA_FOR_CONCEPT_TERMS
 

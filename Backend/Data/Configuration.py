@@ -1,10 +1,9 @@
-import logging
 import os
 from typing import Mapping, Dict, Any
 
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context, get_user_configuration, set_user_configuration
-from Utilities.Decorators import handle_errors
+from Utilities.Decorators.Decorators import handle_errors
 
 
 class Configuration:

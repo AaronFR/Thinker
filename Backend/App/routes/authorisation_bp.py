@@ -13,11 +13,11 @@ from App.extensions import limiter
 
 from Constants.Constants import JWT_SECRET_KEY, HIGHLY_RESTRICTED, RESTRICTED_HIGH_FREQUENCY, RESTRICTED
 from Constants.Exceptions import FAILURE_TO_LOGIN, FAILURE_TO_VALIDATE_SESSION, FAILURE_TO_LOGOUT_SESSION
-from Utilities.Encryption import hash_password, check_password
+from Utilities.Encryption import hash_password, check_password, decode_jwt
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB, NodeDatabaseManagement
 from Utilities.Routing import parse_and_validate_data
 from Utilities.Contexts import set_user_context
-from Utilities.AuthUtils import decode_jwt, login_required, ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE
+from Utilities.Decorators.AuthorisationDecorators import login_required, ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE
 from Utilities.Validation import space_in_content
 from Utilities.Verification import send_verification_email, apply_new_user_promotion
 

@@ -3,7 +3,7 @@ import os
 import py_compile
 import subprocess
 
-from Utilities.Decorators import return_for_error
+from Utilities.Decorators.Decorators import return_for_error
 from Utilities.ErrorHandler import ErrorHandler
 
 

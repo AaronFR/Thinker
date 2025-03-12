@@ -11,7 +11,7 @@ from Constants.Exceptions import file_not_loaded, cannot_read_image_file
 from Data.Files.StorageBase import StorageBase
 from Constants.Constants import DEFAULT_ENCODING, MAX_FILE_SIZE, THE_THINKER_S3_STANDARD_BUCKET_ID
 from Utilities.Contexts import get_user_context
-from Utilities.Decorators import return_for_error
+from Utilities.Decorators.Decorators import return_for_error
 
 
 class S3Manager(StorageBase):

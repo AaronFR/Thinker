@@ -6,7 +6,7 @@ from App import limiter
 from Constants.Constants import LIGHTLY_RESTRICTED
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.Routing import fetch_entity
-from Utilities.AuthUtils import login_required
+from Utilities.Decorators.AuthorisationDecorators import login_required
 
 messages_bp = Blueprint('messages_bp', __name__, url_prefix='/messages')
 

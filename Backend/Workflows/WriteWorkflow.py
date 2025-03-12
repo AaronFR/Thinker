@@ -8,7 +8,7 @@ from Functionality.Coding import Coding
 from Functionality.Writing import Writing
 
 from Utilities.Contexts import get_user_context
-from Utilities.Decorators import return_for_error
+from Utilities.Decorators.Decorators import return_for_error
 from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow, UPDATE_WORKFLOW_STEP
 from Constants.Instructions import write_file, write_code_file, plan_file_creation, SIMPLE_SUMMARY_PROMPT

@@ -11,9 +11,8 @@ from Constants.Exceptions import file_not_found, file_not_loaded, FAILURE_TO_LIS
     FAILURE_TO_READ_FILE, cannot_read_image_file, category_directory_not_found
 from Data.Files.StorageBase import StorageBase
 from Constants.Constants import DEFAULT_ENCODING
-from Utilities.Decorators import handle_errors
+from Utilities.Decorators.Decorators import handle_errors
 from Utilities.ErrorHandler import ErrorHandler
-from Utilities.Contexts import get_user_context
 
 
 class MyDumper(yaml.Dumper):

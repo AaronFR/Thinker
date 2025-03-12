@@ -10,10 +10,10 @@ from Data.CategoryManagement import CategoryManagement
 from Functionality.Organising import Organising
 from Personas.Coder import Coder
 from Personas.Writer import Writer
-from Utilities.AuthUtils import login_required_ws
+from Utilities.Decorators.AuthorisationDecorators import login_required_ws
 from Utilities.Contexts import set_message_context, get_message_context, get_category_context, set_streaming, \
     set_functionality_context
-from Utilities.PaymentDecorators import balance_required
+from Utilities.Decorators.PaymentDecorators import balance_required
 from Utilities.Routing import parse_and_validate_data
 
 ERROR_NO_PROMPT = "No prompt found"

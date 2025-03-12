@@ -15,9 +15,9 @@ from Constants.Exceptions import FAILURE_TO_SELECT_PERSONA, FAILURE_TO_SELECT_WO
     FAILURE_TO_QUESTION_PROMPT
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Augmentation import Augmentation
-from Utilities.AuthUtils import login_required
 from Utilities.Contexts import set_functionality_context
-from Utilities.PaymentDecorators import balance_required
+from Utilities.Decorators.AuthorisationDecorators import login_required
+from Utilities.Decorators.PaymentDecorators import balance_required
 from Utilities.Routing import parse_and_validate_data
 from Utilities.Validation import sanitise_identifier
 

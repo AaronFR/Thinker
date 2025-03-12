@@ -7,7 +7,7 @@ from Constants.Constants import LIGHTLY_RESTRICTED
 from Constants.Exceptions import FAILURE_TO_GET_USER_INFO
 from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
-from Utilities.AuthUtils import login_required
+from Utilities.Decorators.AuthorisationDecorators import login_required
 from Utilities.Routing import fetch_entity, parse_and_validate_data
 
 info_bp = Blueprint('info', __name__, url_prefix='/info')

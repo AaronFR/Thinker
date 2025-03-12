@@ -3,7 +3,7 @@ from typing import Callable, Optional, List, Dict
 
 from flask_socketio import emit
 
-from Utilities.Decorators import return_for_error
+from Utilities.Decorators.Decorators import return_for_error
 from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow
 from Workflows.Workflows import generate_chat_workflow

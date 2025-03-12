@@ -16,8 +16,8 @@ from AiOrchestration.GeminiModel import GeminiModel
 from Constants.Constants import GEMINI_API_KEY, CANNOT_AFFORD_REQUEST
 from Constants.Exceptions import FAILURE_TO_STREAM, SERVER_FAILURE_GEMINI_API, NO_RESPONSE_GEMINI_API, \
     NO_USAGE_DATA_GEMINI
-from Utilities.Decorators import handle_errors
-from Utilities.PaymentDecorators import evaluate_gemini_balance
+from Utilities.Decorators.Decorators import handle_errors
+from Utilities.Decorators.PaymentDecorators import evaluate_gemini_balance
 from Utilities.ErrorHandler import ErrorHandler
 
 

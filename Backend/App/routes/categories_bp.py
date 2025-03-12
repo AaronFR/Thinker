@@ -4,7 +4,7 @@ from App import limiter
 from Constants.Constants import LIGHTLY_RESTRICTED
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.Routing import fetch_entity
-from Utilities.AuthUtils import login_required
+from Utilities.Decorators.AuthorisationDecorators import login_required
 
 categories_bp = Blueprint('categories', __name__)
 

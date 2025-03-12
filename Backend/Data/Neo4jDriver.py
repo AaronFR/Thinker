@@ -5,7 +5,7 @@ from typing import Optional, Any, Dict
 from neo4j import GraphDatabase, basic_auth
 
 from Constants.Constants import NEO4J_URI, NEO4J_PASSWORD
-from Utilities.Decorators import handle_errors
+from Utilities.Decorators.Decorators import handle_errors
 
 
 class Neo4jDriver:

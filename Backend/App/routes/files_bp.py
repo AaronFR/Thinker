@@ -1,5 +1,4 @@
 import logging
-import os
 import sys
 
 from flask import Blueprint, jsonify, request
@@ -13,9 +12,9 @@ from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Organising import Organising
-from Utilities.AuthUtils import login_required
+from Utilities.Decorators.AuthorisationDecorators import login_required
 from Utilities.Routing import fetch_entity
-from Utilities.Contexts import get_category_context, get_user_configuration
+from Utilities.Contexts import get_category_context
 from Utilities.Validation import check_valid_uuid, space_in_content
 
 files_bp = Blueprint('files', __name__)

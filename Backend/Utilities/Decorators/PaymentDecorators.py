@@ -7,7 +7,7 @@ from flask import request, jsonify
 from Constants.Exceptions import failed_to_retrieve_user_balance
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 from Data.Pricing import Pricing
-from Utilities.AuthUtils import decode_jwt
+from Utilities.Encryption import decode_jwt
 from Utilities.Contexts import set_user_context
 
 

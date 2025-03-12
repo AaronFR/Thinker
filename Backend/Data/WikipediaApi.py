@@ -13,7 +13,7 @@ import wikipediaapi
 from typing import Dict, Optional, List
 
 from Data.Files.FileManagement import FileManagement
-from Utilities.Decorators import handle_errors
+from Utilities.Decorators.Decorators import handle_errors
 
 # ToDo: Adapt for StorageMethodology.py
 # DATA_PATH = os.path.join(os.path.dirname(__file__), '../../UserData/DataStores')

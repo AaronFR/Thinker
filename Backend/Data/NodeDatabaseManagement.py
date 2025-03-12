@@ -9,13 +9,10 @@ from typing import List, Dict, Optional, Any
 from Constants import CypherQueries
 from Constants.Constants import DEFAULT_USER_PARAMETERS
 from Constants.Exceptions import failed_to_create_user_topic
-from Constants.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
-from Data.Configuration import Configuration
 from Data.Neo4jDriver import Neo4jDriver
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context, get_message_context, get_earmarked_sum, set_earmarked_sum
-from Utilities.Decorators import handle_errors, specify_functionality_context
-from Utilities.Utility import Utility
+from Utilities.Decorators.Decorators import handle_errors
 from Utilities.Validation import check_valid_uuid
 
 
