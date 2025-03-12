@@ -15,7 +15,7 @@ from Data.Files.StorageMethodology import StorageMethodology
 from Data.UserContextManagement import UserContextManagement
 from Utilities.ErrorHandler import ErrorHandler
 from Constants.Instructions import DEFAULT_BEST_OF_SYSTEM_MESSAGE, DETECT_RELEVANT_HISTORY_SYSTEM_MESSAGE
-from Utilities.Utility import Utility
+from Utilities.Validation import is_valid_prompt
 from Workflows.ChatWorkflow import ChatWorkflow
 
 
@@ -54,7 +54,7 @@ class BasePersona:
         :param selected_message_ids: UUIDs of previously selected relevant messages to review.
         :param tags: Additional information for prompting, e.g., if and where to write a file.
         """
-        if Utility.is_valid_prompt(user_prompt):
+        if is_valid_prompt(user_prompt):
             return self.select_workflow(user_prompt, file_references, selected_message_ids, tags)
         else:
             logging.error("Invalid input. Please ask a clear and valid question.")

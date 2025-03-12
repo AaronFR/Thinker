@@ -5,7 +5,7 @@ from typing import Optional
 import shortuuid
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Constants.Constants import RESULT_AS_TAG_REGEX, SENTENCE_WITH_FULL_STOP_REGEX
+from Constants.Constants import RESULT_AS_TAG_REGEX, SENTENCE_WITH_FULL_STOP_REGEX, DEFAULT_CATEGORY
 from Constants.Exceptions import failure_to_suggest_colour_for_category, failure_to_create_description_for_category
 from Data.Configuration import Configuration
 from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
@@ -69,8 +69,8 @@ class CategoryManagement:
 
         category = CategoryManagement.extract_result(category_reasoning)
         if not category:
-            logging.warning("Failure to categorize! Invalid category provided.")
-            return None
+            logging.warning("Failure to categorize! Invalid category provided. Setting to 'default'")
+            return DEFAULT_CATEGORY
 
         return CategoryManagement.sanitise_category_name(category)
 

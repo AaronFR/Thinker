@@ -17,8 +17,9 @@ from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Augmentation import Augmentation
 from Utilities.AuthUtils import login_required
 from Utilities.Contexts import set_functionality_context
-from Utilities.CostingUtils import balance_required
+from Utilities.PaymentDecorators import balance_required
 from Utilities.Routing import parse_and_validate_data
+from Utilities.Validation import sanitise_identifier
 
 augmentation_bp = Blueprint('augmentation', __name__, url_prefix='/augmentation')
 
@@ -163,8 +164,8 @@ def question_user_prompt():
             reference_files = []
             for file in selected_files:
                 # ToDo: Should be a helper method
-                file_category = file.get("category_id")
-                file_name = file.get("name")
+                file_category = sanitise_identifier(file.get("category_id"))
+                file_name = sanitise_identifier(file.get("name"))
                 full_path = str(file_category) + "/" + file_name
 
                 file_contents = StorageMethodology.select().read_file(full_path)

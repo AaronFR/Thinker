@@ -16,6 +16,7 @@ from Functionality.Organising import Organising
 from Utilities.AuthUtils import login_required
 from Utilities.Routing import fetch_entity
 from Utilities.Contexts import get_category_context, get_user_configuration
+from Utilities.Validation import check_valid_uuid, space_in_content
 
 files_bp = Blueprint('files', __name__)
 
@@ -126,6 +127,9 @@ def delete_file(file_id):
     :param file_id: the UUID of the file to delete
     :return:
     """
+    if not check_valid_uuid(file_id):
+        return jsonify({"error": "Invalid file id"}), 400
+
     try:
         nodeDB().delete_file_by_id(file_id)
 
@@ -143,6 +147,9 @@ def delete_file(file_id):
 @login_required
 @limiter.limit(LIGHTLY_RESTRICTED)
 def list_files_in_category(category_name):
+    if space_in_content(category_name):
+        return jsonify({"error": "Invalid. Category names cannot have spaces in them"}), 400
+
     category_name = category_name.lower()
     return fetch_entity(nodeDB().get_files_by_category(category_name), "files")
 
@@ -154,6 +161,11 @@ def list_files_in_category(category_name):
 @login_required
 @limiter.limit(LIGHTLY_RESTRICTED)
 def get_file_content_by_address(file_category, file_name):
+    if space_in_content(file_category):
+        return jsonify({"error": "Invalid. Category names cannot have spaces in them"}), 400
+    if space_in_content(file_name):
+        return jsonify({"error": "Invalid. File names cannot have spaces in them"}), 400
+
     full_path = str(file_category) + "/" + file_name
 
     logging.info(f"File node {file_category}/{file_name} content extracted")

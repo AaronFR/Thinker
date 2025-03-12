@@ -744,7 +744,7 @@ export function Settings() {
 
     apiFetch(userInfoEndpoint, {
       method: 'POST',
-      body: JSON.stringify({ parameters: filteredParameters }),
+      body: JSON.stringify({ }),
       signal,
     })
       .then(response => {

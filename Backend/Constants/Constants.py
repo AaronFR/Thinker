@@ -70,3 +70,14 @@ SENTENCE_WITH_FULL_STOP_REGEX = r'^.*\.$'
 # Standard Errors
 
 CANNOT_AFFORD_REQUEST = "INSUFFICIENT WEALTH DETECTED"  # I mean it's not wrong
+
+# Categorisation
+
+DEFAULT_CATEGORY = "default"
+
+# Info
+
+DEFAULT_USER_PARAMETERS = ['email', 'augmentation_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'internet_search_cost', 'summarise_workflows_cost', 'summarise_files_cost', 'user_context_cost']
+
+
+

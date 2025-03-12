@@ -69,7 +69,7 @@ def create_app():
     from .routes.pricing_bp import pricing_bp
     from .routes.files_bp import files_bp
     from .routes.categories_bp import categories_bp
-    from .routes.messages import messages_bp
+    from .routes.messages_bp import messages_bp
     from .routes.info_bp import info_bp
     app.register_blueprint(home_bp)
     app.register_blueprint(authorisation_bp)

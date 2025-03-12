@@ -32,15 +32,6 @@ class Utility:
             self.gemini_client = genai.Client(api_key=os.getenv(GEMINI_API_KEY))
 
     @staticmethod
-    def is_within_token_limit(content: str, limit=128000, model="gpt-4o-mini") -> bool:
-        """Check if content size is within token limit."""
-        # To get the tokeniser corresponding to a specific model in the OpenAI API:
-        enc = tiktoken.encoding_for_model(model)
-        token_count = len(enc.encode(content))
-
-        return token_count <= limit
-
-    @staticmethod
     def encapsulate_in_tag(content: str, tag: str):
         """
         Surround the content in a HTML-like tag, not just for html, AI frequently understands what the content is better
@@ -108,39 +99,6 @@ class Utility:
                 time.sleep(wait_time)  # Wait before retrying
         logging.error("Max retries exceeded. Failed to get response from callable.")
         return None
-
-    @staticmethod
-    def ensure_string_list(list_or_string: list[object] | str):
-        if isinstance(list_or_string, str):
-            logging.warning("""Had to reformat a string into a list, this can lead to strings being decomposed into 
-                            individual characters if not correctly handled""")
-            output = [list_or_string]
-        else:
-            output = list_or_string
-
-        if not isinstance(output, list):
-            raise ValueError(
-                f"The supplied parameter is a {type(list_or_string)} not a list.\n"
-                 "Please ensure compliance with this expected structure for proper functionality.)"
-            )
-        if not all(isinstance(sp, str) for sp in output):
-            for sp in output:
-                if not isinstance(sp, str):
-                    raise ValueError(
-                        f"INVALID: {sp} element is a {type(sp)} not a string!\n"
-                        "Please ensure compliance with this expected structure for proper functionality."
-                    )
-
-        return output
-
-    @staticmethod
-    def is_valid_prompt(user_input: str) -> bool:
-        """Validate if the user input is a non-empty question."""
-        if not user_input.strip():
-            logging.error("Invalid prompt entered")
-            return False
-
-        return True
 
 
 if __name__ == '__main__':

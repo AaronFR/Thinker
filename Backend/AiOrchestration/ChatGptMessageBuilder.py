@@ -1,11 +1,10 @@
 import logging
-import os
 from typing import List, Dict
 
 from AiOrchestration.ChatGptWrapper import ChatGptRole
 from AiOrchestration.ChatGptModel import ChatGptModel
-from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Utility import Utility
+from Utilities.Validation import ensure_string_list
 
 
 def generate_messages(
@@ -24,10 +23,10 @@ def generate_messages(
     """
     logging.debug(f"Composing messages with user prompts: {user_prompts}")
 
-    system_prompts = Utility.ensure_string_list(system_prompts)
-    user_prompts = Utility.ensure_string_list(user_prompts)
+    system_prompts = ensure_string_list(system_prompts)
+    user_prompts = ensure_string_list(user_prompts)
     if assistant_messages:
-        assistant_messages = Utility.ensure_string_list(assistant_messages)
+        assistant_messages = ensure_string_list(assistant_messages)
 
     messages = build_role_messages(system_prompts, user_prompts, assistant_messages, model)
     logging.debug(f"Messages: {messages}")

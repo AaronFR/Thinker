@@ -8,6 +8,7 @@ CREATE CONSTRAINT FOR (user:USER) REQUIRE user.id IS UNIQUE;
 CREATE CONSTRAINT FOR (category:CATEGORY) REQUIRE category.id IS UNIQUE;
 CREATE CONSTRAINT FOR (s:SYSTEM) REQUIRE s.id IS UNIQUE;
 """
+from typing import List
 
 # ToDo: include secure user match e.g MATCH (user:USER {id: $user_id})
 #  That way it reduces the odds of forgetting to add a user check
@@ -275,7 +276,7 @@ RETURN user[$functionality]
 """
 
 
-def fetch_user_params_query(user_id, params):
+def fetch_user_params_query(user_id: str, params: List[str]):
     """
     Define query to get
     """

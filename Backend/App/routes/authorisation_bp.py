@@ -18,6 +18,7 @@ from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB, NodeDa
 from Utilities.Routing import parse_and_validate_data
 from Utilities.Contexts import set_user_context
 from Utilities.AuthUtils import decode_jwt, login_required, ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE
+from Utilities.Validation import space_in_content
 from Utilities.Verification import send_verification_email, apply_new_user_promotion
 
 authorisation_bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -48,7 +49,9 @@ def register():
     data = request.json
     parsed_data = parse_and_validate_data(data, REGISTER_USER_SCHEMA)
 
-    email = parsed_data.get('email')
+    email = parsed_data.get('email').strip()
+    if space_in_content(email):
+        return jsonify({"error": "Invalid email address, email contains a space"}), 409
 
     password_hash = hash_password(parsed_data.get('password'))
 
@@ -113,6 +116,9 @@ def login():
     parsed_data = parse_and_validate_data(data, REGISTER_USER_SCHEMA)
 
     email = parsed_data.get("email")
+    if space_in_content(email):
+        return jsonify({"error": "Invalid email address, email contains a space"}), 400
+
     user_id = nodeDB().find_user_by_email(email)
     if not user_id:
         return jsonify({"error": "This email is not present in our systems"}), 400
@@ -168,7 +174,7 @@ def logout():
         if not token:
             logging.info("No access_token cookie found")
             return jsonify({"status": "invalid", "error": "No token provided"}), 401
-    except Exception as e:
+    except Exception:
         logging.exception(FAILURE_TO_LOGOUT_SESSION)
         return jsonify({"error": "logout failed"}), 401
 

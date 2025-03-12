@@ -29,18 +29,13 @@ def get_user_info():
     """
     try:
         data = request.get_json()
-        if not data or 'parameters' not in data:
-            return jsonify({"error": "Missing 'parameters' in request body."}), 400
-
         parameters = data.get('parameters')
 
-        if not isinstance(parameters, list):
-            return jsonify({"error": "'parameters' should be a list."}), 400
+        if parameters:
+            if not isinstance(parameters, list):
+                return jsonify({"error": "'parameters' should be a list."}), 400
 
-        parameters = [param.strip() for param in parameters if param.strip()]
-
-        if not parameters:
-            return jsonify({"error": "No valid parameters provided."}), 400
+            parameters = [param.strip() for param in parameters if param.strip()]
 
         user_info = NodeDB().get_user_information(parameters)
 

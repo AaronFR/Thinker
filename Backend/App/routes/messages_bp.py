@@ -15,7 +15,10 @@ messages_bp = Blueprint('messages_bp', __name__, url_prefix='/messages')
 @login_required
 @limiter.limit(LIGHTLY_RESTRICTED)
 def get_messages(category_name):
-    category_name = category_name.lower()
+    category_name = category_name\
+        .lower()\
+        .replace(' ', '_')
+
     return fetch_entity(nodeDB().get_messages_by_category(category_name), "messages")
 
 

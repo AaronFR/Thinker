@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import List, Dict, Optional, Any
 
 from Constants import CypherQueries
+from Constants.Constants import DEFAULT_USER_PARAMETERS
 from Constants.Exceptions import failed_to_create_user_topic
 from Constants.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
 from Data.Configuration import Configuration
@@ -15,6 +16,7 @@ from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context, get_message_context, get_earmarked_sum, set_earmarked_sum
 from Utilities.Decorators import handle_errors, specify_functionality_context
 from Utilities.Utility import Utility
+from Utilities.Validation import check_valid_uuid
 
 
 class NodeDatabaseManagement:
@@ -265,6 +267,10 @@ class NodeDatabaseManagement:
 
         :param message_id: ID of the message to delete.
         """
+        if not check_valid_uuid(message_id):
+            logging.error(f"Invalid UUID entered! {message_id}")
+            raise Exception("Invalid UUID")
+
         parameters = {
             "user_id": get_user_context(),
             "message_id": message_id,
@@ -437,7 +443,7 @@ class NodeDatabaseManagement:
         return file_uuid
 
     @handle_errors()
-    def get_file_by_id(self, file_id: int):
+    def get_file_by_id(self, file_id: str):
         """
         Retrieve a file by its id, including the category its attached to
         ToDo: like most of these database calls we're going to have to ensure only the users files are
@@ -446,6 +452,10 @@ class NodeDatabaseManagement:
         :param file_id: ID of the file.
         :return: The file record if found, None otherwise.
         """
+        if not check_valid_uuid(file_id):
+            logging.warning(f"Invalid file id {file_id}")
+            return None
+
         parameters = {
             "user_id": get_user_context(),
             "file_id": file_id
@@ -749,14 +759,27 @@ class NodeDatabaseManagement:
         logging.info(f"User functionality {functionality} updated by [{amount}] - Total: {new_total}")
 
     @handle_errors()
-    def get_user_information(self, parameters):
+    def get_user_information(self, parameters: List[str] = None):
         """
-        Fetch user information based on a list of parameters.
+        Fetch user information based on a list of parameters, the idea being that the client doesn't have to request
+        ALL parameters just the ones they need.
 
-        :param parameters: List of parameter names to retrieve.
+        Performs validation to ensure entered parameters on a list of approved, existing user parameters.
+
+        :param parameters: List of parameter names to retrieve, if None the whole set will be requested
         :return: Dictionary of user information.
         """
-        query = CypherQueries.fetch_user_params_query(get_user_context(), parameters)
+        query_parameters = []
+        if parameters is not None:  # optimisation when the whole set is requested
+            for input_parameter in parameters:
+                if input_parameter in DEFAULT_USER_PARAMETERS:
+                    query_parameters.append(input_parameter)
+                else:
+                    logging.warning(f"Invalid user parameter entered! {input_parameter}")
+        else:
+            query_parameters = DEFAULT_USER_PARAMETERS
+
+        query = CypherQueries.fetch_user_params_query(get_user_context(), query_parameters)
 
         records = self.neo4jDriver.execute_read(
             query

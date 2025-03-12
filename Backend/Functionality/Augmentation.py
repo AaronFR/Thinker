@@ -21,6 +21,7 @@ class Workflow(Enum):
     CHAT = "chat"
     WRITE = "write"
     AUTO = "auto"
+    LOOP = "loop"
 
 
 DEFAULT_WORKFLOW = Workflow.CHAT
@@ -68,10 +69,16 @@ class Augmentation:
         :returns Workflow: The selected workflow based on the content of the user prompt.
         """
         if tags:
+            # this basically serves as a system on the backend to ensure that if you send any tags that only apply to a
+            # particular workflow - it will give you only that workflow.
             if tags.get("write"):
+                return Workflow.WRITE
+            if tags.get("pages"):
                 return Workflow.WRITE
             if tags.get("auto"):
                 return Workflow.AUTO
+            if tags.get("loops"):
+                return Workflow.LOOP
 
         config = Configuration.load_config()
         workflow_selection_system_message = config.get('system_messages', {}).get(
