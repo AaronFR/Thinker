@@ -8,7 +8,7 @@ from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
 from Constants.Constants import SENDGRID_API_KEY
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
+from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 
 
 def send_verification_email(email: str):

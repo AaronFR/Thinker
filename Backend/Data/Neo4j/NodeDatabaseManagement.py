@@ -6,10 +6,10 @@ import shortuuid
 from datetime import datetime
 from typing import List, Dict, Optional, Any
 
-from Constants import CypherQueries
+from Data.Neo4j import CypherQueries
 from Constants.Constants import DEFAULT_USER_PARAMETERS
 from Constants.Exceptions import failed_to_create_user_topic
-from Data.Neo4jDriver import Neo4jDriver
+from Data.Neo4j.Neo4jDriver import Neo4jDriver
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities.Contexts import get_user_context, get_message_context, get_earmarked_sum, set_earmarked_sum
 from Utilities.Decorators.Decorators import handle_errors

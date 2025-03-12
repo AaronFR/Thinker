@@ -5,7 +5,7 @@ from typing import List, Dict, Any
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Constants.Constants import IDENTIFY_CONTEXT_NODE_PATTERN
 from Data.EncyclopediaManagementInterface import EncyclopediaManagementInterface
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
+from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 from Constants.Instructions import extract_memory_node_terms_system_message, PARSE_MEMORY_NODES_SYSTEM_MESSAGE
 from Utilities.Decorators.Decorators import return_for_error, specify_functionality_context
 

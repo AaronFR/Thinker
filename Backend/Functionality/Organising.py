@@ -3,7 +3,7 @@ import os
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.UserContextManagement import UserContextManagement
 from Constants.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
 from Utilities.Decorators.Decorators import handle_errors, specify_functionality_context

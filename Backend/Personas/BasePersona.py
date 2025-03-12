@@ -6,11 +6,10 @@ from flask_socketio import emit
 
 from AiOrchestration.AiModel import AiModel
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from AiOrchestration.ChatGptModel import ChatGptModel
 from Constants.Exceptions import FAILURE_TO_REVIEW_RELEVANT_HISTORY
 from Data.Configuration import Configuration
 from Data.InternetSearch import InternetSearch
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Data.UserContextManagement import UserContextManagement
 from Utilities.ErrorHandler import ErrorHandler

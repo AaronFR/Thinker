@@ -1,7 +1,7 @@
 import logging
 
 from Constants.Exceptions import FAILED_TO_UPDATE_USER_BALANCE
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
+from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 from Constants import Globals
 
 

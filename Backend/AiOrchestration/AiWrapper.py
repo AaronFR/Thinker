@@ -1,13 +1,13 @@
 import abc
 import logging
-from typing import List, Dict, Union, Generator
+from typing import List, Dict, Generator
 
 from deprecated.classic import deprecated
 
 from AiOrchestration.AiModel import AiModel
 from AiOrchestration.GeminiModel import GeminiModel
 from Constants import Globals
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
+from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
 from Utilities.Contexts import get_message_context, get_functionality_context
 from Utilities.Utility import Utility
 

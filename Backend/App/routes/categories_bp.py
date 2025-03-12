@@ -2,7 +2,7 @@ from flask import Blueprint
 
 from App import limiter
 from Constants.Constants import LIGHTLY_RESTRICTED
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.Routing import fetch_entity
 from Utilities.Decorators.AuthorisationDecorators import login_required
 

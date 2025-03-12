@@ -8,7 +8,7 @@ from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Constants.Constants import RESULT_AS_TAG_REGEX, SENTENCE_WITH_FULL_STOP_REGEX, DEFAULT_CATEGORY
 from Constants.Exceptions import failure_to_suggest_colour_for_category, failure_to_create_description_for_category
 from Data.Configuration import Configuration
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities import Colour
 from Constants.Instructions import DEFAULT_USER_CATEGORISATION_INSTRUCTIONS, categorisation_inputs, \

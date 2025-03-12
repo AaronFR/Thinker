@@ -9,7 +9,7 @@ from Constants.Constants import LIGHTLY_RESTRICTED, MODERATELY_RESTRICTED, MAX_F
 from Constants.Exceptions import file_not_deleted
 from Data.CategoryManagement import CategoryManagement
 from Data.Configuration import Configuration
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Organising import Organising
 from Utilities.Decorators.AuthorisationDecorators import login_required

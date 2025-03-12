@@ -9,7 +9,7 @@ from typing import List, Dict
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Constants.Exceptions import NOT_IMPLEMENTED_IN_INTERFACE
-from Data.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
+from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Constants.Constants import DEFAULT_ENCODING, EXTRACT_LIST_REGEX
 from Utilities.Decorators.Decorators import handle_errors, specify_functionality_context
 from Constants.Instructions import select_topic_prompt, SELECT_TOPIC_SYSTEM_MESSAGE, \
