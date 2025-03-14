@@ -3,7 +3,8 @@ import logging
 from flask import Blueprint, request, jsonify
 
 from App import limiter
-from Constants.Constants import LIGHTLY_RESTRICTED
+from App.extensions import user_key_func
+from Constants.Constants import LIGHTLY_RESTRICTED, USER_LIGHTLY_RESTRICTED
 from Constants.Exceptions import FAILURE_TO_GET_USER_INFO
 from Data.Configuration import Configuration
 from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
@@ -21,6 +22,7 @@ UPDATE_CONFIG_SCHEMA = {
 @info_bp.route('/user', methods=['POST'])
 @login_required
 @limiter.limit(LIGHTLY_RESTRICTED)
+@limiter.limit(USER_LIGHTLY_RESTRICTED, key_func=user_key_func)
 def get_user_info():
     """
     Endpoint to fetch user information based on provided parameters.
@@ -49,6 +51,7 @@ def get_user_info():
 @info_bp.route('/config', methods=['GET'])
 @login_required
 @limiter.limit(LIGHTLY_RESTRICTED)
+@limiter.limit(USER_LIGHTLY_RESTRICTED, key_func=user_key_func)
 def load_config():
     """
     Load the configuration from the YAML file and return it as a JSON response.
@@ -66,6 +69,7 @@ def load_config():
 @info_bp.route('/config', methods=['POST'])
 @login_required
 @limiter.limit(LIGHTLY_RESTRICTED)
+@limiter.limit(USER_LIGHTLY_RESTRICTED, key_func=user_key_func)
 def update_config():
     """
     Load the configuration from the YAML file and return it as a JSON response.

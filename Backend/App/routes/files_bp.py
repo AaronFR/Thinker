@@ -5,7 +5,8 @@ from flask import Blueprint, jsonify, request
 from werkzeug.utils import secure_filename
 
 from App import limiter
-from Constants.Constants import LIGHTLY_RESTRICTED, MODERATELY_RESTRICTED, MAX_FILE_SIZE
+from App.extensions import user_key_func
+from Constants.Constants import LIGHTLY_RESTRICTED, MODERATELY_RESTRICTED, MAX_FILE_SIZE, USER_LIGHTLY_RESTRICTED
 from Constants.Exceptions import file_not_deleted
 from Data.CategoryManagement import CategoryManagement
 from Data.Configuration import Configuration
@@ -26,6 +27,7 @@ files_bp = Blueprint('files', __name__)
 @files_bp.route('/file/<file_id>', methods=['GET'])
 @login_required
 @limiter.limit(LIGHTLY_RESTRICTED)
+@limiter.limit(USER_LIGHTLY_RESTRICTED, key_func=user_key_func)
 def get_file_by_id(file_id):
     return fetch_entity(nodeDB().get_file_by_id(file_id), "file")
 
@@ -33,6 +35,7 @@ def get_file_by_id(file_id):
 @files_bp.route('/files', methods=['POST'])
 @login_required
 @limiter.limit(MODERATELY_RESTRICTED)
+@limiter.limit(USER_LIGHTLY_RESTRICTED, key_func=user_key_func)
 def upload_files():
     """
     Accept multiple user files and categorise them together with the same category,
@@ -119,6 +122,7 @@ def upload_files():
 
 @files_bp.route('/file/<file_id>', methods=['DELETE'])
 @login_required
+@limiter.limit(USER_LIGHTLY_RESTRICTED, key_func=user_key_func)
 def delete_file(file_id):
     """
     ToDo: Doesn't actually delete the file in local storage
@@ -145,6 +149,7 @@ def delete_file(file_id):
 @files_bp.route('/files/category/<category_name>', methods=['GET'])
 @login_required
 @limiter.limit(LIGHTLY_RESTRICTED)
+@limiter.limit(USER_LIGHTLY_RESTRICTED, key_func=user_key_func)
 def list_files_in_category(category_name):
     if space_in_content(category_name):
         return jsonify({"error": "Invalid. Category names cannot have spaces in them"}), 400
@@ -159,6 +164,7 @@ def list_files_in_category(category_name):
 @files_bp.route('/file_address/<file_category>/<file_name>', methods=['GET'])
 @login_required
 @limiter.limit(LIGHTLY_RESTRICTED)
+@limiter.limit(USER_LIGHTLY_RESTRICTED, key_func=user_key_func)
 def get_file_content_by_address(file_category, file_name):
     if space_in_content(file_category):
         return jsonify({"error": "Invalid. Category names cannot have spaces in them"}), 400

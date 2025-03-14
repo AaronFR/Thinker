@@ -2,8 +2,10 @@
 
 const TooltipConstants = {
   /* Login page */
-  bountyDetails: `
-    Website would probably have to see *some* use first, I plan to pay myself at the same rate eventually: 
+  limitDetails: `Well okay, there <i>litterally</i> are limits, but those are for avoiding malicous abuse.
+    If your hitting those something is going very wrong or <i>right</i>.. please get in contact if so!
+  `,
+  bountyDetails: `Website would probably have to see *some* use first, I plan to pay myself at the same rate eventually: 
     <br>557 hrs and counting at time of writing...
     <br>But I would definetely plan to <b>thank</b> contributers first.
   `,

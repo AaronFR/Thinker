@@ -71,7 +71,14 @@ export function Login({ isAuthenticated }) {
                             <span className="emoji">¢</span>
                         </div>
                         <p>Pay as you go: Pay for what you <i>actually</i> use. Try it out with no recurring fees</p>
-                        <p id="😉">We want you to use AI as much as possible. No qouta's, no limits but the ones you set</p>
+                        <p 
+                            id="😉"
+                            data-tooltip-id="tooltip"
+                            data-tooltip-html={TooltipConstants.limitDetails}
+                            data-tooltip-place="bottom"
+                        >
+                            We want you to use AI as much as possible. No qouta's, no limits but the ones you set
+                        </p>
                     </div>
                     <div className="card left-card">
                         <div className='header'>

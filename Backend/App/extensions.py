@@ -9,6 +9,7 @@ from flask import abort
 
 from Constants.Constants import REDISCLOUD_URL, LIGHTLY_RESTRICTED, \
     LIGHTLY_RESTRICTED_HIGH_FREQUENCY
+from Utilities.Contexts import get_user_context
 
 redis_url = os.environ.get(REDISCLOUD_URL, None)
 
@@ -70,8 +71,21 @@ def socket_rate_limit(key_func, limit: int, period: int):
     return decorator
 
 
-def user_key_func(*args, **kwargs):
+def system_key_func(*args, **kwargs):
     """
-    ToDo: Enable per user rate limit
+    Anonymous, assigning this key means it applies to everyone, at a system level
     """
     return "socketio_rate:anonymous"
+
+
+def user_key_func(*args, **kwargs):
+    """
+    ToDo: The current user_key_func could be highly annoying to those on VPNs, trying to login and register -
+     we can't use their user id before they do
+    """
+    user_id = get_user_context()
+    if user_id is not None:
+        return f"user_rate:{user_id}"
+
+    # Fallback to IP-based rate limiting if no user is found.
+    return get_remote_address()

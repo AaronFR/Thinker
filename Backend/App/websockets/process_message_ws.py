@@ -4,8 +4,8 @@ import time
 import shortuuid
 from flask_socketio import emit, SocketIO
 
-from App.extensions import socket_rate_limit, user_key_func
-from Constants.Constants import BASE_LIMIT
+from App.extensions import socket_rate_limit, user_key_func, system_key_func
+from Constants.Constants import BASE_LIMIT, USER_BASE_LIMIT
 from Data.CategoryManagement import CategoryManagement
 from Functionality.Organising import Organising
 from Personas.Coder import Coder
@@ -49,7 +49,8 @@ def init_process_message_ws(socketio: SocketIO):
     @socketio.on('start_stream')
     @login_required_ws
     @balance_required
-    @socket_rate_limit(key_func=user_key_func, limit=BASE_LIMIT, period=86400)  # 1 per day (86400 seconds)
+    @socket_rate_limit(key_func=system_key_func, limit=BASE_LIMIT, period=86400)  # 1 day (86400 seconds)
+    @socket_rate_limit(key_func=user_key_func, limit=USER_BASE_LIMIT, period=86400)
     def process_message(data):
         """
         Accept a user prompt and process it through the selected persona.

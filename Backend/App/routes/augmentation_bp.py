@@ -10,7 +10,8 @@ from typing import List, Dict
 from flask import Blueprint, jsonify, request
 
 from App import limiter
-from Constants.Constants import MODERATELY_RESTRICTED
+from App.extensions import user_key_func
+from Constants.Constants import MODERATELY_RESTRICTED, USER_MODERATELY_RESTRICTED
 from Constants.Exceptions import FAILURE_TO_SELECT_PERSONA, FAILURE_TO_SELECT_WORKFLOW, FAILURE_TO_AUTO_ENGINEER_PROMPT, \
     FAILURE_TO_QUESTION_PROMPT
 from Data.Files.StorageMethodology import StorageMethodology
@@ -44,6 +45,7 @@ QUESTION_PROMPT_SCHEMA = {
 @login_required
 @balance_required
 @limiter.limit(MODERATELY_RESTRICTED)
+@limiter.limit(USER_MODERATELY_RESTRICTED, key_func=user_key_func)
 def select_persona():
     """
     Will select an appropriate persona automatically based on the users input
@@ -72,6 +74,7 @@ def select_persona():
 @login_required
 @balance_required
 @limiter.limit(MODERATELY_RESTRICTED)
+@limiter.limit(USER_MODERATELY_RESTRICTED, key_func=user_key_func)
 def select_workflow():
     """
     Will select a workflow automatically, either based on tags or failing that an llm call
@@ -101,6 +104,7 @@ def select_workflow():
 @login_required
 @balance_required
 @limiter.limit(MODERATELY_RESTRICTED)
+@limiter.limit(USER_MODERATELY_RESTRICTED, key_func=user_key_func)
 def auto_engineer_user_prompt():
     """
     Accept a user prompt and augment it in line with prompt engineering standards.
@@ -135,6 +139,7 @@ def auto_engineer_user_prompt():
 @login_required
 @balance_required
 @limiter.limit(MODERATELY_RESTRICTED)
+@limiter.limit(USER_MODERATELY_RESTRICTED, key_func=user_key_func)
 def question_user_prompt():
     """
     Accept a user prompt and generates a list of questions that *may* improve the llm's response

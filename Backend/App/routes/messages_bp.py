@@ -3,7 +3,8 @@ import logging
 from flask import Blueprint
 
 from App import limiter
-from Constants.Constants import LIGHTLY_RESTRICTED
+from App.extensions import user_key_func
+from Constants.Constants import LIGHTLY_RESTRICTED, USER_LIGHTLY_RESTRICTED
 from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.Routing import fetch_entity
 from Utilities.Decorators.AuthorisationDecorators import login_required
@@ -14,6 +15,7 @@ messages_bp = Blueprint('messages_bp', __name__, url_prefix='/messages')
 @messages_bp.route('/<category_name>', methods=['GET'])
 @login_required
 @limiter.limit(LIGHTLY_RESTRICTED)
+@limiter.limit(USER_LIGHTLY_RESTRICTED, key_func=user_key_func)
 def get_messages(category_name):
     category_name = category_name\
         .lower()\
@@ -24,6 +26,7 @@ def get_messages(category_name):
 
 @messages_bp.route('/<message_id>', methods=['DELETE'])
 @login_required
+@limiter.limit(USER_LIGHTLY_RESTRICTED, key_func=user_key_func)
 def delete_message(message_id):
     nodeDB().delete_message_by_id(message_id)
 
