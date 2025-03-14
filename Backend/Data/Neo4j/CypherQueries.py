@@ -301,6 +301,11 @@ MATCH (system:SYSTEM)
 SET system.gemini_balance = system.gemini_balance + $amount;
 """
 
+UPDATE_SYSTEM_OPEN_AI_BALANCE = """
+MATCH (system:SYSTEM)
+SET system.open_ai_balance = system.open_ai_balance + $amount;
+"""
+
 
 # Promotions
 

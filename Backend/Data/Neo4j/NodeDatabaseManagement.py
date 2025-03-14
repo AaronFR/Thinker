@@ -674,7 +674,7 @@ class NodeDatabaseManagement:
         )
         logging.info(f"User balance updated by: {amount} (earmarked value: {earmarked_sum}")
 
-    # Pricing - Gemini management
+    # Pricing - Gemini balance tracking
 
     @handle_errors()
     def get_system_gemini_balance(self) -> Optional[float]:
@@ -717,6 +717,36 @@ class NodeDatabaseManagement:
             parameters
         )
         logging.info(f"System gemini balance updated by: {amount}")
+
+    # Pricing - OpenAi balance tracking
+
+    @handle_errors()
+    def deduct_from_system_open_ai_balance(self, amount: float) -> None:
+        """Deducts a specific amount from the systems openAi balance total
+
+        :param amount: The amount to deduct (should be a positive value).
+        """
+        if amount <= 0:
+            logging.error("Deduction amount must be positive.")
+            return
+
+        self.update_system_open_ai_balance(-amount)
+
+    @handle_errors()
+    def update_system_open_ai_balance(self, amount: float) -> None:
+        """Updates the user's balance by the specified amount.
+
+        :param amount: positive for an amount to add to the users balance.
+        """
+        parameters = {
+            "amount": amount
+        }
+
+        self.neo4jDriver.execute_write(
+            CypherQueries.UPDATE_SYSTEM_OPEN_AI_BALANCE,
+            parameters
+        )
+        logging.info(f"System OpenAi balance updated by: {amount}")
 
     @handle_errors()
     def expense_node(self, node_id: str, amount: float) -> None:

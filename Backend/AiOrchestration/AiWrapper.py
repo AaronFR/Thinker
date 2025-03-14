@@ -5,6 +5,7 @@ from typing import List, Dict, Generator
 from deprecated.classic import deprecated
 
 from AiOrchestration.AiModel import AiModel
+from AiOrchestration.ChatGptModel import ChatGptModel
 from AiOrchestration.GeminiModel import GeminiModel
 from Constants import Globals
 from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as NodeDB
@@ -118,6 +119,8 @@ class AiWrapper(abc.ABC):
         NodeDB().deduct_from_user_balance(total_cost)
         if type(model) == GeminiModel:
             NodeDB().deduct_from_system_gemini_balance(total_cost)
+        if type(model) == ChatGptModel:
+            NodeDB().deduct_from_system_open_ai_balance(total_cost)
 
         message_id = get_message_context()
         if message_id:
