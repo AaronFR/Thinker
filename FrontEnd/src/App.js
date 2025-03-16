@@ -26,6 +26,7 @@ import { apiFetch } from './utils/authUtils';
 import './App.css';
 import useSelectedPersona from './hooks/useSelectedPersona';
 import { userBalanceEndpoint } from './constants/endpoints';
+import useSelectedCategory from './hooks/useSelectedCategory';
 
 
 /**
@@ -85,6 +86,7 @@ function App () {
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions();
     const { selectedWorkflow, workflowIsLoading, selectMessageError, selectWorkflow } = useSelectedWorkflow();
     const { automaticallySelectedPersona, personaIsLoading, selectPersonaError, selectPersona } = useSelectedPersona();
+    const { automaticallySelectedCategory, categoryIsLoading, selectCategoryError, selectCategory } = useSelectedCategory();
 
     // Form State
     const [formsFilled, setFormsFilled] = useState(false);
@@ -124,6 +126,10 @@ function App () {
     }, [automaticallySelectedPersona]);
 
     useEffect(() => {
+      setTags(prevTags => ({ ...prevTags, category: automaticallySelectedCategory }))
+    }, [automaticallySelectedCategory])
+
+    useEffect(() => {
       setTags(prevTags => ({ ...prevTags, model: settingsRef.current.models.default_foreground_model }));
     }, [settings.defaultModel])
 
@@ -158,6 +164,7 @@ function App () {
       
       selectPersona(value)
       selectWorkflow(value, tags)
+      selectCategory(value)
       if (currentSettings?.beta_features?.augmented_prompts_enabled  === "auto") {
         generateAugmentedPrompt(value);
       }

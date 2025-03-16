@@ -13,7 +13,8 @@ from App import limiter
 from App.extensions import user_key_func
 from Constants.Constants import MODERATELY_RESTRICTED, USER_MODERATELY_RESTRICTED
 from Constants.Exceptions import FAILURE_TO_SELECT_PERSONA, FAILURE_TO_SELECT_WORKFLOW, FAILURE_TO_AUTO_ENGINEER_PROMPT, \
-    FAILURE_TO_QUESTION_PROMPT
+    FAILURE_TO_QUESTION_PROMPT, FAILURE_TO_SELECT_CATEGORY
+from Data.CategoryManagement import CategoryManagement
 from Data.Files.StorageMethodology import StorageMethodology
 from Functionality.Augmentation import Augmentation
 from Utilities.Contexts import set_functionality_context
@@ -24,17 +25,14 @@ from Utilities.Validation import sanitise_identifier
 
 augmentation_bp = Blueprint('augmentation', __name__, url_prefix='/augmentation')
 
-SELECT_WORKFLOW_SCHEMA = {
+USER_PROMPT_SCHEMA = {
+    "user_prompt": {"required": True, "type": str},
+}
+USER_PROMPT_AND_TAGS_SCHEMA = {
     "user_prompt": {"required": True, "type": str},
     "tags": {"required": False, "type": Dict},
 }
-SELECT_PERSONA_SCHEMA = {
-    "user_prompt": {"required": True, "type": str},
-}
-AUGMENT_PROMPT_SCHEMA = {
-    "user_prompt": {"required": True, "type": str},
-}
-QUESTION_PROMPT_SCHEMA = {
+USER_PROMPT_MESSAGES_AND_FILES_SCHEMA = {
     "user_prompt": {"required": True, "type": str},
     "selected_messages": {"required": False, "type": List},
     "selected_files": {"required": False, "type": List},
@@ -56,7 +54,7 @@ def select_persona():
         set_functionality_context("select_persona")
 
         data = request.get_json()
-        parsed_data = parse_and_validate_data(data, SELECT_WORKFLOW_SCHEMA)
+        parsed_data = parse_and_validate_data(data, USER_PROMPT_AND_TAGS_SCHEMA)
         user_prompt = parsed_data.get("user_prompt")
 
         selected_persona = Augmentation.select_persona(user_prompt).value
@@ -85,7 +83,7 @@ def select_workflow():
         set_functionality_context("select_workflow")
 
         data = request.get_json()
-        parsed_data = parse_and_validate_data(data, SELECT_WORKFLOW_SCHEMA)
+        parsed_data = parse_and_validate_data(data, USER_PROMPT_AND_TAGS_SCHEMA)
         user_prompt = parsed_data.get("user_prompt")
         tags = parsed_data.get("tags")
 
@@ -97,6 +95,28 @@ def select_workflow():
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
         logging.exception(FAILURE_TO_SELECT_WORKFLOW)
+        return jsonify({"error": str(e)}), 500
+
+
+@augmentation_bp.route('/select_category', methods=['POST'])
+@login_required
+@balance_required
+@limiter.limit(MODERATELY_RESTRICTED)
+@limiter.limit(USER_MODERATELY_RESTRICTED, key_func=user_key_func)
+def select_category():
+    """
+    Selects an appropriate category based on the input prompt
+    """
+    try:
+        data = request.get_json()
+        parsed_data = parse_and_validate_data(data, USER_PROMPT_SCHEMA)
+        user_prompt = parsed_data.get("user_prompt")
+
+        selected_category = CategoryManagement.categorise_input(user_prompt)
+
+        return jsonify({"category": selected_category})
+    except Exception as e:
+        logging.exception(FAILURE_TO_SELECT_CATEGORY)
         return jsonify({"error": str(e)}), 500
 
 
@@ -117,7 +137,7 @@ def auto_engineer_user_prompt():
         set_functionality_context("augmentation")
 
         data = request.get_json()
-        parsed_data = parse_and_validate_data(data, AUGMENT_PROMPT_SCHEMA)
+        parsed_data = parse_and_validate_data(data, USER_PROMPT_SCHEMA)
 
         logging.debug(f"Processing augmented prompt, data: {parsed_data}")
         user_prompt = parsed_data.get("user_prompt")
@@ -152,7 +172,7 @@ def question_user_prompt():
         set_functionality_context("questioning")
 
         data = request.get_json()
-        parsed_data = parse_and_validate_data(data, QUESTION_PROMPT_SCHEMA)
+        parsed_data = parse_and_validate_data(data, USER_PROMPT_MESSAGES_AND_FILES_SCHEMA)
         user_prompt = parsed_data.get("user_prompt")
         selected_messages = parsed_data.get("selected_messages")
         selected_files = parsed_data.get("selected_files")

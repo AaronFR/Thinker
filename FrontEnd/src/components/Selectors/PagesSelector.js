@@ -4,9 +4,7 @@ import TooltipConstants from '../../constants/tooltips';
 
 import './styles/WriteSelector.css'; // Ensure this path matches your project structure
 
-/**
- * PagesSelector Component
- * 
+/** 
  * Allows the user to input an integer value determining the number of pages.
  * Provides validation to ensure only positive integers are accepted.
  * Incorporates editing functionality similar to WriteSelector.

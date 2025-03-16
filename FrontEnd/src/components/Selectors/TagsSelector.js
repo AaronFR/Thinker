@@ -1,12 +1,10 @@
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import Select, { components } from 'react-select';
+import Select from 'react-select';
 
 import './styles/Selector.css';
 
-/**
- * TagSelector Component
- * 
+/** 
  * A reusable select component for selecting tags.
  * 
  * @param {string} selectedValue - Currently selected value.

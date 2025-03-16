@@ -27,11 +27,7 @@ authorisation_bp = Blueprint('auth', __name__, url_prefix='/auth')
 ERROR_NO_ID = "No user id found"
 BLACKLIST = set()  # ToDo: Will need to be more robust
 
-REGISTER_USER_SCHEMA = {
-    "email": {"required": True, "type": str},
-    "password": {"required": True, "type": str},
-}
-LOGIN_USER_SCHEMA = {
+EMAIL_AND_PASSWORD_SCHEMA = {
     "email": {"required": True, "type": str},
     "password": {"required": True, "type": str},
 }
@@ -48,7 +44,7 @@ def register():
     :return: a valid response including access and refresh JWT cookies
     """
     data = request.json
-    parsed_data = parse_and_validate_data(data, REGISTER_USER_SCHEMA)
+    parsed_data = parse_and_validate_data(data, EMAIL_AND_PASSWORD_SCHEMA)
 
     email = parsed_data.get('email').strip()
     if space_in_content(email):
@@ -116,7 +112,7 @@ def verify_email():
 @limiter.limit(USER_RESTRICTED, key_func=user_key_func)
 def login():
     data = request.json
-    parsed_data = parse_and_validate_data(data, REGISTER_USER_SCHEMA)
+    parsed_data = parse_and_validate_data(data, EMAIL_AND_PASSWORD_SCHEMA)
 
     email = parsed_data.get("email")
     if space_in_content(email):

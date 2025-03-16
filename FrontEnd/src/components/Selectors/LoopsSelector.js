@@ -5,8 +5,6 @@ import TagSelector from './TagsSelector';
 import TooltipConstants from '../../constants/tooltips';
 
 /**
- * LoopsSelector Component
- * 
  * Allows users to select the number of loops for processing.
  * 
  * @param {number} selectedNumberOfLoops - Current selected number of loops.

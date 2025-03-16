@@ -1,16 +1,12 @@
 import React, {useCallback} from 'react';
 import PropTypes from 'prop-types';
 
-import { Tooltip } from 'react-tooltip';
-
-import Select, { components } from 'react-select';
+import Select from 'react-select';
 import TooltipConstants from '../../constants/tooltips';
 
 
 
-/**
- * PersonaSelector Component
- * 
+/** 
  * Allows users to select a persona from a dropdown list.
  * Provides an option for auto detection of persona with feedback.
  * 

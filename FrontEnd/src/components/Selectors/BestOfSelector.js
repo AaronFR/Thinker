@@ -1,13 +1,9 @@
-// BestOfSelector.js
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import TagSelector from './TagsSelector';
 import TooltipConstants from '../../constants/tooltips';
 
-/**
- * BestOfSelector Component
- * 
+/** 
  * Allows users to select the number of runs for "Best Of" logic.
  * 
  * @param {number} selectedRuns - Current selected number of runs.

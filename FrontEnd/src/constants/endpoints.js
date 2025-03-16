@@ -16,12 +16,13 @@ export const logoutSessionEndpoint = `${FLASK_PORT}/auth/logout`;
 
 export const selectPersonaEndpoint = `${FLASK_PORT}/augmentation/select_persona`;
 export const selectWorkflowEndpoint = `${FLASK_PORT}/augmentation/select_workflow`;
+export const selectedCategoryEndpoint = `${FLASK_PORT}/augmentation/select_category`
 export const autoEngineerPromptEndpoint = `${FLASK_PORT}/augmentation/auto_engineer_prompt`;
 export const questionPromptEndpoint = `${FLASK_PORT}/augmentation/question_prompt`
 
 /* Categories */
 
-export const fetchCategoriesEndpoint = `${FLASK_PORT}/categories`
+export const categoriesEndpoint = `${FLASK_PORT}/categories`
 export const categoriesWithFilesEndpoint = `${FLASK_PORT}/categories_with_files`
 
 /* Files */

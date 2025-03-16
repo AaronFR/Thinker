@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { apiFetch } from '../../utils/authUtils';
 import { withLoadingOpacity, toTitleCase} from '../../utils/textUtils';
-import { fetchCategoriesEndpoint, messagesForCategoryEndpoint } from '../../constants/endpoints';
+import { categoriesEndpoint, messagesForCategoryEndpoint } from '../../constants/endpoints';
 
 import MessageItem from './MessageItem';
 
@@ -31,12 +31,13 @@ const MessageHistory = ({ isProcessing, onMessageSelect, selectedMessages, remov
    * Fetches message categories from the backend API.
    * 
    * ToDo: should re-sort alphabetically if the user prefers
+   * ToDo: When files and messages are merged by default refactor to make use of CategoryService.js
    * 
    * @returns {Promise<void>}
    */
   const fetchCategories = useCallback(async () => {
     try {
-      const response = await apiFetch(fetchCategoriesEndpoint, {
+      const response = await apiFetch(categoriesEndpoint, {
         method: "GET"
       });
 

@@ -24,6 +24,7 @@ const TooltipConstants = {
   `,
 
   /* Selectors */
+  categorySelector: "Select a Category folder for convenient future reference",
   personaSelector: "Select an AI 'persona' with it's own response style and workflows.",
   workflowSelector: "Select a workflow to determine how your request is responded to. Workflows are sequences of individual steps, each using AI to achieve a set task",
   modelSelector: `Select the primary AI model to use, listed from the most affordable first.<br>

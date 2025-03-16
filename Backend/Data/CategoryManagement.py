@@ -15,6 +15,7 @@ from Constants.Instructions import DEFAULT_USER_CATEGORISATION_INSTRUCTIONS, cat
     SELECT_COLOUR_SYSTEM_MESSAGE, CATEGORY_DESCRIPTION_SYSTEM_MESSAGE, category_description_prompt, \
     categorisation_system_messages
 from Utilities.Contexts import set_category_context, get_category_context
+from Utilities.Decorators.Decorators import specify_functionality_context
 
 
 class CategoryManagement:
@@ -45,6 +46,7 @@ class CategoryManagement:
         return category.replace('/', '_').lower()  # Replace '/' to avoid routing issues
 
     @staticmethod
+    @specify_functionality_context("select_category")
     def categorise_input(content: str, llm_response: Optional[str] = None) -> str | None:
         """
         Categorizes the user input based on content and optional response using the AI orchestrator.

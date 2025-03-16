@@ -27,6 +27,7 @@ OPEN_AI_FLAGGED_REQUEST_INAPPROPRIATE = "OpenAi ChatGpt Flagged user request as 
 
 FAILURE_TO_SELECT_PERSONA = "Failed to select persona"
 FAILURE_TO_SELECT_WORKFLOW = "Failed to select workflow"
+FAILURE_TO_SELECT_CATEGORY = "Failed to select category"
 FAILURE_TO_AUTO_ENGINEER_PROMPT = "Failed to automatically engineer prompt"
 FAILURE_TO_QUESTION_PROMPT = "Failed to generate questions for message"
 

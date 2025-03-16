@@ -32,9 +32,11 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles, removeFile, refre
       const response = await apiFetch(categoriesWithFilesEndpoint, {
         method: "GET",
       });
+
       if (!response.ok) {
         throw new Error("Failed to get file categories");
       }
+      
       const data = await response.json();
       const cleanCategories = data.categories.map((category, index) => ({
         id: index + 1, // Unique ID based on index

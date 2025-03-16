@@ -1,5 +1,3 @@
-// ModelSelector.js
-
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { components } from 'react-select';
@@ -13,8 +11,6 @@ import TooltipConstants from '../../constants/tooltips';
 import './styles/Selector.css';
 
 /**
- * CustomOption Component
- *
  * Custom option with an image for the select options.  Uses the Gemini logo
  * for options with 'gemini' in their value, otherwise defaults to OpenAI logo.
  */

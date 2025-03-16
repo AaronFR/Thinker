@@ -1,13 +1,9 @@
-// WorkflowSelector.js
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import TagSelector from './TagsSelector';
 import TooltipConstants from '../../constants/tooltips';
 
-/**
- * WorkflowSelector Component
- * 
+/** 
  * Allows users to select a workflow from a dropdown list.
  * 
  * @param {string} selectedWorkflow - Current selected workflow.

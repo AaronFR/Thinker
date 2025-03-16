@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import FileUploadButton from './FileUploadButton';
@@ -15,13 +15,13 @@ import LoopsSelector from './Selectors/LoopsSelector';
 import WriteSelector from './Selectors/WriteSelector';
 import PagesSelector from './Selectors/PagesSelector';
 
-import { apiFetch } from '../utils/authUtils';
-import { getBasename, shortenText } from '../utils/textUtils';
+import { shortenText } from '../utils/textUtils';
 import AutoExpandingTextarea from '../utils/AutoExpandingTextarea';
 import { Tooltip } from 'react-tooltip';
 import TooltipConstants from '../constants/tooltips';
 
 import './styles/UserInputForm.css';
+import CategorySelector from './Selectors/CategorySelector';
 
 
 
@@ -237,6 +237,10 @@ const UserInputForm = ({
           </div>
 
           <div className='palette'>
+            <CategorySelector
+              selectedCategory={tags.category}
+              setTags={setTags}
+            />
             <PersonaSelector 
               selectedPersona={selectedPersona} 
               setSelectedPersona={setSelectedPersona}
@@ -245,6 +249,7 @@ const UserInputForm = ({
               selectedWorkflow={tags.workflow}
               setTags={setTags}
             />
+
             {tags.workflow === 'loop' && (
               <LoopsSelector
                 selectedNumberOfLoops={tags.loops}
@@ -263,6 +268,7 @@ const UserInputForm = ({
                 setTags={setTags}
               />
             )}
+
             <ModelSelector
               selectedModel={tags.model}
               setTags={setTags}
