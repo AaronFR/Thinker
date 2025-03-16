@@ -55,6 +55,7 @@ const TooltipConstants = {
   summarisationSystemMessage: "The summarisation step will be provided with every single file and message reference supplied originally, this means a For All workflow can see each re-written file",
   fileSummarisationSystemMessage: "File summaries only access the content of the file. TIP: be creative: it doesn't <i>have</i> to be a generic summary, prioritise what you want.",
   bestOfSystemMessage: "The AI compares all generated responses with your original prompt request to select the best response",
+  internetSearchInstructions: "Has access to your prompt, the search term(s) it creates will then be run in a browser (DuckDuckGo).",
 
   /* Explanations */
   llmDetails: `Large Language Model, sometimes for advanced models you'll see LRM (Large <i>Reasoning</i> Model)

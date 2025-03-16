@@ -27,7 +27,8 @@ from duckduckgo_search import DDGS
 from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Constants.Instructions import EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE, EXTRACT_SEARCH_TERMS_PROMPT
+from Constants.Instructions import DEFAULT_EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE, EXTRACT_SEARCH_TERMS_PROMPT
+from Data.Configuration import Configuration
 from Utilities.Contexts import get_iteration_context
 from Utilities.Decorators.Decorators import return_for_error, specify_functionality_context
 from Utilities.Utility import Utility
@@ -96,8 +97,15 @@ class InternetSearch:
         :param user_prompt: The input prompt from the user.
         :return: A list of extracted keywords.
         """
+        config = Configuration.load_config()
+
+        user_categorisation_instructions = config.get('system_messages', {}).get(
+            "internet_search_instructions",
+            DEFAULT_EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE
+        )
+
         response = AiOrchestrator().execute(
-            [EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE],
+            [user_categorisation_instructions],
             [
                 EXTRACT_SEARCH_TERMS_PROMPT,  # ToDo: Might not actually need this line
                 user_prompt

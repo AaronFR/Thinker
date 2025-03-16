@@ -177,6 +177,8 @@ const FunctionalitySettings = React.memo(({
       <InternetSearchSection 
         currentValue={settings?.features?.internet_search_enabled}
         changeSetting={changeSetting}
+        promptMessage={settings?.system_messages?.internet_search_instructions}
+        handleMessageChange={handleMessageChange}
         cost={userInfo?.internet_search_cost}
       />
       <UserContextSection
@@ -629,6 +631,8 @@ const BestOfSection = React.memo(({
 const InternetSearchSection = React.memo(({
   currentValue,
   changeSetting,
+  promptMessage,
+  handleMessageChange,
   cost
 }) => (
   <div className='settings-subsection'>
@@ -663,6 +667,20 @@ const InternetSearchSection = React.memo(({
     <p>📰 Allows the AI to access information it didn't know. E.g. read the news</p>
     <p>👍 Additional context can improve the response and mitigate hallucinations</p>
     <p>⏰ Increases duration of requests (2x)</p>
+    <div
+      data-tooltip-id="tooltip"
+      data-tooltip-content={TooltipConstants.internetSearchInstructions}
+      data-tooltip-place="bottom"
+    >
+      <AutoExpandingTextarea
+        value={promptMessage}
+        className="textarea"
+        onChange={(e) =>
+          handleMessageChange('system_messages', 'internet_search_instructions', e.target.value)
+        }
+        style={{ opacity: 0.9 }}
+      />
+    </div>
   </div>
 ));
 

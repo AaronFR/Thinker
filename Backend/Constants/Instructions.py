@@ -54,8 +54,8 @@ def multiple_pages_summary_message(file_references: List[str], initial_message: 
     )
 
 
-EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE = (
-    "You are an assistant that extracts relevant search phrases from user prompts.\n"
+DEFAULT_EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE = (
+    "You are an assistant that extracts relevant search phrases/sentences from user prompts for internet searches.\n"
     "Search terms should be lengthy sentences and give contextual context"
 )
 

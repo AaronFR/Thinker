@@ -615,18 +615,22 @@ class NodeDatabaseManagement:
         return records[0]["earmarked_sum"]
 
     @handle_errors()
-    def earmark_from_user_balance(self, earmarked_sum: float):
+    def earmark_from_user_balance(self, sum_to_earmark: float):
         """
         Reserves an estimated amount of currency in advance of a transaction after the transaction occurs this earmarked
         amount is returned to the users balance and the real fee deduced.
+
+        ToDo: Currently if a request fails the earmarked value won't be returned to the user, for now well just return
+         the users earmarked total to their balance from time to time manually, with a secure randomly timed function
+         later. First we'll have to see to what degree this phenomena would occur.
         """
-        if earmarked_sum <= 0:
+        if sum_to_earmark <= 0:
             logging.error("Earmarking amount must be positive.")
             return
 
         parameters = {
             "user_id": get_user_context(),
-            "amount": earmarked_sum
+            "amount": sum_to_earmark
         }
 
         earmarked_total = self.neo4jDriver.execute_write(
@@ -634,10 +638,10 @@ class NodeDatabaseManagement:
             parameters,
             'total_earmarked'
         )
-        set_earmarked_sum(earmarked_sum)
+        set_earmarked_sum(sum_to_earmark)
 
         logging.info(
-            f"Earmarked from user balance for ongoing AI request: {earmarked_sum}"
+            f"Earmarked from user balance for ongoing AI request: {sum_to_earmark}"
             f" - total currently earmarked: {earmarked_total}"
         )
 
