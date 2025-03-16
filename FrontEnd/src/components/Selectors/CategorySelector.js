@@ -38,6 +38,25 @@ const CategorySelector = React.memo(({ selectedCategory, setTags }) => {
     loadCategories();
   }, [loadCategories]);
 
+  useEffect(() => {
+    const addMissingCategory = async () => {
+      const formattedCategories = await loadCategories();
+      const categoryExists = formattedCategories?.some(
+        (cat) => cat.value === selectedCategory
+      );
+
+      if (selectedCategory && !categoryExists) {
+        const newCategory = {
+          value: selectedCategory.toLowerCase(),
+          label: `*NEW* - ${selectedCategory}`,
+        };
+        setCategories((prevCategories) => [...prevCategories, newCategory]);
+      }
+    };
+
+    addMissingCategory();
+  }, [loadCategories, selectedCategory]);
+
   return (
     <div
       className='category-selector-container'
