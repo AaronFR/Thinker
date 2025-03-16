@@ -26,8 +26,6 @@ import CategorySelector from './Selectors/CategorySelector';
 
 
 /**
- * UserInputForm Component
- *
  * Renders a form that allows users to input text and upload files.
  * Handles fetching of uploaded files, managing uploaded files state,
  * and integrates the FileUploadButton component for file uploads.
@@ -63,12 +61,12 @@ const UserInputForm = ({
   const [uploadCompleted, setUploadCompleted] = useState(true)
 
   const { settings } = useContext(SettingsContext);
-  const { 
+  const {
     selectedFiles,
     setSelectedFiles,
-    toggleFileSelection, 
+    toggleFileSelection,
     selectedMessages,
-    toggleMessageSelection 
+    toggleMessageSelection
   } = useSelection();
 
   /**
@@ -126,44 +124,47 @@ const UserInputForm = ({
   );
 
   return (
-    <div>
-      {/* Display Selected Messages */}
-      <div className='reference-area'>
-        <ul style={{ listStyleType: 'none', padding: 0 }}>
-          {selectedMessages.map((message, index) => (
-            <li key={index} className="selected-item">
-              <span role="img" aria-label="message">✉</span> {shortenText(message.prompt, 80)}
-              <button
-                className="deselect-button"
-                onClick={() => toggleMessageSelection(message)}
-                aria-label="Deselect this message"
-              >
-                ✖️
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div className="user-input-form-container">
+      {/* Reference Area */}
+      {(selectedMessages.length != 0 || selectedFiles.length != 0) &&
+      <div className="reference-area">
+        {selectedMessages.length != 0 && 
+        <div className="reference-section">
+          <ul className="reference-list">
+            {selectedMessages.map((message, index) => (
+              <li key={index} className="selected-item left">
+                <span role="img" aria-label="message">✉</span> {shortenText(message.prompt, 80)}
+                <button
+                  className="deselect-button"
+                  onClick={() => toggleMessageSelection(message)}
+                  aria-label="Deselect this message"
+                >
+                  ✖️
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>}
 
-      {/* Display Selected Files */}
-      <div className='reference-area'>
-        {fetchError && <p className='error-message'>{fetchError}</p>}
-        {selectedFiles.length === 0 && !fetchError}
-        <ul style={{ listStyleType: 'none', padding: 0 }}>
-          {selectedFiles.map((file, index) => (
-            <li key={index} className="selected-item">
-              <span role="img" aria-label="file">📄</span> {file.name}
-              <button
-                className="deselect-button"
-                onClick={() => toggleFileSelection(file)}
-                aria-label={`Deselect this file`}
-              >
-                ✖️
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+        {selectedFiles.length != 0 && 
+        <div className="reference-section">
+          {fetchError && <p className='error-message'>{fetchError}</p>}
+          <ul className="reference-list">
+            {selectedFiles.map((file, index) => (
+              <li key={index} className="selected-item right">
+                <span role="img" aria-label="file">📄</span> {file.name}
+                <button
+                  className="deselect-button"
+                  onClick={() => toggleFileSelection(file)}
+                  aria-label={`Deselect this file`}
+                >
+                  ✖️
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>}
+      </div>}
 
       {/* User Input Form */}
       <form className='user-input-form' onSubmit={handleSubmit}>
@@ -179,77 +180,81 @@ const UserInputForm = ({
           aria-label="User prompt input"
         />
 
-        <div className='palette-container'>
-          <div className='palette'>
-            <FileUploadButton onUploadSuccess={handleUploadSuccess} />
-            {settings.augmentedPromptsEnabled !== 'off' && (
-              <button
-                type="button"
-                className="button submit-button"
-                onClick={() => generateAugmentedPrompt(userInput)}
-                disabled={isProcessing}
-                aria-busy={isProcessing}
-                data-tooltip-id="tooltip"
-                data-tooltip-html={TooltipConstants.augmentButton}
-                data-tooltip-place="bottom"
-              >
-                Improve prompt
-              </button>
-            )}
-            {settings.questionUserPromptsEnabled !== 'off' && (
-              <button
-                type="button"
-                className="button submit-button"
-                onClick={() => generateQuestionsForPrompt(userInput, selectedMessages, selectedFiles)}
-                disabled={isProcessing}
-                aria-busy={isProcessing}
-                data-tooltip-id="tooltip"
-                data-tooltip-html={TooltipConstants.questionButton}
-                data-tooltip-place="bottom"
-              >
-                Question
-              </button>
-            )}
-            {isProcessing ? (
-              <button
-                type="button"
-                className="button submit-button"
-                onClick={disconnectFromRequest}
-                aria-busy={isProcessing}
-                data-tooltip-id="tooltip"
-                data-tooltip-html={TooltipConstants.submitButton_whileProcessing}
-                data-tooltip-place="bottom"
-              >
-                New
-              </button>
-            ) : (
-              <button
-                type="submit"
-                className="button submit-button"
-                disabled={isProcessing}
-                data-tooltip-id="tooltip"
-                data-tooltip-html={TooltipConstants.submitButton}
-                data-tooltip-place="bottom"
-              >
-                Enter
-              </button>
-            )}
-          </div>
+        {/* Primary Action Buttons */}
+        <div className="primary-actions">
+          <FileUploadButton onUploadSuccess={handleUploadSuccess} />
+          {settings.augmentedPromptsEnabled !== 'off' && (
+            <button
+              type="button"
+              className="button submit-button"
+              onClick={() => generateAugmentedPrompt(userInput)}
+              disabled={isProcessing}
+              aria-busy={isProcessing}
+              data-tooltip-id="tooltip"
+              data-tooltip-html={TooltipConstants.augmentButton}
+              data-tooltip-place="bottom"
+            >
+              Improve prompt
+            </button>
+          )}
+          {settings.questionUserPromptsEnabled !== 'off' && (
+            <button
+              type="button"
+              className="button submit-button"
+              onClick={() => generateQuestionsForPrompt(userInput, selectedMessages, selectedFiles)}
+              disabled={isProcessing}
+              aria-busy={isProcessing}
+              data-tooltip-id="tooltip"
+              data-tooltip-html={TooltipConstants.questionButton}
+              data-tooltip-place="bottom"
+            >
+              Question
+            </button>
+          )}
+          {isProcessing ? (
+            <button
+              type="button"
+              className="button submit-button"
+              onClick={disconnectFromRequest}
+              aria-busy={isProcessing}
+              data-tooltip-id="tooltip"
+              data-tooltip-html={TooltipConstants.submitButton_whileProcessing}
+              data-tooltip-place="bottom"
+            >
+              New
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="button submit-button"
+              disabled={isProcessing}
+              data-tooltip-id="tooltip"
+              data-tooltip-html={TooltipConstants.submitButton}
+              data-tooltip-place="bottom"
+            >
+              Enter
+            </button>
+          )}
+        </div>
 
-          <div className='palette'>
+        {/* Selectors */}
+        <div className="selectors-grid">
+          <div className="selector-group">
             <CategorySelector
               selectedCategory={tags.category}
               setTags={setTags}
             />
-            <PersonaSelector 
-              selectedPersona={selectedPersona} 
+            <PersonaSelector
+              selectedPersona={selectedPersona}
               setSelectedPersona={setSelectedPersona}
             />
+          </div>
+
+          <div className="selector-group workflow-selectors">
             <WorkflowSelector
               selectedWorkflow={tags.workflow}
               setTags={setTags}
             />
-
             {tags.workflow === 'loop' && (
               <LoopsSelector
                 selectedNumberOfLoops={tags.loops}
@@ -257,18 +262,22 @@ const UserInputForm = ({
               />
             )}
             {tags.workflow === 'write' && (
-              <WriteSelector
-                write={tags.write}
-                setTags={setTags}
-              />
+              <>
+                <WriteSelector
+                  write={tags.write}
+                  setTags={setTags}
+                />
+                {selectedPersona === 'writer' && tags.workflow === 'write' && (
+                  <PagesSelector
+                    pages={tags.pages}
+                    setTags={setTags}
+                  />
+                )}
+              </>
             )}
-            {selectedPersona === 'writer' && tags.workflow === 'write' && (
-              <PagesSelector
-                pages={tags.pages}
-                setTags={setTags}
-              />
-            )}
+          </div>
 
+          <div className="selector-group">
             <ModelSelector
               selectedModel={tags.model}
               setTags={setTags}
@@ -282,7 +291,6 @@ const UserInputForm = ({
             )}
           </div>
         </div>
-        
 
         {settings?.interface?.debug === true && (
           <TagsManager tags={tags} setTags={setTags} />
@@ -310,7 +318,7 @@ UserInputForm.propTypes = {
     })
   ).isRequired,
   setSelectedMessages: PropTypes.func.isRequired,
-  tags: PropTypes.arrayOf(PropTypes.string).isRequired,
+  tags: PropTypes.object.isRequired,
   setTags: PropTypes.func.isRequired,
 };
 
