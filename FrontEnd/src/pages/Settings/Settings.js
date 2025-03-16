@@ -148,7 +148,12 @@ const FunctionalitySettings = React.memo(({
   const maxContent = (
     <div>
       {sectionHeading}
+
       <div className='settings-subsection'>
+        <div className='side-by-side'>
+          <h3>Auto categorisation</h3>
+          <p>{formatPrice(parseFloat(userInfo?.select_category_cost))}</p>
+        </div>
         <div className='side-by-side'>
           <h3>Auto select persona</h3>
           <p>{formatPrice(parseFloat(userInfo?.select_persona_cost))}</p>
@@ -725,7 +730,7 @@ const UserContextSection = React.memo(({
  * Main component that aggregates all settings sections.
  */
 export function Settings() {
-  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'internet_search_cost', 'summarise_workflows_cost', 'summarise_files_cost', 'user_context_cost']);
+  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_category_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'internet_search_cost', 'summarise_workflows_cost', 'summarise_files_cost', 'user_context_cost']);
   const [userInfo, setUserInfo] = useState(null);
   const [error, setError] = useState(null);
 
