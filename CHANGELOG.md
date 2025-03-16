@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Auto categorisation before prompt is sent
   - Allows user to pick category, display which category will be selected in advance
     and reduce request durations.
+  - User can enter in new category in selector
 - Edit internet search instructions in settings.
 
 ### Changed

@@ -70,6 +70,7 @@ const CategorySelector = React.memo(({ selectedCategory, setTags }) => {
         options={categories}
         placeholder="Category"
         className="category-selector"
+        creatable={true}
       />
     </div>
     

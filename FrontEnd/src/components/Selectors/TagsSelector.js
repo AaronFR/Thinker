@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Select from 'react-select';
+import Creatable from 'react-select/creatable';
 
 import './styles/Selector.css';
 
@@ -21,6 +22,7 @@ const TagSelector = React.memo(({
   placeholder,
   CustomOption,
   className = '',
+  creatable = false,
 }) => {
   const handleChange = useCallback(
     (selectedOption) => {
@@ -56,7 +58,7 @@ const TagSelector = React.memo(({
 
   return (
     <div className={`${placeholder.toLowerCase()}-selector`}>
-      <Select {...selectProps} />
+      {creatable && <Creatable {...selectProps} /> || <Select {...selectProps} />} 
     </div>
   );
 });
