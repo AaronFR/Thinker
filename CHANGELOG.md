@@ -35,7 +35,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A step's output is properly formatted when displayed
 - 'User context' is no longer in 'beta'
   - (Usually) Remembers user facts and preferences, but increases prompt durations significantly
-- User input page formatted to display better on mobile
+- Improved formatting, especially for mobile
+  - User input page formatted to clearly seperate different categories and selectors by topic
+  - Message/File more compact, cleaner, making it easier to browse many categories
 
 ### Removed
 

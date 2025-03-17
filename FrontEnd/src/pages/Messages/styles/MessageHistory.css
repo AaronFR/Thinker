@@ -1,82 +1,88 @@
 .message-history-container {
-  background-color: var(--color-light-bg);
-  display: flex;
-  flex-direction: column;
+  margin: var(--spacing-xxxl) auto;
 }
 
-body.dark-mode .message-history-container {
-  background: var(--color-background-dark);
-  color: var(--color-text-light);
-  transition: background-color var(--transition-duration) var(--transition-ease),
-              color var(--transition-duration) var(--transition-ease);
-}
-
-/* Category List */
 .category-list {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: var(--spacing-md);
 }
-body.dark-mode .category-list {
-  background: var(--background-gradient);
-  color: var(--color-text-light);
-  transition: background-color var(--transition-duration) var(--transition-ease),
-              color var(--transition-duration) var(--transition-ease);
-}
 
-/* Category Item */
 .category-item {
-  padding: var(--spacing-md) var(--spacing-lg);
-  background: var(--background-gradient-light);
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
-  transition: background-color var(--transition-duration-fast) var(--transition-ease);
-  border: 0.0625em solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  box-shadow: var(--box-shadow-sm);
+  transition: all 0.3s ease; /* Smooth transition for width and flex-basis */
+  box-sizing: border-box;
+  flex-grow: 1;
+  flex-basis: calc(10% - var(--spacing-md)); /* Default to 3 items per row */
+  min-width: 12em; /* Prevent collapsing on smaller screens */
+  /* max-width: calc(10% - var(--spacing-md)); This would prevent the bottom row from occuping having overly wide categories but then categories stop stretching*/
 }
-body.dark-mode .category-item {
-  background: var(--background-gradient);
-  color: var(--color-text-light);
-  transition: background-color var(--transition-duration) var(--transition-ease),
-              color var(--transition-duration) var(--transition-ease);
+/* create class for the last row that CAN have a max width restriction */
+.category-item--expanded {
+  flex-basis: 100%;
+  width: 100%;
 }
 .category-item:hover {
-  box-shadow: var(--shadow-hover);
+  box-shadow: var(--box-shadow-md);
+}
+.category-item > div {
+  padding: var(--spacing-md);
+  background-color: rgba(var(--color-primary-rgb), 0.05);
+  cursor: pointer;
 }
 
-/* Category Title */
+.hidden-flex-item {
+  content: "";
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  box-shadow: var(--box-shadow-sm);
+  transition: all 0.3s ease; /* Smooth transition for width and flex-basis */
+  box-sizing: border-box;
+  flex-grow: 1;
+  flex-basis: calc(10% - var(--spacing-md));
+  min-width: 12em;
+  visibility: hidden;
+}
+
 .category-title {
-  font-size: var(--font-size-large);
+  font-size: var(--font-size-lg);
+  font-weight: 1200;
+  color: rgb(255, 255, 255);
+  margin-bottom: var(--spacing-xs);
+  text-shadow: 1px 1px 0px rgb(0, 0, 0);
+  border-radius: 15px;
+  width: auto;
+  padding: 0px 5px;
 }
 
-/* Message List */
+.category-description {
+  opacity: 80%;
+  text-shadow: 1px 1px 0px rgb(0, 0, 0);
+}
+
 .message-list {
+  padding: var(--spacing-md);
+  background-color: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border);
+}
+
+.error-message {
+  color: var(--color-error);
   margin-top: var(--spacing-md);
-  padding: var(--spacing-md) var(--spacing-xs);
-  background-color: var(--color-light-bg);
-  border-radius: var(--border-radius-sm);
-}
-
-.message-list p {
-  margin: 0.0625em 0;
-}
-
-body.dark-mode .message-list {
-  background: var(--background-gradient);
-  color: var(--color-text-light);
-  transition: background-color var(--transition-duration) var(--transition-ease),
-              color var(--transition-duration) var(--transition-ease);
 }
 
 @media (max-width: 768px) {
   .category-title {
-    font-size: var(--font-size-medium); /* Adjusted font size for smaller screens */
+    font-size: var(--font-size-medium);
   }
 
   .category-item {
-    padding: var(--spacing-sm) var(--spacing-md); /* Reduced padding for smaller screens */
+    padding: var(--spacing-sm) var(--spacing-md);
   }
 
   .message-list {
-    padding: var(--spacing-sm) var(--spacing-xs); /* Adjusted spacing for consistency */
+    padding: var(--spacing-sm) var(--spacing-xs);
   }
 }
