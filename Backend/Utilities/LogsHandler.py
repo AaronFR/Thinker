@@ -42,7 +42,7 @@ class LogsHandler:
         if os.getenv(THINKER_ENV) == DEV_ENV or os.getenv(STORAGE_TYPE) == LOCAL_STORAGE:
             file_handler = LogsHandler.setup_file_handler(log_file, format_scheme)
             if file_handler:
-                file_handler.setLevel(logging.DEBUG)
+                file_handler.setLevel(logging.INFO)
                 logger.addHandler(file_handler)
 
         # Set up console handler
