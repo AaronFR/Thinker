@@ -73,7 +73,6 @@ const CategorySelector = React.memo(({ selectedCategory, setTags }) => {
         creatable={true}
       />
     </div>
-    
   );
 });
 

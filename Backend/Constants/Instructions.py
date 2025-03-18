@@ -192,7 +192,7 @@ def categorisation_system_messages(
         ),
         (
             "Categorize the data with the most suitable single-word answer."
-            "Write it as <result=\"(your_selection)\">"
+            "Write it as a singular XML start tag: <result=\"(your_selection)\">"
         )
     ]
 
