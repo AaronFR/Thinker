@@ -174,15 +174,23 @@ def question_user_prompt():
         data = request.get_json()
         parsed_data = parse_and_validate_data(data, USER_PROMPT_MESSAGES_AND_FILES_SCHEMA)
         user_prompt = parsed_data.get("user_prompt")
+        if not user_prompt:
+            raise Exception("User prompt not found!(?)")
+
         selected_messages = parsed_data.get("selected_messages")
         selected_files = parsed_data.get("selected_files")
 
         reference_messages = None
+        prompt_key = "prompt"
+        response_key = "response"
         if selected_messages:
             reference_messages = []
             for message in selected_messages:
                 reference_messages.append(
-                    message.get("prompt") + "\nResponse:\n" + message.get("response"))
+                    f"{message.get(prompt_key)} \n"
+                    "Response: \n"
+                    f"{message.get(response_key)}"
+                )
 
         reference_files = None
         if selected_files:

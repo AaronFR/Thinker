@@ -6,6 +6,7 @@ import FileItem from './../pages/Messages/FileItem';
 import { useSelection } from '../pages/Messages/SelectionContext';
 
 import './styles/OutputSection.css';
+
 import { apiFetch } from '../utils/authUtils';
 import { fileIdEndpoint } from '../constants/endpoints';
 
