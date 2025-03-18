@@ -10,7 +10,7 @@ from AiOrchestration.ChatGptMessageBuilder import generate_messages
 from Constants.Exceptions import AI_RESOURCE_FAILURE, FUNCTION_SCHEMA_EMPTY, NO_RESPONSE_OPEN_AI_API
 from Data.Configuration import Configuration
 from Utilities.Decorators.Decorators import handle_errors, specify_functionality_context
-from Utilities.ErrorHandler import ErrorHandler
+from Utilities.LogsHandler import LogsHandler
 from Utilities.Utility import Utility
 from Utilities.models import determine_llm_client, find_model_enum_value
 
@@ -38,7 +38,7 @@ class AiOrchestrator:
         """
         self.llm_client = None
         self.default_background_model = ChatGptModel.CHAT_GPT_4_OMNI_MINI
-        ErrorHandler.setup_logging()
+        LogsHandler.setup_logging()
 
     @staticmethod
     def _load_default_model() -> AiModel:

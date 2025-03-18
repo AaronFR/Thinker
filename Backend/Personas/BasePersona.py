@@ -12,7 +12,7 @@ from Data.InternetSearch import InternetSearch
 from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Data.UserContextManagement import UserContextManagement
-from Utilities.ErrorHandler import ErrorHandler
+from Utilities.LogsHandler import LogsHandler
 from Constants.Instructions import DEFAULT_BEST_OF_SYSTEM_MESSAGE, DETECT_RELEVANT_HISTORY_SYSTEM_MESSAGE
 from Utilities.Validation import is_valid_prompt
 from Workflows.ChatWorkflow import ChatWorkflow
@@ -38,7 +38,7 @@ class BasePersona:
         self.history: List[Tuple[str, str]] = []  # question-response pairs
         self.instructions = ""
         self.configuration = ""
-        ErrorHandler.setup_logging()
+        LogsHandler.setup_logging()
 
     def query(self,
               user_prompt: str,

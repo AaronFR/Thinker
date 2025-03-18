@@ -18,7 +18,7 @@ from Constants.Exceptions import FAILURE_TO_STREAM, SERVER_FAILURE_GEMINI_API, N
     NO_USAGE_DATA_GEMINI
 from Utilities.Decorators.Decorators import handle_errors
 from Utilities.Decorators.PaymentDecorators import evaluate_gemini_balance
-from Utilities.ErrorHandler import ErrorHandler
+from Utilities.LogsHandler import LogsHandler
 
 
 #  For now assuming that google only has text and vision available
@@ -43,7 +43,7 @@ class GeminiWrapper(AiWrapper):
         return cls._instance
 
     def __init__(self):
-        ErrorHandler.setup_logging()
+        LogsHandler.setup_logging()
 
     @staticmethod
     def _get_google_genai_client():

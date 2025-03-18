@@ -1,7 +1,7 @@
 from typing import Dict, Any
 from Personas.BasePersona import BasePersona
 from Constants.PersonaSpecification import CoderSpecification
-from Utilities.ErrorHandler import ErrorHandler
+from Utilities.LogsHandler import LogsHandler
 from Workflows.AutoWorkflow import AutoWorkflow
 from Workflows.ChatWorkflow import ChatWorkflow
 from Workflows.LoopWorkflow import LoopWorkflow
@@ -29,7 +29,7 @@ class Coder(BasePersona):
         super().__init__(name)
         self.instructions = CoderSpecification.CODER_INSTRUCTIONS
         self.configuration = CoderSpecification.load_configuration()
-        ErrorHandler.setup_logging()
+        LogsHandler.setup_logging()
 
 
 if __name__ == '__main__':

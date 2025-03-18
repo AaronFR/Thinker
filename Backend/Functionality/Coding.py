@@ -4,7 +4,7 @@ import py_compile
 import subprocess
 
 from Utilities.Decorators.Decorators import return_for_error
-from Utilities.ErrorHandler import ErrorHandler
+from Utilities.LogsHandler import LogsHandler
 
 
 class Coding(enum.Enum):
@@ -15,7 +15,7 @@ class Coding(enum.Enum):
     """
 
     def __init__(self):
-        ErrorHandler.setup_logging()
+        LogsHandler.setup_logging()
 
     @staticmethod
     def is_coding_file(file_name):

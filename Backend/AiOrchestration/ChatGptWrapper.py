@@ -13,7 +13,7 @@ from Constants.Constants import CANNOT_AFFORD_REQUEST
 from Constants.Exceptions import OPEN_AI_FLAGGED_REQUEST_INAPPROPRIATE, \
     SERVER_FAILURE_OPEN_AI_API, FAILURE_TO_STREAM, NO_USAGE_DATA_OPEN_AI
 from Utilities.Decorators.Decorators import handle_errors
-from Utilities.ErrorHandler import ErrorHandler
+from Utilities.LogsHandler import LogsHandler
 from Utilities.Utility import Utility
 
 
@@ -43,7 +43,7 @@ class ChatGptWrapper(AiWrapper):
         return cls._instance
 
     def __init__(self):
-        ErrorHandler.setup_logging()
+        LogsHandler.setup_logging()
 
     def _calculate_cost(
         self,

@@ -12,7 +12,7 @@ from Constants.Exceptions import file_not_found, file_not_loaded, FAILURE_TO_LIS
 from Data.Files.StorageBase import StorageBase
 from Constants.Constants import DEFAULT_ENCODING
 from Utilities.Decorators.Decorators import handle_errors
-from Utilities.ErrorHandler import ErrorHandler
+from Utilities.LogsHandler import LogsHandler
 
 
 class MyDumper(yaml.Dumper):
@@ -41,7 +41,7 @@ class FileManagement(StorageBase):
     config_data_directory = os.path.join(os.path.dirname(__file__), '../../../UserData/UserConfigs')
 
     def __init__(self):
-        ErrorHandler.setup_logging()
+        LogsHandler.setup_logging()
 
     def _get_data_path(self, file_path: str) -> str:
         """Constructs the complete path for the given file_name."""

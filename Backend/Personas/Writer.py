@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from Utilities.ErrorHandler import ErrorHandler
+from Utilities.LogsHandler import LogsHandler
 from Constants.PersonaSpecification import WriterSpecification
 from Personas.BasePersona import BasePersona
 from Workflows.AutoWorkflow import AutoWorkflow
@@ -29,7 +29,7 @@ class Writer(BasePersona):
         self.instructions = WriterSpecification.WRITER_INSTRUCTIONS
         self.configuration = WriterSpecification.load_configuration()
 
-        ErrorHandler.setup_logging()
+        LogsHandler.setup_logging()
 
 
 if __name__ == '__main__':

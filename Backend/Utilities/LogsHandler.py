@@ -7,11 +7,11 @@ from Constants import Constants
 from Constants.Constants import LOCAL_STORAGE, STORAGE_TYPE, THINKER_ENV, DEV_ENV
 
 
-class ErrorHandler:
+class LogsHandler:
     """
-    Centralized error handling class for consistent logging and exception management.
-    ToDo: Currently has to be initialised in every class for logs to *actually* be logged, which can easily lead to
-     mistakes
+    Centralized logger class for consistent logging and exception management.
+    ToDo: Currently has to be initialised in every entry class for logs to *actually* be logged, which can easily lead
+     to mistakes
     ToDo: Add the message_id prefix to each log if said id is set in context
     """
 
@@ -40,9 +40,9 @@ class ErrorHandler:
 
         # Set up file handler
         if os.getenv(THINKER_ENV) == DEV_ENV or os.getenv(STORAGE_TYPE) == LOCAL_STORAGE:
-            file_handler = ErrorHandler.setup_file_handler(log_file, format_scheme)
+            file_handler = LogsHandler.setup_file_handler(log_file, format_scheme)
             if file_handler:
-                file_handler.setLevel(logging.INFO)
+                file_handler.setLevel(logging.DEBUG)
                 logger.addHandler(file_handler)
 
         # Set up console handler
@@ -85,7 +85,7 @@ class ErrorHandler:
 
 
 if __name__ == '__main__':
-    ErrorHandler.setup_logging()
+    LogsHandler.setup_logging()
 
     logging.debug("Debug log initialized.")
     logging.info("Info log initialized.")
