@@ -46,15 +46,19 @@
 
 
 /* ToDo: Will need to change it so the border is always present just not highlighted */
+.message-item {
+  padding: var(--spacing-md);
+}
+
 .message-item,
 .file-item {
-  padding: var(--spacing-md);
   background-color: var(--color-white);
   border-radius: var(--border-radius-sm);
-  margin-bottom: var(--spacing-md);
+  border-left: 3px solid rgb(120, 120, 120);
   text-align: left;
   transition: transform 0.2s var(--transition-ease),
               z-index 0.2s var(--transition-ease);
+  min-width: 19em;
   position: relative;
   cursor: pointer;
 }
@@ -166,7 +170,6 @@ body.dark-mode .file-item {
 /* Footer: Delete Button & Timestamp */
 .message-footer {
   display: flex;
-  justify-content: flex-end; /* Align items to the right */
   align-items: center;
   gap: 10px; /* Space between button and timestamp */
 }
@@ -179,14 +182,18 @@ body.dark-mode .file-item {
 .time {
   font-size: var(--font-size-small);
   opacity: var(--opacity-muted);
-  text-align: right;
+  text-align: left;
+}
+.file-date {
+  font-size: 0.75rem;
+  color: #777;
 }
 
 .delete-button {
   padding: 0.25rem 0.5rem;
   color: rgb(83, 83, 83);
   text-align: center;
-  margin-right: auto;
+  align-self: flex-start;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
 }

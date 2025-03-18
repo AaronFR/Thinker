@@ -5,11 +5,13 @@ import { shortenText, getBasename, CodeHighlighter } from '../../utils/textUtils
 import { apiFetch } from '../../utils/authUtils';
 import { fileAddressEndpoint, fileIdEndpoint } from '../../constants/endpoints';
 
-/** 
+import './styles/FileItem.css';
+
+/**
  * Displays an individual file with options to expand/collapse, select, and delete.
  *
- * @param file: The file object containing id, name, summary, content, category_id, and time. * 
- * @param onDelete: Callback function to handle file deletion. * 
+ * @param file: The file object containing id, name, summary, content, category_id, and time.
+ * @param onDelete: Callback function to handle file deletion.
  * @param onSelect: Callback function to handle file selection.
  */
 const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
@@ -18,6 +20,37 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
+
+  const fileExtension = file.name.split('.').pop().toLowerCase();
+
+  const getFileIcon = () => {
+    switch (fileExtension) {
+      case 'c':
+      case 'cs':
+      case 'cpp':
+      case 'rb':
+      case 'js':
+      case 'jsx':
+        return "💾";
+      case 'css':
+        return "✨"
+      case 'java':
+        return '☕';
+      case 'py':
+        return '🐍';
+      case 'pdf':
+        return "📃";
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+        return "This shouldn't be possible";
+      case 'csv':
+        return '🗃'
+      default:
+        return "📄";
+    }
+  };
 
   const fetchContent = useCallback(async (signal) => {
     setIsLoading(true);
@@ -52,14 +85,15 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
     if (isExpanded && !content) {
       const controller = new AbortController();
       fetchContent(controller.signal);
-      
+
       return () => {
         controller.abort();
       };
     }
   }, [isExpanded, content, fetchContent]);
 
-  const toggleExpansion = useCallback(() => {
+  const toggleExpansion = useCallback((e) => {
+    e.stopPropagation();
     setIsExpanded(prev => !prev);
   }, []);
 
@@ -87,81 +121,75 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
     }
   }, [isDeleting, file.id, onDelete]);
 
-  const handleSelect = useCallback(() => {
+  const handleSelect = useCallback((e) => {
+    e.stopPropagation(); // Prevent expansion when selecting
     onSelect(file);
   }, [file, onSelect]);
 
   return (
-    <div
-      className={`file-item ${isSelected ? 'selected' : ''}`}
-      onClick={handleSelect}
-      style={{ cursor: 'pointer', opacity: isLoading ? 0.5 : 1 }}
-      role="button"
-      aria-pressed={isExpanded}
-      tabIndex={0}
-      onKeyPress={(e) => {
-        if (e.key === 'Enter') toggleExpansion();
-      }}
-    >
-      <div
-        onClick={toggleExpansion}
-        className="file-item-header"
-        aria-expanded={isExpanded}
-        role="button"
-        tabIndex={0}
-        onKeyPress={(e) => {
-          if (e.key === 'Enter') toggleExpansion();
-        }}
-      >
-        <p>
-          {isExpanded ? getBasename(file.name) : shortenText(getBasename(file.name))}
-        </p>
+    <div className={`file-item ${isSelected ? 'selected' : ''}`} >
+      <div className="file-item-container" onClick={handleSelect}>
+
+        <div className="file-icon">
+          {getFileIcon()}
+        </div>
+
+        <div className="file-details">
+          <div className="file-name">
+            {getBasename(file.name)}
+          </div>
+          <div className="file-date">
+            {new Date(file.time * 1000).toLocaleString()}
+          </div>
+        </div>
+
+        <div className="file-actions">
+          {(isSelected || isExpanded) && (
+            <button
+              onClick={handleDelete}
+              className="button delete-button"
+              type="button"
+              disabled={isDeleting}
+              aria-label={isDeleting ? 'Deleting file' : 'Delete this file'}
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </button>
+          )}
+          <button className="button expand-button" onClick={toggleExpansion}>
+            {isExpanded ? "▲" : "▼"}
+          </button>
+        </div>
       </div>
-      
+
+
       {isExpanded && (
-        <div className="file-details" style={{ padding: '10px 0' }}>
+        <div className="file-content">
           {file.summary && (
-            <div>
+            <div className="file-summary">
               <p><strong>Summary</strong></p>
               <small>
                 <div className="markdown-output">
                   <CodeHighlighter>{file.summary}</CodeHighlighter>
                 </div>
-                
               </small>
             </div>
           )}
-          <p>
-            <strong>Content:</strong>{' '}
-            {isLoading ? (
-              <span>Loading content...</span>
-            ) : error ? (
-              <span className="error">{error}</span>
-            ) : (
-              <div className="markdown-output">
-                <CodeHighlighter>{content}</CodeHighlighter>
-              </div>
-            )}
-          </p>
+          {file.summary && <strong>Content</strong>}
+          <div className="file-content-text">
+            <p>
+              {isLoading ? (
+                <span>Loading content...</span>
+              ) : error ? (
+                <span className="error">{error}</span>
+              ) : (
+                <div className="markdown-output">
+                  <CodeHighlighter>{content}</CodeHighlighter>
+                </div>
+              )}
+            </p>
+          </div>
         </div>
       )}
-
-      <div className="message-footer">
-        {(isSelected || isExpanded) && (
-          <button
-            onClick={handleDelete}
-            className="button delete-button"
-            type="button"
-            disabled={isDeleting}
-            aria-label={isDeleting ? 'Deleting file' : 'Delete this file'}
-          >
-            {isDeleting ? 'Deleting...' : 'Delete'}
-          </button>
-        )}
-        <p className="time">
-          {new Date(file.time * 1000).toLocaleString()}
-        </p>
-      </div>
     </div>
   );
 };

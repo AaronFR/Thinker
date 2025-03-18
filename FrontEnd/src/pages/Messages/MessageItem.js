@@ -80,7 +80,8 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
             tabIndex={0}
             onKeyPress={handleKeyPressExpansion}
         >
-            <div 
+            <div className='side-by-side'>
+                <div 
                 className="message-header" 
                 onClick={toggleExpansion} 
                 style={{
@@ -94,12 +95,27 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
                 tabIndex={0}
                 onKeyPress={handleKeyPressExpansion}
             >
-                <div className="markdown-output">
+                {
+                    isExpanded ? 
                     <CodeHighlighter>
-                        {isExpanded ? msg.prompt : shortenText(msg.prompt, 120)}
+                        {msg.prompt}
                     </CodeHighlighter>
-                </div>
+                    : shortenText(msg.prompt, 100)
+                }
             </div>
+            {(isSelected || isExpanded) && <button
+                    onClick={handleDelete}
+                    className="button delete-button"
+                    type="button"
+                    disabled={isDeleting}
+                    aria-label={
+                        isDeleting ? 'Deleting message' : 'Delete this message'
+                    }
+                >
+                    {isDeleting ? 'Deleting...' : 'Delete'}
+                </button>}
+            </div>
+            
             
             {isExpanded && (
                 <div id={`message-content-${msg.id}`} className="message-response">
@@ -119,23 +135,12 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
             </p>}
 
             <div className="message-footer">
-                {(isSelected || isExpanded) && <button
-                    onClick={handleDelete}
-                    className="button delete-button"
-                    type="button"
-                    disabled={isDeleting}
-                    aria-label={
-                        isDeleting ? 'Deleting message' : 'Delete this message'
-                    }
-                >
-                    {isDeleting ? 'Deleting...' : 'Delete'}
-                </button>}
+                <div className="file-date">
+                    {new Date(msg.time * 1000).toLocaleString()}
+                </div>
                 <small>
                     {formatPrice(msg.cost)}
                 </small>
-                <p className='time'>
-                    {new Date(msg.time * 1000).toLocaleString()}
-                </p>
             </div>
         </div>
     );

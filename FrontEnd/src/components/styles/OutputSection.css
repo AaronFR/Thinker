@@ -12,3 +12,8 @@
 .markdown-output:hover {
   background-color: var(--color-markdown-hover-bg); /* Subtle lightening on hover */
 }
+
+.file-items-container {
+  border-bottom: 2em
+}
+

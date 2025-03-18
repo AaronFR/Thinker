@@ -134,7 +134,7 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles, removeFile, refre
                 </div>
 
                 {expandedCategoryId === category.id && (
-                  <div id={`category-${category.id}`} className="message-list">
+                  <div id={`category-${category.id}`} className="centered message-list">
                     {loadingFiles[category.id] ? (
                       <p>Loading files...</p>
                     ) : (

@@ -36,8 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 'User context' is no longer in 'beta'
   - (Usually) Remembers user facts and preferences, but increases prompt durations significantly
 - Improved formatting, especially for mobile
-  - User input page formatted to clearly seperate different categories and selectors by topic
-  - Message/File more compact, cleaner, making it easier to browse many categories
+  - User input page formatted to clearly separate different categories and selectors by topic
+  - Message/File pane more compact, cleaner, making it easier to browse many categories
+  - Messages and Files more streamlined and less 'Chunky' easier to browse multiple files/messages
 
 ### Removed
 

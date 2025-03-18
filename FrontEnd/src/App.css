@@ -50,6 +50,8 @@ body.dark-mode .app-container {
   margin-top: var(--spacing-md);
   box-shadow: var(--box-shadow-deep);
   transition: background-color var(--transition-fast), color var(--transition-fast);
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .markdown-output:hover {

@@ -63,9 +63,54 @@
 }
 
 .message-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
   padding: var(--spacing-md);
   background-color: var(--color-bg-secondary);
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid rgba(255, 255, 255, 0.111);
+}
+
+/* Messages */ 
+
+.message-item {
+  border: 1px solid #ffffff7b;
+  border-radius: var(--border-radius-md);
+  width: 100%;
+  box-sizing: border-box;
+  background-color: #fff;
+  cursor: pointer;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+.message-item:hover {
+  box-shadow: var(--box-shadow-md);
+}
+.message-item--selected {
+  border-color: var(--color-primary);
+}
+
+.message-content {
+  padding: var(--spacing-md);
+  font-size: 0.9rem;
+}
+
+.message-header p:first-child {
+  margin-top: 0;  /* Otherwise when CodeHighlighting is run the prompt will be decomposed into paragraphs and the first paragraph's margin's will move the content*/
+}
+
+.message-footer {
+  justify-content: space-between;
+}
+
+.message-timestamp {
+  font-size: 0.75rem;
+  color: #777;
+}
+
+.message-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .error-message {
