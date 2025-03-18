@@ -21,6 +21,9 @@ from Constants.Instructions import plan_pages_to_write, SIMPLE_SUMMARY_PROMPT
 from Workflows.Workflows import generate_write_pages_workflow
 
 
+MAX_PAGES = 100
+
+
 class WritePagesWorkflow(BaseWorkflow):
     """
     Workflow for writing multiple pages based on user specifications.
@@ -62,9 +65,10 @@ class WritePagesWorkflow(BaseWorkflow):
             logging.warning(f"Invalid page count '{page_count_str}'. Defaulting to 1.")
             page_count = 1
 
-        if page_count > 10:
-            logging.warning("Page count exceeds 10. Capping to 10 to prevent excessive resource usage.")
-            page_count = 10
+        if page_count > MAX_PAGES:
+            logging.warning(f"Page count exceeds {MAX_PAGES}. "
+                            f"Capping to {MAX_PAGES} to prevent excessive resource usage.")
+            page_count = MAX_PAGES
 
         # Generate and emit the workflow details
         workflow_details = generate_write_pages_workflow(

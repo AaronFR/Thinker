@@ -95,8 +95,8 @@ export function Login({ isAuthenticated }) {
                             <span className="emoji">💪</span>
                         </div>
                         <p>Utilise AI workflows to make requests of <b><i>any</i></b> size</p>
-                        <p style={{opacity: 0.3}}>From a typical one answer prompt to generating an entire book, code base, *anything*</p>
-                        <p>🚧 WIP</p>
+                        <p>Rewrite many files at once, write arbitrarily long documents with a single prompt</p>
+                        <p style={{opacity: 0.1}}>Maybe one day a whole code base? ¯\_(ツ)_/¯</p>
                     </div>
                     <div className="card right-card">
                         <div className='header'>

@@ -237,8 +237,9 @@ const WorkflowsSettings = React.memo(({
           Write Pages in Parallel
         </label>
         
-        <p>Write each page at once rather than in sequence - faster but means pages can't refer to prior content</p>
-        <p>If enabled it can't reference what it did in 'prior' pages - this will make it cheaper to run however</p>
+        <p>⏰ Faster, pages can be written in batches, almost simutaneously</p>
+        <p>⛔ Can't reference prior pages, not good when <i>coherency</i> is important</p>
+        <p>💲 This reduction in input does however reduce costs, roughly halving cost when creating a document with many pages</p>
       </div>
 
       <div className='settings-subsection'>
