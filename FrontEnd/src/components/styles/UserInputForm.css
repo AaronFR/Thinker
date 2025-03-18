@@ -69,7 +69,7 @@ body.dark-mode .file-item {
 }
 .message-item:hover,
 .file-item:hover {
-  transform: scale(1.0025);
+  transform:scaleX(1.005);
   z-index: 10;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

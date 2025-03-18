@@ -77,7 +77,6 @@
   border: 1px solid #ffffff7b;
   border-radius: var(--border-radius-md);
   width: 100%;
-  box-sizing: border-box;
   background-color: #fff;
   cursor: pointer;
   overflow: hidden;

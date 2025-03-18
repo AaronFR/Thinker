@@ -161,7 +161,6 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
         </div>
       </div>
 
-
       {isExpanded && (
         <div className="file-content">
           {file.summary && (
