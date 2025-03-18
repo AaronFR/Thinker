@@ -4,7 +4,7 @@ import os
 import sys
 
 from Constants import Constants
-from Constants.Constants import LOCAL_STORAGE, STORAGE_TYPE
+from Constants.Constants import LOCAL_STORAGE, STORAGE_TYPE, THINKER_ENV, DEV_ENV
 
 
 class ErrorHandler:
@@ -25,6 +25,8 @@ class ErrorHandler:
         This method creates a logging directory if it does not exist and sets up file and console handlers
         according to the specified logging configuration.
 
+        NOTE: Only writes logs in dev or if storage is set to local in production
+
         :param log_file: The name of the log file to be created or overwritten.
         :param logger_name: An optional name for the logger. If None, the base logger is used.
         :param format_scheme: The formatting scheme for log messages.
@@ -37,7 +39,7 @@ class ErrorHandler:
         logger.setLevel(logging.DEBUG)
 
         # Set up file handler
-        if os.getenv(STORAGE_TYPE) == LOCAL_STORAGE:
+        if os.getenv(THINKER_ENV) == DEV_ENV or os.getenv(STORAGE_TYPE) == LOCAL_STORAGE:
             file_handler = ErrorHandler.setup_file_handler(log_file, format_scheme)
             if file_handler:
                 file_handler.setLevel(logging.DEBUG)
