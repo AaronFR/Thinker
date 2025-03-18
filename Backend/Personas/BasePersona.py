@@ -38,7 +38,6 @@ class BasePersona:
         self.history: List[Tuple[str, str]] = []  # question-response pairs
         self.instructions = ""
         self.configuration = ""
-        LogsHandler.setup_logging()
 
     def query(self,
               user_prompt: str,

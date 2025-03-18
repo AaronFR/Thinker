@@ -14,9 +14,6 @@ class Coding(enum.Enum):
         - WRITING: write new code file
     """
 
-    def __init__(self):
-        LogsHandler.setup_logging()
-
     @staticmethod
     def is_coding_file(file_name):
         # List of common coding file extensions

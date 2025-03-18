@@ -38,7 +38,6 @@ class AiOrchestrator:
         """
         self.llm_client = None
         self.default_background_model = ChatGptModel.CHAT_GPT_4_OMNI_MINI
-        LogsHandler.setup_logging()
 
     @staticmethod
     def _load_default_model() -> AiModel:

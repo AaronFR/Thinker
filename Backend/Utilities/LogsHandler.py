@@ -10,8 +10,6 @@ from Constants.Constants import LOCAL_STORAGE, STORAGE_TYPE, THINKER_ENV, DEV_EN
 class LogsHandler:
     """
     Centralized logger class for consistent logging and exception management.
-    ToDo: Currently has to be initialised in every entry class for logs to *actually* be logged, which can easily lead
-     to mistakes
     ToDo: Add the message_id prefix to each log if said id is set in context
     """
 

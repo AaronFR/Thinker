@@ -29,7 +29,6 @@ class Coder(BasePersona):
         super().__init__(name)
         self.instructions = CoderSpecification.CODER_INSTRUCTIONS
         self.configuration = CoderSpecification.load_configuration()
-        LogsHandler.setup_logging()
 
 
 if __name__ == '__main__':

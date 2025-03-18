@@ -9,8 +9,6 @@ from Constants.Exceptions import error_in_function
 from Utilities.Contexts import set_iteration_context, get_functionality_context, set_functionality_context
 from Utilities.LogsHandler import LogsHandler
 
-LogsHandler.setup_logging()
-
 
 def handle_errors(func=None, *, debug_logging: bool = False, raise_errors: bool = False):
     """

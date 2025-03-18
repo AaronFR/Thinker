@@ -29,8 +29,6 @@ class Writer(BasePersona):
         self.instructions = WriterSpecification.WRITER_INSTRUCTIONS
         self.configuration = WriterSpecification.load_configuration()
 
-        LogsHandler.setup_logging()
-
 
 if __name__ == '__main__':
     """Suggestions: 

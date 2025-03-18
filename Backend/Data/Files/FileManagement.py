@@ -40,9 +40,6 @@ class FileManagement(StorageBase):
     file_data_directory = os.path.join(os.path.dirname(__file__), '../../../UserData/FileData')
     config_data_directory = os.path.join(os.path.dirname(__file__), '../../../UserData/UserConfigs')
 
-    def __init__(self):
-        LogsHandler.setup_logging()
-
     def _get_data_path(self, file_path: str) -> str:
         """Constructs the complete path for the given file_name."""
         return os.path.join(self.file_data_directory, file_path)

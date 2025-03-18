@@ -42,9 +42,6 @@ class GeminiWrapper(AiWrapper):
             cls._instance.gemini_client = cls._get_google_genai_client()
         return cls._instance
 
-    def __init__(self):
-        LogsHandler.setup_logging()
-
     @staticmethod
     def _get_google_genai_client():
         try:

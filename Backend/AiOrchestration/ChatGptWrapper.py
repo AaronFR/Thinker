@@ -42,9 +42,6 @@ class ChatGptWrapper(AiWrapper):
             cls._instance.open_ai_client = OpenAI()  # Initialize the OpenAI client
         return cls._instance
 
-    def __init__(self):
-        LogsHandler.setup_logging()
-
     def _calculate_cost(
         self,
         input_messages: List[Dict[str, str]],

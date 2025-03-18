@@ -21,9 +21,6 @@ class BaseWorkflow:
     Abstract base class for all workflows.
     """
 
-    def __init__(self):
-        LogsHandler().setup_logging()
-
     @abstractmethod
     def execute(self, process_prompt: Callable, **kwargs) -> Any:
         """
