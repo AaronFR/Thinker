@@ -17,6 +17,7 @@ import 'highlight.js/styles/atom-one-dark.css';
 import Messages from "./pages/Messages/Messages";
 import { validateSessionEndpoint } from "./constants/endpoints";
 import VerifyEmail from "./pages/Verify/VerifyEmail";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 
 function RootApp() {
@@ -55,7 +56,7 @@ function RootApp() {
 
   if (isAuthenticated === null || initialSettings === null) {
     // Show a loading state while session is being validated
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   return (
