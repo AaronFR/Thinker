@@ -170,10 +170,6 @@ body.dark-mode .right-pane {
   .resizer {
     display: none;
   }
-
-  .right-pane {
-    width: 100%; /* Make right pane occupy full width */
-  }
 }
 
 /* Scrolling */
