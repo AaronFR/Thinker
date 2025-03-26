@@ -61,7 +61,7 @@ export function Pricing() {
     }, [loadBalance, loadSessionCost]);
 
     return (
-        <div className="scrollable settings-container">
+        <div className="scrollable settings-container container">
             <Navigation />
 
             <BetaBanner />

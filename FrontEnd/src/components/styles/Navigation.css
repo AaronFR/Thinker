@@ -1,14 +1,14 @@
 .navigation {
   position: sticky;
   top: 0px;
-  background-color: #bababa;
+  background-color: rgba(255, 255, 255, 0.70);
   border-bottom: 1px solid #dee2e6;
   border-radius: 15px;
   margin-bottom: 2.5%;
   z-index: 1000;
 }
 body.dark-mode .navigation {
-  background-color: #161616;
+  background-color: rgba(0, 0, 0, 0.60);
   border-bottom: 1px solid #505254;
 }
 
@@ -21,10 +21,6 @@ body.dark-mode .navigation {
   gap: 2%;
   margin: 0;
   padding: 0;
-}
-
-.nav-item {
-  /* Additional styling if needed */
 }
 
 .nav-link {

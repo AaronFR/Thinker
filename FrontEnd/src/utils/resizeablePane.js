@@ -88,7 +88,6 @@ const ResizablePane = ({ children, className }) => {
         <div
             ref={containerRef}
             className={`resizable-container ${className}`}
-            style={{ display: 'flex', width: '100%', height: '100%' }}
         >
             <div
                 className="left-pane"

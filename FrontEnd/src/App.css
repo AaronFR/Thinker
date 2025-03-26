@@ -7,7 +7,7 @@
   display: flex;
   height: 100vh;
   flex-direction: row;
-  overflow-y: visible;
+  overflow-y: hidden;
   color: var(--color-text);
   margin: 0 auto;
   box-shadow: var(--box-shadow);
@@ -22,8 +22,11 @@ body.dark-mode .app-container {
 }
 
 .container {
-  max-height: 100vh;
+  max-height: 93vh;
+  margin: var(--spacing-md) auto;
   overflow-y: auto;
+  box-shadow: var(--box-shadow-settings);
+  border-radius: var(--border-radius-lg-md);
 }
 
 .side-by-side {
@@ -89,7 +92,8 @@ body.dark-mode .app-container {
   animation: link-bounce var(--animation-duration) ease-in-out;
 }
 
-body.dark-mode .link, .nav-link {
+body.dark-mode .link,
+body.dark-mode .nav-link {
   background-color: var(--color-link-bg-dark);
   color: var(--color-link-dark);
   transition: background-color var(--transition-normal), color var(--transition-normal);
@@ -113,8 +117,8 @@ html {
   background-color: var(--color-left-pane-bg);
   background-image: url('../public/hex-vert-bg.png');
   background-blend-mode: darken;
-  background-size: cover; /* Ensures the image covers the entire element */
-  background-position: center; /* Centers the image */
+  background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
 
   padding: var(--spacing-xs);
@@ -126,9 +130,9 @@ html {
 body.dark-mode .left-pane {
   background: rgba(46, 46, 46, 0.1);
   background-image: url('../public/hex-vert-bg.png');
-  background-blend-mode: darken;
-  background-size: cover; /* Ensures the image covers the entire element */
-  background-position: center; /* Centers the image */
+  background-blend-mode: lighten;
+  background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
 
   color: var(--color-text-light);
@@ -140,14 +144,14 @@ body.dark-mode .left-pane {
 .right-pane {
   background-color: var(--color-right-pane-bg);
   background-image: url('../public/thinker-bg.png');
-  background-size: cover; /* Ensures the image covers the entire element */
-  background-position: center; /* Centers the image */
+  background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
 
   padding: var(--spacing-md);
   overflow-y: auto;
   display: flex;
-  flex-direction: column; /* Stack children vertically */
+  flex-direction: column;
   height: 100%; /* Ensure full height */
 }
 body.dark-mode .right-pane {
@@ -175,19 +179,17 @@ body.dark-mode .right-pane {
 /* Scrolling */
 
 .scrollable::-webkit-scrollbar {
-  width: 12px; /* Set the width of the scrollbar */
+  width: 9px; /* Set the width of the scrollbar */
 }
 .scrollable::-webkit-scrollbar-track {
   background: #f1f1f1; /* Color of the scrollbar track */
-  border-radius: 10px; /* Roundness of the scrollbar track */
 }
 body.dark-mode .scrollable::-webkit-scrollbar-track {
   background: #161616; /* Color of the scrollbar track */
-  border-radius: 10px; /* Roundness of the scrollbar track */
 }
 .scrollable::-webkit-scrollbar-thumb {
   background: #888; /* Color of the scrollbar thumb */
-  border-radius: 10px; /* Roundness of the scrollbar thumb */
+  border-radius: 3px; /* Roundness of the scrollbar thumb */
 }
 .scrollable::-webkit-scrollbar-thumb:hover {
   background: #555; /* Color of the scrollbar thumb on hover */

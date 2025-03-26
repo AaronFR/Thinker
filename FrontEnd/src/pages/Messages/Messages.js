@@ -37,7 +37,7 @@ export function Messages() {
   } = useSelection();
 
   return (
-    <div className="scrollable messages-page-container">
+    <div className="scrollable messages-page-container container">
       <Navigation />
       <h1>Messages and Files</h1>
       <div className="panes-container">

@@ -4,7 +4,8 @@
   padding: var(--spacing-lg);
   background-color: var(--color-markdown-bg);
   border-radius: var(--border-radius-lg);
-  margin-top: var(--spacing-xl);
+  margin-top: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
   box-shadow: var(--box-shadow-deep);
   transition: background-color var(--transition-fast);
 }

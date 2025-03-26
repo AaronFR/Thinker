@@ -1,12 +1,7 @@
 .messages-page-container {
   max-width: 1000px;
-  max-height: 90vh;
-  margin: var(--spacing-xxxl) auto;
-  overflow-y: auto;
   padding: var(--spacing-xl);
   background: var(--color-settings-bg);
-  box-shadow: var(--box-shadow-settings);
-  border-radius: var(--border-radius-lg-md);
   font-family: var(--font-family-base);
 }
 

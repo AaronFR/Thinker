@@ -216,77 +216,75 @@ function App () {
     }, []);
 
     return (
-      <div className="app-container">
-        <ResizablePane>
-          <div className="scrollable left-pane">
-            <FilePane
-              isProcessing={isProcessing}
-              onFileSelect={toggleFileSelection}
-              selectedFiles={selectedFiles}
-              removeFile={removeFile}
-              refreshFiles={refreshFiles}
-            />
-            <MessagePane
-              isProcessing={isProcessing}
-              onMessageSelect={toggleMessageSelection}
-              selectedMessages={selectedMessages}
-              removeMessage={removeMessage}
-              refreshCategory={refreshCategory}
-            />
-          </div>
-        
-          <div className="scrollable right-pane">
-            <Navigation />
-            <LowBalanceWarning balance={balance} />
-    
-            <UserInputForm
-              handleSubmit={handleFormSubmit}
-              disconnectFromRequest={disconnectFromRequest}
-              handleInputChange={handleInputChange}
-              userInput={userInput}
-              isProcessing={isProcessing}
-              selectedPersona={selectedPersona}
-              setSelectedPersona={setSelectedPersona}
-              generateAugmentedPrompt={generateAugmentedPrompt}
-              generateQuestionsForPrompt={generateQuestionsForPrompt}
-              tags={tags}
-              setTags={setTags}
-              setRefreshFiles={setRefreshFiles}
-            />
-            
-            {settingsRef.current?.beta_features?.question_user_prompts_enabled != "off" && 
-            <SuggestedQuestions
-              questionsForPrompt={questionsForPrompt}
-              error={questionsError}
-              isQuestioning={isQuestioning}
-              onFormsFilled={setFormsFilled}
-              setConcatenatedQA={setConcatenatedQA}
-              resetResponsesTrigger={resetResponsesTrigger}
-            />}
-    
-            {settingsRef.current?.beta_features?.augmented_prompts_enabled != "off" && 
-            <PromptAugmentation 
-              augmentedPrompt={augmentedPrompt}
-              error={augmentedError}
-              isAugmenting={isAugmenting}
-              copyAugmentedPrompt={copyAugmentedPrompt}
-            />}
-    
-            <Workflow
-              workflowData={workflow}
-            />
-    
-            <OutputSection 
-              message={message}
-              files={files}
-              error={messageError} 
-              isProcessing={isProcessing}
-            />
-    
+      <ResizablePane className="app-container">
+        <div className="scrollable left-pane">
+          <FilePane
+            isProcessing={isProcessing}
+            onFileSelect={toggleFileSelection}
+            selectedFiles={selectedFiles}
+            removeFile={removeFile}
+            refreshFiles={refreshFiles}
+          />
+          <MessagePane
+            isProcessing={isProcessing}
+            onMessageSelect={toggleMessageSelection}
+            selectedMessages={selectedMessages}
+            removeMessage={removeMessage}
+            refreshCategory={refreshCategory}
+          />
+        </div>
+      
+        <div className="scrollable right-pane">
+          <Navigation />
+          <LowBalanceWarning balance={balance} />
+  
+          <UserInputForm
+            handleSubmit={handleFormSubmit}
+            disconnectFromRequest={disconnectFromRequest}
+            handleInputChange={handleInputChange}
+            userInput={userInput}
+            isProcessing={isProcessing}
+            selectedPersona={selectedPersona}
+            setSelectedPersona={setSelectedPersona}
+            generateAugmentedPrompt={generateAugmentedPrompt}
+            generateQuestionsForPrompt={generateQuestionsForPrompt}
+            tags={tags}
+            setTags={setTags}
+            setRefreshFiles={setRefreshFiles}
+          />
+          
+          {settingsRef.current?.beta_features?.question_user_prompts_enabled != "off" && 
+          <SuggestedQuestions
+            questionsForPrompt={questionsForPrompt}
+            error={questionsError}
+            isQuestioning={isQuestioning}
+            onFormsFilled={setFormsFilled}
+            setConcatenatedQA={setConcatenatedQA}
+            resetResponsesTrigger={resetResponsesTrigger}
+          />}
+  
+          {settingsRef.current?.beta_features?.augmented_prompts_enabled != "off" && 
+          <PromptAugmentation 
+            augmentedPrompt={augmentedPrompt}
+            error={augmentedError}
+            isAugmenting={isAugmenting}
+            copyAugmentedPrompt={copyAugmentedPrompt}
+          />}
+  
+          <Workflow
+            workflowData={workflow}
+          />
+  
+          <OutputSection 
+            message={message}
+            files={files}
+            error={messageError} 
+            isProcessing={isProcessing}
+          />
+  
 
-          </div>
-        </ResizablePane>
-      </div>
+        </div>
+      </ResizablePane>
     );
 };
 

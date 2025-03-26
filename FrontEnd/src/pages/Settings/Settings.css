@@ -10,13 +10,8 @@ body.dark-mode {
 
 .settings-container {
   max-width: 800px;
-  max-height: 90vh;
-  margin: var(--spacing-xxxl) auto;
-  overflow-y: auto;
   padding: var(--spacing-xl);
   background: var(--color-settings-bg);
-  box-shadow: var(--box-shadow-settings);
-  border-radius: var(--border-radius-lg-md);
 }
 
 /* Headings */

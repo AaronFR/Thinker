@@ -809,7 +809,7 @@ export function Settings() {
   }, [changeSetting]);
 
   return (
-    <div className="scrollable settings-container">
+    <div className="scrollable settings-container container">
       <Navigation />
       {error && <p>{error}</p>}
       <small>{userInfo?.email}</small>
