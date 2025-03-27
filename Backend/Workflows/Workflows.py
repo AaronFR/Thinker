@@ -1,10 +1,8 @@
-import logging
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from AiOrchestration.GeminiModel import GeminiModel
 from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
-from Utilities.models import find_model_enum_value
 
 UPDATE_WORKFLOW_STEP = "update_workflow_step"
 
@@ -14,162 +12,115 @@ def display_parameters(
     model: str = None,
     file_references: List[str] = None,
     selected_messages: List[str] = None,
-
 ) -> Dict[str, str]:
-    result = {}
-    if initial_message:
-        result["user_message"] = initial_message
-    if model:
-        result["model"] = model
-    if file_references:
-        result["file_references"] = "\n".join(file_references)
-    if selected_messages:
-        result["selected_message_ids"] = "\n".join(selected_messages)
+    """
+    Construct a consistent dictionary of parameters for workflow steps.
+    If no value exists for the value the key will not be included in the returned dictionary.
+    """
+    params = {
+        "user_message": initial_message,
+        "model": model,
+        "file_references": "\n".join(file_references) if file_references else None,
+        "selected_message_ids": "\n".join(selected_messages) if selected_messages else None,
+    }
+    return {key: value for key, value in params.items() if value is not None}
 
-    return result
 
-
-def generate_chat_workflow(
-        initial_message: str,
-        file_references: List[str],
-        selected_messages: List[str],
-        model: str
+def create_step(
+    step_id: int,
+    module: str,
+    description: str,
+    parameters: Dict[str, str],
+    status: str = "pending",
+    response: Dict = None
 ) -> Dict:
     """
-    Generate a workflow dictionary for chat-based interactions.
-
-    :param initial_message: The initial message provided by the user.
-    :param file_references: A list of file references.
-    :param selected_messages: A list of selected message IDs.
-    :param model: The model to be used.
-    :return: A dictionary representing the chat workflow.
-    :raises ValueError: If any of the parameters are invalid.
+    Create a standardized workflow step.
     """
-
-    workflow = {
-        "version": "1.0",
-        "workflow_name": "Chat Workflow",
-        "steps": [
-            {
-                "step_id": 1,
-                "module": "Chat",
-                "description": "Respond to the prompt and any additional files or reference messages",
-                "parameters": display_parameters(initial_message, model, file_references, selected_messages),
-                "status": "pending",
-                "response": {}
-            }
-        ],
-        "status": "pending",
+    return {
+        "step_id": step_id,
+        "module": module,
+        "description": description,
+        "parameters": parameters,
+        "status": status,
+        "response": response or {}
     }
 
-    return workflow
 
-
-def generate_write_workflow(
-        initial_message: str,
-        file_references: List[str],
-        selected_messages: List[str],
-        model: str
-) -> Dict:
+def build_workflow_base(workflow_name: str, version: str, steps: List[Dict]) -> Dict:
     """
-    Generate a workflow dictionary for writing operations.
-
-    :param initial_message: The initial message provided by the user.
-    :param file_references: A list of file references.
-    :param selected_messages: A list of selected message IDs.
-    :param model: The model to be used.
-    :return: A dictionary representing the write workflow.
-    :raises ValueError: If any of the parameters are invalid.
+    Wrap a set of steps into a complete workflow dictionary.
     """
-    config = Configuration.load_config()
-
-    steps = [
-        {
-            "step_id": 1,
-            "module": "Planning Response",
-            "description": "Plan out a Response",
-            "parameters": display_parameters(initial_message, model, file_references, selected_messages),
-            "status": "pending",
-            "response": {}
-        },
-        {
-            "step_id": 2,
-            "module": "Writing to File",
-            "description": "Write out solution as a valid file",
-            "parameters": {
-                "file_name": "pending...",
-                "model": model
-            },
-            "status": "pending",
-            "response": {}
-        }
-    ]
-
-    if config['workflows'].get("summarise", False):
-        steps.append(
-            {
-                "step_id": 3,
-                "module": "Summarise",
-                "description": "Quickly summarise the workflow's results",
-                "parameters": {
-                    "model": get_background_model()
-                },
-                "status": "pending",
-                "response": {}
-            }
-        )
-
-    workflow = {
-        "version": "1.1",
-        "workflow_name": "Write Workflow",
+    return {
+        "version": version,
+        "workflow_name": workflow_name,
         "steps": steps,
         "status": "pending"
     }
-    return workflow
 
 
-WRITE_TESTS_WORKFLOW = {
-    "version": "1.0.1",
-    "workflow_name": "Write Tests Workflow",
-    "steps": [
-        {
-            "step_id": 1,
-            "module": "Generate File Name",
-            "description": "Generate a file name for the tests.",
-            "parameters": {
-                "initial_message": "initial_message"
-            },
-            "status": "pending",
-            "response": {}
-        },
-        {
-            "step_id": 2,
-            "module": "Write Tests",
-            "description": "Write the tests to the assigned test file.",
-            "parameters": {
-                "file_name": "generated_file_name",
-                "file_references": [],
-                "model": "GPT-4"
-            },
-            "status": "pending",
-            "response": {}
-        },
-        {
-            "step_id": 3,
-            "description": "Summarising the tests written",
-            "module": "summarise Tests",
-            "parameters": {
-                "file_name": "generated_file_name",
-                "file_references": [],
-                "model": "GPT-4"
-            },
-            "status": "pending",
-            "response": {}
-        }
-    ],
-    "status": "pending",
-    "final_response": "Write tests workflow completed successfully."
-}
+def get_background_model() -> str:
+    """
+    Retrieve the default background model from configuration.
+    """
+    config = Configuration.load_config()
+    return config.get("models", {}).get("default_background_model", GeminiModel.GEMINI_2_FLASH.value)
+
+
+# Workflow Generators
+
+def generate_chat_workflow(
+    initial_message: str,
+    file_references: List[str],
+    selected_messages: List[str],
+    model: str
+) -> Dict:
+    """
+    Generate a workflow dictionary for chat-based interactions.
+    """
+    step = create_step(
+        step_id=1,
+        module="Chat",
+        description="Respond to the prompt and any additional files or reference messages",
+        parameters=display_parameters(initial_message, model, file_references, selected_messages)
+    )
+    return build_workflow_base("Chat Workflow", "1.0", [step])
+
+
+def generate_write_workflow(
+    initial_message: str,
+    file_references: List[str],
+    selected_messages: List[str],
+    model: str
+) -> Dict:
+    """
+    Generate a workflow dictionary for writing operations.
+    """
+    config = Configuration.load_config()
+    steps = [
+        create_step(
+            step_id=1,
+            module="Planning Response",
+            description="Plan out a Response",
+            parameters=display_parameters(initial_message, model, file_references, selected_messages)
+        ),
+        create_step(
+            step_id=2,
+            module="Writing to File",
+            description="Write out solution as a valid file",
+            parameters={"file_name": "pending...", "model": model}
+        )
+    ]
+    if config.get("workflows", {}).get("summarise", False):
+        steps.append(
+            create_step(
+                step_id=3,
+                module="Summarise",
+                description="Quickly summarise the workflow's results",
+                parameters={"model": get_background_model()}
+            )
+        )
+    return build_workflow_base("Write Workflow", "1.1", steps)
 
 
 def generate_write_pages_workflow(
@@ -180,70 +131,44 @@ def generate_write_pages_workflow(
     model: str
 ) -> Dict:
     """
-    Generate a workflow dictionary for writing pages with dynamic steps based on page count.
-
-    :param initial_message: The initial message provided by the user.
-    :param page_count: The number of pages to generate 'Save to File' steps for.
-    :param file_references: A list of file references.
-    :param selected_messages: A list of selected message IDs.
-    :param model: The model to be used.
-    :return: A dictionary representing the write pages workflow.
-    :raises ValueError: If any of the parameters are invalid.
+    Generate a workflow dictionary for writing pages with dynamic steps.
     """
-    workflow = {
-        "version": "1.1",
-        "workflow_name": "Write Pages Workflow",
-        "steps": [],
-        "status": "pending",
-    }
-
+    steps = []
     step_id = 1
 
     # Define Pages step
-    define_pages_step = {
-        "step_id": step_id,
-        "module": "Define Pages",
-        "description": "Writes out a list of instructions for how to write each iteration",
-        "parameters": display_parameters(initial_message, model, file_references, selected_messages),
-        "status": "pending",
-        "response": {}
-    }
-    workflow["steps"].append(define_pages_step)
+    steps.append(create_step(
+        step_id,
+        module="Plan document",
+        description="Writes out a list of instructions for each individual page",
+        parameters=display_parameters(initial_message, model, file_references, selected_messages)
+    ))
     step_id += 1
 
-    # Dynamic Steps: Save to File (repeated based on page_count)
+    # Dynamic Steps: Append to File per page iteration
     for i in range(1, page_count + 1):
-        save_to_file_step = {
-            "step_id": step_id,
-            "module": f"Append to File - Page {i}",
-            "description": f"Append content to the specified file for page {i}.",
-            "parameters": {
-                "model": model
-            },
-            "status": "pending",
-            "response": {}
-        }
-        workflow["steps"].append(save_to_file_step)
+        steps.append(create_step(
+            step_id,
+            module=f"Page {i}",
+            description=f"Append content to the specified file for page {i}.",
+            parameters={"model": model}
+        ))
         step_id += 1
 
     config = Configuration.load_config()
-    if config['workflows'].get("summarise", False):
-        summarise_step = {
-            "step_id": step_id,
-            "module": "Summarise",
-            "description": "Quickly summarise the workflow",
-            "parameters": display_parameters(
+    if config.get("workflows", {}).get("summarise", False):
+        steps.append(create_step(
+            step_id,
+            module="Summarise",
+            description="Quickly summarise the workflow",
+            parameters=display_parameters(
                 initial_message=None,
                 model=get_background_model(),
                 file_references=file_references,
                 selected_messages=selected_messages
-            ),
-            "status": "pending",
-            "response": {}
-        }
-        workflow["steps"].append(summarise_step)
-
-    return workflow
+            )
+        ))
+    return build_workflow_base("Write Pages Workflow", "1.1", steps)
 
 
 def generate_auto_workflow(
@@ -253,60 +178,40 @@ def generate_auto_workflow(
 ) -> Dict:
     """
     Generate a workflow dictionary for automatic processing of multiple files.
-
-    :param file_references: A list of file references.
-    :param selected_messages: A list of selected message IDs.
-    :param model: The model to be used.
-    :return: A dictionary representing the auto workflow.
-    :raises ValueError: If any of the parameters are invalid.
     """
-    workflow = {
-        "version": "1.2",
-        "workflow_name": "Auto Workflow",
-        "steps": [],
-        "status": "pending",
-    }
-
+    steps = []
     step_id = 1
 
-    # Dynamic Steps: Process file (repeated based on number of file references)
+    # Create a processing step for each file reference.
     for file_reference in file_references:
         file_name = StorageMethodology().extract_file_name(file_reference)
-        save_to_file_step = {
-            "step_id": step_id,
-            "module": f"Process {file_name}",
-            "description": "Processing file in accordance with user's initial message.",
-            "parameters": display_parameters(
+        steps.append(create_step(
+            step_id,
+            module=f"Process {file_name}",
+            description="Processing file in accordance with user's initial message.",
+            parameters=display_parameters(
                 initial_message=None,
                 model=model,
                 file_references=file_references,
                 selected_messages=selected_messages
-            ),
-            "status": "pending",
-            "response": {}
-        }
-        workflow["steps"].append(save_to_file_step)
+            )
+        ))
         step_id += 1
 
-    # Step N: Summarise
     config = Configuration.load_config()
-    if config['workflows'].get("summarise", False):
-        summarise_step = {
-            "step_id": step_id,
-            "module": "Summarise",
-            "description": "Quickly summarise the workflow",
-            "parameters": display_parameters(
+    if config.get("workflows", {}).get("summarise", False):
+        steps.append(create_step(
+            step_id,
+            module="Summarise",
+            description="Quickly summarise the workflow",
+            parameters=display_parameters(
                 initial_message=None,
                 model=get_background_model(),
                 file_references=file_references,
                 selected_messages=selected_messages
-            ),
-            "status": "pending",
-            "response": {}
-        }
-        workflow["steps"].append(summarise_step)
-
-    return workflow
+            )
+        ))
+    return build_workflow_base("Auto Workflow", "1.2", steps)
 
 
 def generate_loop_workflow(
@@ -316,63 +221,36 @@ def generate_loop_workflow(
     n_loops: int
 ) -> Dict:
     """
-    Generate a workflow dictionary for automatic processing of multiple files.
-
-    :param file_references: A list of file references.
-    :param selected_messages: A list of selected message IDs.
-    :param model: The model to be used.
-    :param n_loops: The number of loops to be performed by the workflow
-    :return: A dictionary representing the auto workflow.
-    :raises ValueError: If any of the parameters are invalid.
+    Generate a workflow dictionary for iterative improvement loops.
     """
-    workflow = {
-        "version": "1.0",
-        "workflow_name": "Loop Workflow",
-        "steps": [],
-        "status": "pending",
-    }
-
+    steps = []
     step_id = 1
 
-    # Dynamic Steps: Process file (repeated based on number of file references)
-    for iteration in range(1, n_loops + 1):
-        chat_step = {
-            "step_id": step_id,
-            "module": f"Loop improving on response",
-            "description": "Processing file in accordance with user's initial message.",
-            "parameters": display_parameters(
+    # Loop steps based on the number of iterations.
+    for _ in range(1, n_loops + 1):
+        steps.append(create_step(
+            step_id,
+            module="Loop improving on response",
+            description="Processing file in accordance with user's initial message.",
+            parameters=display_parameters(
                 initial_message=None,
                 model=model,
                 file_references=file_references,
                 selected_messages=selected_messages
-            ),
-            "status": "pending",
-            "response": {}
-        }
-        workflow["steps"].append(chat_step)
+            )
+        ))
         step_id += 1
 
-    # Step N: Summarise
-    final_output = {
-        "step_id": step_id,
-        "module": "Final Output",
-        "description": "Bring together the improvements in each loop into one response",
-        "parameters": display_parameters(
+    # Final step to compile loop results.
+    steps.append(create_step(
+        step_id,
+        module="Final Output",
+        description="Bring together the improvements in each loop into one response",
+        parameters=display_parameters(
             initial_message=None,
             model=get_background_model(),
             file_references=file_references,
             selected_messages=selected_messages
-        ),
-        "status": "pending",
-        "response": {}
-    }
-    workflow["steps"].append(final_output)
-
-    return workflow
-
-
-def get_background_model():
-    config = Configuration.load_config()
-    model_string = config.get("models", {}).get("default_background_model", GeminiModel.GEMINI_2_FLASH.value)
-
-    return model_string
+        )
+    ))
+    return build_workflow_base("Loop Workflow", "1.0", steps)

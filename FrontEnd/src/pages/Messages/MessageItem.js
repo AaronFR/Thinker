@@ -116,7 +116,6 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
                 </button>}
             </div>
             
-            
             {isExpanded && (
                 <div id={`message-content-${msg.id}`} className="message-response">
                     <p>

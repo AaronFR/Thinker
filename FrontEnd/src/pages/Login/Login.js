@@ -167,9 +167,6 @@ export function Login({ isAuthenticated }) {
                         <button onClick={handleLogout} className="logout-button">Logout</button>
                 )}
 
-
-
-                
                 <p className='version-number'>v0.9.5</p>
             </div>
             <BetaBanner />
