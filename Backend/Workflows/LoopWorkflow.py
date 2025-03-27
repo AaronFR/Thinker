@@ -3,8 +3,9 @@ from typing import Callable, Optional, List, Dict
 from flask_socketio import emit
 
 from AiOrchestration.ChatGptModel import ChatGptModel
+from Data.Configuration import Configuration
 from Utilities.Decorators.Decorators import return_for_error
-from Constants.Instructions import for_each_focus_on_prompt
+from Constants.Instructions import for_each_focus_on_prompt, DEFAULT_BEST_OF_SYSTEM_MESSAGE
 from Utilities.models import find_model_enum_value
 from Workflows.BaseWorkflow import BaseWorkflow
 from Workflows.Workflows import generate_loop_workflow
@@ -65,19 +66,27 @@ class LoopWorkflow(BaseWorkflow):
         )
         emit("send_workflow", {"workflow": workflow_data})
 
+        config = Configuration.load_config()
         for iteration in range(1, n_loops + 1):
             DIFFERENTIATED_LOOPS = False
             if DIFFERENTIATED_LOOPS:
                 enhancement_quality = self.ENHANCEMENT_QUALITIES[iteration - 1] if iteration <= len(self.ENHANCEMENT_QUALITIES) else "enhance the code as needed."
-                message = for_each_focus_on_prompt(initial_message, enhancement_quality, iteration),
+                judgement_criteria = for_each_focus_on_prompt(initial_message, enhancement_quality, iteration),
             else:
-                message = initial_message
+                best_of_system_message = config['system_messages'].get(
+                    "best_of_message",
+                    DEFAULT_BEST_OF_SYSTEM_MESSAGE
+                )
+                judgement_criteria = (
+                        best_of_system_message +
+                        f"\n<user_message>{initial_message}</user_message>"
+                )
             logging.info(f"Iteration {iteration}: with prompt enhancement.")
 
             self._chat_step(
                 iteration=iteration,
                 process_prompt=process_prompt,
-                message=message,
+                message=judgement_criteria,
                 file_references=file_references or [],
                 selected_message_ids=selected_message_ids or [],
                 best_of=best_of,
