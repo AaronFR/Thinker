@@ -4,6 +4,7 @@ import './Guide.css'
 
 import TooltipConstants from '../../constants/tooltips';
 import { Tooltip } from "react-tooltip";
+import GitHubButton from "../../components/GitHubButton";
 
 export const About = () => {
   return (
@@ -232,6 +233,7 @@ export function Guide() {
   return (
     <div className="scrollable container">
       <Navigation />
+      <GitHubButton />
 
       <h1 className="centered thinker logo-bg">
         The Thinker AI

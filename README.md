@@ -1,4 +1,12 @@
+<h1 align="center">
+    <a href="https://thethinkerai.com/">
+        <img src="FrontEnd/public/ThinkerLogo.png" style="width:280px; height:auto;" alt="ThinkerAI Logo">
+    </a>
+</h1>
+
 # The Thinker
+
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 🚧🚧🚧 ***WORK IN PROGRESS PROTOTYPE*** 🚧🚧🚧
 

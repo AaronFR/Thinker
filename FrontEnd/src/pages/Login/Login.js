@@ -9,6 +9,7 @@ import { Tooltip } from 'react-tooltip';
 import TooltipConstants from '../../constants/tooltips';
 
 import './Login.css';
+import GitHubButton from '../../components/GitHubButton';
 
 
 export function Login({ isAuthenticated }) {
@@ -53,6 +54,8 @@ export function Login({ isAuthenticated }) {
     return (
         <div className='scrollable container background'>
             {isAuthenticated && <Navigation />}
+            <GitHubButton />
+
             <div className="auth-container">
                 
                 <div className='logo'>
