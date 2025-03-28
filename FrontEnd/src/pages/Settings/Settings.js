@@ -198,6 +198,13 @@ const FunctionalitySettings = React.memo(({
         handleMessageChange={handleMessageChange}
         cost={userInfo?.best_of_cost}
       />
+      <LoopsSection
+        currentValue={settings?.features?.loops_enabled}
+        promptMessage={settings?.system_messages?.best_of_message}
+        changeSetting={changeSetting}
+        handleMessageChange={handleMessageChange}
+        cost={userInfo?.loops_cost}
+      />
     </div>
   );
 
@@ -612,6 +619,57 @@ const BestOfSection = React.memo(({
     <p>👍 Improving response coherency or any other selected metric</p>
     <p>👍 Helping inexpensive models compete against more expensive ones</p>
     <p>💲 Expensive. 5 runs would cost roughly 6x a regular prompt</p>
+    <div
+      data-tooltip-id="tooltip"
+      data-tooltip-content={TooltipConstants.bestOfSystemMessage}
+      data-tooltip-place="bottom"
+    >
+      <AutoExpandingTextarea
+        value={promptMessage}
+        className="textarea"
+        onChange={(e) =>
+          handleMessageChange('system_messages', 'best_of_message', e.target.value)
+        }
+        style={{ opacity: 0.9 }}
+      />
+    </div>
+  </div>
+));
+
+/**
+ * Renders settings for 'Looping' responses sequentially.
+ */
+const LoopsSection = React.memo(({
+  currentValue,
+  changeSetting,
+  promptMessage,
+  handleMessageChange,
+  cost
+}) => (
+  <div className='settings-subsection'>
+    <div className='side-by-side'>
+      <h3>Looping over responses</h3>
+      <h4>{formatPrice(parseFloat(cost))}</h4>
+    </div>
+    <label className="settings-label">
+      <select
+        className="settings-select"
+        value={currentValue}
+        onChange={(e) =>
+          changeSetting(
+            'features',
+            'loops_enabled',
+            e.target.value,
+          )
+        }
+      >
+        <option value={FUNCTIONALITY_STATES.OFF}>Off</option>
+        <option value={FUNCTIONALITY_STATES.ON}>On</option>
+      </select>
+      For a given step runs multiple prompts in sequence, reviewing and improving the response against the user's initial prompt.
+    </label>
+    <p>👍 Optimising responses</p>
+    <p>💲⏰ Increases time and cost proportional to number of re-runs</p>
     <div
       data-tooltip-id="tooltip"
       data-tooltip-content={TooltipConstants.bestOfSystemMessage}

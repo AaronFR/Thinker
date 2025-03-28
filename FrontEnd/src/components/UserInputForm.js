@@ -183,7 +183,7 @@ const UserInputForm = ({
         {/* Primary Action Buttons */}
         <div className="primary-actions">
           <FileUploadButton onUploadSuccess={handleUploadSuccess} />
-          {settings.augmentedPromptsEnabled !== 'off' && (
+          {settings.beta_features.augmented_prompts_enabled !== 'off' && (
             <button
               type="button"
               className="button submit-button"
@@ -197,7 +197,7 @@ const UserInputForm = ({
               Improve prompt
             </button>
           )}
-          {settings.questionUserPromptsEnabled !== 'off' && (
+          {settings.beta_features.question_user_prompts_enabled !== 'off' && (
             <button
               type="button"
               className="button submit-button"
@@ -277,13 +277,13 @@ const UserInputForm = ({
               setTags={setTags}
               forTags={true}
             />
-            {settings.bestOfEnabled !== 'off' && (
+            {settings.features.multiple_reruns_enabled !== 'off' && (
               <BestOfSelector
                 bestOf={tags.bestOf}
                 setTags={setTags}
               />
             )}
-            {settings.bestOfEnabled !== 'off' && (
+            {settings.features.loops_enabled !== 'off' && (
               <LoopsSelector
                 selectedNumberOfLoops={tags.loops}
                 setTags={setTags}
