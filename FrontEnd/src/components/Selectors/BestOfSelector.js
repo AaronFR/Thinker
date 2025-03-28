@@ -12,10 +12,10 @@ import TooltipConstants from '../../constants/tooltips';
 const BestOfSelector = React.memo(({ selectedRuns, setTags }) => {
   const runOptions = [
     { value: 1, label: "Disabled" },
-    { value: 2, label: "2" },
-    { value: 3, label: "3" },
-    { value: 4, label: "4" },
-    { value: 5, label: "5" },
+    { value: 2, label: "2 Responses" },
+    { value: 3, label: "3 Responses" },
+    { value: 4, label: "4 Responses" },
+    { value: 5, label: "5 Responses" },
   ];
 
   return (

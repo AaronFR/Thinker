@@ -46,13 +46,13 @@ class WriteWorkflow(BaseWorkflow):
         """
         model = find_model_enum_value(tags.get("model") if tags else None)
         best_of = int(tags.get("best of", 1)) if tags else 1
+        loops = int(tags.get("loops", 1)) if tags else 1
 
         emit("send_workflow",
              {"workflow": generate_write_workflow(initial_message, file_references, selected_message_ids,
-                                                  model.value)})
+                                                  model.value, best_of, loops,)})
 
         files = Writing.determine_files(initial_message, tags)
-        summary = ""
         for file in files:
             file_name = file['file_name']
             emit(UPDATE_WORKFLOW_STEP, {"step": 2, "file_name": file_name})
@@ -70,6 +70,7 @@ class WriteWorkflow(BaseWorkflow):
                 file_references=file_references or [],
                 selected_message_ids=selected_message_ids or [],
                 best_of=best_of,
+                loops=loops,
                 streaming=False,
                 model=model,
             )

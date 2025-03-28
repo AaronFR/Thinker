@@ -21,8 +21,7 @@ class AutoWorkflow(BaseWorkflow):
     """
     Workflow for automating a series of prompts, where each file reference is used as context for individual prompts.
 
-    Note:
-        Saving files may take some time.
+    Note: Saving files may take some time.
     """
 
     USE_PARALLEL_PROCESSING = True
@@ -50,6 +49,7 @@ class AutoWorkflow(BaseWorkflow):
         """
         model = find_model_enum_value(tags.get("model", None) if tags else None)
         best_of = int(tags.get("best of", 1)) if tags else 1  # type validation check needed
+        loops = int(tags.get("loops", 1)) if tags else 1
 
         if not file_references:
             logging.warning("No file references provided. Exiting AutoWorkflow.")
@@ -58,7 +58,9 @@ class AutoWorkflow(BaseWorkflow):
         workflow_data = generate_auto_workflow(
             file_references=file_references or [],
             selected_messages=selected_message_ids or [],
-            model=model.value
+            model=model.value,
+            best_of=best_of,
+            loops=loops,
         )
         emit("send_workflow", {"workflow": workflow_data})
 
@@ -68,11 +70,11 @@ class AutoWorkflow(BaseWorkflow):
 
         if self.USE_PARALLEL_PROCESSING:
             self._execute_parallel(
-                process_prompt, initial_message, file_references, selected_message_ids, best_of, model
+                process_prompt, initial_message, file_references, selected_message_ids, best_of, loops, model
             )
         else:
             self._execute_sequential(
-                process_prompt, initial_message, file_references, selected_message_ids, best_of, model
+                process_prompt, initial_message, file_references, selected_message_ids, best_of, loops, model
             )
 
         summary = self._summary_step(
@@ -87,13 +89,14 @@ class AutoWorkflow(BaseWorkflow):
         return summary
 
     def _execute_parallel(
-            self,
-            process_prompt: Callable[[str, List[str], Dict[str, str]], str],
-            initial_message: str,
-            file_references: List[str],
-            selected_message_ids: List[str],
-            best_of: int,
-            model: AiModel,
+        self,
+        process_prompt: Callable[[str, List[str], Dict[str, str]], str],
+        initial_message: str,
+        file_references: List[str],
+        selected_message_ids: List[str],
+        best_of: int,
+        loops: int,
+        model: AiModel,
     ):
         """
         Executes the workflow steps in parallel.
@@ -128,6 +131,7 @@ class AutoWorkflow(BaseWorkflow):
                 file_ref,
                 selected_message_ids,
                 best_of,
+                loops,
                 model,
                 iteration_id
             )
@@ -154,13 +158,14 @@ class AutoWorkflow(BaseWorkflow):
                     logging.exception(failure_to_process_file_in_workflow)
 
     def _execute_sequential(
-            self,
-            process_prompt: Callable[[str, List[str], Dict[str, str]], str],
-            initial_message: str,
-            file_references: List[str],
-            selected_message_ids: List[str],
-            best_of: int,
-            model: AiModel,
+        self,
+        process_prompt: Callable[[str, List[str], Dict[str, str]], str],
+        initial_message: str,
+        file_references: List[str],
+        selected_message_ids: List[str],
+        best_of: int,
+        loops: int,
+        model: AiModel,
     ):
         """
         Executes the workflow steps sequentially.
@@ -187,6 +192,7 @@ class AutoWorkflow(BaseWorkflow):
                 selected_message_ids=selected_message_ids or [],
                 file_name=file_name,
                 best_of=best_of,
+                loops=loops,
                 model=model,
                 overwrite=True
             )
@@ -194,14 +200,15 @@ class AutoWorkflow(BaseWorkflow):
             logging.debug(f"Response for iteration {iteration_id} on '{file_reference}': {response}")
 
     def _process_file(
-            self,
-            process_prompt: Callable[[str, List[str], Dict[str, str]], str],
-            initial_message: str,
-            file_reference: str,
-            selected_message_ids: List[str],
-            best_of: int,
-            model: AiModel,
-            iteration_id: int
+        self,
+        process_prompt: Callable[[str, List[str], Dict[str, str]], str],
+        initial_message: str,
+        file_reference: str,
+        selected_message_ids: List[str],
+        best_of: int,
+        loops: int,
+        model: AiModel,
+        iteration_id: int
     ) -> (int, str):
         """
         Helper method to process a single file in the workflow with a unique iteration ID.
@@ -224,6 +231,7 @@ class AutoWorkflow(BaseWorkflow):
             selected_message_ids=selected_message_ids or [],
             file_name=file_name,
             best_of=best_of,
+            loops=loops,
             model=model,
             overwrite=True
         )

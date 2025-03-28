@@ -56,6 +56,7 @@ class WritePagesWorkflow(BaseWorkflow):
         """
         model = find_model_enum_value(tags.get("model") if tags else None)
         best_of = int(tags.get("best of", 1)) if tags else 1
+        loops = int(tags.get("loops", 1)) if tags else 1
 
         # Determine the number of pages to write
         page_count_str = tags.get("pages", "1") if tags else "1"
@@ -76,7 +77,9 @@ class WritePagesWorkflow(BaseWorkflow):
             page_count=page_count,
             file_references=file_references or [],
             selected_messages=selected_message_ids or [],
-            model=model.value
+            model=model.value,
+            best_of=best_of,
+            loops=loops,
         )
         emit("send_workflow", {"workflow": workflow_details})
 
@@ -105,6 +108,7 @@ class WritePagesWorkflow(BaseWorkflow):
                 file_references,
                 selected_message_ids,
                 best_of,
+                loops,
                 model,
                 iteration
             )
@@ -118,6 +122,7 @@ class WritePagesWorkflow(BaseWorkflow):
                     file_references=file_references or [],
                     selected_message_ids=selected_message_ids or [],
                     best_of=best_of,
+                    loops=loops,
                     streaming=False,
                     model=model,
                 )
@@ -145,6 +150,7 @@ class WritePagesWorkflow(BaseWorkflow):
         file_references,
         selected_message_ids,
         best_of,
+        loops,
         model,
         iteration
     ):
@@ -169,6 +175,7 @@ class WritePagesWorkflow(BaseWorkflow):
                     file_references,
                     selected_message_ids,
                     best_of,
+                    loops,
                     model,
                     message_id,
                     user_id,
@@ -186,7 +193,7 @@ class WritePagesWorkflow(BaseWorkflow):
         return ("\n\n".join(results)).strip()  # concatenate the results to one string.
 
     def threaded_page_process(self, page_instruction, iteration, process_prompt, file_references,
-                              selected_message_ids, best_of, model, message_id, user_id, category_id):
+                              selected_message_ids, best_of, loops, model, message_id, user_id, category_id):
         """Helper function to process a single page instruction."""
         set_message_context(message_id)
         set_user_context(user_id)
@@ -200,6 +207,7 @@ class WritePagesWorkflow(BaseWorkflow):
             file_references=file_references or [],
             selected_message_ids=selected_message_ids or [],
             best_of=best_of,
+            loops=loops,
             streaming=False,
             model=model,
         )

@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import List, Dict
 
 from AiOrchestration.GeminiModel import GeminiModel
 from Data.Configuration import Configuration
@@ -12,16 +12,20 @@ def display_parameters(
     model: str = None,
     file_references: List[str] = None,
     selected_messages: List[str] = None,
+    best_of: int = 1,
+    loops: int = 1,
 ) -> Dict[str, str]:
     """
     Construct a consistent dictionary of parameters for workflow steps.
     If no value exists for the value the key will not be included in the returned dictionary.
     """
     params = {
-        "user_message": initial_message,
-        "model": model,
-        "file_references": "\n".join(file_references) if file_references else None,
-        "selected_message_ids": "\n".join(selected_messages) if selected_messages else None,
+        "Prompt": initial_message,
+        "Model": model,
+        "Files referenced": "\n".join(file_references) if file_references else None,
+        "Messages referenced": "\n".join(selected_messages) if selected_messages else None,
+        "Parallel runs": best_of if best_of > 1 else None,
+        "Sequential runs": loops if loops > 1 else None,
     }
     return {key: value for key, value in params.items() if value is not None}
 
@@ -73,7 +77,9 @@ def generate_chat_workflow(
     initial_message: str,
     file_references: List[str],
     selected_messages: List[str],
-    model: str
+    model: str,
+    best_of: int = 1,
+    loops: int = 1,
 ) -> Dict:
     """
     Generate a workflow dictionary for chat-based interactions.
@@ -82,7 +88,7 @@ def generate_chat_workflow(
         step_id=1,
         module="Chat",
         description="Respond to the prompt and any additional files or reference messages",
-        parameters=display_parameters(initial_message, model, file_references, selected_messages)
+        parameters=display_parameters(initial_message, model, file_references, selected_messages, best_of, loops)
     )
     return build_workflow_base("Chat Workflow", "1.0", [step])
 
@@ -91,7 +97,9 @@ def generate_write_workflow(
     initial_message: str,
     file_references: List[str],
     selected_messages: List[str],
-    model: str
+    model: str,
+    best_of: int = 1,
+    loops: int = 1,
 ) -> Dict:
     """
     Generate a workflow dictionary for writing operations.
@@ -102,7 +110,7 @@ def generate_write_workflow(
             step_id=1,
             module="Planning Response",
             description="Plan out a Response",
-            parameters=display_parameters(initial_message, model, file_references, selected_messages)
+            parameters=display_parameters(initial_message, model, file_references, selected_messages, best_of, loops)
         ),
         create_step(
             step_id=2,
@@ -128,7 +136,9 @@ def generate_write_pages_workflow(
     page_count: int,
     file_references: List[str],
     selected_messages: List[str],
-    model: str
+    model: str,
+    best_of: int = 1,
+    loops: int = 1,
 ) -> Dict:
     """
     Generate a workflow dictionary for writing pages with dynamic steps.
@@ -141,7 +151,7 @@ def generate_write_pages_workflow(
         step_id,
         module="Plan document",
         description="Writes out a list of instructions for each individual page",
-        parameters=display_parameters(initial_message, model, file_references, selected_messages)
+        parameters=display_parameters(initial_message, model, file_references, selected_messages, best_of, loops)
     ))
     step_id += 1
 
@@ -151,7 +161,14 @@ def generate_write_pages_workflow(
             step_id,
             module=f"Page {i}",
             description=f"Append content to the specified file for page {i}.",
-            parameters={"model": model}
+            parameters=display_parameters(
+                initial_message=None,
+                model=model,
+                file_references=file_references,
+                selected_messages=selected_messages,
+                best_of=best_of,
+                loops=loops
+            )
         ))
         step_id += 1
 
@@ -174,7 +191,9 @@ def generate_write_pages_workflow(
 def generate_auto_workflow(
     file_references: List[str],
     selected_messages: List[str],
-    model: str
+    model: str,
+    best_of: int = 1,
+    loops: int = 1,
 ) -> Dict:
     """
     Generate a workflow dictionary for automatic processing of multiple files.
@@ -193,7 +212,9 @@ def generate_auto_workflow(
                 initial_message=None,
                 model=model,
                 file_references=file_references,
-                selected_messages=selected_messages
+                selected_messages=selected_messages,
+                best_of=best_of,
+                loops=loops
             )
         ))
         step_id += 1
@@ -212,45 +233,3 @@ def generate_auto_workflow(
             )
         ))
     return build_workflow_base("Auto Workflow", "1.2", steps)
-
-
-def generate_loop_workflow(
-    file_references: List[str],
-    selected_messages: List[str],
-    model: str,
-    n_loops: int
-) -> Dict:
-    """
-    Generate a workflow dictionary for iterative improvement loops.
-    """
-    steps = []
-    step_id = 1
-
-    # Loop steps based on the number of iterations.
-    for _ in range(1, n_loops + 1):
-        steps.append(create_step(
-            step_id,
-            module="Loop improving on response",
-            description="Processing file in accordance with user's initial message.",
-            parameters=display_parameters(
-                initial_message=None,
-                model=model,
-                file_references=file_references,
-                selected_messages=selected_messages
-            )
-        ))
-        step_id += 1
-
-    # Final step to compile loop results.
-    steps.append(create_step(
-        step_id,
-        module="Final Output",
-        description="Bring together the improvements in each loop into one response",
-        parameters=display_parameters(
-            initial_message=None,
-            model=get_background_model(),
-            file_references=file_references,
-            selected_messages=selected_messages
-        )
-    ))
-    return build_workflow_base("Loop Workflow", "1.0", steps)

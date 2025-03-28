@@ -1,11 +1,9 @@
 from typing import Dict, Any
 
-from Utilities.LogsHandler import LogsHandler
 from Constants.PersonaSpecification import WriterSpecification
 from Personas.BasePersona import BasePersona
 from Workflows.AutoWorkflow import AutoWorkflow
 from Workflows.ChatWorkflow import ChatWorkflow
-from Workflows.LoopWorkflow import LoopWorkflow
 from Workflows.WritePagesWorkflow import WritePagesWorkflow
 
 
@@ -21,7 +19,6 @@ class Writer(BasePersona):
         'chat': ChatWorkflow(),
         'write': WritePagesWorkflow(),
         'auto': AutoWorkflow(),
-        'loop': LoopWorkflow(),
     }
 
     def __init__(self, name):

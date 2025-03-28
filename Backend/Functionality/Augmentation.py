@@ -77,8 +77,6 @@ class Augmentation:
                 return Workflow.WRITE
             if tags.get("auto"):
                 return Workflow.AUTO
-            if tags.get("loops"):
-                return Workflow.LOOP
 
         config = Configuration.load_config()
         workflow_selection_system_message = config.get('system_messages', {}).get(

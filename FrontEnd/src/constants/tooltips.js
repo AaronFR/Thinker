@@ -38,9 +38,10 @@ const TooltipConstants = {
   bestOfSelector: `Enable to run each step multiple times and then select for the best response.
   e.g. best of two means roughly x3 more prompts
   Adjust selection criteria in settings`,
-  loopsSelector: "Set the number of times the workflow will iterate over your prompt, refining it each time",
+  loopsSelector: `Enable to run the LLM calls inside each step multiple times in sequence, improving on the answer with each loop.
+    Increases in time and cost are roughly proprotional to the number of loops`,
   writeSelector: "Specify a filename for the output. If left blank, a name will be generated automatically",
-  pagesSelector: `Indicate the desired length of the document in 'pages' (individual responses). The AI will plan and generate content page by page.`,
+  pagesSelector: `Indicate the desired length of the document in 'pages' (individual responses). The AI will plan instructions for each individual response.`,
 
   /* Toggles */
   categoryColoursisationToggle: "Enable automatic color assignment for new categories. The AI will choose a color that represents the category as opposed to a random colour.",

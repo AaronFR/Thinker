@@ -255,12 +255,6 @@ const UserInputForm = ({
               selectedWorkflow={tags.workflow}
               setTags={setTags}
             />
-            {tags.workflow === 'loop' && (
-              <LoopsSelector
-                selectedNumberOfLoops={tags.loops}
-                setTags={setTags}
-              />
-            )}
             {tags.workflow === 'write' && (
               <>
                 <WriteSelector
@@ -286,6 +280,12 @@ const UserInputForm = ({
             {settings.bestOfEnabled !== 'off' && (
               <BestOfSelector
                 bestOf={tags.bestOf}
+                setTags={setTags}
+              />
+            )}
+            {settings.bestOfEnabled !== 'off' && (
+              <LoopsSelector
+                selectedNumberOfLoops={tags.loops}
                 setTags={setTags}
               />
             )}

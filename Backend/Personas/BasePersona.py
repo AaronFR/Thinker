@@ -12,7 +12,6 @@ from Data.InternetSearch import InternetSearch
 from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Data.UserContextManagement import UserContextManagement
-from Utilities.LogsHandler import LogsHandler
 from Constants.Instructions import DEFAULT_BEST_OF_SYSTEM_MESSAGE, DETECT_RELEVANT_HISTORY_SYSTEM_MESSAGE
 from Utilities.Validation import is_valid_prompt
 from Workflows.ChatWorkflow import ChatWorkflow
@@ -124,19 +123,24 @@ class BasePersona:
         result = self.WORKFLOWS[name].execute(*args, **kwargs)
         return result
 
-    def process_prompt(self,
-                       prompt: str,
-                       file_references: List[str] = None,
-                       selected_message_ids: List[str] = None,
-                       best_of: int = 1,
-                       streaming: bool = False,
-                       model: AiModel = None) -> str:
+    def process_prompt(
+        self,
+        prompt: str,
+        file_references: List[str] = None,
+        selected_message_ids: List[str] = None,
+        best_of: int = 1,
+        loops: int = 1,
+        streaming: bool = False,
+        model: AiModel = None
+    ) -> str:
         """
         Process and store the user's question.
 
         :param prompt: The user's question.
         :param file_references: List of file paths referenced for context.
         :param selected_message_ids: UUIDs of previously selected relevant messages result.
+        :param best_of: Number of simultaneous parallel re-runs
+        :param loops: Number of sequential re-runs
         :param streaming: Whether to stream the response.
         :param model: The model to use for generating responses.
         :return: Generated response.
@@ -167,6 +171,7 @@ class BasePersona:
             input_messages,
             messages,
             best_of=best_of,
+            loops=loops,
             streaming=streaming,
             model=model
         )
@@ -174,12 +179,15 @@ class BasePersona:
 
         return response
 
-    def think(self,
-              user_messages: List[str],
-              history_messages: List[str] = None,
-              best_of: int = 1,
-              streaming: bool = False,
-              model: AiModel = None) -> str:
+    def think(
+        self,
+        user_messages: List[str],
+        history_messages: List[str] = None,
+        best_of: int = 1,
+        loops: int = 1,
+        streaming: bool = False,
+        model: AiModel = None
+    ) -> str:
         """
         Process the input question and create a response.
 
@@ -188,6 +196,7 @@ class BasePersona:
         :param user_messages: List of user messages.
         :param history_messages: The ai will treat these messages as prior context
         :param best_of: How many times this 'thought' is to be rerun to select for a best response
+        :param loops: How many 'thoughts' to think before returning a (hopefully) well thought out response
         :param streaming: Whether to stream the response.
         :param model: The AI model used for generating the response.
         :return: Generated response or an error message.
@@ -224,6 +233,7 @@ class BasePersona:
                 system_messages,
                 user_messages,
                 rerun_count=best_of,
+                loop_count=loops,
                 judgement_criteria=[judgement_criteria],  # should be refactored to an obviously plural argument name
                 model=model,
                 assistant_messages=recent_history,

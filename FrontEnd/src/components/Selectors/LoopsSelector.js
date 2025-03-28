@@ -12,10 +12,11 @@ import TooltipConstants from '../../constants/tooltips';
  */
 const LoopsSelector = React.memo(({ selectedNumberOfLoops, setTags }) => {
   const loopOptions = [
-    { value: 2, label: "Two Loops (2)" },
-    { value: 3, label: "Three Loops (3)" },
-    { value: 4, label: "Four Loops (4)" },
-    { value: 5, label: "Five Loops (5)" },
+    { value: 1, label: "Disabled" },
+    { value: 2, label: "Two Loops" },
+    { value: 3, label: "Three Loops" },
+    { value: 4, label: "Four Loops" },
+    { value: 5, label: "Five Loops" },
   ];
 
   return (

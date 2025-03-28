@@ -14,7 +14,6 @@ const WorkflowSelector = React.memo(({ selectedWorkflow, setTags }) => {
     { value: "chat", label: "🗣 Chat" },
     { value: "write", label: "✍ Write" },
     { value: "auto", label: "Σ For Each" },
-    { value: "loop", label: "➿ Loop" }
   ];
 
   return (

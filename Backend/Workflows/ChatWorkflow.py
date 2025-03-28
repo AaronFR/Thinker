@@ -42,11 +42,15 @@ class ChatWorkflow(BaseWorkflow):
 
         model = find_model_enum_value(tags.get("model") if tags else None)
         best_of = int(tags.get("best of", 1)) if tags else 1  # type validation check needed
+        loops = int(tags.get("loops", 1)) if tags else 1
+
         workflow_details = generate_chat_workflow(
             initial_message=initial_message,
             file_references=file_references or [],
             selected_messages=selected_message_ids or [],
-            model=model.value
+            model=model.value,
+            best_of=best_of,
+            loops=loops,
         )
         emit("send_workflow", {"workflow": workflow_details})
 
@@ -57,6 +61,7 @@ class ChatWorkflow(BaseWorkflow):
             file_references=file_references or [],
             selected_message_ids=selected_message_ids or [],
             best_of=best_of,
+            loops=loops,
             streaming=True,
             model=model,
         )

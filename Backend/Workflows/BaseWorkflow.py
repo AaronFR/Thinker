@@ -41,6 +41,7 @@ class BaseWorkflow:
         file_references: List[str],
         selected_message_ids: List[str],
         best_of: int = 1,
+        loops: int = 1,
         streaming: bool = True,
         model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
     ) -> str:
@@ -63,6 +64,7 @@ class BaseWorkflow:
             file_references,
             selected_message_ids,
             best_of=best_of,
+            loops=loops,
             streaming=streaming,
             model=model,
         )
@@ -79,6 +81,7 @@ class BaseWorkflow:
         file_references: List[str],
         selected_message_ids: List[str],
         best_of: int = 1,
+        loops: int = 1,
         streaming: bool = True,
         model: AiModel = None,
     ) -> str:
@@ -118,6 +121,7 @@ class BaseWorkflow:
             file_references,
             selected_message_ids,
             best_of=best_of,
+            loops=loops,
             streaming=streaming,
             model=model,
         )
@@ -136,6 +140,7 @@ class BaseWorkflow:
         selected_message_ids: List[str],
         file_name: str,
         best_of: int = 1,
+        loops: int = 1,
         model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
         overwrite: bool = True,
     ) -> str:
@@ -162,6 +167,7 @@ class BaseWorkflow:
             file_references,
             selected_message_ids,
             best_of=best_of,
+            loops=loops,
             model=model,
         )
         response += "\n\n"  # Otherwise if a new section is appended on it won't be on a new line
