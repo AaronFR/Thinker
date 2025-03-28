@@ -9,6 +9,7 @@ body.dark-mode {
 }
 
 .settings-container {
+  max-height: 93vh;
   max-width: 800px;
   padding: var(--spacing-xl);
   background: var(--color-settings-bg);

@@ -22,7 +22,7 @@ body.dark-mode .app-container {
 }
 
 .container {
-  max-height: 93vh;
+  max-height: 100vh;
   margin: var(--spacing-md) auto;
   overflow-y: auto;
   box-shadow: var(--box-shadow-settings);
