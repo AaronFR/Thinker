@@ -28,7 +28,7 @@
   box-shadow: var(--box-shadow-md);
 }
 .category-item > div {
-  padding: var(--spacing-md);
+  padding: var(--spacing-md-sm);
   background-color: rgba(var(--color-primary-rgb), 0.05);
   cursor: pointer;
 }

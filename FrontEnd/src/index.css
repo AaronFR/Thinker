@@ -101,6 +101,7 @@ div.react-tooltip.core-styles-module_tooltip__3vRRp {
   /* Spacing */
   --spacing-xs: 0.1875em;
   --spacing-sm: 0.3125em;
+  --spacing-md-sm: 0.5em;
   --spacing-md: 0.625em;
   --spacing-lg: 0.9375em;
   --spacing-xl: 1.25em;
