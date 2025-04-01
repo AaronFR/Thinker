@@ -147,6 +147,19 @@ RETURN newFile;
 """
 
 
+RETRIEVE_USER_DATA_UPLOADED_SIZE = """
+MATCH (user:USER {id: $user_id})
+RETURN user.data_uploaded as data_uploaded
+"""
+
+
+UPDATE_USER_DATA_UPLOADED_SIZE = """
+MATCH (user:USER {id: $user_id})
+SET user.data_uploaded = COALESCE(user.data_uploaded, 0) + $size
+RETURN user.data_uploaded as data_uploaded
+"""
+
+
 # Messages
 
 GET_MESSAGE = """

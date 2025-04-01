@@ -439,6 +439,14 @@ class NodeDatabaseManagement:
             parameters
         )
 
+        self.neo4jDriver.execute_write(
+            CypherQueries.UPDATE_USER_DATA_UPLOADED_SIZE,
+            {
+                "user_id": get_user_context(),
+                "size": size
+            }
+        )
+
         return file_uuid
 
     @handle_errors()
@@ -583,6 +591,20 @@ class NodeDatabaseManagement:
         if records:
             names = [record['name'] for record in records]
             return names
+
+    @handle_errors()
+    def retrieve_user_data_uploaded_size(self) -> int:
+        """
+        Obtains the total number of bytes stored for the user currently
+
+        """
+        parameters = {"user_id": get_user_context()}
+
+        records = self.neo4jDriver.execute_read(
+            CypherQueries.RETRIEVE_USER_DATA_UPLOADED_SIZE,
+            parameters
+        )
+        return records[0]["data_uploaded"]
 
     # Pricing
 

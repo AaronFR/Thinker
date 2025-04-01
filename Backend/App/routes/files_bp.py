@@ -1,12 +1,12 @@
 import logging
-import sys
 
 from flask import Blueprint, jsonify, request
 from werkzeug.utils import secure_filename
 
 from App import limiter
 from App.extensions import user_key_func
-from Constants.Constants import LIGHTLY_RESTRICTED, MODERATELY_RESTRICTED, MAX_FILE_SIZE, USER_LIGHTLY_RESTRICTED
+from Constants.Constants import LIGHTLY_RESTRICTED, MODERATELY_RESTRICTED, MAX_FILE_SIZE, USER_LIGHTLY_RESTRICTED, \
+    USER_DATA_LIMIT
 from Constants.Exceptions import file_not_deleted
 from Data.CategoryManagement import CategoryManagement
 from Data.Configuration import Configuration
@@ -42,12 +42,22 @@ def upload_files():
     then upload each file individually.
 
     ToDo: you might want to directly limit the size of incoming data
+    ToDo: include option for category to be determined by category in tags (send tags)
 
     :returns: A Flask Response object containing a JSON representation of the processed message.
     """
     files = request.files.getlist('files')
     if not files or len(files) == 0:
         return jsonify({'message': 'No files found in the request.'}), 400
+
+    # ToDo: Notify frontend when user is close to limit - should be impossible for legitimate activity.
+    user_data_size = nodeDB().retrieve_user_data_uploaded_size()
+    if user_data_size > USER_DATA_LIMIT:
+        new_user_data_size_in_gb = user_data_size / (1024 * 1024 * 1024)
+        return jsonify({
+            'message': f"Sorry, You've maxed our safety limit on total data uploaded of 1 GB. ({new_user_data_size_in_gb} GB) Please "
+                       "delete unneeded files and/or get in contact"
+        }), 400
 
     file_details = []
     samples = []
@@ -69,14 +79,15 @@ def upload_files():
             logging.exception(f"Decoding error for file {filename}: {decode_err}")
             return jsonify({'message': f"Error decoding file {filename}."}), 400
 
-        if sys.getsizeof(content) > MAX_FILE_SIZE:
+        if len(content) > MAX_FILE_SIZE:
             return jsonify({'message': f"File {filename} is too large. 10 MB allowed max."}), 400
 
         # Attach the files name and a sample of its contents for categorisation
         samples.append(filename + ": " + sample_content)
         content_aggregation += content
 
-        if sys.getsizeof(content_aggregation) > MAX_FILE_SIZE:
+        content_size = len(content_aggregation)
+        if content_size > MAX_FILE_SIZE:
             return jsonify({'message': f"Too much data uploaded at once. 10 MB allowed max."}), 400
 
         if not bulk_upload_categorisation:
@@ -103,11 +114,12 @@ def upload_files():
         result_list = []
         for details in file_details:
             file_id = Organising.save_file(details['content'], category_id, details['filename'], overwrite=True)
-            result_list.append({
-                'category_id': details['category_id'],
-                'id': file_id,
-                'name': details['filename']
-            })
+            if file_id:
+                result_list.append({
+                    'category_id': details['category_id'],
+                    'id': file_id,
+                    'name': details['filename']
+                })
 
         return jsonify({
             'message': 'Files uploaded successfully.',

@@ -1,12 +1,15 @@
+import logging
 import os
 import sys
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
+from Constants.Constants import USER_DATA_LIMIT
 from Data.Configuration import Configuration
 from Data.Files.StorageMethodology import StorageMethodology
 from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.UserContextManagement import UserContextManagement
 from Constants.Instructions import SUMMARISER_SYSTEM_INSTRUCTIONS
+from Utilities.Contexts import get_user_context
 from Utilities.Decorators.Decorators import handle_errors, specify_functionality_context
 from Utilities.Utility import Utility
 
@@ -42,7 +45,17 @@ class Organising:
         if config.get('files', {}).get('summarise_files', False):
             summary = Organising.summarise_content(content)
 
-        file_uuid = nodeDB().create_file_node(category_id, file_path, sys.getsizeof(content), summary)
+        user_data_size = nodeDB().retrieve_user_data_uploaded_size()
+        new_user_data_size = len(content) + user_data_size
+        if new_user_data_size > USER_DATA_LIMIT:
+            new_user_data_size_in_gb = new_user_data_size / (1024 * 1024 * 1024)
+            logging.error(
+                f"Safety limit for user {get_user_context()} breached: ({new_user_data_size_in_gb} GB)"
+            )
+            # ToDo: Display error to frontend
+            return None
+
+        file_uuid = nodeDB().create_file_node(category_id, file_path, len(content), summary)
         StorageMethodology().select().save_file(content, file_path, overwrite=overwrite)
 
         return file_uuid

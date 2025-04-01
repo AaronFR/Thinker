@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Messages and Files more streamlined and less 'Chunky' easier to browse multiple files/messages
   - Reduced 'over-scrolling'
 - loops (parallel runs) available for all workflows instead of having it's own specific workflow.
+- Max data storage per user of 1 GB (Only text is supported currently so this should be *impossible* to breach)
 
 ### Removed
 
