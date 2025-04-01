@@ -144,7 +144,7 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
               {new Date(file.time * 1000).toLocaleString()}
             </div>
             <div className='file-size'>
-              {formatBytes(file.size)}
+              {(!(isSelected) || (isExpanded)) && formatBytes(file.size)}
             </div>
           </div>
           
