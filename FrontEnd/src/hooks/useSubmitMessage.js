@@ -199,6 +199,8 @@ const useSubmitMessage = (
           } finally {
             isRefreshingRef.current = false;
           }
+        } else {
+          setError(`Sorry. We encountered an error: ${data.error}`);
         }
       });
     });
