@@ -42,10 +42,14 @@ const uploadReducer = (state, action) => {
  * Upload a group of files in one bulk request to the bulk file endpoint.
  * @param {Array<File>} files - The list of selected files.
  */
-async function uploadFiles(files, dispatch, onUploadSuccess) {
+async function uploadFiles(files, dispatch, onUploadSuccess, tags) {
   const formData = new FormData();
   // Append each file under the same 'files' key to send them all in one request.
   files.forEach(file => formData.append('files', file));
+
+  if (tags) {
+    formData.append('tags', JSON.stringify(tags));
+  }
 
   const controller = new AbortController();
   const signal = controller.signal;
@@ -82,8 +86,9 @@ async function uploadFiles(files, dispatch, onUploadSuccess) {
  * Allows users to upload files
  *
  * @param {Function} props.onUploadSuccess - Callback invoked upon successful upload.
+ * @param {Object} props.tags - Object containing current prompt tags to send with the upload.
  */
-const FileUploadButton = ({ onUploadSuccess }) => {
+const FileUploadButton = ({ onUploadSuccess, tags }) => {
   const [state, dispatch] = useReducer(uploadReducer, initialState);
 
   /**
@@ -103,10 +108,10 @@ const FileUploadButton = ({ onUploadSuccess }) => {
     // Dispatch to indicate the start of the upload process.
     dispatch({ type: 'UPLOAD_START' });
 
-    await uploadFiles(files, dispatch, onUploadSuccess);
+    await uploadFiles(files, dispatch, onUploadSuccess, tags);
     // Reset file input.
     event.target.value = null;
-  }, [onUploadSuccess]);
+  }, [onUploadSuccess, tags]);
 
   return (
     <label 
@@ -140,6 +145,7 @@ const FileUploadButton = ({ onUploadSuccess }) => {
 
 FileUploadButton.propTypes = {
   onUploadSuccess: PropTypes.func.isRequired,
+  tags: PropTypes.object.isRequired,
 };
 
 export default React.memo(FileUploadButton);

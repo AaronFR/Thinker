@@ -182,7 +182,10 @@ const UserInputForm = ({
 
         {/* Primary Action Buttons */}
         <div className="primary-actions">
-          <FileUploadButton onUploadSuccess={handleUploadSuccess} />
+          <FileUploadButton
+            onUploadSuccess={handleUploadSuccess}
+            tags={tags}
+          />
           {settings.beta_features.augmented_prompts_enabled !== 'off' && (
             <button
               type="button"

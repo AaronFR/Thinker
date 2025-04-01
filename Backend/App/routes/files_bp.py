@@ -1,3 +1,4 @@
+import json
 import logging
 
 from flask import Blueprint, jsonify, request
@@ -42,7 +43,6 @@ def upload_files():
     then upload each file individually.
 
     ToDo: you might want to directly limit the size of incoming data
-    ToDo: include option for category to be determined by category in tags (send tags)
 
     :returns: A Flask Response object containing a JSON representation of the processed message.
     """
@@ -58,6 +58,15 @@ def upload_files():
             'message': f"Sorry, You've maxed our safety limit on total data uploaded of 1 GB. ({new_user_data_size_in_gb} GB) Please "
                        "delete unneeded files and/or get in contact"
         }), 400
+
+    config = Configuration.load_config()
+    use_tags_category = config.get("files", {}).get("use_tags_category", True)
+    tags_category = None
+    if use_tags_category:
+        tags_json = json.loads(request.form.get('tags'))
+        tags_category = tags_json.get("category")
+
+        CategoryManagement.possibly_create_new_category(tags_category)
 
     file_details = []
     samples = []
@@ -91,8 +100,9 @@ def upload_files():
             return jsonify({'message': f"Too much data uploaded at once. 10 MB allowed max."}), 400
 
         if not bulk_upload_categorisation:
-            category = CategoryManagement.categorise_input(sample_content)
-            CategoryManagement.possibly_create_new_category(category)
+            if not tags_category:
+                category = CategoryManagement.categorise_input(sample_content)
+                CategoryManagement.possibly_create_new_category(category)
             category_id = get_category_context()
             file_details.append({'category_id': category_id, 'content': content, 'filename': filename})
         else:
@@ -101,8 +111,9 @@ def upload_files():
     if bulk_upload_categorisation:
         combined_content = "\n".join(samples)  # Combine all contents into one block for categorisation:
 
-        category = CategoryManagement.categorise_input(combined_content)
-        CategoryManagement.possibly_create_new_category(category)
+        if not tags_category:
+            category = CategoryManagement.categorise_input(combined_content)
+            CategoryManagement.possibly_create_new_category(category)
         category_id = get_category_context()
 
         for file_detail in file_details:

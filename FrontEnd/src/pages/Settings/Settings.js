@@ -300,6 +300,7 @@ const FilesSettings = React.memo(({
   settings,
   toggleFileSummarisation,
   toggleBulkUploadCategorisation,
+  toggleUseTagsCategory,
   handleMessageChange,
   summarise_files_cost,
 }) => {
@@ -345,7 +346,21 @@ const FilesSettings = React.memo(({
           <input
             type="checkbox"
             className="settings-checkbox"
-            id="summarise-checkbox"
+            id="useTags-checkbox"
+            checked={settings?.files?.use_tags_category}
+            onChange={toggleUseTagsCategory}
+          />
+          Use Tags category for File Upload
+        </label>
+        <p>Uses the category specified in the tags, if there is any. Removing the need for an AI call to categorise uploads. Faster.</p>
+      </div>
+
+      <div className='settings-subsection'>
+        <label className="settings-label">
+          <input
+            type="checkbox"
+            className="settings-checkbox"
+            id="bulkFileUpload-checkbox"
             checked={settings?.files?.bulk_upload_categorisation}
             onChange={toggleBulkUploadCategorisation}
           />
@@ -808,6 +823,7 @@ export function Settings() {
   const toggleSummarisation = useCallback(() => toggleSetting('workflows', 'summarise'), [toggleSetting]);
   const toggleFileSummarisation = useCallback(() => toggleSetting('files', 'summarise_files'), [toggleSetting]);
   const toggleBulkUploadCategorisation = useCallback(() => toggleSetting('files', 'bulk_upload_categorisation'), [toggleSetting]);
+  const toggleUseTagsCategory = useCallback(() => toggleSetting('files', 'use_tags_category'), [toggleSetting])
   const toggleUserEncyclopedia = useCallback(() => toggleSetting('beta_features', 'user_context_enabled'), [toggleSetting]);
   const toggleMultiFileProcessing = useCallback(() => toggleSetting('beta_features', 'multi_file_processing_enabled'), [toggleSetting]);
 
@@ -905,6 +921,7 @@ export function Settings() {
         settings={settings}
         toggleFileSummarisation={toggleFileSummarisation}
         toggleBulkUploadCategorisation={toggleBulkUploadCategorisation}
+        toggleUseTagsCategory={toggleUseTagsCategory}
         handleMessageChange={handleMessageChange}
         summarise_files_cost={userInfo?.summarise_files_cost}
       />
