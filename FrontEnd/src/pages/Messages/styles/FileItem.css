@@ -31,6 +31,11 @@
   font-size: 0.75rem;
   color: #777;
 }
+.file-size {
+  font-size: 0.75rem;
+  color: #585858;
+  margin-right: 5%;
+}
 
 .file-actions {
   display: flex;
@@ -59,19 +64,19 @@
 }
 
 .button {
-    background-color: #eee;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.75rem;
+  background-color: #eee;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 0.75rem;
 }
 
 .select-button {
-    background-color: #4CAF50;
-    color: white;
+  background-color: #4CAF50;
+  color: white;
 }
 
 .expand-button {
-    background-color: #008CBA;
-    color: white;
+  background-color: #008CBA;
+  color: white;
 }

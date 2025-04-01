@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     and reduce request durations.
   - User can enter in new category in selector
 - Edit internet search instructions in settings.
+- File size displayed
 - LICENSE: AGPL v3
 
 ### Changed

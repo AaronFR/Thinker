@@ -1,4 +1,5 @@
 import os
+import sys
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
@@ -41,7 +42,7 @@ class Organising:
         if config.get('files', {}).get('summarise_files', False):
             summary = Organising.summarise_content(content)
 
-        file_uuid = nodeDB().create_file_node(category_id, file_path, summary)
+        file_uuid = nodeDB().create_file_node(category_id, file_path, sys.getsizeof(content), summary)
         StorageMethodology().select().save_file(content, file_path, overwrite=overwrite)
 
         return file_uuid

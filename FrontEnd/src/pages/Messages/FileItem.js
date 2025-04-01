@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { shortenText, getBasename, CodeHighlighter } from '../../utils/textUtils';
+import { getBasename, CodeHighlighter } from '../../utils/textUtils';
+import { formatBytes } from '../../utils/numberUtils';
 import { apiFetch } from '../../utils/authUtils';
 import { fileAddressEndpoint, fileIdEndpoint } from '../../constants/endpoints';
 
@@ -138,9 +139,15 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
           <div className="file-name">
             {getBasename(file.name)}
           </div>
-          <div className="file-date">
-            {new Date(file.time * 1000).toLocaleString()}
+          <div className='side-by-side'>
+            <div className="file-date">
+              {new Date(file.time * 1000).toLocaleString()}
+            </div>
+            <div className='file-size'>
+              {formatBytes(file.size)}
+            </div>
           </div>
+          
         </div>
 
         <div className="file-actions">

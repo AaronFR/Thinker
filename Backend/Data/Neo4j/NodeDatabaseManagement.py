@@ -407,11 +407,12 @@ class NodeDatabaseManagement:
     # Files
 
     @handle_errors()
-    def create_file_node(self, category_id: str, file_path: str, summary: str = None) -> str:
+    def create_file_node(self, category_id: str, file_path: str, size: int, summary: str = None) -> str:
         """Creates a file node in the database representing the file content.
 
         :param category_id: Category id of the file.
         :param file_path: Path to the file.
+        :param size: As in the number of bytes occupied.
         :param summary: An optional summary describing the document for the user
         :returns: The UUID of the new file node
         """
@@ -427,6 +428,7 @@ class NodeDatabaseManagement:
             "user_prompt_id": user_prompt_id,
             "name": file_name,
             "time": time,
+            "size": size,
             "summary": summary,
             "structure": "PROTOTYPING"
         }
@@ -470,7 +472,8 @@ class NodeDatabaseManagement:
             "name": record["name"],
             "summary": record["summary"],
             "structure": record["structure"],
-            "time": record["time"]
+            "time": record["time"],
+            "size": record.get("size", 0)
         }
 
     @handle_errors()
@@ -493,7 +496,8 @@ class NodeDatabaseManagement:
                 "name": record["name"],
                 "summary": record["summary"],
                 "structure": record["structure"],
-                "time": record["time"]
+                "time": record["time"],
+                "size": record.get("size", 0)
             } for record in records
         ]
 

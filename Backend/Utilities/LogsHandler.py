@@ -34,7 +34,7 @@ class LogsHandler:
         if logger.hasHandlers():
             logger.handlers.clear()
 
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(logging.INFO)
 
         # Set up file handler
         if os.getenv(THINKER_ENV) == DEV_ENV or os.getenv(STORAGE_TYPE) == LOCAL_STORAGE:

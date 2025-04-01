@@ -137,6 +137,7 @@ MERGE (newFile:FILE {name: $name})-[:BELONGS_TO]->(category)
 SET newFile.version = COALESCE(existingFile.version, 0) + 1,
     newFile.id = $file_id,
     newFile.time = $time,
+    newFile.size = $size,
     newFile.summary = $summary,
     newFile.structure = $structure
 FOREACH (up IN CASE WHEN user_prompt IS NOT NULL THEN [user_prompt] ELSE [] END |
@@ -216,14 +217,14 @@ ORDER BY
 GET_FILE_BY_ID = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)--(file:FILE)
 WHERE file.id = $file_id
-RETURN file.id AS id, category.id AS category, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
+RETURN file.id AS id, category.id AS category, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time, file.size as size
 ORDER BY file.time DESC;
 """
 
 GET_FILES_FOR_CATEGORY = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY {name: $category_name})
     <-[:BELONGS_TO]-(file:FILE)
-RETURN file.id AS id, category.id AS category_id, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time
+RETURN file.id AS id, category.id AS category_id, file.name AS name, file.summary AS summary, file.structure AS structure, file.time AS time, file.size as size
 ORDER BY file.time DESC;
 """
 
