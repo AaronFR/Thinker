@@ -215,7 +215,7 @@ class NodeDatabaseManagement:
         """
         time = int(datetime.now().timestamp())
         logging.info(
-            f"Attempting to populate USER_PROMPT: user_id{get_user_context()}, message_id: {get_message_context()}, "
+            f"Attempting to populate USER_PROMPT: user_id: {get_user_context()}, message_id: {get_message_context()}, "
             f"category: {category}")
 
         parameters = {

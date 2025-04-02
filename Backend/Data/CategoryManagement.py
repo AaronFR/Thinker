@@ -1,8 +1,10 @@
 import logging
 import re
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
 
 import shortuuid
+from flask import copy_current_request_context
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Constants.Constants import RESULT_AS_TAG_REGEX, SENTENCE_WITH_FULL_STOP_REGEX, DEFAULT_CATEGORY
@@ -14,7 +16,8 @@ from Utilities import Colour
 from Constants.Instructions import DEFAULT_USER_CATEGORISATION_INSTRUCTIONS, categorisation_inputs, \
     SELECT_COLOUR_SYSTEM_MESSAGE, CATEGORY_DESCRIPTION_SYSTEM_MESSAGE, category_description_prompt, \
     categorisation_system_messages
-from Utilities.Contexts import set_category_context, get_category_context
+from Utilities.Contexts import set_category_context, get_category_context, set_message_context, set_user_context, \
+    set_iteration_context, get_user_context, get_message_context
 from Utilities.Decorators.Decorators import specify_functionality_context
 
 
@@ -117,22 +120,64 @@ class CategoryManagement:
     @staticmethod
     def define_new_category(category: str, additional_context: str = ""):
         """
-        ToDo: Obvious speed up to be gained by putting generate colour and category in separate asynchronous threads.
+        Defines a new category, generating its color and description concurrently.
 
         :param category: The category name
         :param additional_context: The user's prompt which is used as context when creating descriptions
         :return: The id, description and color of the new category
+        :raises Exception: Propagates exceptions from underlying generation functions.
         """
         category_id = str(shortuuid.uuid())
+        user_id = get_user_context()
+        message_id = get_message_context()
         set_category_context(category_id)
 
-        color = CategoryManagement.generate_colour(category)
-        description = CategoryManagement.generate_category_description(
-            category_name=category,
-            additional_context=additional_context
-        )
+        def wrapped_process_generate_colour(category, user_id, category_id, message_id):
+            set_user_context(user_id)
+            set_category_context(category_id)
+            set_message_context(message_id)
 
-        return category_id, description, color
+            return CategoryManagement.generate_colour(category)
+
+        def wrapped_process_generate_category_description(category, additional_context, user_id, category_id, message_id):
+            set_user_context(user_id)
+            set_category_context(category_id)
+            set_message_context(message_id)
+
+            return CategoryManagement.generate_category_description(
+                category_name=category,
+                additional_context=additional_context
+            )
+
+        with ThreadPoolExecutor(max_workers=2, thread_name_prefix='CategoryGen') as executor:
+            color_future = executor.submit(
+                copy_current_request_context(wrapped_process_generate_colour),
+                category,
+                user_id,
+                category_id,
+                message_id
+            )
+            description_future = executor.submit(
+                copy_current_request_context(wrapped_process_generate_category_description),
+                category,
+                additional_context,
+                user_id,
+                category_id,
+                message_id
+            )
+
+            logging.info(f"Tasks submitted for '{category}'. Waiting for results...")
+            try:
+                description_result = description_future.result()
+                logging.info(f"Description result received for '{category}'.")
+                color_result = color_future.result()
+                logging.info(f"Color result received for '{category}'.")
+
+            except Exception as e:
+                logging.error(f"Error during concurrent category generation for '{category}': {e}", exc_info=True)
+                raise
+
+        return category_id, description_result, color_result
 
     @staticmethod
     def extract_result(input_string: str) -> Optional[str]:
