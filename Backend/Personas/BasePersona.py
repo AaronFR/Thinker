@@ -13,6 +13,7 @@ from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Data.UserContextManagement import UserContextManagement
 from Constants.Instructions import DEFAULT_BEST_OF_SYSTEM_MESSAGE, DETECT_RELEVANT_HISTORY_SYSTEM_MESSAGE
+from Utilities.Contexts import get_category_context
 from Utilities.Validation import is_valid_prompt
 from Workflows.ChatWorkflow import ChatWorkflow
 
@@ -206,6 +207,11 @@ class BasePersona:
         config = Configuration.load_config()
 
         system_messages = [self.instructions, self.configuration]
+
+        if config['features'].get('category_system_message', True):
+            category_system_message = nodeDB().get_category_system_message(get_category_context())
+            if category_system_message:
+                system_messages.append(category_system_message)
 
         if config['beta_features']['user_context_enabled']:
             user_encyclopedia_manager = UserContextManagement()

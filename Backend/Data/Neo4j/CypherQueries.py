@@ -193,6 +193,12 @@ MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY {name: $cat
 RETURN category.id AS category_id;
 """
 
+
+GET_CATEGORY_SYSTEM_MESSAGE = """
+MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY {id: $category_id})
+RETURN category.description AS category_system_message;
+"""
+
 LIST_CATEGORIES = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)
 RETURN DISTINCT category.name AS category_name

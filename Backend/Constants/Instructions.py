@@ -245,8 +245,11 @@ def categorisation_inputs(user_prompt: str, llm_response: str = None, category_n
 
 
 CATEGORY_DESCRIPTION_SYSTEM_MESSAGE = (
-    "You are an assistant that provides very concise, short general category descriptions.\n"
-    "These descriptions help others tell if this category is the right one to file their data into"
+    "You are an assistant that takes a given category and any additional context, to responds with a helpful, "
+    "precisely designed LLM system message that would be useful for this category."
+    "These system messages will be used when adding to this category, they should be specific and tailored for the "
+    "most likely use of this category by the user."
+    "Respond only with this system message"
 )
 
 SELECT_COLOUR_SYSTEM_MESSAGE = (

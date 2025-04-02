@@ -366,6 +366,33 @@ class NodeDatabaseManagement:
         return category_id
 
     @handle_errors()
+    def get_category_system_message(self, category_id: str) -> Optional[str]:
+        """Retrieve the system message of a category by its id.
+
+        ToDo: It might be more efficient to pass this variable along when determining category
+         But it would kind of mangle the current architecture?
+
+        :param category_id: ID of the category in the node database.
+        :return: The ID of the category if found, None otherwise.
+        """
+        parameters = {
+            "user_id": get_user_context(),
+            "category_id": category_id
+        }
+
+        try:
+            records = self.neo4jDriver.execute_read(
+                CypherQueries.GET_CATEGORY_SYSTEM_MESSAGE,
+                parameters)
+            category_system_message = records[0]["category_system_message"]
+
+            logging.info(f"Category system message for {category_id}: {category_system_message}")
+        except Exception:
+            category_system_message = None
+
+        return category_system_message
+
+    @handle_errors()
     def list_category_names(self) -> List[Dict[str, str]]:
         """Lists the names of categories
 

@@ -301,6 +301,7 @@ const FilesSettings = React.memo(({
   toggleFileSummarisation,
   toggleBulkUploadCategorisation,
   toggleUseTagsCategory,
+  toggleCategorySystemMessages,
   handleMessageChange,
   summarise_files_cost,
 }) => {
@@ -367,6 +368,20 @@ const FilesSettings = React.memo(({
           Bulk file upload categorisation
         </label>
         <p>If you upload multiple files they will be categorised together</p>
+      </div>
+
+      <div className='settings-subsection'>
+        <label className="settings-label">
+          <input
+            type="checkbox"
+            className="settings-checkbox"
+            id="categorySystemMessages-checkbox"
+            checked={settings?.features?.category_system_message}
+            onChange={toggleCategorySystemMessages}
+          />
+          Category Instructions
+        </label>
+        <p>Responses created for this category will follow specific instructions for that category</p>
       </div>
     </div>
   );
@@ -824,6 +839,7 @@ export function Settings() {
   const toggleFileSummarisation = useCallback(() => toggleSetting('files', 'summarise_files'), [toggleSetting]);
   const toggleBulkUploadCategorisation = useCallback(() => toggleSetting('files', 'bulk_upload_categorisation'), [toggleSetting]);
   const toggleUseTagsCategory = useCallback(() => toggleSetting('files', 'use_tags_category'), [toggleSetting])
+  const toggleCategorySystemMessages = useCallback(() => toggleSetting('features', 'category_system_message'), [toggleSetting])
   const toggleUserEncyclopedia = useCallback(() => toggleSetting('beta_features', 'user_context_enabled'), [toggleSetting]);
   const toggleMultiFileProcessing = useCallback(() => toggleSetting('beta_features', 'multi_file_processing_enabled'), [toggleSetting]);
 
@@ -922,6 +938,7 @@ export function Settings() {
         toggleFileSummarisation={toggleFileSummarisation}
         toggleBulkUploadCategorisation={toggleBulkUploadCategorisation}
         toggleUseTagsCategory={toggleUseTagsCategory}
+        toggleCategorySystemMessages={toggleCategorySystemMessages}
         handleMessageChange={handleMessageChange}
         summarise_files_cost={userInfo?.summarise_files_cost}
       />

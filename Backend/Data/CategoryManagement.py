@@ -223,16 +223,6 @@ class CategoryManagement:
         return tag_category
 
     @staticmethod
-    def is_valid_description(description: str) -> bool:
-        """
-        Validates the AI-generated description.
-
-        :param description: The description to validate.
-        :return: True if valid, False otherwise.
-        """
-        return bool(re.match(SENTENCE_WITH_FULL_STOP_REGEX, description))
-
-    @staticmethod
     def default_description(category_name: str) -> str:
         """
         Provides a default description for the category if AI fails.
@@ -291,14 +281,8 @@ class CategoryManagement:
             )
             description = description.strip()
 
-            if CategoryManagement.is_valid_description(description):
-                logging.debug(f"AI-generated description for '{category_name}': {description}")
-                return description
-            else:
-                logging.warning(
-                    f"AI response '{description}' is not a valid description. Using default description."
-                )
-                return CategoryManagement.default_description(category_name)
+            logging.debug(f"AI-generated description for '{category_name}': {description}")
+            return description
         except Exception:
             logging.exception(failure_to_create_description_for_category(category_name))
             return CategoryManagement.default_description(category_name)
