@@ -231,6 +231,12 @@ ORDER BY
     category_name ASC;
 """
 
+UPDATE_CATEGORY_DESCRIPTION = """
+MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY {name: $category_name})
+SET category.description = $new_category_description
+RETURN category.description as description
+"""
+
 # Files
 
 GET_FILE_BY_ID = """

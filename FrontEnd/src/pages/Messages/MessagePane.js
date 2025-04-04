@@ -10,6 +10,8 @@ import MessageItem from './MessageItem';
 import './styles/MessageHistory.css';
 import { SettingsContext } from '../Settings/SettingsContext';
 import { useCalculateItemsPerRow } from '../../hooks/useCalculateItemsPerRow';
+import CategoryDescriptionEditor from '../../components/CategoryDescriptionEditor';
+import TooltipConstants from '../../constants/tooltips';
 
 /**
  * MessagePane Component
@@ -120,6 +122,19 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
   }, [removeMessage]);
 
   /**
+   * Updates the local state of category descriptions if the backend has been updated.
+   */
+  const handleCategoryDescriptionUpdate = useCallback((categoryName, newDescription) => {
+    setCategories(prevCategories =>
+      prevCategories.map(category =>
+        category.name.toLowerCase() === categoryName.toLowerCase()
+          ? { ...category, description: newDescription }
+          : category
+      )
+    );
+  }, []);
+
+  /**
    * Toggles the expansion of a category.
    *
    * @param {number} id - The ID of the category.
@@ -180,9 +195,14 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
                   </header>
                   {(settings?.interface?.display_category_description === "always" ||
                     (settings?.interface?.display_category_description === "when selected" && expandedCategoryId === category.id)) && (
-                      <small className="category-description">
-                        {category.description}
-                      </small>
+                      <CategoryDescriptionEditor
+                        categoryName={category.name}
+                        category_description={category.description}
+                        onUpdateDescription={handleCategoryDescriptionUpdate}
+                        data-tooltip-id="tooltip"
+                        data-tooltip-content={TooltipConstants.categorySystemMessage}
+                        data-tooltip-place="bottom"
+                      />
                   )}
                 </div>
 

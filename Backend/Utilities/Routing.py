@@ -3,7 +3,7 @@ from flask import request, jsonify
 
 
 def fetch_entity(entity, entity_name=None, success_status=200):
-    """
+    """ Utility function to Jsonify data and return the status code together
 
     :param entity: the result to return to the client
     :param entity_name: Included if the result is to be labeled inside a JSON object, not included if the response is

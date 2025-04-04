@@ -431,6 +431,20 @@ class NodeDatabaseManagement:
 
         return categories
 
+    def update_category_description(self, category_name: str, new_category_description: str) -> str:
+        parameters = {
+            "user_id": get_user_context(),
+            "category_name": category_name,
+            "new_category_description": new_category_description
+        }
+
+        updated_description = self.neo4jDriver.execute_write(
+            CypherQueries.UPDATE_CATEGORY_DESCRIPTION,
+            parameters
+        )
+
+        return updated_description
+
     # Files
 
     @handle_errors()

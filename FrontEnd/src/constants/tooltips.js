@@ -47,6 +47,7 @@ const TooltipConstants = {
   categoryColoursisationToggle: "Enable automatic color assignment for new categories. The AI will choose a color that represents the category as opposed to a random colour.",
   
   /* System Messages */
+  categorySystemMessage: "These instructions are applied to any prompt that fits this category. Click to edit.",
   categorisationSystemMessage: "Categorization helps organize your files and messages by assigning them to existing or new 'folders'.",
   questioningSystemMessage: `When generating questions, the AI references your prompt, uploaded files, and previous messages. (As of yet it does not reference user knowledge)
   
