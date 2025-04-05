@@ -24,6 +24,8 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
 
   const fileExtension = file.name.split('.').pop().toLowerCase();
 
+  const nonCodingExtensions = ['txt', 'md', 'markdown'];
+
   const getFileIcon = () => {
     switch (fileExtension) {
       case 'c':
@@ -32,24 +34,24 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
       case 'rb':
       case 'js':
       case 'jsx':
-        return "💾";
+        return '💾';
       case 'css':
-        return "✨"
+        return '✨';
       case 'java':
         return '☕';
       case 'py':
         return '🐍';
       case 'pdf':
-        return "📃";
+        return '📃';
       case 'jpg':
       case 'jpeg':
       case 'png':
       case 'gif':
         return "This shouldn't be possible";
       case 'csv':
-        return '🗃'
+        return '🗃';
       default:
-        return "📄";
+        return '📄';
     }
   };
 
@@ -67,16 +69,15 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch file content.");
+        throw new Error('Failed to fetch file content.');
       }
 
       const data = await response.json();
       setContent(data.content);
     } catch (err) {
       if (err.name === 'AbortError') return;
-
-      console.error("Error fetching file content:", err);
-      setError("Unable to load content. Please try again.");
+      console.error('Error fetching file content:', err);
+      setError('Unable to load content. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -127,10 +128,23 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
     onSelect(file);
   }, [file, onSelect]);
 
-  return (
-    <div className={`file-item ${isSelected ? 'selected' : ''}`} >
-      <div className="file-item-container" onClick={handleSelect}>
+  /** 
+   * ToDo: Take in the extension, sometimes when guessing what the extension is 
+   *  it gets it wrong.
+   */
+  const getFormattedContent = () => {
+    // For non-coding file types, return content as is
 
+    
+    if (nonCodingExtensions.includes(fileExtension)) {
+      return content;
+    }
+    return "\n```\n" + content + "\n```\n";
+  };
+
+  return (
+    <div className={`file-item ${isSelected ? 'selected' : ''}`}>
+      <div className="file-item-container" onClick={handleSelect}>
         <div className="file-icon">
           {getFileIcon()}
         </div>
@@ -139,15 +153,14 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
           <div className="file-name">
             {getBasename(file.name)}
           </div>
-          <div className='side-by-side'>
+          <div className="side-by-side">
             <div className="file-date">
               {new Date(file.time * 1000).toLocaleString()}
             </div>
-            <div className='file-size'>
-              {(!(isSelected) || (isExpanded)) && formatBytes(file.size)}
+            <div className="file-size">
+              {(!(isSelected) || isExpanded) && formatBytes(file.size)}
             </div>
           </div>
-          
         </div>
 
         <div className="file-actions">
@@ -189,7 +202,7 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
                 <span className="error">{error}</span>
               ) : (
                 <div className="markdown-output">
-                  <CodeHighlighter>{content}</CodeHighlighter>
+                  <CodeHighlighter>{getFormattedContent()}</CodeHighlighter>
                 </div>
               )}
             </p>

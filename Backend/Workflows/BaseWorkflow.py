@@ -160,7 +160,30 @@ class BaseWorkflow:
         """
 
         # ToDo: We'll see if this degrades quality
-        message += "\nJust write the contents to be saved to the file without commentary"
+        message += "\nJust write the contents to be saved to the file without commentary."
+
+        def remove_enclosing_fenced_code_block(code: str) -> str:
+            """
+            Code can be surrounded in a code block for formatting. However, we surround uploaded code with a code
+            bracket. If the program writes a file within a singular code block this gets distorted with the LLM's
+            starting code fence being included in the content.
+            Instead of trying to get the LLM to understand when and when not to exactly add a code block, we just
+            manually remove them if present.
+            """
+            trimmed = code.strip()
+
+            if trimmed.count("```") != 2:
+                return code
+
+            lines = trimmed.splitlines()
+
+            # Check if the first and last lines are fence lines.
+            if lines and lines[0].startswith("```") and lines[-1].startswith("```"):
+                # Remove the first and last line (the fenced code markers)
+                inner_lines = lines[1:-1]
+                return "\n".join(inner_lines)
+
+            return code
 
         response = process_prompt(
             message,
@@ -170,6 +193,8 @@ class BaseWorkflow:
             loops=loops,
             model=model,
         )
+
+        response = remove_enclosing_fenced_code_block(response)
         response += "\n\n"  # Otherwise if a new section is appended on it won't be on a new line
 
         file_uuid = Organising.save_file(response, get_category_context(), file_name, overwrite=overwrite)
