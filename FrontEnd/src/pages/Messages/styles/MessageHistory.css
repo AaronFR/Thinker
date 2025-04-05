@@ -58,6 +58,7 @@
 }
 
 .category-description {
+  color: rgb(255, 255, 255);
   opacity: 80%;
   text-shadow: 1px 1px 0px rgb(0, 0, 0);
 }

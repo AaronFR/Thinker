@@ -104,7 +104,7 @@ const CopyCodeButton = ({ code }) => {
       style={{ position: 'absolute', top: 8, right: 8 }}
       aria-label="Copy code to clipboard"
       div 
-      className='loops-selector'
+      className='copy-button'
       data-tooltip-id="tooltip"
       data-tooltip-content={TooltipConstants.copyButton}
       data-tooltip-place="top"

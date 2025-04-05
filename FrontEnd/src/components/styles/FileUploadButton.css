@@ -5,15 +5,17 @@
   margin: 2px;
   padding: var(--spacing-md) var(--spacing-md);
   margin-left: var(--spacing-md);
-  color: var(--color-white);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+body.dark-mode .file-upload-button {
   background: linear-gradient(
     45deg, 
     var(--color-link), 
     var(--color-input-bg-dark)
   );
-  border-radius: var(--border-radius-md);
-  cursor: pointer;
-  transition: all var(--transition-fast);
+  color: var(--color-white);
 }
 .file-upload-button:hover {
   background: linear-gradient(25deg, var(--color-input-bg), var(--color-border-active));

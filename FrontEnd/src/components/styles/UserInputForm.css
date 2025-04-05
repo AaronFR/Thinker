@@ -22,12 +22,19 @@
 .submit-button {
   padding: var(--spacing-lg) var(--spacing-xxl);
   margin-left: var(--spacing-md);
-  color: var(--color-white);
+  background: linear-gradient(
+    45deg, 
+    #ffffff, 
+    #efefef
+  );
+}
+body.dark-mode .submit-button {
   background: linear-gradient(
     45deg, 
     var(--color-link), 
     var(--color-input-bg-dark)
   );
+  color: var(--color-white);
 }
 .submit-button:hover {
   background: linear-gradient(25deg, var(--color-input-bg), var(--color-border-active));

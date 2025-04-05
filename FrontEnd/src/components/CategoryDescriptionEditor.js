@@ -82,7 +82,7 @@ const CategoryDescriptionEditor = ({ categoryName, category_description, onUpdat
   }
 
   return (
-    <div className="category-description-editor">
+    <div className="category-description category-description-editor">
       {isSaving && <div className="saving-indicator">Saving...</div>}
       {error && <div className="error-message">{error}</div>}
       

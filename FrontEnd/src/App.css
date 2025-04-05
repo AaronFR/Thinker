@@ -224,8 +224,7 @@ body.dark-mode .scrollable::-webkit-scrollbar-track {
   font-size: var(--font-size-small-lg);
   border: 1px solid var(--color-border-secondary);
   border-radius: var(--border-radius);
-  background-color: var(--color-input-text);
-  color: var(--color-text-light);
+  background-color: var(--color-input-text-dark);
   resize: vertical;
   width: 100%;
   transition: border-color var(--transition-speed), 
@@ -233,6 +232,7 @@ body.dark-mode .scrollable::-webkit-scrollbar-track {
 }
 body.dark-mode .textarea {
   background-color: var(--color-input-text);
+  color: var(--color-text-light);
 }
 
 .textarea:focus {
