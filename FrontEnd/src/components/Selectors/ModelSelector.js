@@ -32,18 +32,19 @@ const CustomOption = (props) => {
 
 const ModelSelector = React.memo(({ selectedModel, setTags, forTags, economicalMode }) => {
   const economicalModels = useMemo(() => [
-    { value: "gemini-2.0-flash", label: "gemini-2.0-flash" },
-    { value: "gemini-2.0-flash-lite-preview", label: "gemini-2.0-flash-lite-preview" },
-    { value: "gpt-4o-mini", label: "gpt-4o-mini" },
+    { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash" },
+    { value: "gemini-2.0-flash-lite", label: "Gemini 2.0 Flash Lite" },
+    { value: "gpt-4o-mini", label: "GPT 4o mini" },
   ], []);
 
   const allModels = useMemo(() => [
-    { value: "gemini-2.0-flash", label: "gemini-2.0-flash" },
-    { value: "gemini-2.0-flash-lite-preview", label: "gemini-2.0-flash-lite-preview" },
-    { value: "gpt-4o-mini", label: "gpt-4o-mini" },
-    { value: "o3-mini", label: "o3-mini" },
-    { value: "o1-mini", label: "o1-mini" },
-    { value: "gpt-4o", label: "gpt-4o" },
+    { value: "gemini-2.0-flash", label: "Gemini 2.0 flash" },
+    { value: "gemini-2.0-flash-lite", label: "Gemini 2.0 Flash Lite" },
+    { value: "gpt-4o-mini", label: "GPT 4o mini" },
+    { value: "gemini-2.5-pro-preview-03-25", label: "Gemini 2.5 Pro Preview" },
+    { value: "o3-mini", label: "o3 mini" },
+    { value: "o1-mini", label: "o1 mini" },
+    { value: "gpt-4o", label: "GPT 4o" },
   ], []);
 
   // Derive the models to display based on economicalMode
