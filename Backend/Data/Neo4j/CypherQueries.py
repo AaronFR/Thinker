@@ -208,7 +208,7 @@ ORDER BY category_name;
 LIST_CATEGORIES_BY_LATEST_MESSAGE= """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)
 OPTIONAL MATCH (category)<-[:BELONGS_TO]-(message:USER_PROMPT)
-RETURN DISTINCT category.name AS category_name, category.colour AS colour, category.description as description, max(message.time) AS latest_time
+RETURN DISTINCT category.id as category_id, category.name AS category_name, category.colour AS colour, category.description as description, max(message.time) AS latest_time
 ORDER BY 
     CASE WHEN latest_time IS NULL THEN 1 ELSE 0 END, 
     latest_time DESC,

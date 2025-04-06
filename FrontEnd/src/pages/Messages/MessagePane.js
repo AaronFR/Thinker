@@ -56,7 +56,7 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
 
       // Assign unique IDs and default messages
       const categoriesWithId = data.categories.map((category, index) => ({
-        id: index + 1,
+        id: category.id,
         name: toTitleCase(category.name),
         colour: category.colour || null,
         description: category.description || null,
@@ -101,7 +101,8 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
     if (refreshCategory == null) {
       return;
     }
-    fetchCategories();
+
+    toggleCategory(refreshCategory?.id, refreshCategory?.name)
   }, [refreshCategory, fetchCategories]);
 
   /**
@@ -149,9 +150,10 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
       setExpandedCategoryId(null);
     } else {
       setExpandedCategoryId(id);
-      const category = categories.find(cat => cat.id === id);
+      const category = categories.find(cat => cat.name.toLowerCase() === name.toLowerCase());
+      
       // Fetch messages only if they have not been loaded yet
-      if (!category.messages.length) {
+      if (!category || !category.messages?.length) {
         await fetchMessagesByCategory(name, id);
       }
     }
