@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import TagSelector from './TagsSelector';
@@ -13,7 +13,7 @@ import TooltipConstants from '../../constants/tooltips';
  * @param {string} selectedPersona - Current selected persona.
  * @param {function} setTags - Function to update the selected persona in the prompts tags.
  */
-const PersonaSelector = React.memo(({ persona, setTags }) => {
+const PersonaSelector = React.memo(({ selectedPersona, setTags, isLoading }) => {
     const personas = [
         { value: "coder", label: "💻 Coder" },
         { value: "writer", label: "✍ Writer" },
@@ -21,13 +21,13 @@ const PersonaSelector = React.memo(({ persona, setTags }) => {
     
     return (
         <div 
-            className="persona-selector"
+            className={`persona-selector ${isLoading ? 'loading' : ''}`}
             data-tooltip-id="tooltip"
             data-tooltip-content={TooltipConstants.personaSelector}
             data-tooltip-place="top"
         >
             <TagSelector
-                selectedValue={persona}
+                selectedValue={selectedPersona}
                 setTags={setTags}
                 options={personas}
                 placeholder="Persona"

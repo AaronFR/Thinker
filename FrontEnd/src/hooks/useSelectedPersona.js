@@ -8,7 +8,7 @@ import { selectPersonaEndpoint } from '../constants/endpoints';
  */
 const useSelectedPersona = () => {
   const [automaticallySelectedPersona, setSelectedPersona] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [personaIsLoading, setPersonaIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   /**
@@ -16,7 +16,7 @@ const useSelectedPersona = () => {
    * @param {string} userPrompt - The user's prompt/input.
    */
   const selectPersona = async (userPrompt) => {
-    setIsLoading(true);
+    setPersonaIsLoading(true);
     setError(null);
 
     try {
@@ -41,11 +41,11 @@ const useSelectedPersona = () => {
       console.error("Error in selecting persona:", error);
       setError(error.message);
     } finally {
-      setIsLoading(false);
+      setPersonaIsLoading(false);
     }
   };
 
-  return { automaticallySelectedPersona, isLoading, error, selectPersona };
+  return { automaticallySelectedPersona, personaIsLoading, error, selectPersona };
 };
 
 export default useSelectedPersona;

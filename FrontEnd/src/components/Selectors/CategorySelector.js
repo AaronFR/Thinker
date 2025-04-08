@@ -16,10 +16,10 @@ import { fetchCategories } from '../../utils/CategoryService';
  * @param {string} selectedCategory - Current selected category.
  * @param {function} setTags - Function to update the selected tags.
  */
-const CategorySelector = React.memo(({ selectedCategory, setTags }) => {
+const CategorySelector = React.memo(({ selectedCategory, setTags, isLoading }) => {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   /**
    * Fetches categories from the server and formats them for the TagSelector.
@@ -27,22 +27,21 @@ const CategorySelector = React.memo(({ selectedCategory, setTags }) => {
    * ToDo: Category management needs to be centrally managed to avoid multiple calls and update sensibly
    */
   const loadCategories = useCallback(async () => {
-    setIsLoading(true);
     try {
       setError('');
       const cats = await fetchCategories();
+
       /** @type {Category[]} */
       const formattedCategories = cats.map(cat => ({
         value: cat.name.toLowerCase(),
         label: cat.name,
       }));
+
       setCategories(formattedCategories);
-      return formattedCategories; // Return formatted categories for use in addMissingCategory
+      return formattedCategories;
     } catch (err) {
       setError('Unable to load categories. Please try again.');
-      console.error(err); // Log the error for debugging
-    } finally {
-      setIsLoading(false);
+      console.error(err);
     }
   }, []);
 
@@ -74,12 +73,14 @@ const CategorySelector = React.memo(({ selectedCategory, setTags }) => {
         value: selectedCategory.toLowerCase(),
         label: `*NEW* - ${selectedCategory}`,
       };
+
       setCategories((prevCategories) => {
         // Check if the category is already in prevCategories to avoid duplicates
         const alreadyExists = prevCategories.some(cat => cat.value === newCategory.value);
         if (alreadyExists) {
           return prevCategories;
         }
+
         return [...prevCategories, newCategory];
       });
     }
@@ -91,7 +92,7 @@ const CategorySelector = React.memo(({ selectedCategory, setTags }) => {
 
   return (
     <div
-      className='category-selector-container'
+      className={`category-selector-container ${isLoading ? 'loading' : ''}`}
       data-tooltip-id="tooltip"
       data-tooltip-content={TooltipConstants.categorySelector}
       data-tooltip-place="top"
@@ -101,7 +102,7 @@ const CategorySelector = React.memo(({ selectedCategory, setTags }) => {
           className="error-message"
           role="alert"
           aria-live="assertive" // Announce the error immediately
-          style={{ color: 'red', marginBottom: '10px' }} // Basic styling, customize as needed
+          style={{ color: 'red', marginBottom: '10px' }}
         >
           {error}
         </div>

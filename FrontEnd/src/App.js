@@ -83,7 +83,7 @@ function App () {
     const { message, messageId, files, error: messageError, isProcessing, handleSubmit, disconnectFromRequest, refreshCategory } = useSubmitMessage(concatenatedQA, selectedFiles, selectedMessages, tags, workflow, setWorkflow);
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt();
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions();
-    const { selectedWorkflow, workflowIsLoading, selectMessageError, selectWorkflow } = useSelectedWorkflow();
+    const { automaticallySelectedWorkflow, workflowIsLoading, selectMessageError, selectWorkflow } = useSelectedWorkflow();
     const { automaticallySelectedPersona, personaIsLoading, selectPersonaError, selectPersona } = useSelectedPersona();
     const { automaticallySelectedCategory, categoryIsLoading, selectCategoryError, selectCategory } = useSelectedCategory();
 
@@ -117,8 +117,8 @@ function App () {
     }, [formsFilled])
 
     useEffect(() => {
-      setTags(prevTags => ({ ...prevTags, workflow: selectedWorkflow }));
-    }, [selectedWorkflow]);
+      setTags(prevTags => ({ ...prevTags, workflow: automaticallySelectedWorkflow }));
+    }, [automaticallySelectedWorkflow]);
 
     useEffect(() => {
       setTags(prevTags => ({ ...prevTags, persona: automaticallySelectedPersona }))
@@ -264,6 +264,9 @@ function App () {
             isProcessing={isProcessing}
             generateAugmentedPrompt={generateAugmentedPrompt}
             generateQuestionsForPrompt={generateQuestionsForPrompt}
+            categoryIsLoading={categoryIsLoading}
+            workflowIsLoading={workflowIsLoading}
+            personaIsLoading={personaIsLoading}
             tags={tags}
             setTags={setTags}
             setRefreshFiles={setRefreshFiles}

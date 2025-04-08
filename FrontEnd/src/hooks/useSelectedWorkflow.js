@@ -7,8 +7,8 @@ import { selectWorkflowEndpoint } from '../constants/endpoints';
  * @returns {Object} Contains state and function to select workflow.
  */
 const useSelectedWorkflow = () => {
-  const [selectedWorkflow, setSelectedWorkflow] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [automaticallySelectedWorkflow, setSelectedWorkflow] = useState(null);
+  const [workflowIsLoading, setWorkflowIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   /**
@@ -17,7 +17,7 @@ const useSelectedWorkflow = () => {
    * @param {Array|string} tags - Relevant tags associated with the prompt.
    */
   const selectWorkflow = async (userPrompt, tags) => {
-    setIsLoading(true);
+    setWorkflowIsLoading(true);
     setError(null);
 
     try {
@@ -43,11 +43,11 @@ const useSelectedWorkflow = () => {
       console.error("Error in selecting workflow:", error);
       setError(error.message);
     } finally {
-      setIsLoading(false);
+      setWorkflowIsLoading(false);
     }
   };
 
-  return { selectedWorkflow, isLoading, error, selectWorkflow };
+  return { automaticallySelectedWorkflow, workflowIsLoading, error, selectWorkflow };
 };
 
 export default useSelectedWorkflow;

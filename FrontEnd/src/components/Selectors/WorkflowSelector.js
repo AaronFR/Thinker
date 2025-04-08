@@ -10,7 +10,7 @@ import TooltipConstants from '../../constants/tooltips';
  * @param {string} selectedWorkflow - Current selected workflow.
  * @param {function} setTags - Function to update the selected tags.
  */
-const WorkflowSelector = React.memo(({ selectedWorkflow, setTags }) => {
+const WorkflowSelector = React.memo(({ selectedWorkflow, setTags, isLoading }) => {
   const workflows = [
     { value: "chat", label: "🗣 Chat" },
     { value: "write", label: "✍ Write" },
@@ -19,7 +19,7 @@ const WorkflowSelector = React.memo(({ selectedWorkflow, setTags }) => {
 
   return (
     <div
-      className='workflow-selector-container'
+      className={`workflow-selector-container ${isLoading ? 'loading' : ''}`}
       data-tooltip-id="tooltip"
       data-tooltip-content={TooltipConstants.workflowSelector}
       data-tooltip-place="top"

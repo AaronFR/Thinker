@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Max data storage per user of 1 GB (Only text is supported currently so this should be *impossible* to breach)
 - New category description and description created simultaneously, decreasing time take to create new categories
 - Uploaded code files are formatted correctly as code not text
+- Category, Persona and Workflow selectors visually display when a value is being generated automatically.
 
 ### Removed
 

@@ -49,6 +49,9 @@ const UserInputForm = ({
   isProcessing,
   generateAugmentedPrompt,
   generateQuestionsForPrompt,
+  categoryIsLoading,
+  workflowIsLoading,
+  personaIsLoading,
   tags,
   setTags,
   setRefreshFiles
@@ -122,7 +125,7 @@ const UserInputForm = ({
   return (
     <div className="user-input-form-container">
       {/* Reference Area */}
-      {(selectedMessages.length != 0 || selectedFiles.length != 0) &&
+      {(selectedMessages.length !== 0 || selectedFiles.length !== 0) &&
       <div className="reference-area">
         {selectedMessages.length != 0 && 
         <div className="reference-section">
@@ -242,10 +245,12 @@ const UserInputForm = ({
             <CategorySelector
               selectedCategory={tags.category}
               setTags={setTags}
+              isLoading={categoryIsLoading}
             />
             <PersonaSelector
               selectedPersona={tags.persona}
               setTags={setTags}
+              isLoading={personaIsLoading}
             />
           </div>
 
@@ -253,6 +258,7 @@ const UserInputForm = ({
             <WorkflowSelector
               selectedWorkflow={tags.workflow}
               setTags={setTags}
+              isLoading={workflowIsLoading}
             />
             {tags.workflow === 'write' && (
               <>
