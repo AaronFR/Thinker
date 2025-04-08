@@ -154,14 +154,68 @@ const FunctionalitySettings = React.memo(({
           <h3>Auto categorisation</h3>
           <p>{formatPrice(parseFloat(userInfo?.select_category_cost))}</p>
         </div>
+        <label className="settings-label">
+          <select
+            className="settings-select"
+            value={settings?.features?.automatically_select_category}
+            onChange={(e) =>
+              changeSetting(
+                'features',
+                'automatically_select_category',
+                e.target.value,
+              )
+            }
+          >
+            <option value={'always'}>Always</option>
+            <option value={'once'}>Once</option>
+          </select>
+          Automatically select a Category (folder) to store the promp/files in
+        </label>
+
+
         <div className='side-by-side'>
           <h3>Auto select persona</h3>
           <p>{formatPrice(parseFloat(userInfo?.select_persona_cost))}</p>
         </div>
+        <label className="settings-label">
+          <select
+            className="settings-select"
+            value={settings?.features?.automatically_select_persona}
+            onChange={(e) =>
+              changeSetting(
+                'features',
+                'automatically_select_persona',
+                e.target.value,
+              )
+            }
+          >
+            <option value={'always'}>Always</option>
+            <option value={'once'}>Once</option>
+          </select>
+          Automatically select a Persona (speciality) based on your prompt
+        </label>
+
         <div className='side-by-side'>
           <h3>Auto select worfklows</h3>
           <p>{formatPrice(parseFloat(userInfo?.select_workflow_cost))}</p>
         </div>
+        <label className="settings-label">
+          <select
+            className="settings-select"
+            value={settings?.features?.automatically_select_workflow}
+            onChange={(e) =>
+              changeSetting(
+                'features',
+                'automatically_select_workflow',
+                e.target.value,
+              )
+            }
+          >
+            <option value={'always'}>Always</option>
+            <option value={'once'}>Once</option>
+          </select>
+          Automatically select a Workflow for deciding how to process this prompt
+        </label>
         
       </div>
      

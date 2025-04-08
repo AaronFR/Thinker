@@ -78,7 +78,7 @@ def init_process_message_ws(socketio: SocketIO):
             tags = parsed_data["tags"]
             files = parsed_data["files"]
             messages = parsed_data["messages"]
-            persona_name = parsed_data.get("persona")
+            persona_name = tags.get("persona")
 
             selected_persona = get_selected_persona(persona_name)
             file_references = Organising.process_files(files)

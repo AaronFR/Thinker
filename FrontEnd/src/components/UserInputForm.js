@@ -35,8 +35,6 @@ import CategorySelector from './Selectors/CategorySelector';
  * @param {function} handleInputChange - Function to handle changes in user input.
  * @param {string} userInput - Current value of the user input.
  * @param {boolean} isProcessing - Indicates if the form is in a processing state.
- * @param {String} selectedPersona - Currently selected persona.
- * @param {function} setSelectedPersona - Set new persona
  * @param {function} generateAugmentedPrompt - Trigger a new auto-prompt-engineer of the users prompt
  * @param {function} generateQuestionsForPrompt - Trigger a new set of questions against the users prompt
  * @param {Array} tags - Current tags.
@@ -49,8 +47,6 @@ const UserInputForm = ({
   handleInputChange,
   userInput,
   isProcessing,
-  selectedPersona,
-  setSelectedPersona,
   generateAugmentedPrompt,
   generateQuestionsForPrompt,
   tags,
@@ -248,8 +244,8 @@ const UserInputForm = ({
               setTags={setTags}
             />
             <PersonaSelector
-              selectedPersona={selectedPersona}
-              setSelectedPersona={setSelectedPersona}
+              selectedPersona={tags.persona}
+              setTags={setTags}
             />
           </div>
 
@@ -264,7 +260,7 @@ const UserInputForm = ({
                   write={tags.write}
                   setTags={setTags}
                 />
-                {selectedPersona === 'writer' && tags.workflow === 'write' && (
+                {tags.persona == 'writer' && tags.workflow === 'write' && (
                   <PagesSelector
                     pages={tags.pages}
                     setTags={setTags}

@@ -40,7 +40,6 @@ function App () {
 
     // User Input States
     const [userInput, setUserInput] = useState('')
-    const [selectedPersona, setSelectedPersona] = useState('auto');
 
     // Debounce timer reference to optimize input handling
     const idleTime = 1500; // milliseconds
@@ -122,7 +121,7 @@ function App () {
     }, [selectedWorkflow]);
 
     useEffect(() => {
-      setSelectedPersona(automaticallySelectedPersona);
+      setTags(prevTags => ({ ...prevTags, persona: automaticallySelectedPersona }))
     }, [automaticallySelectedPersona]);
 
     useEffect(() => {
@@ -162,9 +161,28 @@ function App () {
     const handleTyping = (value, selectedMessages, selectedFiles, tags) => {
       const currentSettings = settingsRef.current;
       
-      selectPersona(value)
-      selectWorkflow(value, tags)
-      selectCategory(value)
+      if (currentSettings?.features?.automatically_select_persona !== "once") {
+        selectPersona(value)
+      }
+      if (currentSettings?.features?.automatically_select_persona === "once" && !tags.persona) {
+        selectPersona(value)
+      }
+      
+      if (currentSettings?.features?.automatically_select_workflow !== "once") {
+        selectWorkflow(value, tags)
+      }
+      if (currentSettings?.features?.automatically_select_workflow === "once" && !tags.workflow) {
+        selectWorkflow(value, tags)
+      }
+
+      if (currentSettings?.features?.automatically_select_category !== "once") {
+        selectCategory(value)
+      }
+      if (currentSettings?.features?.automatically_select_category === "once" && !tags.category) {
+        selectCategory(value)
+      }
+
+
       if (currentSettings?.beta_features?.augmented_prompts_enabled  === "auto") {
         generateAugmentedPrompt(value);
       }
@@ -187,7 +205,7 @@ function App () {
     const handleFormSubmit = async (event) => {
       event.preventDefault(); // Always prevent default if event exists
       try {
-        await handleSubmit(userInput, selectedPersona, selectedMessages, selectedFiles, tags);
+        await handleSubmit(userInput, selectedMessages, selectedFiles, tags);
         setSelectedFiles([])
         setSelectedMessages([])
 
@@ -244,8 +262,6 @@ function App () {
             handleInputChange={handleInputChange}
             userInput={userInput}
             isProcessing={isProcessing}
-            selectedPersona={selectedPersona}
-            setSelectedPersona={setSelectedPersona}
             generateAugmentedPrompt={generateAugmentedPrompt}
             generateQuestionsForPrompt={generateQuestionsForPrompt}
             tags={tags}

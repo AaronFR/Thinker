@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import TagSelector from './TagsSelector';
 import TooltipConstants from '../../constants/tooltips';
 

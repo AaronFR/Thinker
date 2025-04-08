@@ -26,7 +26,6 @@ const useSubmitMessage = (
   const socketRef = useRef(null);
 
   const userInputRef = useRef('');
-  const selectedPersonaRef = useRef(null);
   const pendingSubmitRef = useRef(null);
   const workflowRef = useRef(workflow);
 
@@ -184,9 +183,9 @@ const useSubmitMessage = (
               await initializeSocket(); // Reinitialize the socket and wait for it to connect
               console.log('Retrying pending submit:', pendingSubmitRef.current);
               if (pendingSubmitRef.current) {
-                const { userInput, selectedPersona, selectedMessages, selectedFiles, tags } = pendingSubmitRef.current;
+                const { userInput, selectedMessages, selectedFiles, tags } = pendingSubmitRef.current;
                 pendingSubmitRef.current = null; // Clear pending submit after retrying
-                await handleSubmit(userInput, selectedPersona, selectedMessages, selectedFiles, tags); // Retry the request
+                await handleSubmit(userInput, selectedMessages, selectedFiles, tags); // Retry the request
               }
             } else {
               setError('Session expired. Please log in again.');
@@ -225,9 +224,8 @@ const useSubmitMessage = (
   /**
    * Function to handle message submission
    */
-  const handleSubmit = useCallback(async (userInput, selectedPersona, selectedMessages, selectedFiles, tags) => {
+  const handleSubmit = useCallback(async (userInput, selectedMessages, selectedFiles, tags) => {
       userInputRef.current = userInput;
-      selectedPersonaRef.current = selectedPersona;
 
       if (isProcessing) {
         console.warn('A submission is already in progress.');
@@ -240,9 +238,9 @@ const useSubmitMessage = (
       setTotalCost(null); // Reset cost for new request
       setWorkflow(null); // Clear the previous workflow diagram
 
-      console.log('Storing pending submit:', { userInput, selectedPersona, tags });
+      console.log('Storing pending submit:', { userInput, tags });
 
-      pendingSubmitRef.current = { userInput, selectedPersona, selectedMessages, selectedFiles, tags };
+      pendingSubmitRef.current = { userInput, selectedMessages, selectedFiles, tags };
 
       try {
         if (!socketRef.current || !socketRef.current.connected) {
@@ -254,8 +252,7 @@ const useSubmitMessage = (
           prompt: userInput,
           additionalQA: concatenatedQA,
           files: selectedFiles,
-          messages: selectedMessages, // consider sending just IDs if needed
-          persona: selectedPersona,
+          messages: selectedMessages,
           tags: tags
         });
         console.log('Stream started');
