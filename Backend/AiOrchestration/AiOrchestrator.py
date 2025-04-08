@@ -9,6 +9,7 @@ from AiOrchestration.GeminiModel import GeminiModel
 from AiOrchestration.ChatGptMessageBuilder import generate_messages
 from Constants.Exceptions import AI_RESOURCE_FAILURE, FUNCTION_SCHEMA_EMPTY, NO_RESPONSE_OPEN_AI_API
 from Data.Configuration import Configuration
+from Utilities.Contexts import set_functionality_context
 from Utilities.Decorators.Decorators import handle_errors, specify_functionality_context
 from Utilities.Utility import Utility
 from Utilities.models import determine_llm_client, find_model_enum_value
@@ -92,6 +93,7 @@ class AiOrchestrator:
             if iteration == 1:
                 prompt_content = user_prompts
             else:
+                set_functionality_context("loops")
                 prompt_content = (
                     "Review your previous answer and provide an improved solution to the user's original request.\n"
                     f"User prompt: {user_prompts}\n"
@@ -119,6 +121,9 @@ class AiOrchestrator:
             logging.info(f"Iteration {iteration} completed with response")
             loop_responses.append(iteration_response)
             previous_answer = iteration_response
+
+        if loop_count > 1:
+            set_functionality_context(None)
 
         logging.info(f"Final consolidated response:\n{previous_answer}")
         return previous_answer

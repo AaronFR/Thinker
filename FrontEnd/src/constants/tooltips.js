@@ -71,6 +71,8 @@ const TooltipConstants = {
 
     It guesses at correct answers statistically, and sometimes these guesses can be far removed from anything resembling actual thought
   `,
+
+  /* Pricing */
   minFeeDetails: `Which we have to pay and will pass on directly rather than indirectly by increasing prices
     
     <i class="sarcasm">Ahhh the joy of cash-free transactions am I right</i>?
@@ -88,6 +90,7 @@ const TooltipConstants = {
   internetSearchCosting: `This is the minimum cost, page content will also increase the input costs of a prompt`,
   userContextCosting: `This is just the minimum cost for deciding what user info to store and retrieve. 
   The referenced context will also increase the input costs of a prompt.`,
+  loopsCosting: `If you run multiple runs in parrallel this will be costed instead of the number of loops`,
 };
 
 export default TooltipConstants;

@@ -733,7 +733,13 @@ const LoopsSection = React.memo(({
   <div className='settings-subsection'>
     <div className='side-by-side'>
       <h3>Looping over responses</h3>
-      <h4>{formatPrice(parseFloat(cost))}</h4>
+      <h4
+        data-tooltip-id="tooltip"
+        data-tooltip-content={TooltipConstants.loopsCosting}
+        data-tooltip-place="bottom-start"
+      >
+        {formatPrice(parseFloat(cost))}
+      </h4>
     </div>
     <label className="settings-label">
       <select
@@ -873,7 +879,7 @@ const UserContextSection = React.memo(({
  * Main component that aggregates all settings sections.
  */
 export function Settings() {
-  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_category_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'internet_search_cost', 'summarise_workflows_cost', 'summarise_files_cost', 'user_context_cost']);
+  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_category_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'loops_cost', 'internet_search_cost', 'summarise_workflows_cost', 'summarise_files_cost', 'user_context_cost']);
   const [userInfo, setUserInfo] = useState(null);
   const [error, setError] = useState(null);
 
