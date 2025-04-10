@@ -75,8 +75,6 @@ EXTRACT_LIST_REGEX = r'\[.*?\]'
 # Ordered or Unordered
 EXTRACT_ELEMENTS_FROM_LIST = r'^\s*[-*]\s+(.*)$|^\s*\d+\.\s+(.*)$'
 
-SENTENCE_WITH_FULL_STOP_REGEX = r'^.*\.$'
-
 # Standard Errors
 
 CANNOT_AFFORD_REQUEST = "INSUFFICIENT WEALTH DETECTED"  # I mean it's not wrong

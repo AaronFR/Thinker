@@ -10,9 +10,9 @@ from Utilities.Decorators.AuthorisationDecorators import login_required
 categories_bp = Blueprint('categories', __name__)
 
 
-UPDATE_CATEGORY_DESCRIPTION_SCHEMA = {
+UPDATE_CATEGORY_INSTRUCTIONS_SCHEMA = {
     "category_name": {"required": True, "type": str},
-    "new_category_description": {"required": True, "type": str}
+    "new_category_instructions": {"required": True, "type": str}
 }
 
 
@@ -45,23 +45,23 @@ def list_categories_with_files():
     return fetch_entity(nodeDB().list_categories_with_files(), "categories")
 
 
-@categories_bp.route('/category_description', methods=['POST'])
+@categories_bp.route('/category_instructions', methods=['POST'])
 @login_required
 @limiter.limit(LIGHTLY_RESTRICTED)
 @limiter.limit(USER_LIGHTLY_RESTRICTED, key_func=user_key_func)
-def update_category_description():
-    """ Update the category description used as a system message for the given category
+def update_category_instructions():
+    """ Update the category instructions used as a system message for the given category
 
     category_name is case-insensitive, will be lowercase-d for request.
-    new_category_description is capped at 50k characters because come-on.
+    new_category_instruction is capped at 50k characters because come-on.
 
-    :return: A JSON response indicating success or failure to update the categories description
+    :return: A JSON response indicating success or failure to update the category's instructions
     """
     data = request.get_json()
-    parsed_data = parse_and_validate_data(data, UPDATE_CATEGORY_DESCRIPTION_SCHEMA)
+    parsed_data = parse_and_validate_data(data, UPDATE_CATEGORY_INSTRUCTIONS_SCHEMA)
     category_name = parsed_data.get("category_name").lower()
-    new_category_description = parsed_data.get("new_category_description")[:MAX_FIELD_SIZE]
+    new_category_instructions = parsed_data.get("new_category_instructions")[:MAX_FIELD_SIZE]
 
-    updated_category_description = nodeDB().update_category_description(category_name, new_category_description)
+    updated_category_instructions = nodeDB().update_category_instructions(category_name, new_category_instructions)
 
-    return fetch_entity(bool(updated_category_description), "description_updated")
+    return fetch_entity(bool(updated_category_instructions), "instructions_updated")

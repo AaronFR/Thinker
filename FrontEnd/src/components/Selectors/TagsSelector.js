@@ -71,7 +71,7 @@ const TagSelector = React.memo(({
 });
 
 TagSelector.propTypes = {
-  selectedValue: PropTypes.string.isRequired,
+  selectedValue: PropTypes.string,
   setTags: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(
     PropTypes.shape({

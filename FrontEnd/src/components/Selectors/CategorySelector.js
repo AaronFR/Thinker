@@ -120,7 +120,7 @@ const CategorySelector = React.memo(({ selectedCategory, setTags, isLoading }) =
 });
 
 CategorySelector.propTypes = {
-  selectedCategory: PropTypes.string.isRequired,
+  selectedCategory: PropTypes.string,
   setTags: PropTypes.func.isRequired,
 };
 

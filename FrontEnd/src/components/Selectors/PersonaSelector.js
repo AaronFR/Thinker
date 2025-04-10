@@ -38,7 +38,7 @@ const PersonaSelector = React.memo(({ selectedPersona, setTags, isLoading }) => 
 });
 
 PersonaSelector.propTypes = {
-    selectedPersona: PropTypes.string.isRequired,
+    selectedPersona: PropTypes.string,
     setTags: PropTypes.func.isRequired,
 };
 

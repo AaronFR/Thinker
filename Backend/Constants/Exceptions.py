@@ -66,7 +66,7 @@ def failure_to_suggest_colour_for_category(category_name: str):
     return f"AI color assignment failed for category '{category_name}'"
 
 
-def failure_to_create_description_for_category(category_name: str):
+def failure_to_create_instructions_for_category(category_name: str):
     return f"AI color assignment failed for category '{category_name}'"
 
 

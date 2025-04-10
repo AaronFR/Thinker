@@ -24,7 +24,7 @@ export const fetchCategories = async () => {
       id: index + 1, // unique, sequential id
       name: toTitleCase(category.name),
       colour: category.colour || null,
-      description: category.description || null,
+      instructions: category.instructions || null,
     }));
   } catch (error) {
     console.error('Error in fetchCategories:', error);

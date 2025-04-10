@@ -8,7 +8,7 @@ import TooltipConstants from '../../constants/tooltips';
  * Allows users to select the number of loops for processing.
  * 
  * @param {number} selectedNumberOfLoops - Current selected number of loops.
- * @param {function} setLoops - Function to update the selected number of loops.
+ * @param {function} setTags - Function to update the selected number of loops.
  */
 const LoopsSelector = React.memo(({ selectedNumberOfLoops, setTags }) => {
   const loopOptions = [
@@ -39,8 +39,8 @@ const LoopsSelector = React.memo(({ selectedNumberOfLoops, setTags }) => {
 });
 
 LoopsSelector.propTypes = {
-  selectedNumberOfLoops: PropTypes.number.isRequired,
-  setLoops: PropTypes.func.isRequired,
+  selectedNumberOfLoops: PropTypes.number,
+  setTags: PropTypes.func.isRequired,
 };
 
 export default LoopsSelector;

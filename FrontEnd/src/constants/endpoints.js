@@ -24,7 +24,7 @@ export const questionPromptEndpoint = `${FLASK_PORT}/augmentation/question_promp
 
 export const categoriesEndpoint = `${FLASK_PORT}/categories`
 export const categoriesWithFilesEndpoint = `${FLASK_PORT}/categories_with_files`
-export const updateCategoryDescription = `${FLASK_PORT}/category_description`
+export const updateCategoryInstructions = `${FLASK_PORT}/category_instructions`
 
 /* Files */
 

@@ -10,7 +10,7 @@ import MessageItem from './MessageItem';
 import './styles/MessageHistory.css';
 import { SettingsContext } from '../Settings/SettingsContext';
 import { useCalculateItemsPerRow } from '../../hooks/useCalculateItemsPerRow';
-import CategoryDescriptionEditor from '../../components/CategoryDescriptionEditor';
+import CategoryInstructionsEditor from '../../components/CategoryInstructionsEditor';
 import TooltipConstants from '../../constants/tooltips';
 
 /**
@@ -59,7 +59,7 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
         id: category.id,
         name: toTitleCase(category.name),
         colour: category.colour || null,
-        description: category.description || null,
+        instructions: category.instructions || null,
         messages: []
       }));
       setCategories(categoriesWithId);
@@ -123,13 +123,13 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
   }, [removeMessage]);
 
   /**
-   * Updates the local state of category descriptions if the backend has been updated.
+   * Updates the local state of category instructions if the backend has been updated.
    */
-  const handleCategoryDescriptionUpdate = useCallback((categoryName, newDescription) => {
+  const handleCategoryInstructionsUpdate = useCallback((categoryName, newInstructions) => {
     setCategories(prevCategories =>
       prevCategories.map(category =>
         category.name.toLowerCase() === categoryName.toLowerCase()
-          ? { ...category, description: newDescription }
+          ? { ...category, instructions: newInstructions }
           : category
       )
     );
@@ -195,12 +195,14 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
                   <header className="category-title">
                     {category.name}
                   </header>
-                  {(settings?.interface?.display_category_description === "always" ||
-                    (settings?.interface?.display_category_description === "when selected" && expandedCategoryId === category.id)) && (
-                      <CategoryDescriptionEditor
+                  {(
+                    (settings?.interface?.display_category_instructions === "always" && expandedCategoryId === category.id) ||
+                    (settings?.interface?.display_category_instructions === "when selected" && expandedCategoryId === category.id)
+                   ) && (
+                      <CategoryInstructionsEditor
                         categoryName={category.name}
-                        category_description={category.description}
-                        onUpdateDescription={handleCategoryDescriptionUpdate}
+                        category_instructions={category.instructions}
+                        onUpdateInstructions={handleCategoryInstructionsUpdate}
                         data-tooltip-id="tooltip"
                         data-tooltip-content={TooltipConstants.categorySystemMessage}
                         data-tooltip-place="bottom"

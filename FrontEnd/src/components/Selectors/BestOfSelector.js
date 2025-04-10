@@ -37,8 +37,8 @@ const BestOfSelector = React.memo(({ selectedRuns, setTags }) => {
 });
 
 BestOfSelector.propTypes = {
-  selectedRuns: PropTypes.number.isRequired,
-  setRuns: PropTypes.func.isRequired,
+  selectedRuns: PropTypes.number,
+  setTags: PropTypes.func.isRequired,
 };
 
 export default BestOfSelector;

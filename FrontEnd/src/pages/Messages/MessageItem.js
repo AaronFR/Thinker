@@ -82,19 +82,19 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
         >
             <div className='side-by-side'>
                 <div 
-                className="message-header" 
-                onClick={toggleExpansion} 
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                }}
-                role="button"
-                aria-expanded={isExpanded}
-                aria-controls={`message-content-${msg.id}`}
-                tabIndex={0}
-                onKeyPress={handleKeyPressExpansion}
-            >
+                    className="message-header" 
+                    onClick={toggleExpansion} 
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                    role="button"
+                    aria-expanded={isExpanded}
+                    aria-controls={`message-content-${msg.id}`}
+                    tabIndex={0}
+                    onKeyPress={handleKeyPressExpansion}
+                >
                 {
                     isExpanded ? 
                     <CodeHighlighter>

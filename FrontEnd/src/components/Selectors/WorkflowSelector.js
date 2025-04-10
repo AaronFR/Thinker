@@ -37,7 +37,7 @@ const WorkflowSelector = React.memo(({ selectedWorkflow, setTags, isLoading }) =
 });
 
 WorkflowSelector.propTypes = {
-  selectedWorkflow: PropTypes.string.isRequired,
+  selectedWorkflow: PropTypes.string,
   setTags: PropTypes.func.isRequired,
 };
 

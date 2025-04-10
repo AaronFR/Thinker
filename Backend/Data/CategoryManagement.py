@@ -7,17 +7,17 @@ import shortuuid
 from flask import copy_current_request_context
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
-from Constants.Constants import RESULT_AS_TAG_REGEX, SENTENCE_WITH_FULL_STOP_REGEX, DEFAULT_CATEGORY
-from Constants.Exceptions import failure_to_suggest_colour_for_category, failure_to_create_description_for_category
+from Constants.Constants import RESULT_AS_TAG_REGEX, DEFAULT_CATEGORY
+from Constants.Exceptions import failure_to_suggest_colour_for_category, failure_to_create_instructions_for_category
 from Data.Configuration import Configuration
 from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Data.Files.StorageMethodology import StorageMethodology
 from Utilities import Colour
 from Constants.Instructions import DEFAULT_USER_CATEGORISATION_INSTRUCTIONS, categorisation_inputs, \
-    SELECT_COLOUR_SYSTEM_MESSAGE, CATEGORY_DESCRIPTION_SYSTEM_MESSAGE, category_description_prompt, \
+    SELECT_COLOUR_SYSTEM_MESSAGE, CATEGORY_INSTRUCTIONS_SYSTEM_MESSAGE, category_instructions_prompt, \
     categorisation_system_messages
 from Utilities.Contexts import set_category_context, get_category_context, set_message_context, set_user_context, \
-    set_iteration_context, get_user_context, get_message_context
+    get_user_context, get_message_context
 from Utilities.Decorators.Decorators import specify_functionality_context
 
 
@@ -91,14 +91,14 @@ class CategoryManagement:
         available in time for a subsequent request within the prompt
 
         :param category: The category name that has been decided upon
-        :param user_prompt: used as context for deciding the category's description
+        :param user_prompt: used as context for deciding the category's instructions
         :return:
         """
         categories = nodeDB().list_category_names()
 
         if category not in categories:
-            category_id, description, color = CategoryManagement.define_new_category(category, user_prompt)
-            nodeDB().create_category_and_user_prompt(category_id, category, description, color)
+            category_id, instructions, color = CategoryManagement.define_new_category(category, user_prompt)
+            nodeDB().create_category_and_user_prompt(category_id, category, instructions, color)
         else:
             category_id = nodeDB().get_category_id(category)
             nodeDB().create_user_prompt_node(category)
@@ -110,8 +110,8 @@ class CategoryManagement:
         categories = nodeDB().list_category_names()
 
         if category not in categories:
-            category_id, description, color = CategoryManagement.define_new_category(category)
-            nodeDB().create_category(category_id, category, description, color)
+            category_id, instructions, color = CategoryManagement.define_new_category(category)
+            nodeDB().create_category(category_id, category, instructions, color)
         else:
             category_id = nodeDB().get_category_id(category)
 
@@ -120,11 +120,12 @@ class CategoryManagement:
     @staticmethod
     def define_new_category(category: str, additional_context: str = ""):
         """
-        Defines a new category, generating its color and description concurrently.
+        Defines a new category, generating its color and system instructions concurrently.
 
         :param category: The category name
-        :param additional_context: The user's prompt which is used as context when creating descriptions
-        :return: The id, description and color of the new category
+        :param additional_context: The user's prompt which is used as context when creating system instructions for the
+         categories.
+        :return: The id, instructions and color of the new category
         :raises Exception: Propagates exceptions from underlying generation functions.
         """
         category_id = str(shortuuid.uuid())
@@ -139,12 +140,12 @@ class CategoryManagement:
 
             return CategoryManagement.generate_colour(category)
 
-        def wrapped_process_generate_category_description(category, additional_context, user_id, category_id, message_id):
+        def wrapped_process_generate_category_instructions(category, additional_context, user_id, category_id, message_id):
             set_user_context(user_id)
             set_category_context(category_id)
             set_message_context(message_id)
 
-            return CategoryManagement.generate_category_description(
+            return CategoryManagement.generate_category_instructions(
                 category_name=category,
                 additional_context=additional_context
             )
@@ -157,8 +158,8 @@ class CategoryManagement:
                 category_id,
                 message_id
             )
-            description_future = executor.submit(
-                copy_current_request_context(wrapped_process_generate_category_description),
+            instructions_future = executor.submit(
+                copy_current_request_context(wrapped_process_generate_category_instructions),
                 category,
                 additional_context,
                 user_id,
@@ -168,8 +169,8 @@ class CategoryManagement:
 
             logging.info(f"Tasks submitted for '{category}'. Waiting for results...")
             try:
-                description_result = description_future.result()
-                logging.info(f"Description result received for '{category}'.")
+                instructions_result = instructions_future.result()
+                logging.info(f"Instructions result received for '{category}'.")
                 color_result = color_future.result()
                 logging.info(f"Color result received for '{category}'.")
 
@@ -177,7 +178,7 @@ class CategoryManagement:
                 logging.error(f"Error during concurrent category generation for '{category}': {e}", exc_info=True)
                 raise
 
-        return category_id, description_result, color_result
+        return category_id, instructions_result, color_result
 
     @staticmethod
     def extract_result(input_string: str) -> Optional[str]:
@@ -223,15 +224,15 @@ class CategoryManagement:
         return tag_category
 
     @staticmethod
-    def default_description(category_name: str) -> str:
+    def default_instructions(category_name: str) -> str:
         """
-        Provides a default description for the category if AI fails.
+        Provides a default instructions for the category if AI fails.
 
         :param category_name: The name of the category.
-        :return: A default description.
+        :return: default system instructions.
         """
         default = f"A category for {category_name.lower()} related items."
-        logging.debug(f"Default description for '{category_name}': {default}")
+        logging.debug(f"Default instructions for '{category_name}': {default}")
         return default
 
     @staticmethod
@@ -263,30 +264,30 @@ class CategoryManagement:
             return None
 
     @staticmethod
-    def generate_category_description(category_name: str, additional_context: str = "") -> str:
+    def generate_category_instructions(category_name: str, additional_context: str = "") -> str:
         """
-        Generates a short description for the given category name using AI.
+        Generates a system instructions for future prompts in the given category using AI.
 
         :param category_name: The name of the category to describe.
         :param additional_context: Optionally add the user prompt for additional context
-        :return: A short description of the category.
+        :return: A short instructions of the category.
         """
         try:
-            description = AiOrchestrator().execute(
-                [CATEGORY_DESCRIPTION_SYSTEM_MESSAGE],
+            instructions = AiOrchestrator().execute(
+                [CATEGORY_INSTRUCTIONS_SYSTEM_MESSAGE],
                 [
-                    category_description_prompt(category_name),
+                    category_instructions_prompt(category_name),
                     additional_context,
                 ]
             )
-            description = description.strip()
+            instructions = instructions.strip()
 
-            logging.debug(f"AI-generated description for '{category_name}': {description}")
-            return description
+            logging.debug(f"AI-generated instructions for '{category_name}': {instructions}")
+            return instructions
         except Exception:
-            logging.exception(failure_to_create_description_for_category(category_name))
-            return CategoryManagement.default_description(category_name)
+            logging.exception(failure_to_create_instructions_for_category(category_name))
+            return CategoryManagement.default_instructions(category_name)
 
 
 if __name__ == '__main__':
-    CategoryManagement().generate_category_description("Please categorise this as 'testing'.")
+    CategoryManagement().generate_category_instructions("Please categorise this as 'testing'.")

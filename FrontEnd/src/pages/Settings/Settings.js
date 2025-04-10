@@ -64,11 +64,11 @@ const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiCo
       <label className="settings-label">
       <select
         className="settings-select"
-        value={settings?.interface?.display_category_description}
+        value={settings?.interface?.display_category_instructions}
         onChange={(e) =>
           changeSetting(
             'interface',
-            'display_category_description',
+            'display_category_instructions',
              e.target.value,
           )
         }
@@ -77,7 +77,7 @@ const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiCo
         <option value={"when selected"}>When selected</option>
         <option value={"never"}>never</option>
       </select>
-      Display category description
+      Display category instructions
     </label>
 
 

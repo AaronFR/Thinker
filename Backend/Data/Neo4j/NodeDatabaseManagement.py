@@ -283,22 +283,22 @@ class NodeDatabaseManagement:
         self,
         category_id: str,
         category_name: str,
-        category_description: str,
+        category_instructions: str,
         colour: str = "#111111"
     ) -> None:
         """Creates a new category in the database.
 
         :param category_id: The id of the new category node
         :param category_name: The name of the new category.
-        :param category_description: A concise one sentence description of the new category
+        :param category_instructions: A concise one sentence instructions of the new category
         :param colour: the HEX colour assigned to the category
         """
-        logging.info(f"Creating new category [{category_id}]: {category_name} - {category_description}")
+        logging.info(f"Creating new category [{category_id}]: {category_name} - {category_instructions}")
 
         parameters = {
             "user_id": get_user_context(),
             "category_name": category_name.lower(),
-            "category_description": category_description,
+            "category_instructions": category_instructions,
             "category_id": category_id,
             "colour": colour
         }
@@ -313,7 +313,7 @@ class NodeDatabaseManagement:
         self,
         category_id: str,
         category_name: str,
-        category_description: str,
+        category_instructions: str,
         colour: str = "#111111",
     ) -> None:
         """
@@ -325,17 +325,17 @@ class NodeDatabaseManagement:
 
         :param category_id: The id of the new category node
         :param category_name: The name of the new category.
-        :param category_description: A concise one sentence description of the new category
+        :param category_instructions: A concise one sentence instructions of the new category
         :param colour: the HEX colour assigned to the category
         """
 
-        logging.info(f"Creating new category [{category_id}]: {category_name} - {category_description}")
+        logging.info(f"Creating new category [{category_id}]: {category_name} - {category_instructions}")
 
         parameters = {
             "user_id": get_user_context(),
             "message_id": get_message_context(),
             "category_name": category_name.lower(),
-            "category_description": category_description,
+            "category_instructions": category_instructions,
             "category_id": category_id,
             "colour": colour
         }
@@ -420,7 +420,7 @@ class NodeDatabaseManagement:
             {
                 "id": record["category_id"],
                 "name": record["category_name"],
-                "description": record.get("description"),
+                "instructions": record.get("instructions"),
                 "colour": record["colour"]
             } for record in result]
 
@@ -437,19 +437,19 @@ class NodeDatabaseManagement:
 
         return categories
 
-    def update_category_description(self, category_name: str, new_category_description: str) -> str:
+    def update_category_instructions(self, category_name: str, new_category_instructions: str) -> str:
         parameters = {
             "user_id": get_user_context(),
             "category_name": category_name,
-            "new_category_description": new_category_description
+            "new_category_instructions": new_category_instructions
         }
 
-        updated_description = self.neo4jDriver.execute_write(
-            CypherQueries.UPDATE_CATEGORY_DESCRIPTION,
+        updated_instructions = self.neo4jDriver.execute_write(
+            CypherQueries.UPDATE_CATEGORY_INSTRUCTIONS,
             parameters
         )
 
-        return updated_description
+        return updated_instructions
 
     # Files
 

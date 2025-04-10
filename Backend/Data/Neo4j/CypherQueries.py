@@ -46,7 +46,7 @@ RETURN user.verified AS verified_status;
 CREATE_CATEGORY = """
 MATCH (user:USER {id: $user_id})
 WITH user
-MERGE (category:CATEGORY {name: $category_name, description: $category_description, colour: $colour})
+MERGE (category:CATEGORY {name: $category_name, instructions: $category_instructions, colour: $colour})
 ON CREATE SET category.id = $category_id
 MERGE (user)-[:HAS_CATEGORY]->(category)
 RETURN category.id AS category_id;
@@ -55,7 +55,7 @@ RETURN category.id AS category_id;
 CREATE_USER_PROMPT_BLANK_AND_CATEGORY = """
 MATCH (user:USER {id: $user_id})
 WITH user
-MERGE (category:CATEGORY {name: $category_name, description: $category_description, colour: $colour})
+MERGE (category:CATEGORY {name: $category_name, instructions: $category_instructions, colour: $colour})
 ON CREATE SET category.id = $category_id
 MERGE (user)-[:HAS_CATEGORY]->(category)
 CREATE (user_prompt:USER_PROMPT {id: $message_id}) 
@@ -196,7 +196,7 @@ RETURN category.id AS category_id;
 
 GET_CATEGORY_SYSTEM_MESSAGE = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY {id: $category_id})
-RETURN category.description AS category_system_message;
+RETURN category.instructions AS category_system_message;
 """
 
 LIST_CATEGORIES = """
@@ -205,10 +205,10 @@ RETURN DISTINCT category.name AS category_name
 ORDER BY category_name;
 """
 
-LIST_CATEGORIES_BY_LATEST_MESSAGE= """
+LIST_CATEGORIES_BY_LATEST_MESSAGE = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)
 OPTIONAL MATCH (category)<-[:BELONGS_TO]-(message:USER_PROMPT)
-RETURN DISTINCT category.id as category_id, category.name AS category_name, category.colour AS colour, category.description as description, max(message.time) AS latest_time
+RETURN DISTINCT category.id as category_id, category.name AS category_name, category.colour AS colour, category.instructions as instructions, max(message.time) AS latest_time
 ORDER BY 
     CASE WHEN latest_time IS NULL THEN 1 ELSE 0 END, 
     latest_time DESC,
@@ -231,10 +231,10 @@ ORDER BY
     category_name ASC;
 """
 
-UPDATE_CATEGORY_DESCRIPTION = """
+UPDATE_CATEGORY_INSTRUCTIONS = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY {name: $category_name})
-SET category.description = $new_category_description
-RETURN category.description as description
+SET category.instructions = $new_category_instructions
+RETURN category.instructions as instructions
 """
 
 # Files

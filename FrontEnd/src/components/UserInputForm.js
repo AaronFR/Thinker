@@ -57,7 +57,6 @@ const UserInputForm = ({
   setRefreshFiles
 }) => {
   const [fetchError, setFetchError] = useState('');
-  const [uploadCompleted, setUploadCompleted] = useState(true)
 
   const { settings } = useContext(SettingsContext);
   const {
@@ -79,10 +78,6 @@ const UserInputForm = ({
       return;
     }
 
-    // Bulk upload pattern: response has a "files" array
-    
-    setUploadCompleted(true);
-
     // Build a set of file names we already have
     const existingFileNames = new Set(selectedFiles.map(file => file.name))
 
@@ -99,6 +94,7 @@ const UserInputForm = ({
         ...prevFiles,
         ...newFiles
       ]);
+      
       // Trigger refresh with the first sent file
       setRefreshFiles(newFiles[0].name);
     }
@@ -127,7 +123,7 @@ const UserInputForm = ({
       {/* Reference Area */}
       {(selectedMessages.length !== 0 || selectedFiles.length !== 0) &&
       <div className="reference-area">
-        {selectedMessages.length != 0 && 
+        {selectedMessages.length !== 0 && 
         <div className="reference-section">
           <ul className="reference-list">
             {selectedMessages.map((message, index) => (
@@ -145,7 +141,7 @@ const UserInputForm = ({
           </ul>
         </div>}
 
-        {selectedFiles.length != 0 && 
+        {selectedFiles.length !== 0 && 
         <div className="reference-section">
           {fetchError && <p className='error-message'>{fetchError}</p>}
           <ul className="reference-list">
@@ -266,7 +262,7 @@ const UserInputForm = ({
                   write={tags.write}
                   setTags={setTags}
                 />
-                {tags.persona == 'writer' && tags.workflow === 'write' && (
+                {tags.persona === 'writer' && tags.workflow === 'write' && (
                   <PagesSelector
                     pages={tags.pages}
                     setTags={setTags}
@@ -322,7 +318,6 @@ UserInputForm.propTypes = {
       prompt: PropTypes.string.isRequired,
     })
   ).isRequired,
-  setSelectedMessages: PropTypes.func.isRequired,
   tags: PropTypes.object.isRequired,
   setTags: PropTypes.func.isRequired,
 };

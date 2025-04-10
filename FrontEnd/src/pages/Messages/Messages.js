@@ -1,7 +1,4 @@
-// src/pages/Messages.js
-
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import FilePane from './FilePane';
 import MessageHistory from './MessagePane';
@@ -22,7 +19,6 @@ import './styles/Messages.css';
  * @param {Function} onMessageSelect - Callback to handle message selection.
  * @param {boolean} isProcessing - Indicates if the app is currently processing data.
  */
-// const Messages = ({ onFileSelect, onMessageSelect }) => {
 export function Messages() {
   const isProcessing = false;
 
@@ -56,12 +52,6 @@ export function Messages() {
       </div>
     </div>
   );
-};
-
-Messages.propTypes = {
-  onFileSelect: PropTypes.func.isRequired,
-  onMessageSelect: PropTypes.func.isRequired,
-  isProcessing: PropTypes.bool.isRequired,
 };
 
 export default Messages;

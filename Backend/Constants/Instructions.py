@@ -214,9 +214,9 @@ DETERMINE_PAGES_SCHEMA = (
 )
 
 
-def category_description_prompt(category_name: str) -> str:
+def category_instructions_prompt(category_name: str) -> str:
     return (
-        f"Generate a concise and relevant description for the category: {category_name}"
+        f"Generate a concise and relevant system message to be used for future prompts in this category: {category_name}"
     )
 
 
@@ -244,7 +244,7 @@ def categorisation_inputs(user_prompt: str, llm_response: str = None, category_n
     ]
 
 
-CATEGORY_DESCRIPTION_SYSTEM_MESSAGE = (
+CATEGORY_INSTRUCTIONS_SYSTEM_MESSAGE = (
     "You are an assistant that takes a given category and any additional context, to responds with a helpful, "
     "precisely designed LLM system message that would be useful for this category."
     "These system messages will be used when adding to this category, they should be specific and tailored for the "
