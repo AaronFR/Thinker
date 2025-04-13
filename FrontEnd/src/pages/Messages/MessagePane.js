@@ -236,7 +236,7 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
             ))}
           </>
         ) : (
-          <p>No categories yet exist.</p>
+          <p>No category with messages yet.</p>
         )}
       </section>
     </div>

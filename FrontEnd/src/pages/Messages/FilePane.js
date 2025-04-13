@@ -166,7 +166,7 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles, removeFile, refre
             ))}
           </>
         ) : (
-          <div>Loading file categories...</div>
+          <div>No category with files yet.</div>
         )}
       </section>
     </div>
