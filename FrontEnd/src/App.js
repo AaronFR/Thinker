@@ -129,8 +129,9 @@ function App () {
     }, [automaticallySelectedCategory])
 
     useEffect(() => {
+      // ToDo: doesn't refresh when settings changes on another tab
       setTags(prevTags => ({ ...prevTags, model: settingsRef.current.models.default_foreground_model }));
-    }, [settings.defaultModel])
+    }, [settingsRef.current.models?.default_foreground_model])
 
     useEffect(() => {
       if (messageId == null || messageId == '') {
@@ -183,10 +184,10 @@ function App () {
       }
 
 
-      if (currentSettings?.beta_features?.augmented_prompts_enabled  === "auto") {
+      if (currentSettings?.prompt_improvement?.augmented_prompts_enabled  === "auto") {
         generateAugmentedPrompt(value);
       }
-      if (currentSettings?.beta_features?.question_user_prompts_enabled  === "auto" && !formsFilled) {
+      if (currentSettings?.prompt_improvement?.question_user_prompts_enabled  === "auto" && !formsFilled) {
         generateQuestionsForPrompt(value, selectedMessages, selectedFiles);
       }
     };
@@ -222,7 +223,7 @@ function App () {
 
     const copyAugmentedPrompt = () => {
       setUserInput(augmentedPrompt); // Copy augmentedPrompt into userInput
-      if (settingsRef.current?.beta_features?.augmented_prompts_enabled != "off" && !formsFilled && settings.questionUserPromptsEnabled == 'auto') {
+      if (settingsRef.current?.prompt_improvement?.augmented_prompts_enabled != "off" && !formsFilled && settings.questionUserPromptsEnabled == 'auto') {
         generateQuestionsForPrompt(augmentedPrompt, selectedMessages, selectedFiles); // Retrigger questions for prompt
         setResetResponsesTrigger(prev => prev + 1);
       }
@@ -272,7 +273,7 @@ function App () {
             setRefreshFiles={setRefreshFiles}
           />
           
-          {settingsRef.current?.beta_features?.question_user_prompts_enabled != "off" && 
+          {settingsRef.current?.prompt_improvement?.question_user_prompts_enabled != "off" && 
           <SuggestedQuestions
             questionsForPrompt={questionsForPrompt}
             error={questionsError}
@@ -282,7 +283,7 @@ function App () {
             resetResponsesTrigger={resetResponsesTrigger}
           />}
   
-          {settingsRef.current?.beta_features?.augmented_prompts_enabled != "off" && 
+          {settingsRef.current?.prompt_improvement?.augmented_prompts_enabled != "off" && 
           <PromptAugmentation 
             augmentedPrompt={augmentedPrompt}
             error={augmentedError}

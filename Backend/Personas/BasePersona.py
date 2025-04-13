@@ -160,7 +160,7 @@ class BasePersona:
                 messages.append(content)
 
         config = Configuration.load_config()
-        if config['features'].get('internet_search_enabled', False) == 'on':
+        if config['response_improvement'].get('internet_search_enabled', False) == 'on':
             internet_search_results = InternetSearch().search_internet_based_on_prompt(prompt)
             for search_result in internet_search_results:
                 messages.append(str(search_result))
@@ -208,18 +208,18 @@ class BasePersona:
 
         system_messages = [self.instructions, self.configuration]
 
-        if config['features'].get('category_system_message', True):
+        if config['category'].get('category_system_message', True):
             category_system_message = nodeDB().get_category_system_message(get_category_context())
             if category_system_message:
                 system_messages.append(category_system_message)
 
-        if config['beta_features']['user_context_enabled']:
+        if config['response_improvement']['user_context_enabled']:
             user_encyclopedia_manager = UserContextManagement()
             user_context = user_encyclopedia_manager.search_encyclopedia(user_messages)
             if user_context:
                 system_messages.append(user_context)
 
-        if config['optimization']['message_history']:
+        if config['optimisation']['message_history']:
             recent_history = self.detect_relevant_history(user_messages)
         else:
             recent_history = [f"{entry[0]}: {entry[1]}" for entry in self.history[-self.MAX_HISTORY:]]

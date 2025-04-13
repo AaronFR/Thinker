@@ -40,7 +40,7 @@ class Writing(enum.Enum):
             }]
         else:
             test = AiOrchestrator().execute(
-                [determine_pages_prompt(config['beta_features']['multi_file_processing_enabled']),
+                [determine_pages_prompt(config['files']['multi_file_processing_enabled']),
                  DETERMINE_PAGES_SCHEMA],
                 [initial_message],
             )

@@ -55,7 +55,7 @@ const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiCo
       >
         <input
           type="checkbox"
-          checked={settings?.interface?.ai_colour}
+          checked={settings?.category?.ai_colour}
           onChange={toggleAiColourisation}
           className="settings-checkbox"
         />
@@ -75,7 +75,7 @@ const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiCo
       >
         <option value={"always"}>Always</option>
         <option value={"when selected"}>When selected</option>
-        <option value={"never"}>never</option>
+        <option value={"never"}>Never</option>
       </select>
       Display category instructions
     </label>
@@ -220,40 +220,40 @@ const FunctionalitySettings = React.memo(({
       </div>
      
       <AutoPromptEngineeringSection
-        currentValue={settings?.beta_features?.augmented_prompts_enabled}
+        currentValue={settings?.prompt_improvement?.augmented_prompts_enabled}
         changeSetting={changeSetting}
         promptMessage={settings?.system_messages?.prompt_augmentation_message}
         handleMessageChange={handleMessageChange}
         cost={userInfo?.augmentation_cost}
       />
       <PromptQuestioningSection
-        currentValue={settings?.beta_features?.question_user_prompts_enabled}
+        currentValue={settings?.prompt_improvement?.question_user_prompts_enabled}
         changeSetting={changeSetting}
         promptMessage={settings?.system_messages?.prompt_questioning_message}
         handleMessageChange={handleMessageChange}
         cost={userInfo?.questioning_cost}
       />
       <InternetSearchSection 
-        currentValue={settings?.features?.internet_search_enabled}
+        currentValue={settings?.response_improvement?.internet_search_enabled}
         changeSetting={changeSetting}
         promptMessage={settings?.system_messages?.internet_search_instructions}
         handleMessageChange={handleMessageChange}
         cost={userInfo?.internet_search_cost}
       />
       <UserContextSection
-        userContextEnabled={settings?.beta_features?.user_context_enabled}
+        userContextEnabled={settings?.response_improvement?.user_context_enabled}
         toggleUserEncyclopedia={toggleUserEncyclopedia}
         cost={userInfo?.user_context_cost}
       />
       <BestOfSection 
-        currentValue={settings?.features?.multiple_reruns_enabled}
+        currentValue={settings?.response_improvement?.multiple_reruns_enabled}
         promptMessage={settings?.system_messages?.best_of_message}
         changeSetting={changeSetting}
         handleMessageChange={handleMessageChange}
         cost={userInfo?.best_of_cost}
       />
       <LoopsSection
-        currentValue={settings?.features?.loops_enabled}
+        currentValue={settings?.response_improvement?.loops_enabled}
         promptMessage={settings?.system_messages?.best_of_message}
         changeSetting={changeSetting}
         handleMessageChange={handleMessageChange}
@@ -430,7 +430,7 @@ const FilesSettings = React.memo(({
             type="checkbox"
             className="settings-checkbox"
             id="categorySystemMessages-checkbox"
-            checked={settings?.features?.category_system_message}
+            checked={settings?.category?.category_system_message}
             onChange={toggleCategorySystemMessages}
           />
           Category Instructions
@@ -542,7 +542,7 @@ const BetaFeaturesSettings = React.memo(({
       <label className="settings-label">
         <input
           type="checkbox"
-          checked={settings?.beta_features?.multi_file_processing_enabled}
+          checked={settings?.files?.multi_file_processing_enabled}
           onChange={toggleMultiFileProcessing}
           className="settings-checkbox"
         />
@@ -585,7 +585,8 @@ const PromptQuestioningSection = React.memo(({
         value={currentValue}
         onChange={(e) =>
           changeSetting(
-            'beta_features', 'question_user_prompts_enabled',
+            'prompt_improvement',
+            'question_user_prompts_enabled',
             e.target.value,
           )
         }
@@ -636,7 +637,7 @@ const AutoPromptEngineeringSection = React.memo(({
         value={currentValue}
         onChange={(e) =>
           changeSetting(
-            'beta_features',
+            'prompt_improvement',
             'augmented_prompts_enabled',
             e.target.value,
           )
@@ -689,7 +690,7 @@ const BestOfSection = React.memo(({
         value={currentValue}
         onChange={(e) =>
           changeSetting(
-            'features',
+            'response_improvement',
             'multiple_reruns_enabled',
             e.target.value,
           )
@@ -747,7 +748,7 @@ const LoopsSection = React.memo(({
         value={currentValue}
         onChange={(e) =>
           changeSetting(
-            'features',
+            'response_improvement',
             'loops_enabled',
             e.target.value,
           )
@@ -807,7 +808,7 @@ const InternetSearchSection = React.memo(({
         value={currentValue}
         onChange={(e) =>
           changeSetting(
-            'features',
+            'response_improvement',
             'internet_search_enabled',
             e.target.value,
           )
@@ -893,15 +894,15 @@ export function Settings() {
   // Memoize toggle functions to prevent re-creation on every render.
   const toggleDebug = useCallback(() => toggleSetting('interface', 'debug'), [toggleSetting]);
   const toggleDarkMode = useCallback(() => toggleSetting('interface', 'dark_mode'), [toggleSetting]);
-  const toggleAiColourisation = useCallback(() => toggleSetting('interface', 'ai_colour'), [toggleSetting]);
+  const toggleAiColourisation = useCallback(() => toggleSetting('category', 'ai_colour'), [toggleSetting]);
   const toggleWritePagesInParallel = useCallback(() => toggleSetting('workflows', 'write_pages_in_parallel'), [toggleSetting]);
   const toggleSummarisation = useCallback(() => toggleSetting('workflows', 'summarise'), [toggleSetting]);
   const toggleFileSummarisation = useCallback(() => toggleSetting('files', 'summarise_files'), [toggleSetting]);
   const toggleBulkUploadCategorisation = useCallback(() => toggleSetting('files', 'bulk_upload_categorisation'), [toggleSetting]);
   const toggleUseTagsCategory = useCallback(() => toggleSetting('files', 'use_tags_category'), [toggleSetting])
-  const toggleCategorySystemMessages = useCallback(() => toggleSetting('features', 'category_system_message'), [toggleSetting])
-  const toggleUserEncyclopedia = useCallback(() => toggleSetting('beta_features', 'user_context_enabled'), [toggleSetting]);
-  const toggleMultiFileProcessing = useCallback(() => toggleSetting('beta_features', 'multi_file_processing_enabled'), [toggleSetting]);
+  const toggleCategorySystemMessages = useCallback(() => toggleSetting('category', 'category_system_message'), [toggleSetting])
+  const toggleUserEncyclopedia = useCallback(() => toggleSetting('response_improvement', 'user_context_enabled'), [toggleSetting]);
+  const toggleMultiFileProcessing = useCallback(() => toggleSetting('files', 'multi_file_processing_enabled'), [toggleSetting]);
 
   // Use AbortController to cancel unfinished fetch if component unmounts.
   const fetchUserInformation = useCallback(() => {

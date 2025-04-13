@@ -10,7 +10,6 @@ from Data.Configuration import Configuration
 from Functionality.Organising import Organising
 from Utilities.Contexts import get_category_context, set_functionality_context
 from Utilities.Decorators.Decorators import workflow_step_handler, specify_functionality_context
-from Utilities.LogsHandler import LogsHandler
 from Constants.Instructions import SIMPLE_SUMMARY_PROMPT
 
 UPDATE_WORKFLOW_STEP = "update_workflow_step"

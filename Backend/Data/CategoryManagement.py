@@ -246,7 +246,7 @@ class CategoryManagement:
         user_prompts = [f"Category Name: {category_name}"]
 
         config = Configuration.load_config()
-        use_ai = config['interface'].get("ai_colour", False)
+        use_ai = config['category'].get("ai_colour", False)
         try:
             if use_ai:
                 ai_response = AiOrchestrator().execute(

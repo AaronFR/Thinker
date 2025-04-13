@@ -94,7 +94,7 @@ class Organising:
             lambda: nodeDB().populate_user_prompt_node(category, user_prompt, response_message)
         )
 
-        if config['beta_features']['user_context_enabled']:
+        if config['response_improvement']['user_context_enabled']:
             terms = UserContextManagement.extract_terms_from_input([user_prompt])
             nodeDB().create_user_topic_nodes(terms)
 

@@ -446,7 +446,8 @@ class NodeDatabaseManagement:
 
         updated_instructions = self.neo4jDriver.execute_write(
             CypherQueries.UPDATE_CATEGORY_INSTRUCTIONS,
-            parameters
+            parameters,
+            'instructions'
         )
 
         return updated_instructions

@@ -83,7 +83,6 @@ const CategoryInstructionsEditor = ({ categoryName, category_instructions, onUpd
 
   return (
     <div className="category-instructions category-instructions-editor">
-      {console.log("Hello")}
       {isSaving && <div className="saving-indicator">Saving...</div>}
       {error && <div className="error-message">{error}</div>}
       

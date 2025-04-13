@@ -181,7 +181,7 @@ const UserInputForm = ({
             onUploadSuccess={handleUploadSuccess}
             tags={tags}
           />
-          {settings.beta_features.augmented_prompts_enabled !== 'off' && (
+          {settings.prompt_improvement?.augmented_prompts_enabled !== 'off' && (
             <button
               type="button"
               className="button submit-button"
@@ -195,7 +195,7 @@ const UserInputForm = ({
               Improve prompt
             </button>
           )}
-          {settings.beta_features.question_user_prompts_enabled !== 'off' && (
+          {settings.prompt_improvement?.question_user_prompts_enabled !== 'off' && (
             <button
               type="button"
               className="button submit-button"
@@ -278,13 +278,13 @@ const UserInputForm = ({
               setTags={setTags}
               forTags={true}
             />
-            {settings.features.multiple_reruns_enabled !== 'off' && (
+            {settings.response_improvement?.multiple_reruns_enabled !== 'off' && (
               <BestOfSelector
                 bestOf={tags.bestOf}
                 setTags={setTags}
               />
             )}
-            {settings.features.loops_enabled !== 'off' && (
+            {settings.response_improvement?.loops_enabled !== 'off' && (
               <LoopsSelector
                 selectedNumberOfLoops={tags.loops}
                 setTags={setTags}

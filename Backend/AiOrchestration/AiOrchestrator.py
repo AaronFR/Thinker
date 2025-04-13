@@ -73,7 +73,7 @@ class AiOrchestrator:
         :param system_prompts: Contextual instructions for the AI.
         :param user_prompts: The user's instructions.
         :param rerun_count: Number of parallel responses to generate per iteration.
-        :param loop_count: Number of loop iterations.
+        :param loop_count: Number of sequential loop iterations.
         :param judgement_criteria: Criteria to judge and consolidate responses.
         :param model: Preferred AI model; falls back to default if not provided.
         :param assistant_messages: History of prior assistant responses.
