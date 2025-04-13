@@ -150,12 +150,8 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
       setExpandedCategoryId(null);
     } else {
       setExpandedCategoryId(id);
-      const category = categories.find(cat => cat.name.toLowerCase() === name.toLowerCase());
       
-      // Fetch messages only if they have not been loaded yet
-      if (!category || !category.messages?.length) {
-        await fetchMessagesByCategory(name, id);
-      }
+      await fetchMessagesByCategory(name, id);
     }
 
     // Allow toggling after animation completes (matches CSS transition duration)
