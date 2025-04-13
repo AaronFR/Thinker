@@ -22,6 +22,9 @@ class AutoWorkflow(BaseWorkflow):
     Workflow for automating a series of prompts, where each file reference is used as context for individual prompts.
 
     Note: Saving files may take some time.
+
+    ToDo: It may be useful adding in all, or some files from the selected to each individual files step as additional
+     reference for certain workflows. But right now it's just complicating things way too much.
     """
 
     USE_PARALLEL_PROCESSING = True
@@ -37,7 +40,7 @@ class AutoWorkflow(BaseWorkflow):
     ) -> str:
         """
         Execute all steps of the write pages workflow.
-        ToDo: add settings to not incorporate history from one prompt to another
+        ToDo: add settings to stop incorporating history from one prompt to another during sequential processing
 
         :param process_prompt: Function to process user prompts.
         :param initial_message: The user's prompy.

@@ -211,7 +211,7 @@ def generate_auto_workflow(
             parameters=display_parameters(
                 initial_message=None,
                 model=model,
-                file_references=file_references,
+                file_references=[file_reference],
                 selected_messages=selected_messages,
                 best_of=best_of,
                 loops=loops
