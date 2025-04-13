@@ -32,6 +32,19 @@ def list_categories():
     return fetch_entity(nodeDB().list_categories(), "categories")
 
 
+@categories_bp.route('/categories_with_messages', methods=['GET'])
+@login_required
+@limiter.limit(LIGHTLY_RESTRICTED)
+@limiter.limit(USER_LIGHTLY_RESTRICTED, key_func=user_key_func)
+def list_categories_with_messages():
+    """ List all categories the user has with messages.
+
+    :return: A JSON response containing the list of categories with files.
+    :raises: JSON response with error message on failure.
+    """
+    return fetch_entity(nodeDB().list_categories_with_messages(), "categories")
+
+
 @categories_bp.route('/categories_with_files', methods=['GET'])
 @login_required
 @limiter.limit(LIGHTLY_RESTRICTED)

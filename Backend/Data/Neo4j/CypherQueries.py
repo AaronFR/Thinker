@@ -29,7 +29,7 @@ RETURN user.password_hash AS password_hash;
 
 CREATE_USER = """
 MERGE (user:USER {id: $user_id})
-ON CREATE SET user.email = $email, user.password_hash = $password_hash, user.balance = 0
+ON CREATE SET user.email = $email, user.password_hash = $password_hash, user.balance = 0, data_uploaded = 0
 RETURN user.id;
 """
 
@@ -180,9 +180,10 @@ MATCH (message:USER_PROMPT)-[:BELONGS_TO]->(category:CATEGORY)<-[:HAS_CATEGORY]-
 WHERE message.id = $message_id
 DETACH DELETE message
 WITH category
+OPTIONAL MATCH (category)<-[:BELONGS_TO]-(remaining_files:FILE)
 OPTIONAL MATCH (category)<-[:BELONGS_TO]-(remaining_messages:USER_PROMPT)
-WITH category, COUNT(remaining_messages) AS remaining_count
-WHERE remaining_count = 0
+WITH category, COUNT(remaining_files) AS file_count, COUNT(remaining_messages) AS message_count
+WHERE file_count = 0 AND message_count = 0
 DETACH DELETE category;
 """
 
@@ -207,6 +208,16 @@ ORDER BY category_name;
 
 LIST_CATEGORIES_BY_LATEST_MESSAGE = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)
+OPTIONAL MATCH (category)<-[:BELONGS_TO]-(message:USER_PROMPT)
+RETURN DISTINCT category.id as category_id, category.name AS category_name, category.colour AS colour, category.instructions as instructions, max(message.time) AS latest_time
+ORDER BY 
+    CASE WHEN latest_time IS NULL THEN 1 ELSE 0 END, 
+    latest_time DESC,
+    category_name ASC;
+"""
+
+LIST_CATEGORIES_WITH_MESSAGES_BY_LATEST_MESSAGE = """
+MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)--(user_prompt:USER_PROMPT)
 OPTIONAL MATCH (category)<-[:BELONGS_TO]-(message:USER_PROMPT)
 RETURN DISTINCT category.id as category_id, category.name AS category_name, category.colour AS colour, category.instructions as instructions, max(message.time) AS latest_time
 ORDER BY 
@@ -253,10 +264,16 @@ RETURN file.id AS id, category.id AS category_id, file.name AS name, file.summar
 ORDER BY file.time DESC;
 """
 
-DELETE_FILE_BY_ID = """
-MATCH (file:FILE)-[:BELONGS_TO]->(category:CATEGORY)<-[:HAS_CATEGORY]-(user:USER)
-WHERE file.id = $file_id AND user.id = $user_id
-DETACH DELETE file;
+DELETE_FILE_BY_ID_AND_POSSIBLY_CATEGORY = """
+MATCH (file:FILE)-[:BELONGS_TO]->(category:CATEGORY)<-[:HAS_CATEGORY]-(user:USER {id: $user_id})
+WHERE file.id = $file_id
+DETACH DELETE file
+WITH category
+OPTIONAL MATCH (category)<-[:BELONGS_TO]-(remaining_files:FILE)
+OPTIONAL MATCH (category)<-[:BELONGS_TO]-(remaining_messages:USER_PROMPT)
+WITH category, COUNT(remaining_files) AS file_count, COUNT(remaining_messages) AS message_count
+WHERE file_count = 0 AND message_count = 0
+DETACH DELETE category
 """
 
 # Pricing

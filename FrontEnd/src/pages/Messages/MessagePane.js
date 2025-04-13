@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { apiFetch } from '../../utils/authUtils';
 import { withLoadingOpacity, toTitleCase } from '../../utils/textUtils';
-import { categoriesEndpoint, messagesForCategoryEndpoint } from '../../constants/endpoints';
+import { categoriesWithMessagesEndpoint, messagesForCategoryEndpoint } from '../../constants/endpoints';
 
 import MessageItem from './MessageItem';
 
@@ -44,7 +44,7 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
    */
   const fetchCategories = useCallback(async () => {
     try {
-      const response = await apiFetch(categoriesEndpoint, { 
+      const response = await apiFetch(categoriesWithMessagesEndpoint, { 
         method: 'GET'
       });
 

@@ -434,6 +434,24 @@ class NodeDatabaseManagement:
 
         return categories
 
+    @handle_errors()
+    def list_categories_with_messages(self) -> List[Dict[str, str]]:
+        """
+        List all unique categories associated with the user which contain messages
+        """
+        parameters = {"user_id": get_user_context()}
+
+        result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES_WITH_MESSAGES_BY_LATEST_MESSAGE, parameters)
+        categories = [
+            {
+                "id": record["category_id"],
+                "name": record["category_name"],
+                "instructions": record.get("instructions"),
+                "colour": record["colour"]
+            } for record in result]
+
+        return categories
+
     def list_categories_with_files(self) -> List[Dict[str, str]]:
         """
         List all unique categories associated with the user which have files attached
@@ -585,7 +603,7 @@ class NodeDatabaseManagement:
             "file_id": str(file_id),
         }
 
-        self.neo4jDriver.execute_delete(CypherQueries.DELETE_FILE_BY_ID, parameters)
+        self.neo4jDriver.execute_delete(CypherQueries.DELETE_FILE_BY_ID_AND_POSSIBLY_CATEGORY, parameters)
         logging.info(f"File with ID {file_id} deleted")
 
     # User Topics

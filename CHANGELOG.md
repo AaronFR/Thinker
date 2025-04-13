@@ -49,6 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New category instructions and colour created simultaneously, decreasing time take to create new categories
 - Uploaded code files are formatted correctly as code not text
 - Category, Persona and Workflow selectors visually display when a value is being generated automatically.
+- Onlys shows Categories in Files/Messages is the category still has files/messages respectively.
+  - Deleting the last file/message of a category will delete that category- instead of just the last message
 
 ### Removed
 
