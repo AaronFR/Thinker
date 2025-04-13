@@ -441,7 +441,12 @@ class NodeDatabaseManagement:
         parameters = {"user_id": get_user_context()}
 
         result = self.neo4jDriver.execute_read(CypherQueries.LIST_CATEGORIES_WITH_FILES_BY_LATEST_FILE, parameters)
-        categories = [{"name": record["category_name"], "colour": record["colour"]} for record in result]
+        categories = [
+            {
+                "id": record["category_id"],
+                "name": record["category_name"],
+                "colour": record["colour"]
+            } for record in result]
 
         return categories
 

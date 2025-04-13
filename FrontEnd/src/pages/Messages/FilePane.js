@@ -43,7 +43,7 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles, removeFile, refre
       
       const data = await response.json();
       const cleanCategories = data.categories.map((category, index) => ({
-        id: index + 1, // Unique ID based on index
+        id: category.id,
         name: toTitleCase(category.name),
         colour: category.colour || null
       }));

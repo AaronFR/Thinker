@@ -224,7 +224,7 @@ ORDER BY category_name;
 LIST_CATEGORIES_WITH_FILES_BY_LATEST_FILE = """
 MATCH (user:USER {id: $user_id})-[:HAS_CATEGORY]->(category:CATEGORY)--(file:FILE)
 OPTIONAL MATCH (category)<-[:BELONGS_TO]-(file:FILE)
-RETURN DISTINCT category.name AS category_name, category.colour AS colour, max(file.time) AS latest_time
+RETURN DISTINCT category.id as category_id, category.name AS category_name, category.colour AS colour, max(file.time) AS latest_time
 ORDER BY 
     CASE WHEN latest_time IS NULL THEN 1 ELSE 0 END, 
     latest_time DESC,
