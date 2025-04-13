@@ -61,80 +61,120 @@ def upload_files():
 
     config = Configuration.load_config()
     use_tags_category = config.get("files", {}).get("use_tags_category", True)
-    tags_category = None
-    if use_tags_category:
-        tags_json = json.loads(request.form.get('tags'))
-        tags_category = tags_json.get("category")
-
-        CategoryManagement.possibly_create_new_category(tags_category)
-
-    file_details = []
-    samples = []
-    content_aggregation = ""
-
-    config = Configuration.load_config()
     bulk_upload_categorisation = config.get('files', {}).get("bulk_upload_categorisation")
+
+    tags_category_name = None
+    if use_tags_category:
+        tags_json = json.loads(request.form.get('tags', '{}'))
+        tags_category_name = tags_json.get("category")
+
+    processed_files_data = []
+    samples_for_bulk_categorization = []
+    cumulative_upload_size = 0
+
+    # Process and Validate Files
     for file in files:
-        if file.filename == '':
+        if not file or not file.filename:
             return jsonify({'message': 'One or more files have no selected filename.'}), 400
 
         # Secure the filename to prevent directory traversal attacks
         filename = secure_filename(file.filename)
 
         try:
-            content = file.read().decode()
-            sample_content = content[:500]  # Max 500 first characters are required for categorisation
+            content = file.read().decode('utf-8')
+        except UnicodeDecodeError:
+            logging.warning(f"Could not decode file {filename} as UTF-8.")
+            return jsonify({'message': f"Error decoding file {filename}. Ensure it is UTF-8 encoded."}), 400
         except Exception as decode_err:
             logging.exception(f"Decoding error for file {filename}: {decode_err}")
-            return jsonify({'message': f"Error decoding file {filename}."}), 400
+            return jsonify({'message': f"Error decoding file {filename}."}), 500
 
-        if len(content) > MAX_FILE_SIZE:
+        content_size_bytes = len(content.encode('utf-8'))
+
+        if content_size_bytes > MAX_FILE_SIZE:
             return jsonify({'message': f"File {filename} is too large. 10 MB allowed max."}), 400
 
-        # Attach the files name and a sample of its contents for categorisation
-        samples.append(filename + ": " + sample_content)
-        content_aggregation += content
+        cumulative_upload_size += content_size_bytes
 
-        content_size = len(content_aggregation)
-        if content_size > MAX_FILE_SIZE:
-            return jsonify({'message': f"Too much data uploaded at once. 10 MB allowed max."}), 400
+        processed_files_data.append({
+            'content': content,
+            'filename': filename,
+            'sample': content[:500]  # Keep sample for potential individual categorization
+        })
 
-        if not bulk_upload_categorisation:
-            if not tags_category:
-                category = CategoryManagement.categorise_input(sample_content)
-                CategoryManagement.possibly_create_new_category(category)
-            category_id = get_category_context()
-            file_details.append({'category_id': category_id, 'content': content, 'filename': filename})
-        else:
-            file_details.append({'content': content, 'filename': filename})
+        if bulk_upload_categorisation and not tags_category_name:
+            samples_for_bulk_categorization.append(filename + ": " + processed_files_data[-1]['sample'])
 
-    if bulk_upload_categorisation:
-        combined_content = "\n".join(samples)  # Combine all contents into one block for categorisation:
+    if not processed_files_data:
+        return jsonify({'message': 'No valid files processed.'}), 400
 
-        if not tags_category:
-            category = CategoryManagement.categorise_input(combined_content)
-            CategoryManagement.possibly_create_new_category(category)
-        category_id = get_category_context()
+    # Determine Category
+    final_category_id = None
+    category_name_to_use = None
 
-        for file_detail in file_details:
-            file_detail["category_id"] = category_id
+    if tags_category_name:
+        category_name_to_use = tags_category_name
+        logging.info(f"Using category '{category_name_to_use}' from tags.")
+
+        final_category_id = CategoryManagement.possibly_create_new_category(category_name_to_use)
+        if not final_category_id:
+            return jsonify(
+                {'message': f"Failed to process category specified in tags: {tags_category_name}"}), 500
+    elif bulk_upload_categorisation:
+        if not samples_for_bulk_categorization:
+            logging.error("Bulk categorization enabled, but no samples collected (maybe all files were empty?).")
+            return jsonify({'message': 'Cannot perform bulk categorization with no file content.'}), 400
+
+        combined_samples = "\n".join(samples_for_bulk_categorization)
+        category_name_to_use = CategoryManagement.categorise_input(combined_samples)
+        logging.info(f"Using category '{category_name_to_use}' determined from bulk analysis.")
+        final_category_id = CategoryManagement.possibly_create_new_category(category_name_to_use)
+        if not final_category_id:
+            return jsonify(
+                {'message': f"Failed to process category determined from bulk analysis: {category_name_to_use}"}), 500
+
+    # Save File to Storage
+    result_list = []
+    saved_category_id = final_category_id  # Use the determined ID if available, otherwise it will be set per file
 
     try:
-        category_id = get_category_context()
+        for file_data in processed_files_data:
+            category_id_for_this_file = final_category_id
 
-        result_list = []
-        for details in file_details:
-            file_id = Organising.save_file(details['content'], category_id, details['filename'], overwrite=True)
+            if category_id_for_this_file is None:
+                individual_category_name = CategoryManagement.categorise_input(file_data['sample'])
+                logging.info(f"Determined category '{individual_category_name}' for file '{file_data['filename']}'.")
+                category_id_for_this_file = CategoryManagement.possibly_create_new_category(individual_category_name)
+
+                if not category_id_for_this_file:
+                    logging.error(
+                        f"Failed to determine or create category for file {file_data['filename']}. Skipping file.")
+                    continue  # Skip this file
+
+            saved_category_id = category_id_for_this_file
+            file_id = Organising.save_file(
+                content=file_data['content'],
+                category_id=category_id_for_this_file,
+                filename=file_data['filename'],
+                overwrite=True
+            )
+
             if file_id:
                 result_list.append({
-                    'category_id': details['category_id'],
+                    'category_id': category_id_for_this_file,
                     'id': file_id,
-                    'name': details['filename']
+                    'name': file_data['filename']
                 })
+            else:
+                logging.error(
+                    f"Failed to save file node for {file_data['filename']} in category {category_id_for_this_file}")
+
+        if not result_list:
+            return jsonify({'message': 'Files were processed but none could be saved successfully.'}), 500
 
         return jsonify({
-            'message': 'Files uploaded successfully.',
-            'category_id': category_id,
+            'message': f'{len(result_list)} file(s) uploaded successfully.',
+            'category_id': saved_category_id,  # ID of the category used (might be last one if mixed)
             'files': result_list
         }), 200
 

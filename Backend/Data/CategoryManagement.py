@@ -106,16 +106,39 @@ class CategoryManagement:
         set_category_context(category_id)
 
     @staticmethod
-    def possibly_create_new_category(category: str):
-        categories = nodeDB().list_category_names()
+    def possibly_create_new_category(category_name: str) -> str | None:
+        """
+        Checks if a category exists by name. If not, creates it using define_new_category.
+        Returns the category ID (existing or newly created), or None if creation fails.
+        """
+        if not category_name or not isinstance(category_name, str) or category_name.strip() == "":
+            logging.warning("Attempted to create or find category with invalid name.")
+            return None
 
-        if category not in categories:
-            category_id, instructions, color = CategoryManagement.define_new_category(category)
-            nodeDB().create_category(category_id, category, instructions, color)
+        existing_category_id = nodeDB().get_category_id(category_name)
+
+        if existing_category_id:
+            logging.debug(f"Category '{category_name}' already exists with ID {existing_category_id}.")
+
+            set_category_context(existing_category_id)
+            return existing_category_id
         else:
-            category_id = nodeDB().get_category_id(category)
+            # Category does not exist, try to create it
+            logging.info(f"Category '{category_name}' not found. Attempting to create.")
+            try:
+                new_category_id, instructions, color = CategoryManagement.define_new_category(category_name)
 
-        set_category_context(category_id)
+                if nodeDB().create_category(new_category_id, category_name, instructions, color):
+                    logging.info(f"Successfully created category '{category_name}' with ID {new_category_id}.")
+
+                    set_category_context(new_category_id)
+                    return new_category_id
+                else:
+                    logging.error(f"Defined category '{category_name}' but failed to save it to the database.")
+                    return None
+            except Exception as e:
+                logging.exception(f"Error creating category '{category_name}': {e}")
+                return None
 
     @staticmethod
     def define_new_category(category: str, additional_context: str = ""):

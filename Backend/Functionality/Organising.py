@@ -98,19 +98,6 @@ class Organising:
             terms = UserContextManagement.extract_terms_from_input([user_prompt])
             nodeDB().create_user_topic_nodes(terms)
 
-    @staticmethod
-    def summarise_content(content: str):
-        """Creates and saves a summary file for the given file.
-        ToDo: should use AST for coding files - when we create 'structure' methods
-
-        :param content: The content to be summarised
-        """
-        summary = AiOrchestrator().execute(
-            [SUMMARISER_SYSTEM_INSTRUCTIONS],
-            [content]
-        )
-        return summary
-
 
 if __name__ == '__main__':
     parent_class_name = "EncyclopediaManagementInterface.py"

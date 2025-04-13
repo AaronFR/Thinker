@@ -285,13 +285,14 @@ class NodeDatabaseManagement:
         category_name: str,
         category_instructions: str,
         colour: str = "#111111"
-    ) -> None:
+    ) -> bool:
         """Creates a new category in the database.
 
         :param category_id: The id of the new category node
         :param category_name: The name of the new category.
         :param category_instructions: A concise one sentence instructions of the new category
         :param colour: the HEX colour assigned to the category
+        :return: True if the new category was saved in the database successfully
         """
         logging.info(f"Creating new category [{category_id}]: {category_name} - {category_instructions}")
 
@@ -303,10 +304,13 @@ class NodeDatabaseManagement:
             "colour": colour
         }
 
-        self.neo4jDriver.execute_write(
+        category_id = self.neo4jDriver.execute_write(
             CypherQueries.CREATE_CATEGORY,
-            parameters
+            parameters,
+            'category_id'
         )
+
+        return bool(category_id)
 
     @handle_errors()
     def create_category_and_user_prompt(
@@ -360,10 +364,14 @@ class NodeDatabaseManagement:
         records = self.neo4jDriver.execute_read(
             CypherQueries.GET_CATEGORY_ID,
             parameters)
-        category_id = records[0]["category_id"]
 
-        logging.info(f"Category ID for {category_name}: {category_id}")
-        return category_id
+        if records and len(records) > 0:
+            category_id = records[0].get("category_id")
+            logging.info(f"Category ID found for {category_name}: {category_id}")
+            return category_id
+        else:
+            logging.info(f"Category ID not found for {category_name}.")
+            return None
 
     @handle_errors()
     def get_category_system_message(self, category_id: str) -> Optional[str]:
