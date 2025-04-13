@@ -32,12 +32,12 @@ class FileManagement(StorageBase):
 
     The file management system is intentionally inflexible to prevent
     possible prompt injection and data extraction from outside the designated data areas.
-    ONLY information within the boundaries of the 'FileData' directory can be edited by the user.
+    ONLY information within the boundaries of the 'Files' directory can be edited by the user.
 
     ToDo: (Bug) tries to create a category folder even when set to s3?
     """
 
-    file_data_directory = os.path.join(os.path.dirname(__file__), '../../../UserData/FileData')
+    file_data_directory = os.path.join(os.path.dirname(__file__), '../../../UserData/Files')
     config_data_directory = os.path.join(os.path.dirname(__file__), '../../../UserData/UserConfigs')
 
     def _get_data_path(self, file_path: str) -> str:
@@ -234,7 +234,7 @@ class FileManagement(StorageBase):
         """
         Creates a category folder locally for a new category.
         ToDo: This will need to be changed when s3 is adapted to resemble local storage
-         that is UserData/FileData/UserId?/Categories
+         that is UserData/Files/UserId?/Categories
 
         :param category_id: The new folder id to create.
         """

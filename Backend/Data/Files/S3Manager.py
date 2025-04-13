@@ -49,21 +49,23 @@ class S3Manager(StorageBase):
         if sys.getsizeof(content) > MAX_FILE_SIZE:
             raise Exception("File is far too large. 10 MB max.")
 
+        full_path = os.path.join("Files", file_path)
+
         # Prevent overwriting without an explicit overwrite
-        if not overwrite and self.check_file_exists(file_path):
-            logging.warning(f"File {file_path} already exists. Not overwriting.")
+        if not overwrite and self.check_file_exists(full_path):
+            logging.warning(f"File {full_path} already exists. Not overwriting.")
             content = self.read_file(file_path) + content
 
         try:
             self.s3_client.put_object(
                 Bucket=os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
-                Key=self.convert_to_s3_path(file_path),
+                Key=self.convert_to_s3_path(full_path),
                 Body=content
             )
-            logging.info(f"File {file_path} uploaded successfully.")
+            logging.info(f"File {full_path} uploaded successfully.")
             return True
         except ClientError as e:
-            logging.error(f"Failed to upload {file_path}: {e}")
+            logging.error(f"Failed to upload {full_path}: {e}")
             return False
 
     def read_file(self, full_address: str) -> str:
@@ -73,20 +75,21 @@ class S3Manager(StorageBase):
         :param full_address: S3 object name.
         :return: The contents of the file or an error message.
         """
+        full_path = os.path.join("Files", full_address)
         try:
             logging.info(f"Reading file {full_address}")
 
-            if self.is_image_file(full_address):
-                logging.warning(f"Cannot read image file: {full_address}")
-                return cannot_read_image_file(full_address)
+            if self.is_image_file(full_path):
+                logging.warning(f"Cannot read image file: {full_path}")
+                return cannot_read_image_file(full_path)
 
             response = self.s3_client.get_object(
                 Bucket=os.getenv(THE_THINKER_S3_STANDARD_BUCKET_ID),
-                Key=self.convert_to_s3_path(full_address)
+                Key=self.convert_to_s3_path(full_path)
             )
             return response['Body'].read().decode(DEFAULT_ENCODING)
         except ClientError as e:
-            logging.error(f"Failed to download {full_address}: {e}")
+            logging.error(f"Failed to download {full_path}: {e}")
             return file_not_loaded(full_address)
 
     def save_yaml(self, yaml_path: str, data: Dict[Any, Any]) -> None:
