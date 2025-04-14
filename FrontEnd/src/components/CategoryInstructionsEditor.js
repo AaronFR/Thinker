@@ -100,7 +100,7 @@ const CategoryInstructionsEditor = ({ categoryName, category_instructions, onUpd
           onClick={handleDisplayClick}
           {...rest}
         >
-          {shortenText(instructions, 500) || 'Click to edit category instructions'}
+          {instructions && shortenText(instructions, 500) || 'Click to edit category instructions'}
         </div>
       )}
     </div>

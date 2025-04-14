@@ -32,7 +32,7 @@ const FUNCTIONALITY_STATES = {
  *
  * Renders User Interface related settings.
  */
-const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiColourisation, changeSetting }) => {
+const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiColourisation }) => {
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">User Interface</h2>), []);
 
   const maxContent = (
@@ -61,24 +61,7 @@ const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiCo
         />
         New Category Colourisation via LLM Prompt
       </label>
-      <label className="settings-label">
-      <select
-        className="settings-select"
-        value={settings?.interface?.display_category_instructions}
-        onChange={(e) =>
-          changeSetting(
-            'interface',
-            'display_category_instructions',
-             e.target.value,
-          )
-        }
-      >
-        <option value={"always"}>Always</option>
-        <option value={"when selected"}>When selected</option>
-        <option value={"never"}>Never</option>
-      </select>
-      Display category instructions
-    </label>
+      
 
 
       <TextSizeSlider />
@@ -408,6 +391,8 @@ const FilesSettings = React.memo(({
   toggleBulkUploadCategorisation,
   toggleUseTagsCategory,
   toggleCategorySystemMessages,
+  toggleGenerateCategorySystemMessages,
+  changeSetting,
   handleMessageChange,
   summarise_files_cost,
 }) => {
@@ -485,9 +470,46 @@ const FilesSettings = React.memo(({
             checked={settings?.category?.category_system_message}
             onChange={toggleCategorySystemMessages}
           />
-          Category Instructions
+          Use Category Instructions
         </label>
+
         <p>Responses created for this category will follow specific instructions for that category</p>
+
+        <label className="settings-label">
+          <div
+            data-tooltip-id="tooltip"
+            data-tooltip-content={TooltipConstants.generateCategorySystemMessagesToggle}
+            data-tooltip-place="bottom"
+          >
+            <input
+              type="checkbox"
+              className="settings-checkbox"
+              id="generateCategorySystemMessages-checkbox"
+              checked={settings?.category?.generate_category_system_message}
+              onChange={toggleGenerateCategorySystemMessages}
+            />
+            Automatically Generate Category Instructions - For new Categories
+          </div>
+          
+        </label>
+        <label className="settings-label">
+          <select
+            className="settings-select"
+            value={settings?.interface?.display_category_instructions}
+            onChange={(e) =>
+              changeSetting(
+                'interface',
+                'display_category_instructions',
+                e.target.value,
+              )
+            }
+          >
+            <option value={"always"}>Always</option>
+            <option value={"when selected"}>When selected</option>
+            <option value={"never"}>Never</option>
+          </select>
+          Display category instructions
+        </label>
       </div>
     </div>
   );
@@ -936,6 +958,7 @@ export function Settings() {
   const toggleBulkUploadCategorisation = useCallback(() => toggleSetting('files', 'bulk_upload_categorisation'), [toggleSetting]);
   const toggleUseTagsCategory = useCallback(() => toggleSetting('files', 'use_tags_category'), [toggleSetting])
   const toggleCategorySystemMessages = useCallback(() => toggleSetting('category', 'category_system_message'), [toggleSetting])
+  const toggleGenerateCategorySystemMessages = useCallback(() => toggleSetting('category', 'generate_category_system_message'), [toggleSetting])
   const toggleUserEncyclopedia = useCallback(() => toggleSetting('response_improvement', 'user_context_enabled'), [toggleSetting]);
   const toggleMultiFileProcessing = useCallback(() => toggleSetting('files', 'multi_file_processing_enabled'), [toggleSetting]);
 
@@ -1004,7 +1027,6 @@ export function Settings() {
         settings={settings}
         toggleDarkMode={toggleDarkMode}
         toggleAiColourisation={toggleAiColourisation}
-        changeSetting={changeSetting}
       />
 
       <AiModelSettings
@@ -1035,6 +1057,8 @@ export function Settings() {
         toggleBulkUploadCategorisation={toggleBulkUploadCategorisation}
         toggleUseTagsCategory={toggleUseTagsCategory}
         toggleCategorySystemMessages={toggleCategorySystemMessages}
+        toggleGenerateCategorySystemMessages={toggleGenerateCategorySystemMessages}
+        changeSetting={changeSetting}
         handleMessageChange={handleMessageChange}
         summarise_files_cost={userInfo?.summarise_files_cost}
       />

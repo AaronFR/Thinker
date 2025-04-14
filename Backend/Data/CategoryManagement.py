@@ -289,24 +289,30 @@ class CategoryManagement:
     @staticmethod
     def generate_category_instructions(category_name: str, additional_context: str = "") -> str:
         """
-        Generates a system instructions for future prompts in the given category using AI.
+        Generates a system instructions for future prompts in the given category using AI, if configured to do so.
+        Otherwise, a blank instruction will be created which the user can fill out themselves if they want.
 
         :param category_name: The name of the category to describe.
         :param additional_context: Optionally add the user prompt for additional context
-        :return: A short instructions of the category.
+        :return: A short string of instructions for the category.
         """
+        config = Configuration.load_config()
+        generate_category_system_message = config['category'].get("generate_category_system_message", False)
         try:
-            instructions = AiOrchestrator().execute(
-                [CATEGORY_INSTRUCTIONS_SYSTEM_MESSAGE],
-                [
-                    category_instructions_prompt(category_name),
-                    additional_context,
-                ]
-            )
-            instructions = instructions.strip()
+            if generate_category_system_message:
+                instructions = AiOrchestrator().execute(
+                    [CATEGORY_INSTRUCTIONS_SYSTEM_MESSAGE],
+                    [
+                        category_instructions_prompt(category_name),
+                        additional_context,
+                    ]
+                )
+                instructions = instructions.strip()
 
-            logging.debug(f"AI-generated instructions for '{category_name}': {instructions}")
-            return instructions
+                logging.debug(f"AI-generated instructions for '{category_name}': {instructions}")
+                return instructions
+            else:
+                return ""
         except Exception:
             logging.exception(failure_to_create_instructions_for_category(category_name))
             return CategoryManagement.default_instructions(category_name)
