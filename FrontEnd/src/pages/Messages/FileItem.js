@@ -56,6 +56,9 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
   };
 
   const fetchContent = useCallback(async (signal) => {
+    // Avoid fetching if content is already loaded or if a fetch is in progress
+    if (content || isLoading) return;
+
     setIsLoading(true);
     setError(null);
     try {
@@ -69,13 +72,19 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
       );
 
       if (!response.ok) {
+        const errorData = await response.text();
+        console.error(`Failed to fetch file content: ${response.status} ${response.statusText}`, errorData);
         throw new Error('Failed to fetch file content.');
       }
 
       const data = await response.json();
       setContent(data.content);
     } catch (err) {
-      if (err.name === 'AbortError') return;
+      if (err.name === 'AbortError') {
+        console.log('File content fetch aborted.');
+        return;
+      }
+
       console.error('Error fetching file content:', err);
       setError('Unable to load content. Please try again.');
     } finally {
@@ -83,6 +92,7 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
     }
   }, [file.category_id, file.name]);
 
+  // Effect to trigger content fetching when the item is expanded and content isn't already loaded
   useEffect(() => {
     if (isExpanded && !content) {
       const controller = new AbortController();
@@ -111,9 +121,13 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
       const response = await apiFetch(fileIdEndpoint(file.id), {
         method: 'DELETE',
       });
+
       if (!response.ok) {
-        throw new Error('Failed to delete the file.');
+        const errorData = await response.text();
+        console.error(`Failed to delete file: ${response.status} ${response.statusText}`, errorData);
+        throw new Error(`HTTP error ${response.status}: Failed to delete the file.`);
       }
+
       onDelete(file.id);
     } catch (err) {
       console.error('Error deleting the file:', err);
@@ -128,18 +142,15 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
     onSelect(file);
   }, [file, onSelect]);
 
-  /** 
-   * ToDo: Take in the extension, sometimes when guessing what the extension is 
-   *  it gets it wrong.
-   */
+  // It appears explicetely including the extension leads to formatting failure if the system fails to remove added code blocks
   const getFormattedContent = () => {
-    // For non-coding file types, return content as is
+    if (!content) return '';
 
-    
+    // For non-coding file types, return content as is
     if (nonCodingExtensions.includes(fileExtension)) {
       return content;
     }
-    return "\n```\n" + content + "\n```\n";
+    return `\n\`\`\`\n${content}\n\`\`\`\n`;
   };
 
   return (
@@ -170,19 +181,29 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
               className="button delete-button"
               type="button"
               disabled={isDeleting}
-              aria-label={isDeleting ? 'Deleting file' : 'Delete this file'}
+              aria-label={isDeleting ? `Deleting file ${file.name}` : `Delete file ${file.name}`}
+              aria-busy={isDeleting}
             >
               {isDeleting ? 'Deleting...' : 'Delete'}
             </button>
           )}
-          <button className="button expand-button" onClick={toggleExpansion}>
+          <button 
+            className="button expand-button"
+            onClick={toggleExpansion}
+            aria-expanded={isExpanded}
+            aria-controls={`file-content-${file.id}`}
+            aria-label={isExpanded ? `Collapse file ${file.name}` : `Expand file ${file.name}`}
+          >
             {isExpanded ? "▲" : "▼"}
           </button>
         </div>
       </div>
 
       {isExpanded && (
-        <div className="file-content">
+        <div 
+          className="file-content"
+          id={`file-content-${file.id}`}
+        >
           {file.summary && (
             <div className="file-summary">
               <p><strong>Summary</strong></p>
@@ -193,7 +214,9 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
               </small>
             </div>
           )}
+
           {file.summary && <strong>Content</strong>}
+          
           <div className="file-content-text">
             <p>
               {isLoading ? (

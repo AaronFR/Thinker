@@ -12,8 +12,14 @@ import { deleteMessageByIdEndpoint } from '../../constants/endpoints';
  * Displays an individual message with options to expand/collapse and delete.
  * 
  * @param {Object} msg : The message object containing id, prompt, response, and time.
- * @param {Function} onDelete : Callback function to handle message deletion.
- * @param {Function} onSelect : Callback function to handle message selection.
+ * @param {string} msg.id - Unique identifier for the message.
+ * @param {string} msg.prompt - The user prompt text.
+ * @param {string} [msg.response] - The response text (optional).
+ * @param {number} msg.time - Timestamp of the message creation (Unix epoch).
+ * @param {number} [msg.cost] - Cost associated with the message (optional).
+ * @param {Function} onDelete - Callback function invoked with message ID upon successful deletion.
+ * @param {Function} onSelect - Callback function invoked with the message object when selected.
+ * @param {boolean} isSelected - Flag indicating if the message item is currently selected.
  */
 const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -26,6 +32,25 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
     const toggleExpansion = useCallback(() => {
         setIsExpanded(prev => !prev);
     }, []);
+
+    /**
+     * Handles the click event on the message header to toggle expansion,
+     * preventing the event from bubbling up to the main selection handler.
+     */
+    const handleExpansionClick = useCallback((e) => {
+        e.stopPropagation(); // Prevent triggering onSelect when clicking header
+        toggleExpansion();
+    }, [toggleExpansion]);
+
+    /**
+     * Handles the key press event (Enter) on the message header for accessibility.
+     */
+    const handleKeyPressExpansion = useCallback((e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Prevent default button behavior if any
+            toggleExpansion();
+        }
+    }, [toggleExpansion]);
 
     /**
      * Handles the deletion of the message by making an API call.
@@ -45,6 +70,8 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
             });
 
             if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                const errorMessage = errorData?.detail || "Failed to delete the message.";
                 throw new Error("Failed to delete the message.");
             }
 
@@ -61,49 +88,47 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
      * Handles the selection of the message.
      */
     const handleSelect = useCallback(() => {
-        onSelect(msg);
-    }, [msg, onSelect]);
-
-    const handleKeyPressExpansion = useCallback((e) => {
-        if (e.key === 'Enter') {
-            toggleExpansion();
+        if (!isDeleting) {
+            onSelect(msg);
         }
-    }, [toggleExpansion]);
+    }, [msg, onSelect, isDeleting]);
 
     return (
         <div
             className={`message-item ${isSelected ? 'selected' : ''}`}
             onClick={handleSelect}
-            style={{ cursor: 'pointer', opacity: isDeleting ? 0.5 : 1 }}
+            style={{
+                cursor: 'pointer',
+                opacity: isDeleting ? 0.5 : 1,
+                transition: 'opacity 0.2s ease-in-out',
+            }}
             role="button"
             aria-pressed={isExpanded}
+        aria-current={isSelected ? 'true' : 'false'}
             tabIndex={0}
             onKeyPress={handleKeyPressExpansion}
         >
             <div className='side-by-side'>
                 <div 
                     className="message-header" 
-                    onClick={toggleExpansion} 
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                    }}
+                    onClick={handleExpansionClick}
+                    onKeyPress={handleKeyPressExpansion}
                     role="button"
                     aria-expanded={isExpanded}
                     aria-controls={`message-content-${msg.id}`}
                     tabIndex={0}
-                    onKeyPress={handleKeyPressExpansion}
+                    style={{ flexGrow: 1, overflow: 'hidden' }}
                 >
-                {
-                    isExpanded ? 
+                {isExpanded ? (
                     <CodeHighlighter>
                         {msg.prompt}
                     </CodeHighlighter>
-                    : shortenText(msg.prompt, 100)
-                }
+                ) : (
+                    shortenText(msg.prompt, 100)
+                )}
             </div>
-            {(isSelected || isExpanded) && <button
+            {(isSelected || isExpanded) && 
+                <button
                     onClick={handleDelete}
                     className="button delete-button"
                     type="button"
@@ -111,6 +136,7 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
                     aria-label={
                         isDeleting ? 'Deleting message' : 'Delete this message'
                     }
+                    tabIndex={0}
                 >
                     {isDeleting ? 'Deleting...' : 'Delete'}
                 </button>}
@@ -123,7 +149,7 @@ const MessageItem = ({ msg, onDelete, onSelect, isSelected }) => {
                     </p>
                     <div className="markdown-output">
                         <CodeHighlighter>
-                            {msg.response || 'No response available.'}
+                            {msg.response || 'No Content.'}
                         </CodeHighlighter>
                     </div>
                 </div>

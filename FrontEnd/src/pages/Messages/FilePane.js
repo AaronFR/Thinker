@@ -57,6 +57,8 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles, removeFile, refre
   // Fetch files for a given category – store in filesByCategory state.
   const fetchFilesByCategory = useCallback(async (categoryName, categoryId) => {
     setLoadingFiles(prev => ({ ...prev, [categoryId]: true }));
+
+    setFetchError('');
     try {
       const response = await apiFetch(filesForCategoryNameEndpoint(categoryName.toLowerCase()), {
         method: "GET",
@@ -93,21 +95,47 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles, removeFile, refre
   }, [expandedCategoryId, filesByCategory, fetchFilesByCategory]);
 
   /**
-   * Handles deletion of a file by updating filesByCategory state.
+   * Handles deletion of a file. If the deleted file is the last one in its category,
+   * the category itself is removed from the UI.
    */
   const handleDeleteFile = useCallback((categoryId, fileId) => {
+    const updatedFilesForCategory = filesByCategory[categoryId]?.filter(file => file.id !== fileId);
+
     setFilesByCategory(prev => ({
       ...prev,
-      [categoryId]: prev[categoryId]?.filter(file => file.id !== fileId)
+      [categoryId]: updatedFilesForCategory
     }));
+
+    // Check if the category became empty after deleting the file
+    if (updatedFilesForCategory && updatedFilesForCategory.length === 0) {
+      // If the category is now empty, remove it from the main categories list
+      setCategories(prevCategories =>
+        prevCategories.filter(category => category.id !== categoryId)
+      );
+      // Optionally collapse the view if the deleted category was expanded
+      if (expandedCategoryId === categoryId) {
+        setExpandedCategoryId(null);
+      }
+    }
+
     removeFile(fileId);
-  }, [removeFile]);
+  }, [filesByCategory, removeFile, expandedCategoryId]);
 
   useEffect(() => {
     if (!isProcessing) {
       fetchCategories();
     }
   }, [isProcessing, refreshFiles, fetchCategories]);
+
+  // Calculate the number of placeholder items needed to fill the last row for flexbox alignment
+  const numPlaceholders = itemsPerRow === 0 || categories.length === 0 || categories.length % itemsPerRow === 0
+    ? 0
+    : itemsPerRow - (categories.length % itemsPerRow);
+
+  // Generate placeholder elements
+  const placeholderItems = Array.from({ length: numPlaceholders }).map((_, index) => (
+    <div key={`hidden-${index}`} className="hidden-flex-item" aria-hidden="true" />
+  ));
 
   return (
     <div className="files-container" style={withLoadingOpacity(isProcessing)}>
@@ -149,6 +177,8 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles, removeFile, refre
                           />
                         ))
                       ) : (
+                         // This state should ideally not be reached if the category is removed upon becoming empty,
+                         // but kept as a fallback display.
                         <p>No files available in this category.</p>
                       )
                     )}
@@ -157,13 +187,7 @@ const FilePane = ({ onFileSelect, isProcessing, selectedFiles, removeFile, refre
               </div>
             ))}
             {/* Add hidden flex items to fill the last row based on itemsPerRow */}
-            {Array.from({
-              length: (itemsPerRow === 0 || categories.length === 0)
-                ? 0
-                : (categories.length % itemsPerRow === 0 ? 0 : itemsPerRow - (categories.length % itemsPerRow))
-            }, (_, index) => (
-              <div key={`hidden-${index}`} className="hidden-flex-item" />
-            ))}
+            {placeholderItems}
           </>
         ) : (
           <div>No category with files yet.</div>

@@ -19,12 +19,11 @@ import './styles/MessageHistory.css';
  * allows category expansion/collapse, message selection, and deletion.
  * Handles category instruction display and editing based on settings.
  * 
- * @param {object} props - Component props.
- * @param {boolean} props.isProcessing - Indicates whether the application is processing data.
- * @param {function} props.onMessageSelect - Callback function for selecting a message.
- * @param {Array<object>} props.selectedMessages - Array of currently selected messages.
- * @param {function} props.removeMessage - Callback function invoked to remove a message.
- * @param {object|null} props.categoryToRefresh - Object containing { id, name } of a category to reload and expand.
+ * @param {boolean} isProcessing - Indicates whether the application is processing data.
+ * @param {function} onMessageSelect - Callback function for selecting a message.
+ * @param {Array<object>} selectedMessages - Array of currently selected messages.
+ * @param {function} removeMessage - Callback function invoked to remove a message.
+ * @param {object|null} categoryToRefresh - Object containing { id, name } of a category to reload and expand.
  */
 const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMessage, refreshCategory }) => {
   const [categories, setCategories] = useState([]);
@@ -85,14 +84,25 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
    * @param {number} categoryId - The ID of the category.
    */
   const fetchMessagesByCategory = useCallback(async (categoryName, categoryId) => {
+    const targetCategory = categories.find(cat => cat.id === categoryId);
+
+    // Avoid fetching if messages are already loaded and not forcing a refresh
+    if (!targetCategory) {
+      return;
+    }
+
+    setError('');
     try {
       const response = await apiFetch(messagesForCategoryEndpoint(categoryName.toLowerCase()), {
         method: "GET",
       });
+
       if (!response.ok) {
         throw new Error(`Failed to get messages for category: ${categoryName}`);
       }
+
       const data = await response.json();
+
       setCategories(prevCategories =>
         prevCategories.map(category =>
           category.name.toLowerCase() === categoryName.toLowerCase()
@@ -102,9 +112,9 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
       );
     } catch (error) {
       console.error("Error fetching messages:", error);
-      setError("Unable to load messages. Please try again.");
+      setError(`Unable to load messages for ${categoryName}. Please try again.`);
     }
-  }, []);
+  }, [categories]);
 
   useEffect(() => {
     if (refreshCategory == null) {
@@ -116,23 +126,38 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
 
   /**
    * Handles deletion of a message.
+   * Also removes a category from the MessagePane if it no longer has any messsages (it's been deleted)
    *
    * @param {number} categoryId - The ID of the category containing the message.
    * @param {number} messageId - The ID of the message to be deleted.
    */
   const handleDeleteMessage = useCallback((categoryId, messageId) => {
-    setCategories(prevCategories =>
-      prevCategories.map(category =>
-        category.id === categoryId
-          ? { ...category, messages: category.messages.filter(msg => msg.id !== messageId) }
-          : category
-      )
-    );
+    setCategories(prevCategories => {
+      const potentiallyUpdatedCategories = prevCategories.map(category => {
+        if (category.id === categoryId) {
+          const updatedMessages = category.messages.filter(msg => msg.id !== messageId);
+          
+          if (updatedMessages.length === 0) {
+            return null; 
+          }
+          return { ...category, messages: updatedMessages };
+        }
+        return category;
+      });
+      
+      // Filter out the categories marked as null (those that became empty)
+      return potentiallyUpdatedCategories.filter(category => category !== null);
+    });
+
+    // Notify parent component about the message removal (if needed for other state)
     removeMessage(messageId);
   }, [removeMessage]);
 
   /**
    * Updates the local state of category instructions if the backend has been updated.
+   * 
+   * @param {string} categoryName - The name of the category being updated.
+   * @param {string|null} newInstructions - The new instructions text.
    */
   const handleCategoryInstructionsUpdate = useCallback((categoryName, newInstructions) => {
     setCategories(prevCategories =>
@@ -154,8 +179,9 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
     if (animating) return;
 
     setAnimating(true);
+    const isCurrentlyExpanded = expandedCategoryId === id;
 
-    if (expandedCategoryId === id) {
+    if (isCurrentlyExpanded) {
       setExpandedCategoryId(null);
     } else {
       setExpandedCategoryId(id);
@@ -167,14 +193,24 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
     setTimeout(() => {
       setAnimating(false);
     }, 300);
-  }, [categories, expandedCategoryId, fetchMessagesByCategory, animating]);
+  }, [animating, expandedCategoryId, fetchMessagesByCategory]);
 
   // Fetch categories when the component mounts if not processing
   useEffect(() => {
     if (!isProcessing) {
       fetchCategories();
     }
-  }, [isProcessing, fetchCategories]);
+  }, [isProcessing]);
+
+  // Calculate the number of placeholder items needed to fill the last row for flexbox alignment
+  const numPlaceholders = itemsPerRow === 0 || categories.length === 0 || categories.length % itemsPerRow === 0
+    ? 0
+    : itemsPerRow - (categories.length % itemsPerRow);
+
+  // Generate placeholder elements
+  const placeholderItems = Array.from({ length: numPlaceholders }).map((_, index) => (
+    <div key={`hidden-${index}`} className="hidden-flex-item" aria-hidden="true" />
+  ));
 
   return (
     <div className="message-history-container" style={withLoadingOpacity(isProcessing)}>
@@ -235,14 +271,7 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
               </div>
             ))}
             {/* Add hidden flex items to fill the last row for proper alignment */}
-            {Array.from({
-              length:
-                itemsPerRow === 0 || categories.length === 0
-                  ? 0
-                  : (categories.length % itemsPerRow === 0 ? 0 : itemsPerRow - (categories.length % itemsPerRow))
-            }).map((_, index) => (
-              <div key={`hidden-${index}`} className="hidden-flex-item" />
-            ))}
+            {placeholderItems}
           </>
         ) : (
           <p>No category with messages yet.</p>
