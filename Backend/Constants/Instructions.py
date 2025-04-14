@@ -98,8 +98,7 @@ def extract_memory_node_terms_system_message(existing_nodes: List[str] = 'No Kno
 
 AUTO_SELECT_PERSONA_SYSTEM_MESSAGE = (
     "You are an assistant that selects an appropriate persona based on the user's prompt. "
-    "Choose one of the following personas: 'coder' or 'writer'.\n"
-    "Respond with only the persona name in lowercase."
+    "Choose one of the following personas: 'coder' or 'writer'."
 )
 
 AUTO_SELECT_WORKFLOW_SYSTEM_MESSAGE = (
@@ -108,7 +107,6 @@ AUTO_SELECT_WORKFLOW_SYSTEM_MESSAGE = (
     "'chat' is for simply responding to the user, "
     "'write' writes the output to a given file and "
     "'auto' processes input files one by one.\n"
-    "Respond with only the workflow name in lowercase."""
 )
 
 AUTO_ENGINEER_PROMPT_SYSTEM_MESSAGE = (

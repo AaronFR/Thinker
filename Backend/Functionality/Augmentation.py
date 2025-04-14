@@ -39,9 +39,9 @@ class Augmentation:
         """
         config = Configuration.load_config()
         persona_selection_system_message = config.get('system_messages', {}).get(
-            "personaSelectionMessage",
+            "persona_selection_message",
             AUTO_SELECT_PERSONA_SYSTEM_MESSAGE
-        )
+        ) + "\nRespond with only the persona name in lowercase."
 
         llm_response = AiOrchestrator().execute(
             [persona_selection_system_message],
@@ -80,9 +80,9 @@ class Augmentation:
 
         config = Configuration.load_config()
         workflow_selection_system_message = config.get('system_messages', {}).get(
-            "workflowSelectionMessage",
+            "workflow_selection_message",
             AUTO_SELECT_WORKFLOW_SYSTEM_MESSAGE
-        )
+        ) + "\nRespond with only the workflow name in lowercase."
 
         # Execute the LLM call to determine the workflow
         llm_response = AiOrchestrator().execute(

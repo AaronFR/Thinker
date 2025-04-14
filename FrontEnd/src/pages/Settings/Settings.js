@@ -171,6 +171,23 @@ const FunctionalitySettings = React.memo(({
           </select>
           Automatically select a Category (folder) to store the promp/files in
         </label>
+        <label className="message-label">
+          Categorisation Instructions
+          <div
+            data-tooltip-id="tooltip"
+            data-tooltip-content={TooltipConstants.categorisationSystemMessage}
+            data-tooltip-place="bottom"
+          >
+            <AutoExpandingTextarea
+              value={settings?.system_messages?.categorisation_message}
+              className="textarea"
+              onChange={(e) =>
+                handleMessageChange('system_messages', 'categorisation_message', e.target.value)
+              }
+              style={{ opacity: 0.9 }}
+            />
+          </div>
+        </label>
 
 
         <div className='side-by-side'>
@@ -194,6 +211,24 @@ const FunctionalitySettings = React.memo(({
           </select>
           Automatically select a Persona (speciality) based on your prompt
         </label>
+        <label className="message-label">
+          Persona Selection Instructions
+          <div
+            data-tooltip-id="tooltip"
+            data-tooltip-content={TooltipConstants.personaSelectionSystemMessage}
+            data-tooltip-place="bottom"
+          >
+            <AutoExpandingTextarea
+              value={settings?.system_messages?.persona_selection_message}
+              className="textarea"
+              onChange={(e) =>
+                handleMessageChange('system_messages', 'persona_selection_message', e.target.value)
+              }
+              style={{ opacity: 0.9 }}
+            />
+          </div>
+        </label>
+        
 
         <div className='side-by-side'>
           <h3>Auto select worfklows</h3>
@@ -215,6 +250,23 @@ const FunctionalitySettings = React.memo(({
             <option value={'once'}>Once</option>
           </select>
           Automatically select a Workflow for deciding how to process this prompt
+        </label>
+        <label className="message-label">
+          Workflow Selection Instructions
+          <div
+            data-tooltip-id="tooltip"
+            data-tooltip-content={TooltipConstants.workflowSelectionSystemMessaeg}
+            data-tooltip-place="bottom"
+          >
+            <AutoExpandingTextarea
+              value={settings?.system_messages?.workflow_selection_message}
+              className="textarea"
+              onChange={(e) =>
+                handleMessageChange('system_messages', 'workflow_selection_message', e.target.value)
+              }
+              style={{ opacity: 0.9 }}
+            />
+          </div>
         </label>
         
       </div>
@@ -451,10 +503,10 @@ const FilesSettings = React.memo(({
 });
 
 /**
- * Renders System Messages related settings without using the MessageSettings component.
+ * Renders Persona System Messages related settings without using the MessageSettings component.
  */
 const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) => {
-  const sectionHeading = useMemo(() => (<h2 className="settings-heading">System Messages</h2>), []);
+  const sectionHeading = useMemo(() => (<h2 className="settings-heading">Personas</h2>), []);
 
   const maxContent = (
     <div>
@@ -464,7 +516,7 @@ const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) =>
       
       <div className="message-settings">
         <label className="message-label">
-          Coder Persona Message
+          Coder Instructions
           <AutoExpandingTextarea
             value={settings?.system_messages?.coder_persona_message}
             className="textarea"
@@ -475,7 +527,7 @@ const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) =>
           />
         </label>
         <label className="message-label">
-          Writer Persona Message
+          Writer Instructions
           <AutoExpandingTextarea
             value={settings?.system_messages?.writer_persona_message}
             className="textarea"
@@ -484,23 +536,6 @@ const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) =>
             }
             style={{ opacity: 0.9 }}
           />
-        </label>
-        <label className="message-label">
-          Categorisation Message
-          <div
-            data-tooltip-id="tooltip"
-            data-tooltip-content={TooltipConstants.categorisationSystemMessage}
-            data-tooltip-place="bottom"
-          >
-            <AutoExpandingTextarea
-              value={settings?.system_messages?.categorisation_message}
-              className="textarea"
-              onChange={(e) =>
-                handleMessageChange('system_messages', 'categorisation_message', e.target.value)
-              }
-              style={{ opacity: 0.9 }}
-            />
-          </div>
         </label>
       </div>
     </div>

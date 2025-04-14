@@ -49,6 +49,12 @@ const TooltipConstants = {
   /* System Messages */
   categorySystemMessage: "These instructions are applied to any prompt that fits this category. Click to edit.",
   categorisationSystemMessage: "Categorization helps organize your files and messages by assigning them to existing or new 'folders'.",
+  personaSelectionSystemMessage: `'Personas' (think 'role', 'focus' or 'speciality') are used for being more specific and targeted, applying unique instructions and workflows to a given type of prompt
+  
+  Note: In future this function will probably be provided by a list of personas you select including custom personas, so this system message may be overwritten in future`,
+  workflowSelectionSystemMessaeg: `Workflows determine how the system responds to your prompt as a series of steps. Determining if it's chatting, writing a file for you, or modifying many files at once
+  
+  Note: In future there will be many more workflows for individual, specified use cases`,
   questioningSystemMessage: `When generating questions, the AI references your prompt, uploaded files, and previous messages. (As of yet it does not reference user knowledge)
   
   Note: 'Provide only the questions.' instructs the LLM to only output the questions themselves without preface: faster and less expensive to run.`,
