@@ -32,7 +32,7 @@ const FUNCTIONALITY_STATES = {
  *
  * Renders User Interface related settings.
  */
-const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiColourisation }) => {
+const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiColourisation, changeSetting }) => {
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">User Interface</h2>), []);
 
   const maxContent = (
@@ -62,7 +62,24 @@ const UserInterfaceSettings = React.memo(({ settings, toggleDarkMode, toggleAiCo
         New Category Colourisation via LLM Prompt
       </label>
       
-
+      
+      <label className="settings-label">
+        <select
+          className="settings-select"
+          value={settings?.category?.display}
+          onChange={(e) =>
+            changeSetting(
+              'category',
+              'display',
+              e.target.value,
+            )
+          }
+        >
+          <option value={'latest'}>Latest</option>
+          <option value={'alphabetically'}>Alphabetically</option>
+        </select>
+        Choose how Categories are displayed
+      </label>
 
       <TextSizeSlider />
     </div>
@@ -1027,6 +1044,7 @@ export function Settings() {
         settings={settings}
         toggleDarkMode={toggleDarkMode}
         toggleAiColourisation={toggleAiColourisation}
+        changeSetting={changeSetting}
       />
 
       <AiModelSettings

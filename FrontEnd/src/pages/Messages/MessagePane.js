@@ -7,20 +7,24 @@ import { categoriesWithMessagesEndpoint, messagesForCategoryEndpoint } from '../
 
 import MessageItem from './MessageItem';
 
-import './styles/MessageHistory.css';
 import { SettingsContext } from '../Settings/SettingsContext';
 import { useCalculateItemsPerRow } from '../../hooks/useCalculateItemsPerRow';
 import CategoryInstructionsEditor from '../../components/CategoryInstructionsEditor';
 import TooltipConstants from '../../constants/tooltips';
 
+import './styles/MessageHistory.css';
+
 /**
- * MessagePane Component
+ * Displays a list of messages grouped by categories. Fetches categories and messages,
+ * allows category expansion/collapse, message selection, and deletion.
+ * Handles category instruction display and editing based on settings.
  * 
- * Displays a list of messages grouped by categories,
- * allowing selection, expansion, and deletion.
- * 
- * @param {boolean} isProcessing - Indicates whether the application is processing data.
- * @param {function} onMessageSelect - Callback function for selecting a message.
+ * @param {object} props - Component props.
+ * @param {boolean} props.isProcessing - Indicates whether the application is processing data.
+ * @param {function} props.onMessageSelect - Callback function for selecting a message.
+ * @param {Array<object>} props.selectedMessages - Array of currently selected messages.
+ * @param {function} props.removeMessage - Callback function invoked to remove a message.
+ * @param {object|null} props.categoryToRefresh - Object containing { id, name } of a category to reload and expand.
  */
 const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMessage, refreshCategory }) => {
   const [categories, setCategories] = useState([]);
@@ -55,13 +59,18 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
       const data = await response.json();
 
       // Assign unique IDs and default messages
-      const categoriesWithId = data.categories.map((category, index) => ({
+      let categoriesWithId = data.categories.map((category, index) => ({
         id: category.id,
         name: toTitleCase(category.name),
         colour: category.colour || null,
         instructions: category.instructions || null,
         messages: []
       }));
+
+      if (settings?.category?.display === "alphabetically") {
+        categoriesWithId = categoriesWithId.sort((a, b) => a.name.localeCompare(b.name));
+      }
+
       setCategories(categoriesWithId);
     } catch (error) {
       console.error("Error fetching categories:", error);
