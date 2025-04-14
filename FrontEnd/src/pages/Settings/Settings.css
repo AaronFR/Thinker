@@ -75,11 +75,11 @@ html {
   padding: var(--spacing-sm);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-sm);
-  background-color: var(--color-body-bg-dark);
-  resize: vertical;
-  overflow-y: auto;
   font-family: var(--font-family-base);
   line-height: 1.4;
+}
+body.dark-mode .message-settings textarea {
+  border: 1px solid #ddddddc3;
 }
 .message-settings textarea:focus {
   border-color: var(--color-border-focus);

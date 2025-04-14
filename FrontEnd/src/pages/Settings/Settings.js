@@ -146,7 +146,7 @@ const FunctionalitySettings = React.memo(({
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">Functionality</h2>), []);
   
   const maxContent = (
-    <div>
+    <div className='message-settings'>
       {sectionHeading}
 
       <div className='settings-subsection'>
@@ -337,7 +337,7 @@ const WorkflowsSettings = React.memo(({
   const sectionHeading = useMemo(() => (<h2 className="settings-heading">Workflows</h2>), []);
   
   const maxContent = (
-    <div>
+    <div className='message-settings'>
       {sectionHeading}
       <div className='settings-subsection'>
         <label className="settings-label">
@@ -417,7 +417,7 @@ const FilesSettings = React.memo(({
     <div>
       {sectionHeading}
 
-      <div className='settings-subsection'>
+      <div className='settings-subsection message-settings'>
         <div className='side-by-side'>
           <label className="settings-label">
             <input
