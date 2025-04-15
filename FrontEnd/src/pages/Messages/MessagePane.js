@@ -244,7 +244,7 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
                     {category.name}
                   </header>
                   {(
-                    (settings?.interface?.display_category_instructions === "always" && expandedCategoryId === category.id) ||
+                    (settings?.interface?.display_category_instructions === "always") ||
                     (settings?.interface?.display_category_instructions === "when selected" && expandedCategoryId === category.id)
                    ) && (
                       <CategoryInstructionsEditor
