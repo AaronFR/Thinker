@@ -40,7 +40,6 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
   /**
    * Fetches message categories from the backend API.
    * 
-   * ToDo: should re-sort alphabetically if the user prefers
    * ToDo: When files and messages are merged by default refactor to make use of CategoryService.js
    * 
    * @returns {Promise<void>}
@@ -116,12 +115,20 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
     }
   }, [categories]);
 
+  // ToDo: It would be more efficient to add the new item to the category rather than refresh the entire category
   useEffect(() => {
     if (refreshCategory == null) {
       return;
     }
+    
+    const isCurrentlyExpanded = expandedCategoryId === refreshCategory.id;
 
-    toggleCategory(refreshCategory?.id, refreshCategory?.name)
+    if (isCurrentlyExpanded) {
+      fetchMessagesByCategory(refreshCategory?.name, refreshCategory.id)
+    } else {
+      toggleCategory(refreshCategory?.id, refreshCategory?.name)
+    }
+
   }, [refreshCategory, fetchCategories]);
 
   /**
@@ -256,7 +263,7 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
                     {category.messages.length === 0 ? (
                       <p>Loading messages...</p>
                     ) : (
-                      category.messages.map((msg) => (
+                      category.messages?.map((msg) => (
                         <MessageItem
                           key={msg.id}
                           msg={msg}
