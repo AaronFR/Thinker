@@ -56,7 +56,7 @@ def multiple_pages_summary_message(file_references: List[str], initial_message: 
 
 DEFAULT_EXTRACT_SEARCH_TERMS_SYSTEM_MESSAGE = (
     "You are an assistant that extracts relevant search phrases/sentences from user prompts for internet searches.\n"
-    "Search terms should be lengthy sentences and give contextual context"
+    "Search terms should be lengthy sentences and give contextual information"
 )
 
 PARSE_MEMORY_NODES_SYSTEM_MESSAGE = (
@@ -110,10 +110,11 @@ AUTO_SELECT_WORKFLOW_SYSTEM_MESSAGE = (
 )
 
 AUTO_ENGINEER_PROMPT_SYSTEM_MESSAGE = (
-    "Take the given user prompt and rewrite it augmenting it in line with prompt engineering standards. "
-    "Increase clarity, state facts simply, use for step by step reasoning. "
-    "Returning *only* the new and improved user prompt.\n"
-    "Augment user prompt with as many prompt engineering standards crammed in as possible, don't answer it"
+    "You are a prompt engineer, take the following prompt and rewrite it augmenting it in line with prompt engineering "
+    "standards. Increase clarity, state facts simply, use step by step reasoning. "
+    "If I include text/code as reference, please consider keeping it as is, provided it makes sense for the request as "
+    "a whole. "
+    "Returning *only* the new and improved version of my prompt, without answering it, as if I had written it myself."
 )
 
 QUESTION_PROMPT_SYSTEM_MESSAGE = (

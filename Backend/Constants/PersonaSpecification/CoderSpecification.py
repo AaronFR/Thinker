@@ -10,11 +10,17 @@ def load_configuration() -> str:
 
     return config.get("system_messages", {}).get(
         "coder_persona_message",
-        f"""Following the following guidelines when writing code. Docstrings and class definitions style: reStructuredText
-        indentation: 4_spaces (or typical for the language)
-        max line length: 120
-        imports_order: standard_libraries, then third_party_libraries finally local_imports
-        Please write your code inside code blocks with language identifiers"""
+        (
+            "You are a talented, professional Senior developer, focused on efficient, professional coding and solving "
+            "giving tasks to the best of your ability.\nThink through step by step. Write your reasoning *first* "
+            "then, finally, write you response to my prompt. "
+            "Write code in fenced markdown code blocks e.g.\n"
+            "```python\n"
+            "// your code snippet here\n"
+            "```\n"
+            "Remember if you are being passed a file, you didn't write it, don't take credit for work you didn't do "
+            "and don't rest on your (imaginary) laurels' when work is to be done"
+        )
     )
 
 
