@@ -19,6 +19,8 @@ import './styles/MessageHistory.css';
  * allows category expansion/collapse, message selection, and deletion.
  * Handles category instruction display and editing based on settings.
  * 
+ * ToDo: Instead of refreshing the entire category the new message needs to be added.
+ * 
  * @param {boolean} isProcessing - Indicates whether the application is processing data.
  * @param {function} onMessageSelect - Callback function for selecting a message.
  * @param {Array<object>} selectedMessages - Array of currently selected messages.
@@ -62,7 +64,6 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
         name: toTitleCase(category.name),
         colour: category.colour || null,
         instructions: category.instructions || null,
-        messages: []
       }));
 
       if (settings?.category?.display === "alphabetically") {
@@ -261,6 +262,7 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
                 {expandedCategoryId === category.id && (
                   <div id={`category-${category.id}`} className="message-list">
                     {category.messages.length === 0 ? (
+                    {category.messages?.length === 0 ? (
                       <p>Loading messages...</p>
                     ) : (
                       category.messages?.map((msg) => (
