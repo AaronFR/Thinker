@@ -29,7 +29,7 @@ RETURN user.password_hash AS password_hash;
 
 CREATE_USER = """
 MERGE (user:USER {id: $user_id})
-ON CREATE SET user.email = $email, user.password_hash = $password_hash, user.balance = 0, data_uploaded = 0
+ON CREATE SET user.email = $email, user.password_hash = $password_hash, user.balance = 0, user.data_uploaded = 0
 RETURN user.id;
 """
 

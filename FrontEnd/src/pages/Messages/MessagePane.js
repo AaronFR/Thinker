@@ -211,6 +211,7 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
   }, [isProcessing]);
 
   // Calculate the number of placeholder items needed to fill the last row for flexbox alignment
+  // ToDo: A better system needs to be in place for calcualting width, sometimes it assigns the wrong widths after category selection.
   const numPlaceholders = itemsPerRow === 0 || categories.length === 0 || categories.length % itemsPerRow === 0
     ? 0
     : itemsPerRow - (categories.length % itemsPerRow);
@@ -261,7 +262,6 @@ const MessagePane = ({ isProcessing, onMessageSelect, selectedMessages, removeMe
 
                 {expandedCategoryId === category.id && (
                   <div id={`category-${category.id}`} className="message-list">
-                    {category.messages.length === 0 ? (
                     {category.messages?.length === 0 ? (
                       <p>Loading messages...</p>
                     ) : (

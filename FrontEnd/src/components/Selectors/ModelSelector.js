@@ -38,7 +38,7 @@ const ModelSelector = React.memo(({ selectedModel, setTags, forTags, economicalM
   ], []);
 
   const allModels = useMemo(() => [
-    { value: "gemini-2.0-flash", label: "Gemini 2.0 flash" },
+    { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash" },
     { value: "gemini-2.0-flash-lite", label: "Gemini 2.0 Flash Lite" },
     { value: "gpt-4o-mini", label: "GPT 4o mini" },
     { value: "gemini-2.5-pro-preview-03-25", label: "Gemini 2.5 Pro Preview" },

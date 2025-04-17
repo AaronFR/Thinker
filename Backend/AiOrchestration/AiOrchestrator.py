@@ -184,7 +184,9 @@ class AiOrchestrator:
         logging.info(f"Re-run responses ({rerun_count}) : \n{responses}")
 
         # ToDo: Could add a system message to detail how to select a best of response
-        combined_messages = generate_messages("", judgement_criteria, responses, model)
+        # ToDo: messages is added to specifically handle the case where the user refers to a prior message/file
+        #  There may be some filtering that can be performed, for better performance.
+        combined_messages = generate_messages("", judgement_criteria, responses, model) + messages
         response_call = (
             lambda: self.llm_client.get_ai_streaming_response(combined_messages, model)
             if streaming else self.llm_client.get_ai_response(combined_messages, model)

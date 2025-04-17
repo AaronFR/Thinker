@@ -132,8 +132,16 @@ class S3Manager(StorageBase):
             existing_data = yaml.safe_load(yaml_content) or {}
 
             logging.info(f"YAML data loaded from S3: {full_path}")
-        except (ClientError, yaml.YAMLError) as e:
-            logging.error(f"Error reading YAML file from S3: {e}")
+        except ClientError as e:
+            error_code = e.response.get('Error', {}).get('Code')
+            if error_code == 'NoSuchKey':
+                logging.info(f"Yaml file not found: {full_path}, returning empty dictionary")
+            else:
+                logging.exception(f"S3 ClientError accessing s3, path: {full_path}")
+        except yaml.YAMLError as e:
+            logging.exception(f"Error reading YAML file from S3: {e}")
+        except Exception as e:
+            logging.exception(f"Unexpected error loading YAML from s3")
 
         return existing_data
 

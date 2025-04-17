@@ -47,6 +47,10 @@ class Configuration:
 
             # Merge user_config into config
             full_config = Configuration.deep_merge(default_config, user_config)
+            if user_config:
+                full_config = Configuration.deep_merge(default_config, user_config)
+            else:
+                full_config = default_config
 
             set_user_configuration(full_config)
 

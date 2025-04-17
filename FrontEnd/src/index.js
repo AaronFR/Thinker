@@ -39,7 +39,7 @@ function RootApp() {
         }
 
       } catch (error) {
-        console.error("Error validating session:", error);
+        console.error("Error initialising app:", error);
         setIsAuthenticated(false);
         setInitialSettings({});
       }

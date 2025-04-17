@@ -66,7 +66,6 @@ class NodeDatabaseManagement:
         )
 
         if returned_user_id:
-            StorageMethodology.select().add_new_user_file_folder(returned_user_id)
             logging.info(f"User created successfully: {user_id}")
             return True
 
