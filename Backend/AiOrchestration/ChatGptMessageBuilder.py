@@ -11,7 +11,7 @@ def generate_messages(
     system_prompts: List[str] | str,
     user_prompts: List[str],
     assistant_messages: List[str] = None,
-    model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
+    model: ChatGptModel = ChatGptModel.CHAT_GPT_4_POINT_ONE_NANO
 ) -> List[Dict[str, str]]:
     """Generates the list of messages by composing user and system prompts.
 
@@ -38,7 +38,7 @@ def build_role_messages(
     system_prompts: List[str],
     user_prompts: List[str],
     assistant_messages: List[str] = None,
-    model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
+    model: ChatGptModel = ChatGptModel.CHAT_GPT_4_POINT_ONE_NANO
 ) -> List[Dict[str, str]]:
     """Creates a list of messages to be handled by the ChatGpt API, the most important messages is the very last
     'latest' message in the list
@@ -61,8 +61,8 @@ def build_role_messages(
          format_message(ChatGptRole.USER, prompt) for prompt in user_prompts
      ]
 
-    if model == ChatGptModel.CHAT_GPT_O1_MINI or model == ChatGptModel.CHAT_GPT_O3_MINI:
-        role_messages = _handle_o1_model_messages(role_messages)
+    # if model == ChatGptModel...
+    #     role_messages = _handle_o1_model_messages(role_messages)
 
     logging.info(f"Generated role messages - [{model}] : {role_messages}")
 

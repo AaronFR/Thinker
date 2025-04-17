@@ -11,8 +11,8 @@ const models = [
         name: 'Gemini 2.0 Flash',
         inputPerToken: 0.0000001,
         outputPerToken: 0.0000004,
-        description: 'Very-affordable model while nearing peak performance. Talks more conversationally than OpenAi models',
-        goodFor: 'Competent performance while very affordable. Fastest available LLM.',
+        description: 'Very-affordable, very competent mid-tier model. Our recommended default model.',
+        goodFor: 'Competent performance while very affordable. Very fast.',
         image: googleLogo,
     },
     {
@@ -25,50 +25,41 @@ const models = [
         image: googleLogo,
     },
     {
-      name: 'GPT 4o Mini',
-      inputPerToken: 0.00000015,
-      outputPerToken: 0.0000006,
-      description: 'Affordable open-ai model, capable, outputs short to the point statements',
-      goodFor: 'Affordable model',
-      badFor: 'Requests where you need peak performance',
-      image: openAiLogo,
+        name: 'GPT 4.1 Nano',
+        inputPerToken: 0.0000001,
+        outputPerToken: 0.0000004,
+        description: 'Competent economical model',
+        goodFor: 'Affordable model. Fastest available model (Though only ~10% faster than 2.0 Flash)',
+        badFor: 'Not as good as Gemini 2.0 Flash while in the same price range.',
+        image: openAiLogo,
+    },
+    {
+        name: 'GPT 4.1 Mini',
+        inputPerToken: 0.0000004,
+        outputPerToken: 0.0000016,
+        description: 'Competent mid-tier model, more intelligent than Gemini 2.0 Flash but more expensive too',
+        badFor: 'Not of the same ability as 04-mini and Gemini 2.5 Pro',
+        image: openAiLogo,
+    },
+    {
+        name: 'o4 mini',
+        inputPerToken: 0.0000011,
+        outputPerToken: 0.0000044,
+        description: 'OpenAi\'s leading publicly avaible model.',
+        goodFor: 'Current cutting edge model, very intelligent and affordable',
+        badFor: 'Slow, Long latency (that means it takes a while to get started)',
+        image: openAiLogo,
     },
     {
         name: 'Gemini 2.5 Pro Preview',
         inputPerToken: 0.00000125,
         outputPerToken: 0.00001,
-        description: `Current cutting edge model for performance. 
+        description: `Leading Gemmini model. 
         (NOTE: For inputs bigger than 200,000 tokens input costs double (100% increase),
         while output costs will rise by 50%.`,
-        goodFor: 'Cutting edge model for problem solving and coding',
-        badFor: 'Not a wide margin compared to o3 mini for the price.',
+        goodFor: 'Very intelligent model',
+        badFor: 'Expensive. 04-mini performs better for a lower price. Long latency (that means it takes a while to get started)',
         image: googleLogo,
-    },
-    {
-        name: 'o3 mini',
-        inputPerToken: 0.00000055,
-        outputPerToken: 0.0000044,
-        description: 'OpenAi\'s leading publicly avaible model, intelligent, quick and affordable ',
-        goodFor: 'Strong, problem solving model',
-        badFor: 'Long latency (that means it takes a while to get started)',
-        image: openAiLogo,
-    },
-    {
-        name: 'o1 Mini',
-        inputPerToken: 0.00000055,
-        outputPerToken: 0.0000044,
-        description: 'Very verbose, which can be good or bad depending on context',
-        goodFor: 'Slightly faster than o3-mini',
-        badFor: 'Long-winded, outdated by o3-mini',
-        image: openAiLogo,
-    },
-    {
-        name: 'GPT 4o',
-        inputPerToken: 0.0000025,
-        outputPerToken: 0.00001,
-        description: 'Legacy model, competent but not as good as more recent, cheaper models',
-        badFor: 'Expensive and no longer cutting edge',
-        image: openAiLogo,
     },
 ];
 
@@ -195,7 +186,7 @@ const ModelPricing = () => {
             ))}
 
             <small>
-              Prices last updated: 24th of Febuary
+              Prices last updated: 17th of April
             </small>
         </div>
     );

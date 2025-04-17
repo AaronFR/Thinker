@@ -34,17 +34,17 @@ const ModelSelector = React.memo(({ selectedModel, setTags, forTags, economicalM
   const economicalModels = useMemo(() => [
     { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash" },
     { value: "gemini-2.0-flash-lite", label: "Gemini 2.0 Flash Lite" },
-    { value: "gpt-4o-mini", label: "GPT 4o mini" },
+    { value: "gpt-4.1-nano", label: "GPT 4.1 nano" },
+    // Maybe 4.1 mini later but I don't want users getting into higher prices than they expect and can easily observe.
   ], []);
 
   const allModels = useMemo(() => [
     { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash" },
     { value: "gemini-2.0-flash-lite", label: "Gemini 2.0 Flash Lite" },
-    { value: "gpt-4o-mini", label: "GPT 4o mini" },
+    { value: "gpt-4.1-nano", label: "GPT 4.1 nano" },
+    { value: "gpt-4.1-mini", label: "GPT 4.1 mini" },
+    { value: "o4-mini", label: "o4 mini" },
     { value: "gemini-2.5-pro-preview-03-25", label: "Gemini 2.5 Pro Preview" },
-    { value: "o3-mini", label: "o3 mini" },
-    { value: "o1-mini", label: "o1 mini" },
-    { value: "gpt-4o", label: "GPT 4o" },
   ], []);
 
   // Derive the models to display based on economicalMode

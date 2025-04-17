@@ -44,7 +44,9 @@ class Utility:
         """
         return f"<{tag}>\n{content}\n</{tag}>"
 
-    def calculate_tokens_used(self, messages: List[Dict[str, str]], model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI):
+    def calculate_tokens_used(
+        self, messages: List[Dict[str, str]], model: AiModel = ChatGptModel.CHAT_GPT_4_POINT_ONE_NANO
+    ):
         token_count = 0
         model_type = type(model)
 
@@ -54,7 +56,17 @@ class Utility:
         extra_tokens_per_message = 4
 
         if model_type == ChatGptModel:
-            encoding = tiktoken.encoding_for_model(model.value)
+            try:
+                encoding = tiktoken.encoding_for_model(model.value)
+            except KeyError:
+                # If the model name isn't recognized, fall back to the likely encoding
+                logging.warning(
+                    f"Could not automatically map model '{model.value}' to a tokenizer. "
+                    f"Falling back to 'cl100k_base' encoding. Please update 'tiktoken' "
+                    f"library when a new version is available."
+                )
+                encoding = tiktoken.get_encoding("cl100k_base")
+
             for message in messages:
                 token_count += len(encoding.encode(message.get("content", "")))
                 token_count += extra_tokens_per_message

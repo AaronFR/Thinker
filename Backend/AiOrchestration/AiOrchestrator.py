@@ -37,7 +37,7 @@ class AiOrchestrator:
         Initializes an LLM wrapper instance that can call a given supported model.
         """
         self.llm_client = None
-        self.default_background_model = ChatGptModel.CHAT_GPT_4_OMNI_MINI
+        self.default_background_model = ChatGptModel.CHAT_GPT_4_POINT_ONE_NANO
 
     @staticmethod
     def _load_default_model() -> AiModel:
@@ -47,7 +47,7 @@ class AiOrchestrator:
         config = Configuration.load_config()
         default_model_str = config.get('models', {}).get(
             "default_background_model",
-            ChatGptModel.CHAT_GPT_4_OMNI_MINI.value
+            ChatGptModel.CHAT_GPT_4_POINT_ONE_NANO.value
         )
         return find_model_enum_value(default_model_str)
 
@@ -200,7 +200,7 @@ class AiOrchestrator:
         system_prompts: List[str] | str,
         user_prompts: List[str] | str,
         function_schema: str,
-        model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI
+        model: AiModel = ChatGptModel.CHAT_GPT_4_POINT_ONE_NANO
     ) -> Dict[str, object]:
         """
         Generates a structured response adhering to the provided function schema.
@@ -240,7 +240,7 @@ if __name__ == '__main__':
                 "Be concise and targeted."
             )],
             user_prompts=["rewrite solution.txt to be more concise"],
-            model=ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+            model=ChatGptModel.CHAT_GPT_4_POINT_ONE_NANO,
             rerun_count=3,
             loop_count=2,
             streaming=True  # Use streaming for the final consolidated response

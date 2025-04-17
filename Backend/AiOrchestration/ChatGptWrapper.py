@@ -17,7 +17,7 @@ from Utilities.LogsHandler import LogsHandler
 from Utilities.Utility import Utility
 
 
-REASONING_MODELS = {ChatGptModel.CHAT_GPT_O3_MINI, ChatGptModel.CHAT_GPT_O1_MINI}
+REASONING_MODELS = {ChatGptModel.CHAT_GPT_O4_MINI}
 
 
 class ChatGptRole(enum.Enum):
@@ -72,7 +72,7 @@ class ChatGptWrapper(AiWrapper):
     def get_ai_response(
             self,
             messages: List[Dict[str, str]],
-            model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+            model: ChatGptModel = ChatGptModel.CHAT_GPT_4_POINT_ONE_NANO,
             rerun_count: int = 1) -> str | List[str]:
         """Request a response from the OpenAI API.
 
@@ -108,7 +108,7 @@ class ChatGptWrapper(AiWrapper):
     def get_ai_streaming_response(
             self,
             messages: List[Dict[str, str]],
-            model: ChatGptModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> str | List[str]:
+            model: ChatGptModel = ChatGptModel.CHAT_GPT_4_POINT_ONE_NANO) -> str | List[str]:
         """Request a response from the OpenAI API with streaming enabled and calculate cost at the end.
 
         :param messages: The system and user messages to send to the ChatGPT client
@@ -162,7 +162,7 @@ class ChatGptWrapper(AiWrapper):
     def get_ai_function_response(self,
                                  messages: List[Dict[str, str]],
                                  function_schema,
-                                 model=ChatGptModel.CHAT_GPT_4_OMNI_MINI) -> Dict[str, object]:
+                                 model=ChatGptModel.CHAT_GPT_4_POINT_ONE_NANO) -> Dict[str, object]:
         """Requests a structured response from the OpenAI API for function calling.
 
         :param messages: Messages sent to the ChatGPT client
@@ -173,7 +173,7 @@ class ChatGptWrapper(AiWrapper):
         if not self.can_afford_request(model, messages):
             return CANNOT_AFFORD_REQUEST
 
-        if model == ChatGptModel.CHAT_GPT_O1_MINI or model == ChatGptModel.CHAT_GPT_O3_MINI:
+        if model == ChatGptModel.CHAT_GPT_O4_MINI:
             raise Exception("O1 models do not support function calls!")
         chat_completion = self.open_ai_client.chat.completions.create(
             model=model.value,

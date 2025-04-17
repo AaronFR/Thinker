@@ -2,10 +2,9 @@ from AiOrchestration.AiModel import AiModel
 
 
 class ChatGptModel(AiModel):
-    CHAT_GPT_4_OMNI_MINI = ("gpt-4o-mini", 0.00000015, 0.0000006)
-    CHAT_GPT_O3_MINI = ("o3-mini", 0.00000055, 0.0000044)
-    CHAT_GPT_O1_MINI = ("o1-mini", 0.00000055, 0.0000044)
-    CHAT_GPT_4_OMNI = ("gpt-4o", 0.0000025, 0.00001)
+    CHAT_GPT_4_POINT_ONE_NANO = ("gpt-4.1-nano", 0.0000001, 0.0000004)
+    CHAT_GPT_4_POINT_ONE_MINI = ("gpt-4.1-mini", 0.0000004, 0.0000016)
+    CHAT_GPT_O4_MINI = ("o4-mini", 0.0000011, 0.0000044)
 
     @property
     def value(self) -> str:
@@ -14,4 +13,4 @@ class ChatGptModel(AiModel):
 
     @classmethod
     def get_default(cls) -> 'ChatGptModel':
-        return cls.CHAT_GPT_4_OMNI_MINI
+        return cls.CHAT_GPT_4_POINT_ONE_NANO

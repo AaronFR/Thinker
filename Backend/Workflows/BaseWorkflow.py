@@ -42,7 +42,7 @@ class BaseWorkflow:
         best_of: int = 1,
         loops: int = 1,
         streaming: bool = True,
-        model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+        model: AiModel = ChatGptModel.CHAT_GPT_4_POINT_ONE_NANO,
     ) -> str:
         """
         Handles individual chat steps.
@@ -140,7 +140,7 @@ class BaseWorkflow:
         file_name: str,
         best_of: int = 1,
         loops: int = 1,
-        model: AiModel = ChatGptModel.CHAT_GPT_4_OMNI_MINI,
+        model: AiModel = ChatGptModel.CHAT_GPT_4_POINT_ONE_NANO,
         overwrite: bool = True,
     ) -> str:
         """

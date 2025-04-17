@@ -6,7 +6,7 @@ import './styles/TagsManager.css';
  * Default tags and their corresponding preferred values.
  */
 const DEFAULT_TAGS = {
-    model: ['gemini-2.0-flash', 'gemini-2.0-flash-lite-preview', 'o3-mini', 'gpt-4o-mini', 'gpt-4o', 'o1-mini'],
+    model: ['gemini-2.0-flash', 'gemini-2.0-flash-lite-preview', 'gpt-4.1-nano', 'gpt-4.1-mini', 'o4-mini', 'gemini-2.5-pro-preview-03-25'],
     category: [],
     write: ['example.txt'],
     'best of': [1, 2, 3],

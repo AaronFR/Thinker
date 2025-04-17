@@ -212,7 +212,7 @@ export const Tutorial = () => {
             <ul>User Interface</ul>
             <ul>
               Functionality - By default most features a few features are disabled, toggle them on if you want to try them out. Each function typically incurrs an additional cost:
-              However each function has been designed to work on the cheapest available LLM model (gpt-4o-mini), so they shouldn be rather afforadable to run ()
+              But background processes run on a seperate model from the main, one that's economical and fast while still competent (You can select which specfific model is used as the background model in settings), so they should be rather afforadable to run
             </ul>
             <ul>System Messages - These dictate how an LLM will respond to your prompt. You can customise nearly all system messages based on your preferences</ul>
 
