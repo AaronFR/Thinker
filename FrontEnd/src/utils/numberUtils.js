@@ -40,7 +40,7 @@ export function formatTime(number) {
 /**
  * Converts a number of bytes into a more readable number of kilobyes / megabytes
  * 
- * @param {number} size - the nuumber of bytes
+ * @param {number} size - the number of bytes
  * @returns The size of the file in kilobytes or mb
  */
 export function formatBytes(size) {
@@ -49,8 +49,8 @@ export function formatBytes(size) {
   const kiloBytes = size / kiloByte
 
   if (kiloBytes > kiloByte) {
-    return `${(kiloBytes / kiloByte).toPrecision(2)} mb`
+    return `${(kiloBytes / kiloByte).toFixed(1)} mb`;
   }
 
-  return `${kiloBytes.toPrecision(2)} kb`
+  return `${kiloBytes.toFixed(1)} kb`;
 }
