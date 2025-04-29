@@ -91,8 +91,8 @@ export const BetaBanner = () => {
   return (
     <div className="centered beta-banner">
       <div>
-        <h2 >
-          🚧 In beta - β testers wanted! Enquire and get to use the site <i>for free.</i>
+        <h2 id="Not guranteed!">
+          🚧 In beta - Email feedback/opinions and ask for <i>free credit</i>
         </h2>
         <div className="centered">
           <h3 >Contact us: <a href= "mailto:TheThinkerAi@protonmail.com">TheThinkerAi@protonmail.com</a></h3>

@@ -288,15 +288,15 @@ MATCH (user:USER {id: $user_id})
 RETURN user.earmarked AS earmarked_sum;
 """
 
-"""
-Note: an '$amount' is typically negative except for when paying into the system
-'$earmarkedAmount' is positive
-"""
-UPDATE_USER_BALANCE = """
-MATCH (user:USER {id: $user_id})
-SET user.balance = user.balance + $amount + $earmarkedAmount,
-    user.earmarked = user.earmarked - $earmarkedAmount;
-"""
+# """
+# Note: an '$amount' is typically negative except for when paying into the system
+# '$earmarkedAmount' is positive
+# """
+# UPDATE_USER_BALANCE = """
+# MATCH (user:USER {id: $user_id})
+# SET user.balance = user.balance + $amount + $earmarkedAmount,
+#     user.earmarked = user.earmarked - $earmarkedAmount;
+# """
 
 EARMARK_AGAINST_USER_BALANCE = """
 MATCH (user:USER {id: $user_id})

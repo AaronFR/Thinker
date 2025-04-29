@@ -763,24 +763,24 @@ class NodeDatabaseManagement:
 
         self.update_user_balance(-amount)
 
-    @handle_errors()
-    def update_user_balance(self, amount: float) -> None:
-        """Updates the user's balance by the specified amount.
-
-        :param amount: positive for an amount to add to the users balance. DON'T GET THE F###ING SIGN WRONG
-        """
-        earmarked_sum = get_earmarked_sum()
-        parameters = {
-            "user_id": get_user_context(),
-            "amount": amount,
-            "earmarkedAmount": earmarked_sum
-        }
-
-        self.neo4jDriver.execute_write(
-            CypherQueries.UPDATE_USER_BALANCE,
-            parameters
-        )
-        logging.info(f"User balance updated by: {amount} (earmarked value: {earmarked_sum}")
+    # @handle_errors()
+    # def update_user_balance(self, amount: float) -> None:
+    #     """Updates the user's balance by the specified amount.
+    #
+    #     :param amount: positive for an amount to add to the users balance. DON'T GET THE F###ING SIGN WRONG
+    #     """
+    #     earmarked_sum = get_earmarked_sum()
+    #     parameters = {
+    #         "user_id": get_user_context(),
+    #         "amount": amount,
+    #         "earmarkedAmount": earmarked_sum
+    #     }
+    #
+    #     self.neo4jDriver.execute_write(
+    #         CypherQueries.UPDATE_USER_BALANCE,
+    #         parameters
+    #     )
+    #     logging.info(f"User balance updated by: {amount} (earmarked value: {earmarked_sum}")
 
     # Pricing - Gemini balance tracking
 

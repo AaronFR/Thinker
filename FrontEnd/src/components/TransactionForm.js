@@ -88,17 +88,22 @@ const TransactionForm = ({ onSuccess }) => {
 
     return (
         <form onSubmit={attemptTransaction} aria-label="Transaction Form">
-            <h3>Top Up Your Balance $</h3>
+            <h3>Top Up Your $ Balance</h3>
             <div className="form-group">
                 <label htmlFor="amount" className="visually-hidden">
                     Amount in dollars
                 </label>
+
+                <div id='payments disabled warning'>
+                    Payments are currently disabled at this stage of beta.
+                </div>
+
                 <input
                     type="text"
                     className={`input-field ${error ? 'input-error' : ''}`}
                     id="amount"
                     name="amount"
-                    placeholder='Amount in dollars $...'
+                    placeholder='DISABLED'
                     value={amount}
                     onChange={handleAmountChange}
                     aria-describedby="amountHelp"
@@ -117,7 +122,7 @@ const TransactionForm = ({ onSuccess }) => {
                 className={`pay-button ${isLoading ? 'button-loading' : ''}`}
                 aria-busy={isLoading}
             >
-                {isLoading ? 'Processing...' : 'Pay'}
+                {isLoading ? 'Processing...' : 'Pay (DISABLED)'}
             </button>
         </form>
     );

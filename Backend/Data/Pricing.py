@@ -18,29 +18,29 @@ class Pricing:
         """
         return NodeDB().get_user_balance()
 
-    @staticmethod
-    def top_up_user_balance(amount: float) -> dict:
-        """Tops up the user's balance.
-
-        :param amount: The amount to add to the user's balance (must be positive).
-        :return: A dictionary containing the status of the operation.
-        :raises ValueError: If the amount is not positive.
-        """
-        if amount <= 0:
-            raise ValueError("Amount to top up must be greater than zero.")
-
-        try:
-            NodeDB().update_user_balance(amount)
-            return {
-                "status_code": 200,
-                "message": f"User balance successfully topped up by ${amount}."
-            }
-        except Exception as e:
-            logging.exception(FAILED_TO_UPDATE_USER_BALANCE)
-            return {
-                "status_code": 500,
-                "message": f"Failed to update user balance: {str(e)}"
-            }
+    # @staticmethod
+    # def top_up_user_balance(amount: float) -> dict:
+    #     """Tops up the user's balance.
+    #
+    #     :param amount: The amount to add to the user's balance (must be positive).
+    #     :return: A dictionary containing the status of the operation.
+    #     :raises ValueError: If the amount is not positive.
+    #     """
+    #     if amount <= 0:
+    #         raise ValueError("Amount to top up must be greater than zero.")
+    #
+    #     try:
+    #         NodeDB().update_user_balance(amount)
+    #         return {
+    #             "status_code": 200,
+    #             "message": f"User balance successfully topped up by ${amount}."
+    #         }
+    #     except Exception as e:
+    #         logging.exception(FAILED_TO_UPDATE_USER_BALANCE)
+    #         return {
+    #             "status_code": 500,
+    #             "message": f"Failed to update user balance: {str(e)}"
+    #         }
 
     @staticmethod
     def get_session_cost() -> float:
