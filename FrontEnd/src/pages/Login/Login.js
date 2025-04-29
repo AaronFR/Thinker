@@ -170,9 +170,16 @@ export function Login({ isAuthenticated }) {
                         <button onClick={handleLogout} className="logout-button">Logout</button>
                 )}
 
-                <p className='version-number'>v0.9.5</p>
+                <p className='version-number'>v0.10.0</p>
             </div>
             <BetaBanner />
+            
+            <div className="centered">
+                <iframe width="860" height="480"
+                src="https://www.youtube.com/embed/syfUbWpO7Cg">
+                </iframe>
+            </div>
+
             <Pitch />
             <About />
 

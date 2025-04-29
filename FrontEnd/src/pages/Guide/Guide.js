@@ -115,9 +115,9 @@ export const Pitch = () => {
             🗿 - You can maybe change the instructions or the tone - which does nothing usually
           </ul>
           <ul id="I can see people saying 'well I never have this problem', but I dunno this stuff REALLY annoyed me, personally">
-            😠 Constantly sorting long stacks of messages to find that message you wanted to look at now..
+            😠 - Constantly sorting long stacks of messages to find that message you wanted to look at now..
           </ul>
-          <ul id="because 'f### you, pay me' right?" style={{paddingBottom: "1rem"}}>
+          <ul id="because 'f### you, pay me' right?">
             🤑 - Subscription models, costing the same amount of money regardless of how little you use the application in a given month, if at all
           </ul>
           <ul>
@@ -130,7 +130,7 @@ export const Pitch = () => {
             👁‍🗨 Explicetely (sometimes) tell you they will use your data for their own purposes
           </ul>
           <ul id="because 'fuck you, pay me' right?">
-            🔐 - Closed source, unexpandable, uncheckable, a <b>dead end</b>
+            🔐 - Closed source: closed off, uncheckable, non-collaborative, a <b>dead end</b>
           </ul>
         
         </div>
@@ -147,9 +147,6 @@ export const Pitch = () => {
           </ul>
           <ul id="I'm hoping break even with budget for contribution bounties can be reached at 10-20% margin. That may be naive honestly.">
             ¢ - Pay as you go, pay for what you want as you want, with a small margin (0% in beta) going to funding the development of this application
-            <ul id="">
-              🤏 Put in a small amount, and give it a shot! (We pass on a $0.30 fee per transaction)
-            </ul>
           </ul>
           <ul id="Well. That's the idea anyway">
             🦅 - No Rate limits! Use as much as you can as quickly as you want
@@ -241,6 +238,8 @@ export function Guide() {
       <h2 className="centered">
         🧰 AI Toolkit 🧰
       </h2>
+
+      
 
       <About />
 

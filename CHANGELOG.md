@@ -9,42 +9,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Model descriptions and price per token comparisons are displayed in Pricing
-- New users are sent email verification emails
-  - New user *can* receive the free dollar promotion after verification
+- 
+
+### Changed
+
+- 
+
+### Removed
+
+- 
+
+## [0.9.5] - 2025-02-18 - β
+
+### Added
+
 - Newly created messages will be automatically selected by default
-- Workflow duration in seconds
+- LICENSE: AGPL v3
 - Auto categorisation before prompt is sent
   - Allows user to pick category, display which category will be selected in advance
     and reduce request durations.
   - User can enter in new category in selector
+- Option to only automatically select a category, persona or workflow once.
+- Model descriptions and price per token comparisons are displayed in Pricing
+- New users are sent email verification emails
+  - New user *can* receive the free dollar promotion after verification
+- Workflow duration in seconds
 - Edit internet search instructions in settings.
 - File size displayed
-- LICENSE: AGPL v3
 - Option (on by default) to use the category in tags for file uploads.
-- Option to only automatically select a category, persona or workflow once.
 
 ### Changed
 
-- New messages will trigger a category refresh if that category is already open
-- Settings sections can be minimised to make settings less overwhelming
-  - Most sections start minimised
-- Full internet search: Relevant pages are used as reference for the user's prompt
-  - Pages are sourced and displayed to the user per step
-- Added o3-mini, the cutting edge open-ai model
+- Added ~~o3-mini~~ o4-mini the cutting edge open-ai model, Gemini 2.5 Pro
   - o1-mini prices update (now lower)
-- More intuitive file upload, files are uploaded ..after file upload, not after sending a prompt with the uploaded files
- attached.
-- Ongoing requests won't be affected by a change in configuration mid-run.
-- A step's output is properly formatted when displayed
-- 'User context' is no longer in 'beta'
-  - (Usually) Remembers user facts and preferences, but increases prompt durations significantly
 - Improved formatting, especially for mobile
   - User input page formatted to clearly separate different categories and selectors by topic
   - Message/File pane more compact, cleaner, making it easier to browse many categories
   - Messages and Files more streamlined and less 'Chunky' easier to browse multiple files/messages
   - Reduced 'over-scrolling'
 - loops (parallel runs) available for all workflows instead of having it's own specific workflow.
+- New messages will trigger a category refresh if that category is already open
+- More intuitive file upload, files are uploaded ..after file upload, not after sending a prompt with the uploaded files
+ attached.
+- Settings sections can be minimised to make settings less overwhelming
+  - Most sections start minimised
+- Full internet search: Relevant pages are used as reference for the user's prompt
+  - Pages are sourced and displayed to the user per step
+- Ongoing requests won't be affected by a change in configuration mid-run.
+- A step's output is properly formatted when displayed
+- 'User context' is no longer in 'beta'
+  - (Usually) Remembers user facts and preferences, but increases prompt durations significantly
 - Max data storage per user of 1 GB (Only text is supported currently so this should be *impossible* to breach)
 - New category instructions and colour created simultaneously, decreasing time take to create new categories
 - Uploaded code files are formatted correctly as code not text
