@@ -17,13 +17,15 @@ def send_verification_email(email: str):
 
     :param email: The entered email, (already passed check to confirm email isn't in database)
     """
+    expiration_date = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+
 
     token = jwt.encode({
         'email': email,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+        'exp': expiration_date
     }, os.getenv("JWT_SECRET_KEY"), algorithm='HS256')
 
-    verification_link = f"http://thethinkerai.com/verify?token={token}"
+    verification_link = f"https://thethinkerai.com/verify?token={token}"
 
     message = Mail(
         from_email='verification@em6129.thethinkerai.com',
@@ -45,7 +47,7 @@ def send_verification_email(email: str):
     try:
         sg = SendGridAPIClient(os.getenv(SENDGRID_API_KEY))
         response = sg.send(message)
-        logging.info(f"Verification email sent to {email} with status code {response.status_code}")
+        logging.info(f"Verification email sent to {email} with status code {response.status_code} and expiration date {expiration_date}")
     except Exception:
         logging.exception("Failure to send verification email!")
         raise Exception("Failure to send verification email!")

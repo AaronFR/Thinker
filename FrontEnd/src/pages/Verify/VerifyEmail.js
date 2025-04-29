@@ -19,7 +19,7 @@ const VerifyEmail = (isAuthenticated) => {
   let promption_text = ''
 
   const success_message = 'Your email address has been successfully verified! You can now use and top up your balance. '
-  const error_message = 'Your email address has been unsuccesffully, not verified! ..-succesffully not verified.. unsuccesffully?\n(something has gone wrong)'
+  const error_message = 'Your email address has been unsuccesffully, not verified! ..-succesffully not verified.. unsuccesffully?  (something has gone wrong)'
 
   useEffect(() => {
     const verify = async () => {
@@ -39,6 +39,8 @@ const VerifyEmail = (isAuthenticated) => {
           });
 
         } else {
+          console.log("Incorrect response", response)
+
           setVerificationStatus({
             success: false,
             message: error_message,

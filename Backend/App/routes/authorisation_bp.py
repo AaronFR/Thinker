@@ -102,9 +102,14 @@ def verify_email():
         else:
             return jsonify({'error': 'Failed to mark user as verified, try again later'}), 500
     except jwt.ExpiredSignatureError:
+        logging.exception("Email verification failure: Link expired.")
         return jsonify({'error': 'Verification link has expired.'}), 400
     except jwt.InvalidTokenError:
+        logging.exception("Email verification failure: Invalid Token")
         return jsonify({'error': 'Invalid token.'}), 400
+    except Exception:
+        logging.exception("Email verification failure")
+        return jsonify({'error': 'Unknown error'}), 400
 
 
 @authorisation_bp.route('/login', methods=['POST'])
