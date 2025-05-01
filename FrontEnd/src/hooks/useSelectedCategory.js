@@ -28,7 +28,7 @@ const useSelectedCategory = () => {
       console.log("Selected category:", data.category);
       setSelectedCategory(data.category);
     } catch (error) {
-      console.error("Error in selecting persona:", error);
+      console.error("Error in selecting worker:", error);
       setError(error.message);
     } finally {
       setCategoryIsLoading(false);

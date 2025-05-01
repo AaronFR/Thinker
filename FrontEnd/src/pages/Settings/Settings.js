@@ -191,17 +191,17 @@ const FunctionalitySettings = React.memo(({
 
 
         <div className='side-by-side'>
-          <h3>Auto select persona</h3>
-          <p>{formatPrice(parseFloat(userInfo?.select_persona_cost))}</p>
+          <h3>Auto select worker</h3>
+          <p>{formatPrice(parseFloat(userInfo?.select_worker_cost))}</p>
         </div>
         <label className="settings-label">
           <select
             className="settings-select"
-            value={settings?.features?.automatically_select_persona}
+            value={settings?.features?.automatically_select_worker}
             onChange={(e) =>
               changeSetting(
                 'features',
-                'automatically_select_persona',
+                'automatically_select_worker',
                 e.target.value,
               )
             }
@@ -209,20 +209,20 @@ const FunctionalitySettings = React.memo(({
             <option value={'always'}>Always</option>
             <option value={'once'}>Once</option>
           </select>
-          Automatically select a Persona (speciality) based on your prompt
+          Automatically select a Worker (speciality) based on your prompt
         </label>
         <label className="message-label">
-          Persona Selection Instructions
+          Worker Selection Instructions
           <div
             data-tooltip-id="tooltip"
-            data-tooltip-content={TooltipConstants.personaSelectionSystemMessage}
+            data-tooltip-content={TooltipConstants.workerSelectionSystemMessage}
             data-tooltip-place="bottom"
           >
             <AutoExpandingTextarea
-              value={settings?.system_messages?.persona_selection_message}
+              value={settings?.system_messages?.worker_selection_message}
               className="textarea"
               onChange={(e) =>
-                handleMessageChange('system_messages', 'persona_selection_message', e.target.value)
+                handleMessageChange('system_messages', 'worker_selection_message', e.target.value)
               }
               style={{ opacity: 0.9 }}
             />
@@ -542,10 +542,10 @@ const FilesSettings = React.memo(({
 });
 
 /**
- * Renders Persona System Messages related settings without using the MessageSettings component.
+ * Renders Worker System Messages related settings without using the MessageSettings component.
  */
 const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) => {
-  const sectionHeading = useMemo(() => (<h2 className="settings-heading">Personas</h2>), []);
+  const sectionHeading = useMemo(() => (<h2 className="settings-heading">Workers</h2>), []);
 
   const maxContent = (
     <div>
@@ -557,10 +557,10 @@ const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) =>
         <label className="message-label">
           Coder Instructions
           <AutoExpandingTextarea
-            value={settings?.system_messages?.coder_persona_message}
+            value={settings?.system_messages?.coder_worker_message}
             className="textarea"
             onChange={(e) =>
-              handleMessageChange('system_messages', 'coder_persona_message', e.target.value)
+              handleMessageChange('system_messages', 'coder_worker_message', e.target.value)
             }
             style={{ opacity: 0.9 }}
           />
@@ -568,10 +568,10 @@ const SystemMessagesSettings = React.memo(({ settings, handleMessageChange }) =>
         <label className="message-label">
           Writer Instructions
           <AutoExpandingTextarea
-            value={settings?.system_messages?.writer_persona_message}
+            value={settings?.system_messages?.writer_worker_message}
             className="textarea"
             onChange={(e) =>
-              handleMessageChange('system_messages', 'writer_persona_message', e.target.value)
+              handleMessageChange('system_messages', 'writer_worker_message', e.target.value)
             }
             style={{ opacity: 0.9 }}
           />
@@ -620,7 +620,7 @@ const BetaFeaturesSettings = React.memo(({
           onChange={toggleMultiFileProcessing}
           className="settings-checkbox"
         />
-        Multi file processing - personas can operate on multiple files at once (unstable)
+        Multi file processing - workers can operate on multiple files at once (unstable)
       </label>
     </div>
   );
@@ -954,7 +954,7 @@ const UserContextSection = React.memo(({
  * Main component that aggregates all settings sections.
  */
 export function Settings() {
-  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_category_cost', 'select_persona_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'loops_cost', 'internet_search_cost', 'summarise_workflows_cost', 'summarise_files_cost', 'user_context_cost']);
+  const [parameters, setParameters] = useState(['email', 'augmentation_cost', 'select_category_cost', 'select_worker_cost', 'select_workflow_cost', 'questioning_cost', 'best_of_cost', 'loops_cost', 'internet_search_cost', 'summarise_workflows_cost', 'summarise_files_cost', 'user_context_cost']);
   const [userInfo, setUserInfo] = useState(null);
   const [error, setError] = useState(null);
 

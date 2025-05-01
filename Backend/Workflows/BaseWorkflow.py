@@ -48,7 +48,7 @@ class BaseWorkflow:
         Handles individual chat steps.
 
         :param iteration: Current iteration number.
-        :param process_prompt: Persona function to process user questions.
+        :param process_prompt: Worker function to process user questions.
         :param message: The message to process.
         :param file_references: Optional references to files.
         :param selected_message_ids: Optional selected message IDs for context.
@@ -91,7 +91,7 @@ class BaseWorkflow:
         tailor the AI for the user and generally.
 
         :param iteration: Current iteration number.
-        :param process_prompt: Persona function to process user questions.
+        :param process_prompt: Worker function to process user questions.
         :param message: The message to process.
         :param file_references: Optional references to files.
         :param selected_message_ids: Optional selected message IDs for context.
@@ -149,7 +149,7 @@ class BaseWorkflow:
         ToDo: If chatgpt fails it shouldn't save (overwrite) the input files
 
         :param iteration: Current iteration number.
-        :param process_prompt: Persona function to process user questions.
+        :param process_prompt: Worker function to process user questions.
         :param message: The message to process.
         :param file_references: References to files.
         :param file_name: Name of the file to save including extension

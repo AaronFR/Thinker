@@ -5,16 +5,16 @@ from typing import Dict
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
 from Constants.Instructions import AUTO_ENGINEER_PROMPT_SYSTEM_MESSAGE, QUESTION_PROMPT_SYSTEM_MESSAGE, \
-    AUTO_SELECT_WORKFLOW_SYSTEM_MESSAGE, AUTO_SELECT_PERSONA_SYSTEM_MESSAGE
+    AUTO_SELECT_WORKFLOW_SYSTEM_MESSAGE, AUTO_SELECT_WORKER_SYSTEM_MESSAGE
 from Utilities.Decorators.Decorators import return_for_error
 
 
-class Persona(Enum):
+class Worker(Enum):
     CODER = "coder"
     WRITER = "writer"
 
 
-DEFAULT_PERSONA = Persona.CODER
+DEFAULT_WORKER = Worker.CODER
 
 
 class Workflow(Enum):
@@ -29,34 +29,34 @@ DEFAULT_WORKFLOW = Workflow.CHAT
 
 class Augmentation:
     @staticmethod
-    @return_for_error(DEFAULT_PERSONA)
-    def select_persona(user_prompt: str) -> Persona:
+    @return_for_error(DEFAULT_WORKER)
+    def select_worker(user_prompt: str) -> Worker:
         """
-        Selects a persona based on the user prompt.
+        Selects a worker based on the user prompt.
 
         :param user_prompt: The initial prompt provided by the user.
-        :returns Persona: The selected persona based on the content of the user prompt.
+        :returns Worker: The selected worker based on the content of the user prompt.
         """
         config = Configuration.load_config()
-        persona_selection_system_message = config.get('system_messages', {}).get(
-            "persona_selection_message",
-            AUTO_SELECT_PERSONA_SYSTEM_MESSAGE
-        ) + "\nRespond with only the persona name in lowercase."
+        worker_selection_system_message = config.get('system_messages', {}).get(
+            "worker_selection_message",
+            AUTO_SELECT_WORKER_SYSTEM_MESSAGE
+        ) + "\nRespond with only the worker name in lowercase."
 
         llm_response = AiOrchestrator().execute(
-            [persona_selection_system_message],
+            [worker_selection_system_message],
             [f"user prompt: \"\"\"\n{user_prompt}\n\"\"\""]
         ).strip().lower()
 
-        logging.info(f"LLM selected persona: {llm_response}")
+        logging.info(f"LLM selected worker: {llm_response}")
 
-        if llm_response == Persona.CODER.value:
-            return Persona.CODER
-        elif llm_response == Persona.WRITER.value:
-            return Persona.WRITER
+        if llm_response == Worker.CODER.value:
+            return Worker.CODER
+        elif llm_response == Worker.WRITER.value:
+            return Worker.WRITER
         else:
-            logging.warning(f"Unexpected persona '{llm_response}' returned by LLM. Defaulting to {DEFAULT_PERSONA}.")
-            return DEFAULT_PERSONA
+            logging.warning(f"Unexpected worker '{llm_response}' returned by LLM. Defaulting to {DEFAULT_WORKER}.")
+            return DEFAULT_WORKER
 
     @staticmethod
     @return_for_error(DEFAULT_WORKFLOW)

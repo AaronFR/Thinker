@@ -9,7 +9,7 @@ def load_configuration() -> str:
     config = Configuration.load_config()
 
     return config.get("system_messages", {}).get(
-        "coder_persona_message",
+        "coder_worker_message",
         (
             "You are a talented, professional Senior developer, focused on efficient, professional coding and solving "
             "giving tasks to the best of your ability.\nThink through step by step. Write your reasoning *first* "

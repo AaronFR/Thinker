@@ -24,7 +24,7 @@ import LowBalanceWarning from './utils/BalanceWarning';
 import { apiFetch } from './utils/authUtils';
 
 import './App.css';
-import useSelectedPersona from './hooks/useSelectedPersona';
+import useSelectedWorker from './hooks/useSelectedWorker';
 import { userBalanceEndpoint } from './constants/endpoints';
 import useSelectedCategory from './hooks/useSelectedCategory';
 
@@ -84,7 +84,7 @@ function App () {
     const { augmentedPrompt, setAugmentedPrompt, isAugmenting, error: augmentedError, generateAugmentedPrompt } = useAugmentedPrompt();
     const { questionsForPrompt, setQuestionsForPrompt, isQuestioning, error: questionsError, generateQuestionsForPrompt } = useSuggestedQuestions();
     const { automaticallySelectedWorkflow, workflowIsLoading, selectMessageError, selectWorkflow } = useSelectedWorkflow();
-    const { automaticallySelectedPersona, personaIsLoading, selectPersonaError, selectPersona } = useSelectedPersona();
+    const { automaticallySelectedWorker, workerIsLoading, selectWorkerError, selectWorker } = useSelectedWorker();
     const { automaticallySelectedCategory, categoryIsLoading, selectCategoryError, selectCategory } = useSelectedCategory();
 
     // Form State
@@ -121,8 +121,8 @@ function App () {
     }, [automaticallySelectedWorkflow]);
 
     useEffect(() => {
-      setTags(prevTags => ({ ...prevTags, persona: automaticallySelectedPersona }))
-    }, [automaticallySelectedPersona]);
+      setTags(prevTags => ({ ...prevTags, worker: automaticallySelectedWorker }))
+    }, [automaticallySelectedWorker]);
 
     useEffect(() => {
       setTags(prevTags => ({ ...prevTags, category: automaticallySelectedCategory }))
@@ -162,11 +162,11 @@ function App () {
     const handleTyping = (value, selectedMessages, selectedFiles, tags) => {
       const currentSettings = settingsRef.current;
       
-      if (currentSettings?.features?.automatically_select_persona !== "once") {
-        selectPersona(value)
+      if (currentSettings?.features?.automatically_select_worker !== "once") {
+        selectWorker(value)
       }
-      if (currentSettings?.features?.automatically_select_persona === "once" && !tags.persona) {
-        selectPersona(value)
+      if (currentSettings?.features?.automatically_select_worker === "once" && !tags.worker) {
+        selectWorker(value)
       }
       
       if (currentSettings?.features?.automatically_select_workflow !== "once") {
@@ -267,7 +267,7 @@ function App () {
             generateQuestionsForPrompt={generateQuestionsForPrompt}
             categoryIsLoading={categoryIsLoading}
             workflowIsLoading={workflowIsLoading}
-            personaIsLoading={personaIsLoading}
+            workerIsLoading={workerIsLoading}
             tags={tags}
             setTags={setTags}
             setRefreshFiles={setRefreshFiles}

@@ -25,7 +25,7 @@ OPEN_AI_FLAGGED_REQUEST_INAPPROPRIATE = "OpenAi ChatGpt Flagged user request as 
 
 # Route Failures
 
-FAILURE_TO_SELECT_PERSONA = "Failed to select persona"
+FAILURE_TO_SELECT_WORKER = "Failed to select worker"
 FAILURE_TO_SELECT_WORKFLOW = "Failed to select workflow"
 FAILURE_TO_SELECT_CATEGORY = "Failed to select category"
 FAILURE_TO_AUTO_ENGINEER_PROMPT = "Failed to automatically engineer prompt"
@@ -81,7 +81,7 @@ def failed_to_create_user_topic(topic: str):
     return f"Error creating user topic node: {topic}"
 
 
-# Persona System
+# Worker System
 
 FAILURE_TO_REVIEW_RELEVANT_HISTORY = "Failed to Retrieve relevant history"
 

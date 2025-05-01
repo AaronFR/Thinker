@@ -14,7 +14,7 @@ export const logoutSessionEndpoint = `${FLASK_PORT}/auth/logout`;
 
 /* Augmentation */
 
-export const selectPersonaEndpoint = `${FLASK_PORT}/augmentation/select_persona`;
+export const selectWorkerEndpoint = `${FLASK_PORT}/augmentation/select_worker`;
 export const selectWorkflowEndpoint = `${FLASK_PORT}/augmentation/select_workflow`;
 export const selectedCategoryEndpoint = `${FLASK_PORT}/augmentation/select_category`
 export const autoEngineerPromptEndpoint = `${FLASK_PORT}/augmentation/auto_engineer_prompt`;

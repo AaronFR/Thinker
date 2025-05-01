@@ -12,7 +12,7 @@ from flask import Blueprint, jsonify, request
 from App import limiter
 from App.extensions import user_key_func
 from Constants.Constants import MODERATELY_RESTRICTED, USER_MODERATELY_RESTRICTED
-from Constants.Exceptions import FAILURE_TO_SELECT_PERSONA, FAILURE_TO_SELECT_WORKFLOW, FAILURE_TO_AUTO_ENGINEER_PROMPT, \
+from Constants.Exceptions import FAILURE_TO_SELECT_WORKER, FAILURE_TO_SELECT_WORKFLOW, FAILURE_TO_AUTO_ENGINEER_PROMPT, \
     FAILURE_TO_QUESTION_PROMPT, FAILURE_TO_SELECT_CATEGORY
 from Data.CategoryManagement import CategoryManagement
 from Data.Files.StorageMethodology import StorageMethodology
@@ -39,32 +39,32 @@ USER_PROMPT_MESSAGES_AND_FILES_SCHEMA = {
 }
 
 
-@augmentation_bp.route('/select_persona', methods=['POST'])
+@augmentation_bp.route('/select_worker', methods=['POST'])
 @login_required
 @balance_required
 @limiter.limit(MODERATELY_RESTRICTED)
 @limiter.limit(USER_MODERATELY_RESTRICTED, key_func=user_key_func)
-def select_persona():
+def select_worker():
     """
-    Will select an appropriate persona automatically based on the users input
+    Will select an appropriate worker automatically based on the users input
 
-    :return: A JSON object representing the selected persona
+    :return: A JSON object representing the selected worker
     """
     try:
-        set_functionality_context("select_persona")
+        set_functionality_context("select_worker")
 
         data = request.get_json()
         parsed_data = parse_and_validate_data(data, USER_PROMPT_AND_TAGS_SCHEMA)
         user_prompt = parsed_data.get("user_prompt")
 
-        selected_persona = Augmentation.select_persona(user_prompt).value
+        selected_worker = Augmentation.select_worker(user_prompt).value
 
-        return jsonify({"persona": selected_persona})
+        return jsonify({"worker": selected_worker})
     except ValueError as ve:
         logging.error("Value error: %s", str(ve))
         return jsonify({"error": str(ve)}), 400
     except Exception as e:
-        logging.exception(FAILURE_TO_SELECT_PERSONA)
+        logging.exception(FAILURE_TO_SELECT_WORKER)
         return jsonify({"error": str(e)}), 500
 
 

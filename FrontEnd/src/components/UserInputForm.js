@@ -7,7 +7,7 @@ import TagsManager from './TagsManager';
 import { SettingsContext } from '../pages/Settings/SettingsContext';
 import { useSelection } from '../pages/Messages/SelectionContext';
 
-import PersonaSelector from './Selectors/PersonaSelector'
+import WorkerSelector from './Selectors/WorkerSelector'
 import WorkflowSelector from './Selectors/WorkflowSelector';
 import ModelSelector from './Selectors/ModelSelector';
 import BestOfSelector from './Selectors/BestOfSelector';
@@ -51,7 +51,7 @@ const UserInputForm = ({
   generateQuestionsForPrompt,
   categoryIsLoading,
   workflowIsLoading,
-  personaIsLoading,
+  workerIsLoading,
   tags,
   setTags,
   setRefreshFiles
@@ -243,10 +243,10 @@ const UserInputForm = ({
               setTags={setTags}
               isLoading={categoryIsLoading}
             />
-            <PersonaSelector
-              selectedPersona={tags.persona}
+            <WorkerSelector
+              selectedWorker={tags.worker}
               setTags={setTags}
-              isLoading={personaIsLoading}
+              isLoading={workerIsLoading}
             />
           </div>
 
@@ -262,7 +262,7 @@ const UserInputForm = ({
                   write={tags.write}
                   setTags={setTags}
                 />
-                {tags.persona === 'writer' && tags.workflow === 'write' && (
+                {tags.worker === 'writer' && tags.workflow === 'write' && (
                   <PagesSelector
                     pages={tags.pages}
                     setTags={setTags}

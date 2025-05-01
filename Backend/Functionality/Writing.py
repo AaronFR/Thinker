@@ -8,13 +8,13 @@ from typing import Dict, List, Optional
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
-from Constants.PersonaSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
+from Constants.WorkerSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
 from Constants.Constants import DEFAULT_EXTENSION, TAG_WITH_PURPOSE_REGEX
 from Constants.Instructions import determine_pages_prompt, DETERMINE_PAGES_SCHEMA
 
 
 class Writing(enum.Enum):
-    """Writing represents various task types used within the persona system."""
+    """Writing represents various task types used within the worker system."""
 
     @staticmethod
     def determine_files(initial_message: str, tags: Optional[Dict[str, str]]) -> List[Dict[str, str]]:

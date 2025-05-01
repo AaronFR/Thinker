@@ -1,20 +1,20 @@
 from typing import Dict, Any
 
-from Constants.PersonaSpecification import WriterSpecification
-from Personas.BasePersona import BasePersona
+from Constants.WorkerSpecification import WriterSpecification
+from Workers.BaseWorker import BaseWorker
 from Workflows.AutoWorkflow import AutoWorkflow
 from Workflows.ChatWorkflow import ChatWorkflow
 from Workflows.WritePagesWorkflow import WritePagesWorkflow
 
 
-class Writer(BasePersona):
+class Writer(BaseWorker):
     """
-    Writer persona, representing a role that manages writing tasks and their outputs
+    Writer worker, representing a role that manages writing tasks and their outputs
 
-    This persona handles tasks such as creating new documents or appending to existing files.
+    This worker handles tasks such as creating new documents or appending to existing files.
     """
 
-    # ToDo: Obviously later this should be updated later to just update the base workflows from BasePersona
+    # ToDo: Obviously later this should be updated later to just update the base workflows from BaseWorker
     WORKFLOWS: Dict[str, Dict[str, Any]] = {
         'chat': ChatWorkflow(),
         'write': WritePagesWorkflow(),

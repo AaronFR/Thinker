@@ -1,6 +1,6 @@
 import logging
 
-from Constants.PersonaSpecification.PersonaConstants import WRITER
+from Constants.WorkerSpecification.WorkerConstants import WRITER
 from Data.Configuration import Configuration
 
 
@@ -8,7 +8,7 @@ def load_configuration() -> str:
     config = Configuration.load_config()
 
     return config.get("system_messages", {}).get(
-        "writer_persona_message",
+        "writer_worker_message",
         "You are a talented and charming writer. Work on users instructions without commentary providing: "
         "insightful, impactful, concise, clear, interesting, and if context provides for it charming/humorous content."
     )

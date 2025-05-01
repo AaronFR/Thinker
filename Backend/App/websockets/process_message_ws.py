@@ -8,8 +8,8 @@ from App.extensions import socket_rate_limit, user_key_func, system_key_func
 from Constants.Constants import BASE_LIMIT, USER_BASE_LIMIT
 from Data.CategoryManagement import CategoryManagement
 from Functionality.Organising import Organising
-from Personas.Coder import Coder
-from Personas.Writer import Writer
+from Workers.Coder import Coder
+from Workers.Writer import Writer
 from Utilities.Decorators.AuthorisationDecorators import login_required_ws
 from Utilities.Contexts import set_message_context, get_message_context, get_category_context, set_streaming, \
     set_functionality_context
@@ -23,14 +23,14 @@ PROCESS_MESSAGE_SCHEMA = {
     "tags": {"required": False, "default": {}, "type": dict},
     "files": {"required": False, "default": [], "type": list},
     "messages": {"required": False, "default": [], "type": list},
-    "persona": {"required": False, "default": "coder"}
+    "worker": {"required": False, "default": "coder"}
 }
 
-PERSONA_MAPPING = {
+WORKER_MAPPING = {
     "coder": Coder,
     "writer": Writer,
 }
-DEFAULT_PERSONA = "coder"
+DEFAULT_WORKER = "coder"
 
 
 def init_process_message_ws(socketio: SocketIO):
@@ -53,10 +53,10 @@ def init_process_message_ws(socketio: SocketIO):
     @socket_rate_limit(key_func=user_key_func, limit=USER_BASE_LIMIT, period=86400)
     def process_message(data):
         """
-        Accept a user prompt and process it through the selected persona.
+        Accept a user prompt and process it through the selected worker.
 
         :param data: A dictionary containing the user prompt and additional parameters.
-        :raises ValueError: If the prompt or persona is invalid.
+        :raises ValueError: If the prompt or worker is invalid.
         """
         start_time = time.time()
         message_uuid = str(shortuuid.uuid())
@@ -78,15 +78,15 @@ def init_process_message_ws(socketio: SocketIO):
             tags = parsed_data["tags"]
             files = parsed_data["files"]
             messages = parsed_data["messages"]
-            persona_name = tags.get("persona")
+            worker_name = tags.get("worker")
 
-            selected_persona = get_selected_persona(persona_name)
+            selected_worker = get_selected_worker(worker_name)
             file_references = Organising.process_files(files)
 
             category = CategoryManagement.determine_category(user_prompt, tags.get("category"))
             CategoryManagement.create_initial_user_prompt_and_possibly_new_category(category, user_prompt)
 
-            response_stream = selected_persona.query(
+            response_stream = selected_worker.query(
                 user_prompt,
                 file_references,
                 [message["id"] for message in messages],
@@ -126,7 +126,7 @@ def init_process_message_ws(socketio: SocketIO):
 
 def stream_response(response_stream, message_uuid: str) -> str:
     """
-    Iterates over the streaming response from the persona and emits events.
+    Iterates over the streaming response from the worker and emits events.
     Combines all content parts and ensures a stream_end event is sent.
     :param response_stream: Generator yielding response chunks.
     :return: The full concatenated response message.
@@ -147,12 +147,12 @@ def stream_response(response_stream, message_uuid: str) -> str:
         return "".join(full_message_parts)
 
 
-def get_selected_persona(persona_name: str):
+def get_selected_worker(worker_name: str):
     """
-    Determines the selected persona based on the provided name, defaulting to Coder if the persona name is invalid.
+    Determines the selected worker based on the provided name, defaulting to Coder if the worker name is invalid.
     """
-    if not persona_name:
-        return PERSONA_MAPPING[DEFAULT_PERSONA]("default")
+    if not worker_name:
+        return WORKER_MAPPING[DEFAULT_WORKER]("default")
 
-    persona_class = PERSONA_MAPPING.get(persona_name.lower(), PERSONA_MAPPING[DEFAULT_PERSONA])
-    return persona_class(persona_name)
+    worker_class = WORKER_MAPPING.get(worker_name.lower(), WORKER_MAPPING[DEFAULT_WORKER])
+    return worker_class(worker_name)

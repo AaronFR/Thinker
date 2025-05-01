@@ -160,11 +160,11 @@ export const Tutorial = () => {
       <h3>Home Page</h3>
       <p>
         On the home page you'll see the typical LLM wrapper prompt box. When you make your first request that request will be Automatically
-        categorised based on its contents -so you don't need to worry about organising your prior messages yourself. At the same time a persona
-        (role) and workflow will be assigned.
+        categorised based on its contents -so you don't need to worry about organising your prior messages yourself. 
+        At the same time a worker and workflow will be assigned that's appropriate for your prompt.
       </p>
       <p>
-        Different personas interpret responses and produce different responses based on their role. `Coder` Will work like a software developer given a coding ticket,
+        Different workers interpret responses and produce different responses based on their role. `Coder` Will work like a software developer given a coding ticket,
         `Writer`'s will act like writers creating an article and so on.
       </p>
       <p>
@@ -174,7 +174,7 @@ export const Tutorial = () => {
           Chat - Your typical prompt -{'>'} response
         </ul>
         <ul>
-          Write - will write to a file name you suggest or come up with its own. The Writer persona can be asked to write a certain number of 'pages' for arbitrarily long documents
+          Write - will write to a file name you suggest or come up with its own. The Writer worker can be asked to write a certain number of 'pages' for arbitrarily long documents
         </ul>
         <ul>
           For Each - Will process each file reference you select/upload individually. (Useful for improving on entire folders or working on many tasks at once)

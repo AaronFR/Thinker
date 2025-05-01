@@ -1,14 +1,14 @@
 from typing import Dict, Any
-from Personas.BasePersona import BasePersona
-from Constants.PersonaSpecification import CoderSpecification
+from Workers.BaseWorker import BaseWorker
+from Constants.WorkerSpecification import CoderSpecification
 from Workflows.AutoWorkflow import AutoWorkflow
 from Workflows.ChatWorkflow import ChatWorkflow
 from Workflows.WriteWorkflow import WriteWorkflow
 
 
-class Coder(BasePersona):
+class Coder(BaseWorker):
     """
-    Coding persona to write and edit code files.
+    Coding worker to write and edit code files.
     """
 
     WORKFLOWS: Dict[str, Dict[str, Any]] = {
@@ -19,9 +19,9 @@ class Coder(BasePersona):
 
     def __init__(self, name: str) -> None:
         """
-        Initialize the Coder persona with a given name.
+        Initialize the Coder worker with a given name.
 
-        :param name: The name of the coding persona.
+        :param name: The name of the coding worker.
         """
         super().__init__(name)
         self.instructions = CoderSpecification.CODER_INSTRUCTIONS

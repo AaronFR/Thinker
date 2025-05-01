@@ -18,11 +18,11 @@ from Utilities.Validation import is_valid_prompt
 from Workflows.ChatWorkflow import ChatWorkflow
 
 
-class BasePersona:
+class BaseWorker:
     """
-    Base class for creating personas that execute tasks.
+    Base class for creating workers that execute tasks.
 
-    :param name: Name of the persona.
+    :param name: Name of the worker.
 
     history: Note that history is written first on the left, latest on the right, but OpenAI uses latest on
     the left, first on the right. Therefore, it must be reversed if submitted to OpenAI API as messages.
@@ -258,7 +258,7 @@ class BasePersona:
 
         ToDo: latter this project would probably be better suited extracting 'concepts' from prompts, these concepts
          would be keywords that can then relate *back* to the knowledge base, user knowledge, history, configuration,
-         persona, workflow, etc. With contexts having different strengths based on the input prompt and response
+         worker, workflow, etc. With contexts having different strengths based on the input prompt and response
 
         :param user_messages: List of messages inputted by the user.
         :return: Relevant history entries.

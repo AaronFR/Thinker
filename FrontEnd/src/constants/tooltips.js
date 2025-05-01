@@ -25,7 +25,7 @@ const TooltipConstants = {
 
   /* Selectors */
   categorySelector: "Select a Category folder for convenient future reference",
-  personaSelector: "Select an AI 'persona' with it's own response style and workflows.",
+  workerSelector: "Select an AI 'worker' with it's own area of expertise, style and workflows.",
   workflowSelector: "Select a workflow to determine how your request is responded to. Workflows are sequences of individual steps, each using AI to achieve a set task",
   modelSelector: `Select the primary AI model to use, listed from the most affordable first.<br>
     Note: Only "key" operations within workflow steps use the selected model, 
@@ -50,9 +50,9 @@ const TooltipConstants = {
   /* System Messages */
   categorySystemMessage: "These instructions are applied to any prompt that fits this category. Click to edit.",
   categorisationSystemMessage: "Categorization helps organize your files and messages by assigning them to existing or new 'folders'.",
-  personaSelectionSystemMessage: `'Personas' (think 'role', 'focus' or 'speciality') are used for being more specific and targeted, applying unique instructions and workflows to a given type of prompt
+  workerSelectionSystemMessage: `'Workers' are specific and targeted 'agents', applying unique instructions and workflows to a given type of prompt
   
-  Note: In future this function will probably be provided by a list of personas you select including custom personas, so this system message may be overwritten in future`,
+  Note: In future this function will probably be provided by a list of workers you select including custom workers, so this system message may be change in future`,
   workflowSelectionSystemMessaeg: `Workflows determine how the system responds to your prompt as a series of steps. Determining if it's chatting, writing a file for you, or modifying many files at once
   
   Note: In future there will be many more workflows for individual, specified use cases`,

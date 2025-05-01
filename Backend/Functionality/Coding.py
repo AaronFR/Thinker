@@ -8,7 +8,7 @@ from Utilities.LogsHandler import LogsHandler
 
 
 class Coding(enum.Enum):
-    """Coding is an enumeration representing various task types used within the persona system.
+    """Coding is an enumeration representing various task types used within the worker system.
 
     Methods:
         - WRITING: write new code file

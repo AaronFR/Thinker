@@ -941,7 +941,7 @@ class NodeDatabaseManagement:
     def add_new_user_promotion(self, email: str) -> int | None:
         """
         Will attempt to add a new user promotion against the account with the specified email
-        # ToDo: would be nice to see user_balance information too but would require re-write of neo4jdriver's
+        # ToDo: would be nice to see user_balance information too but would require re-write of neo4jDriver's
         execute_write method
 
         :param email:

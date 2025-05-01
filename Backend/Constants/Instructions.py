@@ -96,9 +96,9 @@ def extract_memory_node_terms_system_message(existing_nodes: List[str] = 'No Kno
 # Augmentation
 
 
-AUTO_SELECT_PERSONA_SYSTEM_MESSAGE = (
-    "You are an assistant that selects an appropriate persona based on the user's prompt. "
-    "Choose one of the following personas: 'coder' or 'writer'."
+AUTO_SELECT_WORKER_SYSTEM_MESSAGE = (
+    "You are an assistant that selects an appropriate worker based on the user's prompt. "
+    "Choose one of the following workers: 'coder' or 'writer'."
 )
 
 AUTO_SELECT_WORKFLOW_SYSTEM_MESSAGE = (
