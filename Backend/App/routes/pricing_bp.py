@@ -54,5 +54,5 @@ def get_user_balance():
 #     response = Pricing.top_up_user_balance(sum)
 #     if response.get("status_code") == 500:
 #         return jsonify({"error": "Internal database error."}), 500
-# 
+#
 #     return fetch_entity(f"User balance topped up by {sum}", "message")

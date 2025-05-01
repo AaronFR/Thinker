@@ -50,7 +50,7 @@ body.dark-mode .background:before {
 }
 
 .thinker {
-  font-size: 10rem;
+  font-size: 7rem;
   font-family: 'Montserrat';
   color: #bbbbbb;
   text-shadow:
@@ -66,7 +66,7 @@ body.dark-mode .thinker {
 }
 @media (max-width: 1024px) {
   .thinker {
-    font-size: 7rem; /* Adjust font size for mobile */
+    font-size: 5rem;
   }
   .beta-symbol {
     font-size: 8rem;
@@ -74,7 +74,7 @@ body.dark-mode .thinker {
 }
 @media (max-width: 768px) {
   .thinker {
-    font-size: 3rem; /* Adjust font size for mobile */
+    font-size: 2.5rem;
   }
   .beta-symbol {
     font-size: 4rem;

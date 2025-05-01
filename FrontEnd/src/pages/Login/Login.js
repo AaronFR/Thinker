@@ -63,57 +63,53 @@ export function Login({ isAuthenticated }) {
                     <div className='thinker'>The Thinker AI</div>
                 </div>
 
-                <h1>
-                    🧰 AI toolkit 🧰
-                </h1>
+                <h2>
+                    🧰 AI Toolkit 🧰
+                </h2>
 
                 <div className="card-container">
                     <div className="card left-card">
                         <div className='header'>
-                            <h3><b className='red-text'>NOT</b> another subscription</h3>
+                            <h3><b className='red-text'>NOT</b> another Subscription</h3>
                             <span className="emoji">¢</span>
                         </div>
-                        <p>Pay as you go: Pay for what you <i>actually</i> use. Try it out with no recurring fees</p>
+                        <p>Pay per prompt, with no recurring fees</p>
+                        <p>Fairly priced with a 1% margin to cover hosting costs (ZERO % in β, i.e. at a loss)</p>
                         <p 
                             id="😉"
                             data-tooltip-id="tooltip"
                             data-tooltip-html={TooltipConstants.limitDetails}
                             data-tooltip-place="bottom"
                         >
-                            We want you to use AI as much as possible. No qouta's, no limits but the ones you set
+                            No qoutas
                         </p>
                     </div>
                     <div className="card left-card">
                         <div className='header'>
-                            <h3>User Friendly</h3>
-                            <span className="emoji">😘</span>
-                        </div>
-                        <p>Use AI to help use AI with automated helper functionality</p>
-                        <p>Activate/De-activate or customise any feature you want enabled</p>
-                        <p id="fully, later">All configurable, with more options and settings to come</p>
-                    </div>
-                    <div className="card right-card">
-                        <div className='header'>
                             <h3>Powerful</h3>
                             <span className="emoji">💪</span>
                         </div>
-                        <p>Utilise AI workflows to make requests of <b><i>any</i></b> size</p>
-                        <p>Rewrite many files at once, write arbitrarily long documents with a single prompt</p>
-                        <p style={{opacity: 0.1}}>Maybe one day a whole code base? ¯\_(ツ)_/¯</p>
+                        <p>Generate many response at once, the best selected automatically</p>
+                        <p>Generate files, hundreds of responses long</p>
+                        <p>Rewrite many files simultaneously from a single request</p>
+
+                    </div>
+                    <div className="card right-card">
+                        <div className='header'>
+                            <h3>User Friendly</h3>
+                            <span className="emoji">😘</span>
+                        </div>
+                        <p>Use AI to rewrite or question your messages in advance.</p>
+                        <p>Messages categorised automatically, with custom instructions of your choosing for each.</p>
+                        <p>Activate/Deactivate/Customise any feature</p>
                     </div>
                     <div className="card right-card">
                         <div className='header'>
                             <h3>Open Source</h3>
                             <span className="emoji-large">👐</span>
                         </div>
-                        <p>Developing a robust tool for the community, not for profiteering off 'hype'. Review our development process and contribute</p>
-                        <p  style={{opacity: 0.1}}
-                            data-tooltip-id="tooltip"
-                            data-tooltip-html={TooltipConstants.bountyDetails}
-                            data-tooltip-place="bottom"
-                        >
-                            Bounties in future at $30/hr (<b><i>subject to review</i></b>), I dunno message me
-                        </p>
+                        <p>Open and transparent</p>
+                        <p>Developing a tool for the community, not for profiteering. Review our development process and contribute</p>
                     </div>
                 </div>
 
@@ -176,7 +172,7 @@ export function Login({ isAuthenticated }) {
             
             <div className="centered">
                 <iframe width="860" height="480"
-                src="https://www.youtube.com/embed/syfUbWpO7Cg">
+                    src="https://www.youtube.com/embed/syfUbWpO7Cg">
                 </iframe>
             </div>
 

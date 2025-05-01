@@ -22,7 +22,7 @@ export const About = () => {
         in your day to day life and work. Without being ripped off by 'AI Hype' grifters.
       </p>
       <p>
-        I've been looking at the state of AI since before gpt-2 and for the last 2 years I've been thinking: "Okay cool.. is <i>this</i> it? 
+        I've been looking at AI since before gpt-2, before the hype and I've been thinking: "Okay cool.. is <i>this</i> it? 
       </p>
         <ul>
           Where can I use workflows of <b>multiple</b> prompts, not just one and only one at a time?
@@ -56,31 +56,17 @@ export const About = () => {
 
 
       <h2 className="centered">Okay, why should <i>I</i> care?</h2>
-        <h3>Reasonably Priced</h3>
-
         <p>
           If you plan on using or even just experimenting with AI, The Thinker would be a great place to start because it's <b>pay as you go</b>.
         </p>
         <p>
-          No monthly subscription, no running costs, no qoutas, no limits. While your also provided with workflows and optional functions that can help
+          No monthly subscription, no recurring fees, no qoutas. While your also provided with workflows and optional functions that can help
           you make the most of AI in your day to day.
         </p>
-          <ul>
-            You can put in an amount as low as <b>$1 (US)</b> (There is a <u
-              id="not currently anyway"
-              className="explanation"
-              data-tooltip-id="tooltip"
-              data-tooltip-html={TooltipConstants.minFeeDetails}
-              data-tooltip-place="bottom"
-            >$0.30 fee per transaction</u> we have to pay) to get started and if you use the default, economical models that can actually last a bit.
-          </ul>
-          <ul>
-            No running fees. Put in any amount and come back and use it whenever you want. The next day, the next month, the next year. Whenever.
-          </ul>
 
         <p>
           Prices will be our own costs per AI resource we pay for, plus a small percentage to pay for server costs and salary 
-          (Hopefully around +10-20%, but for now its at cost -so at a loss).
+          (1% after beta, but for now its at cost -so at a loss).
         </p>
         <p>And if you want to use it locally and just use your own API keys you can.</p>
     </div>
@@ -109,13 +95,13 @@ export const Pitch = () => {
         <div className="card">
           Popular AI applications
           <ul id="giving 'wrappers' a bad name">
-            😑 - <i>Very</i> simple wrappers, one prompt -{`>`} one response
+            😑 - <i>Very</i> simple, one prompt -{`>`} one response
           </ul>
           <ul>
             🗿 - You can maybe change the instructions or the tone - which does nothing usually
           </ul>
           <ul id="I can see people saying 'well I never have this problem', but I dunno this stuff REALLY annoyed me, personally">
-            😠 - Constantly sorting long stacks of messages to find that message you wanted to look at now..
+            😠 - Constantly sorting long stacks of messages to find that one you want..
           </ul>
           <ul id="because 'f### you, pay me' right?">
             🤑 - Subscription models, costing the same amount of money regardless of how little you use the application in a given month, if at all
@@ -130,14 +116,14 @@ export const Pitch = () => {
             👁‍🗨 Explicetely (sometimes) tell you they will use your data for their own purposes
           </ul>
           <ul id="because 'fuck you, pay me' right?">
-            🔐 - Closed source: closed off, uncheckable, non-collaborative, a <b>dead end</b>
+            🔐 - Closed source: closed off, uncheckable, non-collaborative, <b>untrustworthy</b>
           </ul>
         
         </div>
         <div className="card">
           The Thinker AI
           <ul>
-            😃 - Utilises workflows and optional functionalities, one prompt can trigger as many AI calls as you want/need.
+            😃 - Utilise workflows and optional features, one prompt can trigger as many AI calls as you want/need.
           </ul>
           <ul>
             ⚙ - Fully customisable. Don't like a feature? Just turn it off
@@ -146,7 +132,7 @@ export const Pitch = () => {
             🤖 - Uses AI... to automate using AI
           </ul>
           <ul id="I'm hoping break even with budget for contribution bounties can be reached at 10-20% margin. That may be naive honestly.">
-            ¢ - Pay as you go, pay for what you want as you want, with a small margin (0% in beta) going to funding the development of this application
+            ¢ - Pay as you go, pay for what you want as you want, with a small 1% margin (0% in beta) paying hosting costs and possibly the maintance and development of this application
           </ul>
           <ul id="Well. That's the idea anyway">
             🦅 - No Rate limits! Use as much as you can as quickly as you want
@@ -191,21 +177,11 @@ export const Tutorial = () => {
           Write - will write to a file name you suggest or come up with its own. The Writer persona can be asked to write a certain number of 'pages' for arbitrarily long documents
         </ul>
         <ul>
-          Auto - Will process each and every file reference you select/upload as individual prompts. (I find this useful for improving on entire folders or working on many tasks at once)
+          For Each - Will process each file reference you select/upload individually. (Useful for improving on entire folders or working on many tasks at once)
         </ul>
-
-        <h4>Tags</h4>
-        You'll see some boxes beneath the command menu, these are tags you can write your own say if you want to explicetely categorise a prompt.
-        This is mostly a debug feature but one is of note:
-
-        <ul>
-          best of - If you specifiy a number, the program will run each step in the workflow that many times and then run again, filtering for the best result. This can improve consistency
-          or whatever other factor you would like to optimise for.
-        </ul>
-
 
         <h3>Settings</h3>
-          <p>Here you can config how the application will react in detail</p>
+          <p>Here you can configure how the application will react in detail</p>
             <ul>User Interface</ul>
             <ul>
               Functionality - By default most features a few features are disabled, toggle them on if you want to try them out. Each function typically incurrs an additional cost:
