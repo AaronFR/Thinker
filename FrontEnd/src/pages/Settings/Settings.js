@@ -334,11 +334,42 @@ const WorkflowsSettings = React.memo(({
   summarise_workflows_cost,
   handleMessageChange,
 }) => {
-  const sectionHeading = useMemo(() => (<h2 className="settings-heading">Workflows</h2>), []);
+  const sectionHeading = useMemo(() => (<h2 className="settings-heading">Workers & Workflows</h2>), []);
   
   const maxContent = (
     <div className='message-settings'>
       {sectionHeading}
+
+      <div className='settings-subsection'>
+        <h3>Workers</h3>
+        <p>Bear in mind, LLMs pay particular attention to the first or last instructions</p>
+        
+        <div className="message-settings">
+          <label className="message-label">
+            Coder Instructions
+            <AutoExpandingTextarea
+              value={settings?.system_messages?.coder_worker_message}
+              className="textarea"
+              onChange={(e) =>
+                handleMessageChange('system_messages', 'coder_worker_message', e.target.value)
+              }
+              style={{ opacity: 0.9 }}
+            />
+          </label>
+          <label className="message-label">
+            Writer Instructions
+            <AutoExpandingTextarea
+              value={settings?.system_messages?.writer_worker_message}
+              className="textarea"
+              onChange={(e) =>
+                handleMessageChange('system_messages', 'writer_worker_message', e.target.value)
+              }
+              style={{ opacity: 0.9 }}
+            />
+          </label>
+        </div>
+      </div>
+
       <div className='settings-subsection'>
         <label className="settings-label">
           <input
@@ -384,8 +415,7 @@ const WorkflowsSettings = React.memo(({
             style={{ opacity: 0.9 }}
           />
         </div>
-      </div>
-      
+      </div>      
     </div>
   );
 
@@ -1081,10 +1111,6 @@ export function Settings() {
         summarise_files_cost={userInfo?.summarise_files_cost}
       />
 
-      <SystemMessagesSettings
-        settings={settings}
-        handleMessageChange={handleMessageChange}
-      />
 
       <BetaFeaturesSettings
         settings={settings}

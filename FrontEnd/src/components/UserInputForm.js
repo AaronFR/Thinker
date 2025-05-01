@@ -243,14 +243,14 @@ const UserInputForm = ({
               setTags={setTags}
               isLoading={categoryIsLoading}
             />
+          </div>
+
+          <div className="selector-group workflow-selectors">
             <WorkerSelector
               selectedWorker={tags.worker}
               setTags={setTags}
               isLoading={workerIsLoading}
             />
-          </div>
-
-          <div className="selector-group workflow-selectors">
             <WorkflowSelector
               selectedWorkflow={tags.workflow}
               setTags={setTags}
