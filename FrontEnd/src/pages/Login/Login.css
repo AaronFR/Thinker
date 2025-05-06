@@ -238,3 +238,24 @@ body.dark-mode .card {
       align-items: center;
   }
 }
+
+.video {
+  width: 90%;
+  max-width: 860px;
+  margin: 0 auto;
+  justify-content: center;
+  display: flex;
+  white-space: initial; 
+}
+
+@media (max-width: 767px) {
+  .video {
+    width: 100%;
+  }
+}
+/* Media query for tablets (768px to 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+  .video {
+    width: 80%;
+  }
+}

@@ -170,10 +170,13 @@ export function Login({ isAuthenticated }) {
             </div>
             <BetaBanner />
             
-            <div className="centered">
-                <iframe width="860" height="480"
-                    src="https://www.youtube.com/embed/syfUbWpO7Cg">
-                </iframe>
+            <div className="video">
+                <iframe
+                    src="https://www.youtube.com/embed/N3GOj288DOc"
+                    style={{ width: "100%", aspectRatio: "16 / 9" }}
+                    allowFullScreen
+                    title="YouTube video"
+                ></iframe>
             </div>
 
             <Pitch />

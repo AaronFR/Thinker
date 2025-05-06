@@ -103,7 +103,7 @@ const ModelPricing = () => {
         <div className="models-container">
             <h2>Available models</h2>
             <p>
-                <b>Warning:</b> This is beta pricing. Out of beta, the application will cost around 1.1x these prices to ensure maintenance costs can be paid.
+                <b>Note:</b>A margin of around 1% will be applied when topping up your balance to pay for hosting costs. However in beta no such margin is applied.
             </p>
             <p>
                 With additional features enabled its not just your original prompt that will be input, you can see the pricing of any enabled features in settings.
