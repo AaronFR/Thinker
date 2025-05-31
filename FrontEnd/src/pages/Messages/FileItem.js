@@ -142,7 +142,7 @@ const FileItem = ({ file, onDelete, onSelect, isSelected }) => {
     onSelect(file);
   }, [file, onSelect]);
 
-  // It appears explicetely including the extension leads to formatting failure if the system fails to remove added code blocks
+  // It appears explicitely including the extension leads to formatting failure if the system fails to remove added code blocks
   const getFormattedContent = () => {
     if (!content) return '';
 

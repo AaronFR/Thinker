@@ -2,19 +2,19 @@
 
 const TooltipConstants = {
   /* Login page */
-  limitDetails: `Well okay, there <i>litterally</i> are limits, but those are for avoiding malicous abuse.
-    If your hitting those something is going very wrong or <i>right</i>.. please get in contact if so!
+  limitDetails: `Well okay, there <i>literally</i> are limits, but those are for avoiding malicious abuse.
+    If you're hitting those something is going very wrong or <i>right</i>.. please get in contact if so!
   `,
   bountyDetails: `Website would probably have to see *some* use first, I plan to pay myself at the same rate eventually: 
     <br>557 hrs and counting at time of writing...
-    <br>But I would definetely plan to <b>thank</b> contributers first.
+    <br>But I would definitely plan to <b>thank</b> contributors first.
   `,
 
   /* Buttons */
   copyButton: "Copy to clipboard",
   fileUploadButton: "Upload file(s) as reference for your prompt",
   augmentButton: "Generate a more detailed copy of your prompt. <br>Optimised to be more machine readable/provide a better response.",
-  questionButton: `The app will ask you questions it has about your prompt.
+  questionButton: `The app will ask you questions about your prompt.
     Provide answers for additional context or just use it for rubber ducking 🦆`,
   submitButton: `Send your message to The Thinker for a response.
     <br>If you click here again you can enter another prompt while this one continues in the background
@@ -29,7 +29,7 @@ const TooltipConstants = {
   workflowSelector: "Select a workflow to determine how your request is responded to. Workflows are sequences of individual steps, each using AI to achieve a set task",
   modelSelector: `Select the primary AI model to use, listed from the most affordable first.<br>
     Note: Only "key" operations within workflow steps use the selected model, 
-    Most background LLM calls use a seperate, economical model.sele
+    background LLM calls use a separate, economical model.
   `,
   backgroundModelSelector: `Select a secondary, background model, this should be a fast and economical model.<br>
     Used throughout the application for everything that *isn't* a primary workflow task.
@@ -39,7 +39,7 @@ const TooltipConstants = {
   e.g. best of two means roughly x3 more prompts
   Adjust selection criteria in settings`,
   loopsSelector: `Enable to run the LLM calls inside each step multiple times in sequence, improving on the answer with each loop.
-    Increases in time and cost are roughly proprotional to the number of loops`,
+    Increases in time and cost are roughly proportional to the number of loops`,
   writeSelector: "Specify a filename for the output. If left blank, a name will be generated automatically",
   pagesSelector: `Indicate the desired length of the document in 'pages' (individual responses). The AI will plan instructions for each individual response.`,
 
@@ -89,7 +89,7 @@ const TooltipConstants = {
   Precise measurements differ from model to model. 
   This explanation is 40 tokens long to GPT-4o.
   `,
-  perMillionToken: `1 million tokens more accurately correpsonds to ~750,000 words
+  perMillionToken: `1 million tokens more accurately corresponds to ~750,000 words
   The average novel is about 100,000 words long.
   `,
   byCheapest: `Gemini-2.0- Flash lite - preview
@@ -97,7 +97,7 @@ const TooltipConstants = {
   internetSearchCosting: `This is the minimum cost, page content will also increase the input costs of a prompt`,
   userContextCosting: `This is just the minimum cost for deciding what user info to store and retrieve. 
   The referenced context will also increase the input costs of a prompt.`,
-  loopsCosting: `If you run multiple runs in parrallel this will be costed instead of the number of loops`,
+  loopsCosting: `If you run multiple runs in parallel this will be costed instead of the number of loops`,
 };
 
 export default TooltipConstants;

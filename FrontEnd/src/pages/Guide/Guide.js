@@ -10,7 +10,7 @@ export const About = () => {
   return (
     <div className="about">
       <p>
-        'The Thinker' is designed to be a low fuss, low BS tool for iteracting with <u
+        'The Thinker' is designed to be a low fuss, low BS tool for interacting with <u
           id="not currently anyway"
           className="explanation"
           data-tooltip-id="tooltip"
@@ -36,7 +36,7 @@ export const About = () => {
         <ul>
           Where uses a system to try and mitigate the inconsistencies and hallucinations of LLMs <i>intelligently</i>,
           instead of thinking we need to try and cram
-          the entire, up to date human canon inside a statistical algorithm?
+          all human knowledge inside a statistical algorithm?
         </ul>
         <ul>
           Why do I have to deal with these limits and restrictions, why can't <i>I</i> set the limits?
@@ -49,7 +49,7 @@ export const About = () => {
         </ul>
         
         
-      <small>prefereably open source</small>
+      <small>preferably open source</small>
 
       <p>Eventually, I just got tired of wondering these questions and decided to take a shot at it myself!</p>
 
@@ -60,7 +60,7 @@ export const About = () => {
           If you plan on using or even just experimenting with AI, The Thinker would be a great place to start because it's <b>pay as you go</b>.
         </p>
         <p>
-          No monthly subscription, no recurring fees, no qoutas. While your also provided with workflows and optional functions that can help
+          No monthly subscription, no recurring fees, no quotas. While your also provided with workflows and optional functions that can help
           you make the most of AI in your day to day.
         </p>
 
@@ -77,7 +77,7 @@ export const BetaBanner = () => {
   return (
     <div className="centered beta-banner">
       <div>
-        <h2 id="Not guranteed!">
+        <h2 id="Not guaranteed!">
           🚧 In beta - Email feedback/opinions and ask for <i>free credit</i>
         </h2>
         <div className="centered">
@@ -113,7 +113,7 @@ export const Pitch = () => {
             🥴 Hallucinates and is generally unreliable
           </ul>
           <ul hidden>
-            👁‍🗨 Explicetely (sometimes) tell you they will use your data for their own purposes
+            👁‍🗨 Explicitely (sometimes) tell you they will use your data for their own purposes
           </ul>
           <ul id="because 'fuck you, pay me' right?">
             🔐 - Closed source: closed off, uncheckable, non-collaborative, <b>untrustworthy</b>
@@ -132,16 +132,16 @@ export const Pitch = () => {
             🤖 - Uses AI... to automate using AI
           </ul>
           <ul id="I'm hoping break even with budget for contribution bounties can be reached at 10-20% margin. That may be naive honestly.">
-            ¢ - Pay as you go, pay for what you want as you want, with a small 1% margin (0% in beta) paying hosting costs and possibly the maintance and development of this application
+            ¢ - Pay as you go, pay for what you want as you want, with a small 1% margin (0% in beta) paying hosting costs and possibly the maintenance and development of this application
           </ul>
           <ul id="Well. That's the idea anyway">
             🦅 - No Rate limits! Use as much as you can as quickly as you want
           </ul>
           <ul hidden id="WIP, though the workflow part is true">
-            🤔 Workflows are designed by a humnan, with (optional) internet search every step of the way to minimise inaccuracies
+            🤔 Workflows are designed by a human, with (optional) internet search every step of the way to minimise inaccuracies
           </ul>
-          <ul hidden id="Currently we *can* see user messages, I need to implement privately hosted models that encyrpt/do not log user requests, otherwise as far as I'm concerned saying I encrypt user data - but then send it on to a 3rd party api, would be *false privacy*">
-            🚧 (WIP) Option to select a privately hosted model that does not log your messages, encypted secure messages
+          <ul hidden id="Currently we *can* see user messages, I need to implement privately hosted models that encrypt/do not log user requests, otherwise as far as I'm concerned saying I encrypt user data - but then send it on to a 3rd party api, would be *false privacy*">
+            🚧 (WIP) Option to select a privately hosted model that does not log your messages, encrypted  secure messages
           </ul>
           <ul>
             👐 - Open Source, providing a tool for the whole community
@@ -184,8 +184,8 @@ export const Tutorial = () => {
           <p>Here you can configure how the application will react in detail</p>
             <ul>User Interface</ul>
             <ul>
-              Functionality - By default most features a few features are disabled, toggle them on if you want to try them out. Each function typically incurrs an additional cost:
-              But background processes run on a seperate model from the main, one that's economical and fast while still competent (You can select which specfific model is used as the background model in settings), so they should be rather afforadable to run
+              Functionality - By default most features a few features are disabled, toggle them on if you want to try them out. Each function typically incurs an additional cost:
+              But background processes run on a separate model from the main, one that's economical and fast while still competent (You can select which specific model is used as the background model in settings), so they should be rather affordable to run
             </ul>
             <ul>System Messages - These dictate how an LLM will respond to your prompt. You can customise nearly all system messages based on your preferences</ul>
 

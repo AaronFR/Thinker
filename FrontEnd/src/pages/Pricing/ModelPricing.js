@@ -45,7 +45,7 @@ const models = [
         name: 'o4 mini',
         inputPerToken: 0.0000011,
         outputPerToken: 0.0000044,
-        description: 'OpenAi\'s leading publicly avaible model.',
+        description: 'OpenAi\'s leading publicly available model.',
         goodFor: 'Current cutting edge model, very intelligent and affordable',
         badFor: 'Slow, Long latency (that means it takes a while to get started)',
         image: openAiLogo,
@@ -54,7 +54,7 @@ const models = [
         name: 'Gemini 2.5 Pro Preview',
         inputPerToken: 0.00000125,
         outputPerToken: 0.00001,
-        description: `Leading Gemmini model. 
+        description: `Leading Gemini model. 
         (NOTE: For inputs bigger than 200,000 tokens input costs double (100% increase),
         while output costs will rise by 50%.`,
         goodFor: 'Very intelligent model',
@@ -109,7 +109,7 @@ const ModelPricing = () => {
                 With additional features enabled its not just your original prompt that will be input, you can see the pricing of any enabled features in settings.
             </p>
             <p>
-              Contained below are our recomendations and opinions, you should look up external sources. <a href='https://artificialanalysis.ai/models'>artificialanalysis.ai</a> is a good, comprehensive place to start.
+              Contained below are our recommendations and opinions, you should look up external sources. <a href='https://artificialanalysis.ai/models'>artificialanalysis.ai</a> is a good, comprehensive place to start.
             </p>
             
             <div className="toggle-container">

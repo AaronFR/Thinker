@@ -81,7 +81,7 @@ export function Login({ isAuthenticated }) {
                             data-tooltip-html={TooltipConstants.limitDetails}
                             data-tooltip-place="bottom"
                         >
-                            No qoutas
+                            No quotas
                         </p>
                     </div>
                     <div className="card left-card">

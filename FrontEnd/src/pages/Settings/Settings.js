@@ -169,7 +169,7 @@ const FunctionalitySettings = React.memo(({
             <option value={'always'}>Always</option>
             <option value={'once'}>Once</option>
           </select>
-          Automatically select a Category (folder) to store the promp/files in
+          Automatically select a Category (folder) to store the prompt/files in
         </label>
         <label className="message-label">
           Categorisation Instructions
@@ -231,7 +231,7 @@ const FunctionalitySettings = React.memo(({
         
 
         <div className='side-by-side'>
-          <h3>Auto select worfklows</h3>
+          <h3>Auto select workflows</h3>
           <p>{formatPrice(parseFloat(userInfo?.select_workflow_cost))}</p>
         </div>
         <label className="settings-label">
@@ -381,7 +381,7 @@ const WorkflowsSettings = React.memo(({
           Write Pages in Parallel
         </label>
         
-        <p>⏰ Faster, pages can be written in batches, almost simutaneously</p>
+        <p>⏰ Faster, pages can be written in batches, almost simultaneously</p>
         <p>⛔ Can't reference prior pages, not good when <i>coherency</i> is important</p>
         <p>💲 This reduction in input does however reduce costs, roughly halving cost when creating a document with many pages</p>
       </div>
