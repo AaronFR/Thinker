@@ -8,6 +8,10 @@
  * @returns {string} The formatted price string.
  */
 export function formatPrice(price) {
+  if (isNaN(price)) {
+    return `$0`;
+  }
+
   const scale = 100
   if (price < 0.0001) {
     // In the event the price is less than one percent of a cent
