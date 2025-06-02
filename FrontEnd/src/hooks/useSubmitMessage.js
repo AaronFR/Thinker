@@ -104,6 +104,58 @@ const useSubmitMessage = (
         resolve();
       });
 
+      /* Initial connection listners */
+
+      const handleInitialConnect = () => {
+        console.log('WebSocket connected (initial)');
+        socket.off('connect_error', handleInitialError);
+        resolve(); // ✅ initial success
+      };
+  
+      const handleInitialError = (err) => {
+        console.warn('WebSocket initial connection error:', err.message);
+        socket.off('connect', handleInitialConnect);
+        setError(
+          'Unable to establish a WebSocket connection. Please check your network and try again.'
+        );
+        setIsProcessing(false);
+        reject(err); // ❌ initial failure
+      };
+
+      /* Ongoing/general lifecycle listeners */
+
+      socket.on('connect_error', (err) => {
+        console.warn('WebSocket runtime connect_error:', err.message);
+        // Let Socket.IO auto-reconnect. Just update UI:
+        setError('Connection lost. Reconnecting…');
+        setIsProcessing(true);
+      });
+  
+      socket.on('disconnect', (reason) => {
+        console.log('WebSocket disconnected:', reason);
+        setError('Connection lost. Reconnecting…');
+        setIsProcessing(true);
+      });
+  
+      socket.on('reconnect_attempt', (n) => {
+        console.log(`Reconnect attempt #${n}`);
+        setError(`Reconnecting… attempt ${n}`);
+      });
+  
+      socket.on('reconnect', (n) => {
+        console.log(`Reconnected after ${n} attempts`);
+        setError(null);
+        setIsProcessing(false);
+      });
+  
+      socket.on('reconnect_failed', () => {
+        console.error('All reconnection attempts failed');
+        setError('Unable to reconnect. Your message will still be stored in Messages when complete.');
+        setIsProcessing(false);
+      });
+
+      /* Data Events */
+
       socket.on('response', (data) => {
         console.log('Received chunk:', data.content);
         setMessage((prevMessage) => prevMessage + data.content);
@@ -111,13 +163,6 @@ const useSubmitMessage = (
 
       socket.on('output_file', (data) => {
         setFiles((prevFiles) => [...prevFiles, data.file]);
-      });
-
-      socket.on('connect_error', () => {
-        console.log('WebSocket connection error');
-        setError('Unable to establish a WebSocket connection. Please check your network and try again.');
-        setIsProcessing(false);
-        reject(new Error('WebSocket connection failed'));
       });
 
       /* Workflow Events */

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - 'Persona' -> 'Worker' More intuitive name.
+- Updated web socket connection handling, reducing premature rejections on shaky internet connections.
 
 ### Removed
 
