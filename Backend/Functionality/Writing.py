@@ -8,7 +8,6 @@ from typing import Dict, List, Optional
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
-from Constants.WorkerSpecification.CoderSpecification import GENERATE_FILE_NAMES_FUNCTION_SCHEMA
 from Constants.Constants import DEFAULT_EXTENSION, TAG_WITH_PURPOSE_REGEX
 from Constants.Instructions import determine_pages_prompt, DETERMINE_PAGES_SCHEMA
 

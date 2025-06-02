@@ -1,14 +1,14 @@
 from typing import Dict, Any
 from Workers.BaseWorker import BaseWorker
-from Constants.WorkerSpecification import CoderSpecification, DefaultSpecification
+from Constants.WorkerSpecification import DefaultSpecification
 from Workflows.AutoWorkflow import AutoWorkflow
 from Workflows.ChatWorkflow import ChatWorkflow
 from Workflows.WriteWorkflow import WriteWorkflow
 
 
-class Coder(BaseWorker):
+class Default(BaseWorker):
     """
-    Coding worker to write and edit code files.
+    Default worker, mostly to serve as a baseline while also tutorial-ising "well what's not default then?"
     """
 
     WORKFLOWS: Dict[str, Dict[str, Any]] = {
@@ -19,19 +19,18 @@ class Coder(BaseWorker):
 
     def __init__(self, name: str) -> None:
         """
-        Initialize the Coder worker with a given name.
+        Initialize the Default worker.
 
         :param name: The name of the coding worker.
         """
         super().__init__(name)
         self.instructions = DefaultSpecification.DEFAULT_INSTRUCTIONS
-        self.configuration = CoderSpecification.load_configuration()
+        self.configuration = DefaultSpecification.load_configuration()
 
 
 if __name__ == '__main__':
     """
     Suggestions:
-    - generate a method for calculating the 'ruggedness' of a area of terrain,
-    assume the terrain is entered as a 2d data plot
-    - How would you improve the Thinker.py class?
+    - News
+    - General Knowledge
     """

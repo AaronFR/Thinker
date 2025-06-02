@@ -345,6 +345,18 @@ const WorkflowsSettings = React.memo(({
         <p>Bear in mind, LLMs pay particular attention to the first or last instructions</p>
         
         <div className="message-settings">
+        <label className="message-label">
+            Default Worker Instructions
+            <AutoExpandingTextarea
+              value={settings?.system_messages?.default_worker_message}
+              className="textarea"
+              onChange={(e) =>
+                handleMessageChange('system_messages', 'default_worker_message', e.target.value)
+              }
+              style={{ opacity: 0.9 }}
+            />
+          </label>
+
           <label className="message-label">
             Coder Instructions
             <AutoExpandingTextarea
@@ -356,6 +368,7 @@ const WorkflowsSettings = React.memo(({
               style={{ opacity: 0.9 }}
             />
           </label>
+
           <label className="message-label">
             Writer Instructions
             <AutoExpandingTextarea

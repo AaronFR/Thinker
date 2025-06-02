@@ -57,7 +57,7 @@ def select_worker():
         parsed_data = parse_and_validate_data(data, USER_PROMPT_AND_TAGS_SCHEMA)
         user_prompt = parsed_data.get("user_prompt")
 
-        selected_worker = Augmentation.select_worker(user_prompt).value
+        selected_worker = Augmentation.select_worker(user_prompt)
 
         return jsonify({"worker": selected_worker})
     except ValueError as ve:

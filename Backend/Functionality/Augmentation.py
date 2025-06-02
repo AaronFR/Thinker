@@ -7,14 +7,9 @@ from Data.Configuration import Configuration
 from Constants.Instructions import AUTO_ENGINEER_PROMPT_SYSTEM_MESSAGE, QUESTION_PROMPT_SYSTEM_MESSAGE, \
     AUTO_SELECT_WORKFLOW_SYSTEM_MESSAGE, AUTO_SELECT_WORKER_SYSTEM_MESSAGE
 from Utilities.Decorators.Decorators import return_for_error
-
-
-class Worker(Enum):
-    CODER = "coder"
-    WRITER = "writer"
-
-
-DEFAULT_WORKER = Worker.CODER
+from Workers.BaseWorker import BaseWorker
+from Workers.Default import Default
+from Workers.WorkerManagement import get_selected_worker, WORKER_MAPPING, DEFAULT_WORKER
 
 
 class Workflow(Enum):
@@ -29,10 +24,10 @@ DEFAULT_WORKFLOW = Workflow.CHAT
 
 class Augmentation:
     @staticmethod
-    @return_for_error(DEFAULT_WORKER)
-    def select_worker(user_prompt: str) -> Worker:
+    @return_for_error(Default)
+    def select_worker(user_prompt: str) -> str:
         """
-        Selects a worker based on the user prompt.
+        Provides a string representing a worker based on the user prompt.
 
         :param user_prompt: The initial prompt provided by the user.
         :returns Worker: The selected worker based on the content of the user prompt.
@@ -50,13 +45,10 @@ class Augmentation:
 
         logging.info(f"LLM selected worker: {llm_response}")
 
-        if llm_response == Worker.CODER.value:
-            return Worker.CODER
-        elif llm_response == Worker.WRITER.value:
-            return Worker.WRITER
-        else:
-            logging.warning(f"Unexpected worker '{llm_response}' returned by LLM. Defaulting to {DEFAULT_WORKER}.")
+        if not WORKER_MAPPING.get(llm_response.lower(), False):
             return DEFAULT_WORKER
+
+        return llm_response.lower()
 
     @staticmethod
     @return_for_error(DEFAULT_WORKFLOW)

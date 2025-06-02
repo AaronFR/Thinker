@@ -9,6 +9,8 @@ from Constants.Constants import BASE_LIMIT, USER_BASE_LIMIT
 from Data.CategoryManagement import CategoryManagement
 from Functionality.Organising import Organising
 from Workers.Coder import Coder
+from Workers.Default import Default
+from Workers.WorkerManagement import get_selected_worker
 from Workers.Writer import Writer
 from Utilities.Decorators.AuthorisationDecorators import login_required_ws
 from Utilities.Contexts import set_message_context, get_message_context, get_category_context, set_streaming, \
@@ -23,14 +25,8 @@ PROCESS_MESSAGE_SCHEMA = {
     "tags": {"required": False, "default": {}, "type": dict},
     "files": {"required": False, "default": [], "type": list},
     "messages": {"required": False, "default": [], "type": list},
-    "worker": {"required": False, "default": "coder"}
+    "worker": {"required": False, "default": "default"}
 }
-
-WORKER_MAPPING = {
-    "coder": Coder,
-    "writer": Writer,
-}
-DEFAULT_WORKER = "coder"
 
 
 def init_process_message_ws(socketio: SocketIO):
@@ -145,14 +141,3 @@ def stream_response(response_stream, message_uuid: str) -> str:
     finally:
         set_functionality_context(None)  # Wiping any previously set context for a stream
         return "".join(full_message_parts)
-
-
-def get_selected_worker(worker_name: str):
-    """
-    Determines the selected worker based on the provided name, defaulting to Coder if the worker name is invalid.
-    """
-    if not worker_name:
-        return WORKER_MAPPING[DEFAULT_WORKER]("default")
-
-    worker_class = WORKER_MAPPING.get(worker_name.lower(), WORKER_MAPPING[DEFAULT_WORKER])
-    return worker_class(worker_name)

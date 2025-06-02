@@ -15,6 +15,7 @@ import TooltipConstants from '../../constants/tooltips';
  */
 const WorkerSelector = React.memo(({ selectedWorker, setTags, isLoading }) => {
     const workers = [
+        { value: "default", label: "😶 Default" },
         { value: "coder", label: "💻 Coder" },
         { value: "writer", label: "✍ Writer" },
     ];
