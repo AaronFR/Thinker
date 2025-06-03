@@ -128,13 +128,11 @@ const useSubmitMessage = (
         console.warn('WebSocket runtime connect_error:', err.message);
         // Let Socket.IO auto-reconnect. Just update UI:
         setError('Connection lost. Reconnecting…');
-        setIsProcessing(true);
       });
   
       socket.on('disconnect', (reason) => {
         console.log('WebSocket disconnected:', reason);
         setError('Connection lost. Reconnecting…');
-        setIsProcessing(true);
       });
   
       socket.on('reconnect_attempt', (n) => {
@@ -145,7 +143,6 @@ const useSubmitMessage = (
       socket.on('reconnect', (n) => {
         console.log(`Reconnected after ${n} attempts`);
         setError(null);
-        setIsProcessing(false);
       });
   
       socket.on('reconnect_failed', () => {
