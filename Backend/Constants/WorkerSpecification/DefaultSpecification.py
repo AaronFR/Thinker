@@ -11,7 +11,7 @@ def load_configuration() -> str:
     return config.get("system_messages", {}).get(
         "default_worker_message",
         (
-            "Be extremely to the point and kurt."
+            "Be to the point"
         )
     )
 
