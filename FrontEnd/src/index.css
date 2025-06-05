@@ -13,20 +13,27 @@ code {
 }
 
 /* Tool Tip */
+@keyframes tooltipFadeIn {
+  from { opacity: 0; }
+  to { opacity: 0.9; }
+}
+
 div.react-tooltip.core-styles-module_tooltip__3vRRp {
   flex-wrap: wrap;
-  opacity: 0.95;
+  opacity: 0.9;
   z-index: 9999;
+  font-size: 0.75rem;
   white-space: pre-line;
   overflow-wrap: break-word;
   box-sizing: border-box;
   padding: 10px;
   max-width: 600px;
+  animation: tooltipFadeIn var(--transition-duration-fast) ease-in-out;
 }
 @media (max-width: 600px) {
   div.react-tooltip.core-styles-module_tooltip__3vRRp {
     max-width: 90%;
-    font-size: 1rem;
+    font-size: 0.65rem;
   }
 }
 
@@ -133,9 +140,6 @@ div.react-tooltip.core-styles-module_tooltip__3vRRp {
   /* Transformations */
   --transform-lift: translateY(-0.1875em); 
   --transform-slide-left: translateX(-0.1875em);
-
-  /* Animation */
-  --animation-duration: 0.5s;
 
   /* Others */
   --transform-bounce: translateY(-2px);

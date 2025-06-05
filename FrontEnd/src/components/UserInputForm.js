@@ -17,11 +17,11 @@ import PagesSelector from './Selectors/PagesSelector';
 
 import { shortenText } from '../utils/textUtils';
 import AutoExpandingTextarea from '../utils/AutoExpandingTextarea';
-import { Tooltip } from 'react-tooltip';
 import TooltipConstants from '../constants/tooltips';
 
 import './styles/UserInputForm.css';
 import CategorySelector from './Selectors/CategorySelector';
+import MobileFriendlyTooltip from './MobileFriendlyTooltip';
 
 
 
@@ -296,7 +296,7 @@ const UserInputForm = ({
         {settings?.interface?.debug === true && (
           <TagsManager tags={tags} setTags={setTags} />
         )}
-        <Tooltip id="tooltip" />
+        <MobileFriendlyTooltip id="tooltip" />
       </form>
     </div>
   );

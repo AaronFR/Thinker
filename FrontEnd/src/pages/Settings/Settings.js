@@ -14,8 +14,8 @@ import './Settings.css';
 import { SettingsContext } from './SettingsContext';
 
 import ModelSelector from '../../components/Selectors/ModelSelector';
-import { Tooltip } from 'react-tooltip';
 import { userInfoEndpoint } from '../../constants/endpoints';
+import MobileFriendlyTooltip from '../../components/MobileFriendlyTooltip';
 
 
 const FUNCTIONALITY_STATES = {
@@ -1136,7 +1136,7 @@ export function Settings() {
           Logout
         </button>
       </div>
-      <Tooltip id="tooltip" />
+      <MobileFriendlyTooltip id="tooltip" />
     </div>
   );
 }

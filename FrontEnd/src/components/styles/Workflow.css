@@ -209,5 +209,5 @@ body.dark-mode .parameters {
 
 .workflow,
 .step {
-  animation: fadeIn var(--animation-duration) ease-in-out;
+  animation: fadeIn var(--transition-duration) ease-in-out;
 }

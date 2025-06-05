@@ -5,7 +5,7 @@ import { handleLogin, handleRegister, handleLogout } from '../../utils/loginUtil
 import { About, BetaBanner, Pitch } from '../Guide/Guide';
 import Navigation from "../../components/Navigation";
 
-import { Tooltip } from 'react-tooltip';
+import MobileFriendlyTooltip from '../../components/MobileFriendlyTooltip';
 import TooltipConstants from '../../constants/tooltips';
 
 import './Login.css';
@@ -182,7 +182,7 @@ export function Login({ isAuthenticated }) {
             <Pitch />
             <About />
 
-            <Tooltip id="tooltip" />          
+            <MobileFriendlyTooltip id="tooltip" />          
         </div>
     );
 }

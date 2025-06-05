@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 
 import { apiFetch } from '../../utils/authUtils';
 import { formatPrice } from '../../utils/numberUtils';
@@ -8,7 +7,8 @@ import Navigation from '../../components/Navigation';
 import { BetaBanner } from '../Guide/Guide';
 import { sessionTotalSpentEndpoint, userBalanceEndpoint } from '../../constants/endpoints';
 import ModelPricing from './ModelPricing';
-import { Tooltip } from 'react-tooltip';
+import MobileFriendlyTooltip from '../../components/MobileFriendlyTooltip';
+
 
 export function Pricing() {
     const [balance, setBalance] = useState(0.0);
@@ -73,7 +73,7 @@ export function Pricing() {
             <TransactionForm onSuccess={loadBalance} />
 
             <ModelPricing />
-            <Tooltip id="tooltip" />
+            <MobileFriendlyTooltip id="tooltip" />
         </div>
     );
 }

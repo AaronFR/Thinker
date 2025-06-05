@@ -89,7 +89,7 @@ body.dark-mode .app-container {
 
 .link:hover, .nav-link:hover {
   color: var(--color-link-hover);
-  animation: link-bounce var(--animation-duration) ease-in-out;
+  animation: link-bounce var(--transition-duration) ease-in-out;
 }
 
 body.dark-mode .link,
