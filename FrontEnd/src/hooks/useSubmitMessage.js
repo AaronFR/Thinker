@@ -132,7 +132,7 @@ const useSubmitMessage = (
   
       socket.on('disconnect', (reason) => {
         console.log('WebSocket disconnected:', reason);
-        setError('Connection lost. Reconnecting…');
+        setError(null);
       });
   
       socket.on('reconnect_attempt', (n) => {
