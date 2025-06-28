@@ -9,65 +9,39 @@ import GitHubButton from "../../components/GitHubButton";
 export const About = () => {
   return (
     <div className="about">
-      <p>
-        'The Thinker' is designed to be a low fuss, low BS tool for interacting with <u
-          id="not currently anyway"
-          className="explanation"
-          data-tooltip-id="tooltip"
-          data-tooltip-html={TooltipConstants.llmDetails}
-          data-tooltip-place="bottom"
-        >
-          LLMs 
-        </u>  and using them
-        in your day to day life and work. Without being ripped off by 'AI Hype' grifters.
-      </p>
-      <p>
-        I've been looking at AI since before gpt-2, before the hype and I've been thinking: "Okay cool.. is <i>this</i> it? 
-      </p>
-        <ul>
-          Where can I use workflows of <b>multiple</b> prompts, not just one and only one at a time?
-        </ul>
-        <ul>
-          Where can I, <i>you know</i>, use AI to help automate using AI??
-        </ul>
-        <ul>
-          Where can I deeply customise how I interact with LLMs and how they respond to my prompts?
-        </ul>
-        <ul>
-          Where uses a system to try and mitigate the inconsistencies and hallucinations of LLMs <i>intelligently</i>,
-          instead of thinking we need to try and cram
-          all human knowledge inside a statistical algorithm?
-        </ul>
-        <ul>
-          Why do I have to deal with these limits and restrictions, why can't <i>I</i> set the limits?
-        </ul>
-        <ul>
-          And where can I get them without having to pay for another damn subscription?
-        </ul>
-        <ul>
-          There are products designed for enterprise, but where is something for the average person?
-        </ul>
-        
-        
-      <small>preferably open source</small>
+      <div className="QA-card">
+        <h2>What is The Thinker AI?</h2>
+        <p>The Thinker AI is a pay as you go AI chat website, that means no recurring fees, no quotas. You only pay for what you actually use. This also means that if you get more control - <i>you</i> choose when to use expensive cutting edge models, additional features or just keep costs as low as possible.</p>
 
-      <p>Eventually, I just got tired of wondering these questions and decided to take a shot at it myself!</p>
+      </div>
 
+      <div className="QA-card">
+        <h2>What's the <i>point</i> of this site?</h2>
+        <p>Do you like subscriptions?</p>
+        <p>Neither do we. There are plenty of times when you want to ask AI loads of questions all at once.. then <i>none</i> at all for months. Being pay as you go means it's <i>fairer</i>, The Thinker AI also offers a greater degree of customization and options for increasing the 'power' of a given prompt, for offering features which making using AI convenient, you have the choice to use as much or as little as you'd like <i>precisely</i> because it's pay as you go.</p>
 
+      </div>
 
-      <h2 className="centered">Okay, why should <i>I</i> care?</h2>
-        <p>
-          If you plan on using or even just experimenting with AI, The Thinker would be a great place to start because it's <b>pay as you go</b>.
-        </p>
-        <p>
-          No monthly subscription, no recurring fees, no quotas. While your also provided with workflows and optional functions that can help
-          you make the most of AI in your day to day.
-        </p>
+      <div className="QA-card">
+        <h2>What can I use it for?</h2>
+        <p>Well for anything you'd like feedback on. AI is a good fit for ideation, opinions, drafts and testing/growing your own knowledge. To get the most use out of AI, use it as an assistant, something to <b>help</b> you do the work, not to try and do the work all on it's own - that's asking for trouble.</p>
 
-        <p>
-          Prices will be our own costs per AI resource we pay for, plus a small percentage to pay for server costs and salary 
-          (1% after beta, but for now its at cost -so at a loss).
-        </p>
+      </div>
+
+      <div className="QA-card">
+        <h2>What does it cost?</h2>
+        <p>You pay what we pay. Pay in what you'd like, each prompt you send will use up a portion of your balance - the cost is included on each prompt and the total lifetime cost of each feature is also displayed in settings. That balance stays right where it is, When you need to just top up your balance. Currently in Beta the AI is priced at cost, in future there will be a small margin on top to pay hosting costs, should be around a percent or two</p>
+
+        <p>We will soon be accepting payments, in the meantime there is a <i>limited</i> number of free 1$ credits available on registration.</p>
+      </div>
+
+      <div className="QA-card">
+        <h2>I would like if the site did such-and-such -and I don't like that it does this-and-that</h2>
+        <p><i><b>Please</b></i> let us know! We can't convey just how important feedback is to us. If you have an idea for something you'd like to see in our app, we'd be <i>happy</i> to take it onboard!</p>
+
+        <p><a href= "mailto:TheThinkerAi@protonmail.com">TheThinkerAi@protonmail.com</a></p>
+      </div>
+
         <p>And if you want to use it locally and just use your own API keys you can.</p>
     </div>
   )
@@ -81,7 +55,7 @@ export const BetaBanner = () => {
           🚧 In beta - Email feedback/opinions and ask for <i>free credit</i>
         </h2>
         <div className="centered">
-          <h3 >Contact us: <a href= "mailto:TheThinkerAi@protonmail.com">TheThinkerAi@protonmail.com</a></h3>
+          <h3 >Contact us - <a href= "mailto:TheThinkerAi@protonmail.com">TheThinkerAi@protonmail.com</a></h3>
         </div>
       </div>
     </div>
@@ -113,7 +87,7 @@ export const Pitch = () => {
             🥴 Hallucinates and is generally unreliable
           </ul>
           <ul hidden>
-            👁‍🗨 Explicitely (sometimes) tell you they will use your data for their own purposes
+            👁‍🗨 Explicitly (sometimes) tell you they will use your data for their own purposes
           </ul>
           <ul id="because 'fuck you, pay me' right?">
             🔐 - Closed source: closed off, uncheckable, non-collaborative, <b>untrustworthy</b>
@@ -155,48 +129,55 @@ export const Pitch = () => {
 export const Tutorial = () => {
   return (
     <div className="tutorial">
-      <h2 className="centered">How do I use it?</h2>
+      <h2 className="centered">Q&A</h2>
 
-      <h3>Home Page</h3>
-      <p>
-        On the home page you'll see the typical LLM wrapper prompt box. When you make your first request that request will be Automatically
-        categorised based on its contents -so you don't need to worry about organising your prior messages yourself. 
-        At the same time a worker and workflow will be assigned that's appropriate for your prompt.
-      </p>
-      <p>
-        Different workers interpret responses and produce different responses based on their role. `Coder` Will work like a software developer given a coding ticket,
-        `Writer`'s will act like writers creating an article and so on.
-      </p>
-      <p>
-        Workflows dictate how responses and actions taken
-      </p>
-        <ul>
-          Chat - Your typical prompt -{'>'} response
-        </ul>
-        <ul>
-          Write - will write to a file name you suggest or come up with its own. The Writer worker can be asked to write a certain number of 'pages' for arbitrarily long documents
-        </ul>
-        <ul>
-          For Each - Will process each file reference you select/upload individually. (Useful for improving on entire folders or working on many tasks at once)
-        </ul>
+      <div className="QA-card">
+        <h2>How do I get started?</h2>
+        <p>Just put in your question (prompt) inside the text area on the home page after registering, then hit enter. The AI will then respond to your prompt. By default your account has a *minimum* number of features enabled, each one usually costs additional money after all. There are a few exceptions however for features that help explain how the application works. So when comfortable make sure to check the settings and enable/disable features to your own liking</p>
+      </div>
 
-        <h3>Settings</h3>
-          <p>Here you can configure how the application will react in detail</p>
-            <ul>User Interface</ul>
-            <ul>
-              Functionality - By default most features a few features are disabled, toggle them on if you want to try them out. Each function typically incurs an additional cost:
-              But background processes run on a separate model from the main, one that's economical and fast while still competent (You can select which specific model is used as the background model in settings), so they should be rather affordable to run
-            </ul>
-            <ul>System Messages - These dictate how an LLM will respond to your prompt. You can customise nearly all system messages based on your preferences</ul>
+      <div className="QA-card">
+        <h2>What's an AI model?</h2>
+        <p><u
+          id="not currently anyway"
+          className="explanation"
+          data-tooltip-id="tooltip"
+          data-tooltip-html={TooltipConstants.llmDetails}
+          data-tooltip-place="bottom"
+        >
+          LLMs
+        </u> take in input text and then output text, it's worth noting that this is less intelligence and more pattern recognition.</p>
+        <p>On the prompt page you can select the 'foreground' model, this AI model processes your prompt step by step. In settings you can select a default for the 'background' model, this handels background features, e.g. categorisation. The background model should be fast and economical. Don't worry the most economical model is selected by default.</p>
+      </div>
 
-        <h3>Messages</h3>
-          <p>
-            Here you'll see prior messages and files that have been created/uploaded, if you select on the bottom of a file or message you can select it, then its contents will be used as reference
-            in your next prompt
-          </p>
-          <p>
-            if you want to expand a file or prompt, just click on the text/file name respectively to expand the item
-          </p>
+      <div className="QA-card">
+        <h2>What are Categories?</h2>
+        <p>When you submit a prompt it's automatically categorised by the AI based on your prompts content. This is to help make retrieving and referencing prior content easier. If you want to reference a prior message in a new prompt, click on the text sample to expand, click on the footer to only select/deselect</p>
+      </div>
+
+      <div className="QA-card">
+        <h2>What are Workers/Workflows?</h2>
+        <p>Workers are a type of 'focus' for your prompt. Each one responds to your messages in their own specific way. Writers focus on writing documents, coders on coding and presenting code.. etc.</p>
+        <p>Workflows are sets of tasks for approaching various problems.</p>
+        <ul>
+          <li>Chat – single prompt → single reply</li>
+          <li>Write – create or rewrite a file</li>
+          <li>For Each – rewrite multiple files simultaneously</li>
+        </ul>
+      </div>
+
+      <div className="QA-card">
+        <h2>What settings should I change?</h2>
+        <p>Check the <b>'Functionality'</b> group first, 'Prompt improvement' and 'Prompt questioning' in particular can be useful for helping writing a prompt when you really want a good result.</p>
+        <p>With the same line of thought, enabling the option to produce multiple responses at once or getting the AI to rewrite/loop over it's answer can also improve answer quality.</p>
+        <p>Initial settings are kept as simple as possible to avoid any additional expenses but also to prevent the initial experience from being <i>too</i> overwhelming. 
+        But as you get familiar, if you want, you can fine-tune the specific instructions for almost every single AI process used.</p>
+      </div>
+
+      <div className="QA-card">
+        <h2>What can I customize?</h2>
+        <p>The primary thing is how each worker responds to your messages but you can specify how almost every, you can precisely dictate how messages are categorized, extra instructions for a given category if you click on it, how features like prompt improvement re-write prompts.</p>
+      </div>
     </div>
   )
 }

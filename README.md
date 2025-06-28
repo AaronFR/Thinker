@@ -51,6 +51,7 @@ Some of the features planned for the next few releases..
 - **Reference/File message optimisation**: Optimised in regard to the prompt referencing them, this could both minimise
   confusion when using a lot of reference material and also serve as basically a 2nd step in the 'thought process' of responding
   to a given prompt
+- **Guide to running locally**: It's possible if you setup the necessary accounts and update your env vars accordinly, but there isn't an explict guide setup. If you *are* interested, message me first and I'll guide you through the process myself.
 
 ### UI
 
