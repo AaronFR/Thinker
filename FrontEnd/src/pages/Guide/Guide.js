@@ -204,11 +204,11 @@ export const Tutorial = () => {
 export function Guide() { 
 
   return (
-    <div className="scrollable container">
+    <div className="scrollable container logo-bg">
       <Navigation />
       <GitHubButton />
 
-      <h1 className="centered thinker logo-bg">
+      <h1 className="centered thinker ">
         The Thinker AI
       </h1>
       <h2 className="centered">
