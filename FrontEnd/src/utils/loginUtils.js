@@ -61,6 +61,14 @@ import { apiFetch } from "./authUtils";
             if (response.ok) {
                 alert(data.message);
                 window.location.href = "/";
+
+                if (typeof window.gtag === 'function') {
+                    window.gtag('event', 'conversion', {
+                      send_to: 'AW-17278411815/Pn8yCJj0s-UaEKfI_q5A'
+                    });
+                  } else {
+                    console.warn('gtag is not defined');
+                  }
             } else {
                 alert(data.error);
                 console.error('Register request failed with status:', response.status);

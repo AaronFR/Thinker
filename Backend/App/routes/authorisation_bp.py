@@ -50,6 +50,8 @@ def register():
     if space_in_content(email):
         return jsonify({"error": "Invalid email address, email contains a space"}), 409
 
+    # ToDo: Confirm email actually exists
+
     password_hash = hash_password(parsed_data.get('password'))
 
     user_id = str(shortuuid.uuid())
