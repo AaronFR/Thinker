@@ -11,14 +11,15 @@ export const About = () => {
     <div className="about">
       <div className="QA-card">
         <h2>What is The Thinker AI?</h2>
-        <p>The Thinker AI is a pay as you go AI chat website, that means no recurring fees, no quotas. You only pay for what you actually use. This also means that if you get more control - <i>you</i> choose when to use expensive cutting edge models, additional features or just keep costs as low as possible.</p>
+        <p>The Thinker AI is a pay as you go AI chat website, that means no recurring fees, no quotas. You only pay for what you actually use. This also means that you get more control - <i>you</i> choose when to use expensive cutting edge models, additional features or just keep costs as low as possible.</p>
 
       </div>
 
       <div className="QA-card">
         <h2>What's the <i>point</i> of this site?</h2>
         <p>Do you like subscriptions?</p>
-        <p>Neither do we. There are plenty of times when you want to ask AI loads of questions all at once.. then <i>none</i> at all for months. Being pay as you go means it's <i>fairer</i>, The Thinker AI also offers a greater degree of customization and options for increasing the 'power' of a given prompt, for offering features which making using AI convenient, you have the choice to use as much or as little as you'd like <i>precisely</i> because it's pay as you go.</p>
+        <p>Neither do we. There are plenty of times when you want to ask AI loads of questions all at once.. then <i>none</i> at all for months. Being pay as you go means it's <i>fairer</i>, The Thinker AI also offers a greater degree of customization and options for increasing the 'power' of a given prompt, for offering features which making using AI convenient.</p>
+        <p>You have the choice to use as much or as little as you'd like <i>precisely</i> because it's pay as you go.</p>
 
       </div>
 
@@ -30,7 +31,8 @@ export const About = () => {
 
       <div className="QA-card">
         <h2>What does it cost?</h2>
-        <p>You pay what we pay. Pay in what you'd like, each prompt you send will use up a portion of your balance - the cost is included on each prompt and the total lifetime cost of each feature is also displayed in settings. That balance stays right where it is, When you need to just top up your balance. Currently in Beta the AI is priced at cost, in future there will be a small margin on top to pay hosting costs, should be around a percent or two</p>
+        <p>You pay what we pay. Pay in what you'd like, each prompt you send will use up a portion of your balance - the cost is included on each prompt and the total lifetime cost of each feature is also displayed in settings.</p>
+        <p>When you need to just top up your balance. Currently in Beta the AI is priced at cost, in future there will be a small margin on top to pay hosting costs, should be around a percent or two.</p>
 
         <p>We will soon be accepting payments, in the meantime there is a <i>limited</i> number of free 1$ credits available on registration.</p>
       </div>
@@ -133,7 +135,7 @@ export const Tutorial = () => {
 
       <div className="QA-card">
         <h2>How do I get started?</h2>
-        <p>Just put in your question (prompt) inside the text area on the home page after registering, then hit enter. The AI will then respond to your prompt. By default your account has a *minimum* number of features enabled, each one usually costs additional money after all. There are a few exceptions however for features that help explain how the application works. So when comfortable make sure to check the settings and enable/disable features to your own liking</p>
+        <p>Just put in your question (prompt) inside the text area on the home page after registering, then hit enter. The AI will then respond to your prompt. By default your account has a *minimum* number of features enabled, each one usually costs additional money after all. There are a few exceptions however for features that help explain how the application works. So when comfortable make sure to check the settings and enable/disable features to your own liking.</p>
       </div>
 
       <div className="QA-card">
@@ -152,7 +154,7 @@ export const Tutorial = () => {
 
       <div className="QA-card">
         <h2>What are Categories?</h2>
-        <p>When you submit a prompt it's automatically categorised by the AI based on your prompts content. This is to help make retrieving and referencing prior content easier. If you want to reference a prior message in a new prompt, click on the text sample to expand, click on the footer to only select/deselect</p>
+        <p>When you submit a prompt it's automatically categorised by the AI based on your prompts content. This is to help make retrieving and referencing prior content easier. If you want to reference a prior message in a new prompt, click on the text sample to expand, click on the footer to only select/deselect.</p>
       </div>
 
       <div className="QA-card">
@@ -172,11 +174,6 @@ export const Tutorial = () => {
         <p>With the same line of thought, enabling the option to produce multiple responses at once or getting the AI to rewrite/loop over it's answer can also improve answer quality.</p>
         <p>Initial settings are kept as simple as possible to avoid any additional expenses but also to prevent the initial experience from being <i>too</i> overwhelming. 
         But as you get familiar, if you want, you can fine-tune the specific instructions for almost every single AI process used.</p>
-      </div>
-
-      <div className="QA-card">
-        <h2>What can I customize?</h2>
-        <p>The primary thing is how each worker responds to your messages but you can specify how almost every, you can precisely dictate how messages are categorized, extra instructions for a given category if you click on it, how features like prompt improvement re-write prompts.</p>
       </div>
     </div>
   )

@@ -56,11 +56,13 @@ import { apiFetch } from "./authUtils";
         try {
             const response = await postRequest(registerEndpoint, { email, password });
 
+            const data = await response.json();
+
             if (response.ok) {
-                alert('User registered successfully!');
+                alert(data.message);
                 window.location.href = "/";
             } else {
-                alert('Failed to register user.');
+                alert(data.error);
                 console.error('Register request failed with status:', response.status);
             }
         } catch (error) {

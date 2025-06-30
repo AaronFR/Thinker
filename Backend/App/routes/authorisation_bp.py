@@ -15,12 +15,12 @@ from Constants.Constants import JWT_SECRET_KEY, HIGHLY_RESTRICTED, RESTRICTED_HI
     USER_HIGHLY_RESTRICTED, USER_RESTRICTED_HIGH_FREQUENCY, USER_RESTRICTED, USER_LIGHTLY_RESTRICTED
 from Constants.Exceptions import FAILURE_TO_LOGIN, FAILURE_TO_VALIDATE_SESSION, FAILURE_TO_LOGOUT_SESSION
 from Utilities.Encryption import hash_password, check_password, decode_jwt
-from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB, NodeDatabaseManagement
+from Data.Neo4j.NodeDatabaseManagement import NodeDatabaseManagement as nodeDB
 from Utilities.Routing import parse_and_validate_data
 from Utilities.Contexts import set_user_context
 from Utilities.Decorators.AuthorisationDecorators import login_required, ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE
 from Utilities.Validation import space_in_content
-from Utilities.Verification import send_verification_email, apply_new_user_promotion
+from Utilities.Verification import apply_new_user_promotion
 
 authorisation_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -60,56 +60,65 @@ def register():
 
     logging.info(f"Registering new user {user_id}")
 
-    send_verification_email(email)
     registered = nodeDB().create_user(user_id, email, password_hash)
     if registered:
         logging.info("Successfully registered new user")
         access_token = create_access_token(identity=user_id)
         refresh_token = create_refresh_token(identity=user_id)
 
-        response = make_response(jsonify({"message": "User registration successful"}))
+        success_message = "Registration Successful!"
+
+        promotion_applied, last_promotion = apply_new_user_promotion(email)
+        if promotion_applied:
+            if not last_promotion:
+                success_message += " + 1$ Promotion Applied"
+            else:
+                success_message += " + LAST 1$ Promotion Applied!! L U C K Y"
+
+        response = make_response(jsonify({"message": success_message}))
         response.set_cookie(ACCESS_TOKEN_COOKIE, access_token, httponly=True, secure=True)
         response.set_cookie(REFRESH_TOKEN_COOKIE, refresh_token, httponly=True, secure=True, samesite="None")
         return response
     else:
-        logging.error("Failed to register new user!")
+        logging.error("Failed to register user")
         return jsonify({"Failure": "Failed to register user"}), 500
 
 
-@authorisation_bp.route('/verify', methods=['GET'])
-@limiter.limit(RESTRICTED_HIGH_FREQUENCY)
-@limiter.limit(USER_RESTRICTED_HIGH_FREQUENCY, key_func=user_key_func)
-def verify_email():
-    token = request.args.get('token')
-    if not token:
-        return jsonify({'error': 'Missing token.'}), 400
-    try:
-        decoded = jwt.decode(token, os.getenv(JWT_SECRET_KEY), algorithms=['HS256'])
-        email = decoded['email']
-
-        email_verified: bool = NodeDatabaseManagement().mark_user_email_verified(email)
-
-        if email_verified:
-            promotion_applied, last_promotion = apply_new_user_promotion(email)
-
-            logging.info(f"The following email address has been marked verified: {email}")
-            return jsonify(
-                {'message': 'Email verified successfully.',
-                 'promotion_applied': promotion_applied,
-                 'last_promotion': last_promotion
-                 }
-            ), 200
-        else:
-            return jsonify({'error': 'Failed to mark user as verified, try again later'}), 500
-    except jwt.ExpiredSignatureError:
-        logging.exception("Email verification failure: Link expired.")
-        return jsonify({'error': 'Verification link has expired.'}), 400
-    except jwt.InvalidTokenError:
-        logging.exception("Email verification failure: Invalid Token")
-        return jsonify({'error': 'Invalid token.'}), 400
-    except Exception:
-        logging.exception("Email verification failure")
-        return jsonify({'error': 'Unknown error'}), 400
+# ToDo: password reset email
+# @authorisation_bp.route('/verify', methods=['GET'])
+# @limiter.limit(RESTRICTED_HIGH_FREQUENCY)
+# @limiter.limit(USER_RESTRICTED_HIGH_FREQUENCY, key_func=user_key_func)
+# def verify_email():
+#     token = request.args.get('token')
+#     if not token:
+#         return jsonify({'error': 'Missing token.'}), 400
+#     try:
+#         decoded = jwt.decode(token, os.getenv(JWT_SECRET_KEY), algorithms=['HS256'])
+#         email = decoded['email']
+#
+#         email_verified: bool = NodeDatabaseManagement().mark_user_email_verified(email)
+#
+#         if email_verified:
+#             promotion_applied, last_promotion = apply_new_user_promotion(email)
+#
+#             logging.info(f"The following email address has been marked verified: {email}")
+#             return jsonify(
+#                 {'message': 'Email verified successfully.',
+#                  'promotion_applied': promotion_applied,
+#                  'last_promotion': last_promotion
+#                  }
+#             ), 200
+#         else:
+#             return jsonify({'error': 'Failed to mark user as verified, try again later'}), 500
+#     except jwt.ExpiredSignatureError:
+#         logging.exception("Email verification failure: Link expired.")
+#         return jsonify({'error': 'Verification link has expired.'}), 400
+#     except jwt.InvalidTokenError:
+#         logging.exception("Email verification failure: Invalid Token")
+#         return jsonify({'error': 'Invalid token.'}), 400
+#     except Exception:
+#         logging.exception("Email verification failure")
+#         return jsonify({'error': 'Unknown error'}), 400
 
 
 @authorisation_bp.route('/login', methods=['POST'])

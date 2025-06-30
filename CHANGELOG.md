@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- 
+- Verification emails - new registrations don't verify, I can see it now: if I saw a hyperlink in an email from a company I didn't know, would I *really* click on it?
 
 ## [0.9.5] - 2025-02-18 - β
 

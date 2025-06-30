@@ -71,28 +71,10 @@ const VerifyEmail = (isAuthenticated) => {
 
       <div>
         <h2 className='centered'>Email Verification</h2>
-        <p>
-          {verificationStatus.success === null ? (
-            "Verifying..."
-          ) : verificationStatus.success ? (
-            <>
-              <p className='message'>{verificationStatus.message}</p>
-              {verificationStatus.promotionApplied && !verificationStatus.lastPromotion && (
-                <p className='promotion'>
-                  <p>
-                    Also you've been granted a promotional, <i>whole</i>, <b>singular</b>, <b className='big'><b className='big'><i>DOLLAR!</i></b></b>
-                  </p>
-                  <p>Try out the thinker, we hope it works for you.</p>
-                </p>
-              )}
-              {verificationStatus.lastPromotion && (
-                <p className='promotion'>Òooooo you got the <i>last</i> free trial dollar, <i className='big'>luuuucky!</i></p>
-              )}
-            </>
-          ) : (
-            verificationStatus.message
-          )}
-        </p>
+        <h3>
+          NO LONGER IN USE
+        </h3>
+        <p>As it turns out people don't want to click on hyperlinks from a company they haven't heard of before. <i>huh</i></p>
       </div>
     </div>
   );

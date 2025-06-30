@@ -166,6 +166,8 @@ export function Login({ isAuthenticated }) {
                         <button onClick={handleLogout} className="logout-button">Logout</button>
                 )}
 
+                {!isLoginMode && <p>On registration you'll get a free dollar of credit to get started</p>}
+
                 <p className='version-number'>v0.10.0</p>
             </div>
             <BetaBanner />
