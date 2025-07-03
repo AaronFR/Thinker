@@ -1,6 +1,8 @@
 import logging
 import threading
 import os
+import time
+
 import shortuuid
 
 from datetime import datetime
@@ -53,10 +55,12 @@ class NodeDatabaseManagement:
         :param password_hash: Hashed password of the user.
         :return: True if the user is created successfully, False otherwise.
         """
+        registration_time = time.time()
         parameters = {
             "user_id": user_id,
             "email": email,
-            "password_hash": password_hash
+            "password_hash": password_hash,
+            "registration_time": registration_time
         }
 
         returned_user_id = self.neo4jDriver.execute_write(
