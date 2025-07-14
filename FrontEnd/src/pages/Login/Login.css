@@ -242,7 +242,7 @@ body.dark-mode .card {
 .video {
   width: 90%;
   max-width: 860px;
-  margin: 0 auto;
+  margin: 1em auto;
   justify-content: center;
   display: flex;
   white-space: initial; 

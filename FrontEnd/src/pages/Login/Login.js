@@ -10,6 +10,7 @@ import TooltipConstants from '../../constants/tooltips';
 
 import './Login.css';
 import GitHubButton from '../../components/GitHubButton';
+import ComparisonGraph from '../../components/ComparisonGraph';
 
 
 export function Login({ isAuthenticated }) {
@@ -170,8 +171,12 @@ export function Login({ isAuthenticated }) {
 
                 <p className='version-number'>v0.10.0</p>
             </div>
-            <BetaBanner />
-            
+            <BetaBanner />            
+
+            <ComparisonGraph />
+
+            <Pitch />
+
             <div className="video">
                 <iframe
                     src="https://www.youtube.com/embed/N3GOj288DOc"
@@ -181,7 +186,6 @@ export function Login({ isAuthenticated }) {
                 ></iframe>
             </div>
 
-            <Pitch />
             <About />
 
             <MobileFriendlyTooltip id="tooltip" />          

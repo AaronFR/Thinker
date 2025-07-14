@@ -1,5 +1,6 @@
 import Navigation from "../../components/Navigation";
 import '../../App.css';
+
 import './Guide.css'
 
 import TooltipConstants from '../../constants/tooltips';
@@ -192,8 +193,6 @@ export function Guide() {
       <h2 className="centered">
         🧰 AI Toolkit 🧰
       </h2>
-
-      
 
       <About />
 

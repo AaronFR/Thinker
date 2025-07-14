@@ -20,7 +20,8 @@
   background-repeat: no-repeat;
   background-position: center center;
   opacity: 30%;
-  filter: blue(40px)
+  filter: blue(40px);
+  transition: opacity 1.5s ease, font-size 1.5s ease, color 1.5s ease;
 }
 .logo-bg {
   position: relative; 
