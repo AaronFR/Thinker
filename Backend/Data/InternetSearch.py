@@ -23,7 +23,7 @@ import urllib.robotparser
 
 import requests
 from bs4 import BeautifulSoup
-from duckduckgo_search import DDGS
+from ddgs import DDGS
 from flask_socketio import emit
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
@@ -54,10 +54,10 @@ class DuckDuckGoSearchAPI:
         search_query = quote_plus(query)
 
         response = DDGS().text(
-            keywords=search_query,
+            query=search_query,
             region='wt-wt',
             safesearch='off',
-            max_results=3
+            num_results=3
         )
         logging.info(f"DuckDuckGo search request successful: Response:\n {response}")
         return response
