@@ -23,6 +23,7 @@ def fetch_entity(entity, entity_name=None, success_status=200):
 def parse_and_validate_data(data, schema):
     """
     Generalized function to parse and validate data against a defined schema.
+    A field must be in the schema to be parsed and passed on to the program.
 
     :param data: The incoming WebSocket data (dictionary).
     :param schema: A dictionary defining required fields, their default values, and validation rules.

@@ -32,6 +32,11 @@ USER_PROMPT_AND_TAGS_SCHEMA = {
     "user_prompt": {"required": True, "type": str},
     "tags": {"required": False, "type": Dict},
 }
+USER_PROMPT_AND_TAGS_AND_FILES_SCHEMA = {
+    "user_prompt": {"required": True, "type": str},
+    "tags": {"required": False, "type": Dict},
+    "selected_files": {"required": False, "type": List},
+}
 USER_PROMPT_MESSAGES_AND_FILES_SCHEMA = {
     "user_prompt": {"required": True, "type": str},
     "selected_messages": {"required": False, "type": List},
@@ -83,11 +88,12 @@ def select_workflow():
         set_functionality_context("select_workflow")
 
         data = request.get_json()
-        parsed_data = parse_and_validate_data(data, USER_PROMPT_AND_TAGS_SCHEMA)
+        parsed_data = parse_and_validate_data(data, USER_PROMPT_AND_TAGS_AND_FILES_SCHEMA)
         user_prompt = parsed_data.get("user_prompt")
         tags = parsed_data.get("tags")
+        selected_files = parsed_data.get("selected_files", None)
 
-        selected_workflow = Augmentation.select_workflow(user_prompt, tags).value
+        selected_workflow = Augmentation.select_workflow(user_prompt, tags, selected_files).value
 
         return jsonify({"workflow": selected_workflow})
     except ValueError as ve:

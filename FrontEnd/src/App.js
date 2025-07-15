@@ -170,10 +170,10 @@ function App () {
       }
       
       if (currentSettings?.features?.automatically_select_workflow !== "once") {
-        selectWorkflow(value, tags)
+        selectWorkflow(value, tags, selectedFiles)
       }
       if (currentSettings?.features?.automatically_select_workflow === "once" && !tags.workflow) {
-        selectWorkflow(value, tags)
+        selectWorkflow(value, tags, selectedFiles)
       }
 
       if (currentSettings?.features?.automatically_select_category !== "once") {

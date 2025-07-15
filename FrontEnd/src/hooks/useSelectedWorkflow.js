@@ -16,7 +16,7 @@ const useSelectedWorkflow = () => {
    * @param {string} userPrompt - The user's prompt/input.
    * @param {Array|string} tags - Relevant tags associated with the prompt.
    */
-  const selectWorkflow = async (userPrompt, tags) => {
+  const selectWorkflow = async (userPrompt, tags, selectedFiles) => {
     setWorkflowIsLoading(true);
     setError(null);
 
@@ -25,7 +25,8 @@ const useSelectedWorkflow = () => {
         method: 'POST',
         body: JSON.stringify({
           user_prompt: userPrompt,
-          tags: tags
+          tags: tags,
+          selected_files: selectedFiles
         }),
       });
 

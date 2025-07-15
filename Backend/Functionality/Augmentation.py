@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-from typing import Dict
+from typing import Dict, List
 
 from AiOrchestration.AiOrchestrator import AiOrchestrator
 from Data.Configuration import Configuration
@@ -52,12 +52,14 @@ class Augmentation:
 
     @staticmethod
     @return_for_error(DEFAULT_WORKFLOW)
-    def select_workflow(user_prompt: str, tags: Dict[str, str] = None) -> Workflow:
+    def select_workflow(user_prompt: str, tags: Dict[str, str] = None, selected_files: List[Dict[str, str]] = None) -> Workflow:
         """
         Automatically selects a workflow based on the user prompt using AI deliberation.
 
         :param user_prompt: The initial prompt provided by the user.
         :param tags: User supplied tags that can be used to automatically select a workflow based on appropriateness
+        :param selected_files: List of supplied files, used to disqualify FOR EACH workflow if no files are actually
+         present. (Otherwise a FOR EACH workflow would fail)
         :returns Workflow: The selected workflow based on the content of the user prompt.
         """
         if tags:
@@ -67,7 +69,7 @@ class Augmentation:
                 return Workflow.WRITE
             if tags.get("pages"):
                 return Workflow.WRITE
-            if tags.get("auto"):
+            if tags.get("auto") and selected_files:
                 return Workflow.AUTO
 
         config = Configuration.load_config()
@@ -89,7 +91,7 @@ class Augmentation:
             return Workflow.CHAT
         elif llm_response == Workflow.WRITE.value:
             return Workflow.WRITE
-        elif llm_response == Workflow.AUTO.value:
+        elif llm_response == Workflow.AUTO.value and selected_files:
             return Workflow.AUTO
         else:
             logging.warning(
