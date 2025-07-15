@@ -39,7 +39,9 @@ import useSelectedCategory from './hooks/useSelectedCategory';
 function App () {
 
     // User Input States
-    const [userInput, setUserInput] = useState('')
+    const [userInput, setUserInput] = useState(() => {
+      return localStorage.getItem('userInput') || '';
+    });
 
     // Debounce timer reference to optimize input handling
     const idleTime = 1500; // milliseconds
@@ -134,7 +136,7 @@ function App () {
     }, [settingsRef.current.models?.default_foreground_model])
 
     useEffect(() => {
-      if (messageId == null || messageId == '') {
+      if (messageId === null || messageId === '') {
         return
       }
 
@@ -161,7 +163,8 @@ function App () {
 
     const handleTyping = (value, selectedMessages, selectedFiles, tags) => {
       const currentSettings = settingsRef.current;
-      
+      localStorage.setItem('userInput', value);
+
       if (currentSettings?.features?.automatically_select_worker !== "once") {
         selectWorker(value)
       }
@@ -182,7 +185,6 @@ function App () {
       if (currentSettings?.features?.automatically_select_category === "once" && !tags.category) {
         selectCategory(value)
       }
-
 
       if (currentSettings?.prompt_improvement?.augmented_prompts_enabled  === "auto") {
         generateAugmentedPrompt(value);
@@ -223,7 +225,7 @@ function App () {
 
     const copyAugmentedPrompt = () => {
       setUserInput(augmentedPrompt); // Copy augmentedPrompt into userInput
-      if (settingsRef.current?.prompt_improvement?.augmented_prompts_enabled != "off" && !formsFilled && settings.questionUserPromptsEnabled == 'auto') {
+      if (settingsRef.current?.prompt_improvement?.augmented_prompts_enabled !== "off" && !formsFilled && settings.questionUserPromptsEnabled === 'auto') {
         generateQuestionsForPrompt(augmentedPrompt, selectedMessages, selectedFiles); // Retrigger questions for prompt
         setResetResponsesTrigger(prev => prev + 1);
       }
@@ -273,7 +275,7 @@ function App () {
             setRefreshFiles={setRefreshFiles}
           />
           
-          {settingsRef.current?.prompt_improvement?.question_user_prompts_enabled != "off" && 
+          {settingsRef.current?.prompt_improvement?.question_user_prompts_enabled !== "off" && 
           <SuggestedQuestions
             questionsForPrompt={questionsForPrompt}
             error={questionsError}
@@ -283,7 +285,7 @@ function App () {
             resetResponsesTrigger={resetResponsesTrigger}
           />}
   
-          {settingsRef.current?.prompt_improvement?.augmented_prompts_enabled != "off" && 
+          {settingsRef.current?.prompt_improvement?.augmented_prompts_enabled !== "off" && 
           <PromptAugmentation 
             augmentedPrompt={augmentedPrompt}
             error={augmentedError}
