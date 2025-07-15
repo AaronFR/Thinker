@@ -536,18 +536,18 @@ const FilesSettings = React.memo(({
         <p>Responses created for this category will follow specific instructions for that category</p>
 
         <label className="settings-label">
+          <input
+            type="checkbox"
+            className="settings-checkbox"
+            id="generateCategorySystemMessages-checkbox"
+            checked={settings?.category?.generate_category_system_message}
+            onChange={toggleGenerateCategorySystemMessages}
+          />
           <div
             data-tooltip-id="tooltip"
             data-tooltip-content={TooltipConstants.generateCategorySystemMessagesToggle}
             data-tooltip-place="bottom"
           >
-            <input
-              type="checkbox"
-              className="settings-checkbox"
-              id="generateCategorySystemMessages-checkbox"
-              checked={settings?.category?.generate_category_system_message}
-              onChange={toggleGenerateCategorySystemMessages}
-            />
             Automatically Generate Category Instructions - For new Categories
           </div>
           
