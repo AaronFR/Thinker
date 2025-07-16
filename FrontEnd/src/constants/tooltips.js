@@ -16,6 +16,7 @@ const TooltipConstants = {
   augmentButton: "Generate a more detailed copy of your prompt. <br>Optimised to be more machine readable/provide a better response.",
   questionButton: `The app will ask you questions about your prompt.
     Provide answers for additional context or just use it for rubber ducking 🦆`,
+  internetSearchButton: `Click to switch internet search functionality on or off for this request`,
   submitButton: `Send your message to The Thinker for a response.
     <br>If you click here again you can enter another prompt while this one continues in the background
   `,

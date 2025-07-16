@@ -49,6 +49,11 @@ body.dark-mode .submit-button {
   transform: scale(0.95); /* Makes the button look pressed */
 }
 
+.inactive-button {
+  opacity: 0.5;
+  background-color: #777;
+}
+
 /* Message Item */
 
 

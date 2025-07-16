@@ -22,6 +22,7 @@ import TooltipConstants from '../constants/tooltips';
 import './styles/UserInputForm.css';
 import CategorySelector from './Selectors/CategorySelector';
 import MobileFriendlyTooltip from './MobileFriendlyTooltip';
+import { FUNCTIONALITY_STATES } from '../pages/Settings/Settings';
 
 
 
@@ -58,7 +59,7 @@ const UserInputForm = ({
 }) => {
   const [fetchError, setFetchError] = useState('');
 
-  const { settings } = useContext(SettingsContext);
+  const { settings, changeSetting } = useContext(SettingsContext);
   const {
     selectedFiles,
     setSelectedFiles,
@@ -181,7 +182,7 @@ const UserInputForm = ({
             onUploadSuccess={handleUploadSuccess}
             tags={tags}
           />
-          {settings.prompt_improvement?.augmented_prompts_enabled == 'on' && (
+          {settings.prompt_improvement?.augmented_prompts_enabled === FUNCTIONALITY_STATES.ON && (
             <button
               type="button"
               className="button submit-button"
@@ -195,7 +196,7 @@ const UserInputForm = ({
               Improve prompt
             </button>
           )}
-          {settings.prompt_improvement?.question_user_prompts_enabled == 'on' && (
+          {settings.prompt_improvement?.question_user_prompts_enabled === FUNCTIONALITY_STATES.ON && (
             <button
               type="button"
               className="button submit-button"
@@ -209,6 +210,24 @@ const UserInputForm = ({
               Question
             </button>
           )}
+          <button
+            type="button"
+            className={`button submit-button ${settings.response_improvement?.internet_search_enabled === FUNCTIONALITY_STATES.ON ? '' : 'inactive-button'}`}
+            onClick={() => changeSetting(
+              'response_improvement',
+              'internet_search_enabled',
+              settings.response_improvement?.internet_search_enabled === FUNCTIONALITY_STATES.ON ? FUNCTIONALITY_STATES.OFF : FUNCTIONALITY_STATES.ON ,
+            )}
+            disabled={isProcessing}
+            aria-busy={isProcessing}
+            data-tooltip-id="tooltip"
+            data-tooltip-html={TooltipConstants.internetSearchButton}
+            data-tooltip-place="bottom"
+          >
+            <span className='custom-file-label' role="button" tabIndex={0} aria-label="Internet search">
+            🌐
+            </span>
+          </button>
           {isProcessing ? (
             <button
               type="button"
@@ -278,13 +297,13 @@ const UserInputForm = ({
               setTags={setTags}
               forTags={true}
             />
-            {settings.response_improvement?.multiple_reruns_enabled == 'on' && (
+            {settings.response_improvement?.multiple_reruns_enabled === FUNCTIONALITY_STATES.ON && (
               <BestOfSelector
                 bestOf={tags.bestOf}
                 setTags={setTags}
               />
             )}
-            {settings.response_improvement?.loops_enabled == 'on' && (
+            {settings.response_improvement?.loops_enabled === FUNCTIONALITY_STATES.ON && (
               <LoopsSelector
                 selectedNumberOfLoops={tags.loops}
                 setTags={setTags}

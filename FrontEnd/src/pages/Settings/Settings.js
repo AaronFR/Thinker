@@ -18,7 +18,7 @@ import { userInfoEndpoint } from '../../constants/endpoints';
 import MobileFriendlyTooltip from '../../components/MobileFriendlyTooltip';
 
 
-const FUNCTIONALITY_STATES = {
+export const FUNCTIONALITY_STATES = {
   OFF: 'off',
   ON: 'on',
   AUTO: 'auto',

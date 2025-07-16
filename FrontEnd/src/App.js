@@ -27,6 +27,7 @@ import './App.css';
 import useSelectedWorker from './hooks/useSelectedWorker';
 import { userBalanceEndpoint } from './constants/endpoints';
 import useSelectedCategory from './hooks/useSelectedCategory';
+import { FUNCTIONALITY_STATES } from './pages/Settings/Settings';
 
 
 /**
@@ -97,18 +98,18 @@ function App () {
 
     const loadBalance = async () => {
       try {
-          const response = await apiFetch(userBalanceEndpoint, {
-              method: 'GET',
-          });
+        const response = await apiFetch(userBalanceEndpoint, {
+          method: 'GET',
+        });
 
-          if (response.ok) {
-              const balanceData = await response.json();
-              if (balanceData && typeof balanceData.balance === 'number') {
-                  setBalance(balanceData.balance);
-              }
-          } else {
-              console.error('Failed to load user balance', response);
+        if (response.ok) {
+          const balanceData = await response.json();
+          if (balanceData && typeof balanceData.balance === 'number') {
+              setBalance(balanceData.balance);
           }
+        } else {
+          console.error('Failed to load user balance', response);
+        }
       } catch (error) {
           console.error('Error retrieving user balance:', error);
       }
@@ -186,10 +187,10 @@ function App () {
         selectCategory(value)
       }
 
-      if (currentSettings?.prompt_improvement?.augmented_prompts_enabled  === "auto") {
+      if (currentSettings?.prompt_improvement?.augmented_prompts_enabled  === FUNCTIONALITY_STATES.AUTO) {
         generateAugmentedPrompt(value);
       }
-      if (currentSettings?.prompt_improvement?.question_user_prompts_enabled  === "auto" && !formsFilled) {
+      if (currentSettings?.prompt_improvement?.question_user_prompts_enabled  === FUNCTIONALITY_STATES.AUTO && !formsFilled) {
         generateQuestionsForPrompt(value, selectedMessages, selectedFiles);
       }
     };
@@ -226,7 +227,7 @@ function App () {
 
     const copyAugmentedPrompt = () => {
       setUserInput(augmentedPrompt); // Copy augmentedPrompt into userInput
-      if (settingsRef.current?.prompt_improvement?.augmented_prompts_enabled !== "off" && !formsFilled && settings.questionUserPromptsEnabled === 'auto') {
+      if (settingsRef.current?.prompt_improvement?.augmented_prompts_enabled !== FUNCTIONALITY_STATES.OFF && !formsFilled && settings.questionUserPromptsEnabled === FUNCTIONALITY_STATES.AUTO) {
         generateQuestionsForPrompt(augmentedPrompt, selectedMessages, selectedFiles); // Retrigger questions for prompt
         setResetResponsesTrigger(prev => prev + 1);
       }
@@ -276,7 +277,7 @@ function App () {
             setRefreshFiles={setRefreshFiles}
           />
           
-          {settingsRef.current?.prompt_improvement?.question_user_prompts_enabled !== "off" && 
+          {settingsRef.current?.prompt_improvement?.question_user_prompts_enabled !== FUNCTIONALITY_STATES.OFF && 
           <SuggestedQuestions
             questionsForPrompt={questionsForPrompt}
             error={questionsError}
@@ -286,7 +287,7 @@ function App () {
             resetResponsesTrigger={resetResponsesTrigger}
           />}
   
-          {settingsRef.current?.prompt_improvement?.augmented_prompts_enabled !== "off" && 
+          {settingsRef.current?.prompt_improvement?.augmented_prompts_enabled !== FUNCTIONALITY_STATES.OFF && 
           <PromptAugmentation 
             augmentedPrompt={augmentedPrompt}
             error={augmentedError}
