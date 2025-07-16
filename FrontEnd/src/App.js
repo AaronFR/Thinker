@@ -212,7 +212,8 @@ function App () {
         setSelectedFiles([])
         setSelectedMessages([])
 
-        setUserInput(''); 
+        setUserInput('');
+        localStorage.setItem('userInput', '');
         setAugmentedPrompt('');
         setQuestionsForPrompt('');
         setFormsFilled(false);
