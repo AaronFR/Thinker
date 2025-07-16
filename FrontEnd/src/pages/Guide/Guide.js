@@ -136,7 +136,7 @@ export const Tutorial = () => {
 
       <div className="QA-card">
         <h2>How do I get started?</h2>
-        <p>Just put in your question (prompt) inside the text area on the home page after registering, then hit enter. The AI will then respond to your prompt. By default your account has a *minimum* number of features enabled, each one usually costs additional money after all. There are a few exceptions however for features that help explain how the application works. So when comfortable make sure to check the settings and enable/disable features to your own liking.</p>
+        <p>Just put in your question (prompt) inside the text area on the home page after registering, then hit enter. The AI will then respond to your prompt. Nearly all features are enabled so you can find out what you like, when comfortable make sure to check the settings and enable/disable features to your own liking.</p>
       </div>
 
       <div className="QA-card">
