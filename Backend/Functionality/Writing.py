@@ -38,26 +38,34 @@ class Writing(enum.Enum):
                 )
             }]
         else:
-            test = AiOrchestrator().execute(
-                [determine_pages_prompt(config['files']['multi_file_processing_enabled']),
-                 DETERMINE_PAGES_SCHEMA],
+            files_suggested = AiOrchestrator().execute(
+                [
+                    DETERMINE_PAGES_SCHEMA,
+                    determine_pages_prompt(config['files']['multi_file_processing_enabled'])
+                 ],
                 [initial_message],
             )
 
-            # Find all matches using re.findall
-            matches = re.findall(TAG_WITH_PURPOSE_REGEX, test)
 
-            if not matches:
-                logging.warning("No matches found for user topic tags.")
+            # Find all matches using re.findall
+            matches = re.findall(TAG_WITH_PURPOSE_REGEX, files_suggested)
 
             files = []
-            for match in matches:
+            if matches:
+                for match in matches:
+                    file_dict = {
+                        "file_name": match[0],
+                    }
+                    # Add 'purpose' only if it exists
+                    if match[1]:
+                        file_dict["purpose"] = match[1]
+                    files.append(file_dict)
+            else:
+                logging.warning("No matches found for user topic tags.")
                 file_dict = {
-                    "file_name": match[0],
+                    "file_name": "default.txt",
+                    "purpose": files_suggested
                 }
-                # Add 'purpose' only if it exists
-                if match[1]:
-                    file_dict["purpose"] = match[1]
                 files.append(file_dict)
 
         logging.info(f"Referencing/Creating the following files: {files}")

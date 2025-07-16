@@ -197,7 +197,7 @@ def categorisation_system_messages(
 
 
 DETERMINE_PAGES_SCHEMA = (
-    "Write your data as a list ('[' then ']') of tags ('<' then '>'), "
+    "Write your response as tags ('<' then '>'), "
     "where the tag name itself is the file_name (including extension), "
     "with a parameter 'purpose' representing why you want to create this file given the initial user "
     "message."
@@ -208,8 +208,8 @@ DETERMINE_PAGES_SCHEMA = (
     "Example:\n"
     "Message: 'Create a function to calculate pi using the Leibniz formula' and graph the results "
     "visually using pandas' ->\n"
-    "[<pi.py purpose='Create a functional to calculate pi using the Leibniz formula'>,\n"
-    "<graph.py purpose='graph the results of pi.py using pandas'>]"
+    "<pi.py purpose='Create a functional to calculate pi using the Leibniz formula'>,\n"
+    "<graph.py purpose='graph the results of pi.py using pandas'>"
 )
 
 
