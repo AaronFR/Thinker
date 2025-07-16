@@ -41,9 +41,10 @@ Some of the features planned for the next few releases..
 
 ### Functionality
 
+- **Image Generation**: Ability to generate images on request.
 - **Payment System**: If there's interest we'll start allowing user's to top up their balances.
-- **Personas**: Fully fleshing out the feature, e.g. "Teacher", "Curator", etc
-- **Workflows**: Changing workflows to be specific and targetted, e.g. "Check news", "Suggest System Architecture", "Plan holiday", etc, etc.
+- **Workers**: Fully fleshing out the feature, e.g. "Teacher", "Curator", etc
+- **Workflows**: Changing workflows to be specific and targeted, e.g. "Check news", "Suggest System Architecture", "Plan holiday", etc, etc.
 - **Temperature**: Change model temperature (randomness)
 - **Deepseek R1**
 - **Claude**:
